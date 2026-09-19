@@ -1,0 +1,27 @@
+{
+  "name": "inorganic-chemistry-learning",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "build": "pnpm -r --if-present build",
+    "content:validate": "pnpm --filter @inorganic/content validate",
+    "contracts:check": "node scripts/check-contracts.mjs",
+    "contracts:generate": "node scripts/generate-contracts.mjs",
+    "dev": "pnpm dev:web",
+    "dev:api": "uv --directory apps/api run uvicorn inorganic_api.main:app --reload --port 8000",
+    "dev:web": "pnpm --filter @inorganic/web dev",
+    "db:up": "docker compose up -d database",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "test": "pnpm -r --if-present test",
+    "test:e2e": "pnpm --filter @inorganic/web test:e2e",
+    "typecheck": "pnpm -r --if-present typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "openapi-typescript": "7.13.0",
+    "typescript": "catalog:"
+  }
+}

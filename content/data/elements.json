@@ -1,0 +1,2480 @@
+[
+  {
+    "id": "element.001-h",
+    "atomicNumber": 1,
+    "symbol": "H",
+    "nameCs": "Vodík",
+    "nameLat": "Hydrogenium",
+    "period": 1,
+    "group": 1,
+    "atomicWeight": 1.008,
+    "valenceConfiguration": "1s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.002-he",
+    "atomicNumber": 2,
+    "symbol": "He",
+    "nameCs": "Helium",
+    "nameLat": "Helium",
+    "period": 1,
+    "group": 18,
+    "atomicWeight": 4.0026,
+    "valenceConfiguration": "1s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.003-li",
+    "atomicNumber": 3,
+    "symbol": "Li",
+    "nameCs": "Lithium",
+    "nameLat": "Lithium",
+    "period": 2,
+    "group": 1,
+    "atomicWeight": 6.94,
+    "valenceConfiguration": "2s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.004-be",
+    "atomicNumber": 4,
+    "symbol": "Be",
+    "nameCs": "Berylium",
+    "nameLat": "Beryllium",
+    "period": 2,
+    "group": 2,
+    "atomicWeight": 9.0122,
+    "valenceConfiguration": "2s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.005-b",
+    "atomicNumber": 5,
+    "symbol": "B",
+    "nameCs": "Bor",
+    "nameLat": "Borum",
+    "period": 2,
+    "group": 13,
+    "atomicWeight": 10.81,
+    "valenceConfiguration": "2s2 2p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.006-c",
+    "atomicNumber": 6,
+    "symbol": "C",
+    "nameCs": "Uhlík",
+    "nameLat": "Carboneum",
+    "period": 2,
+    "group": 14,
+    "atomicWeight": 12.011,
+    "valenceConfiguration": "2s2 2p2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.007-n",
+    "atomicNumber": 7,
+    "symbol": "N",
+    "nameCs": "Dusík",
+    "nameLat": "Nitrogenium",
+    "period": 2,
+    "group": 15,
+    "atomicWeight": 14.007,
+    "valenceConfiguration": "2s2 2p3",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.008-o",
+    "atomicNumber": 8,
+    "symbol": "O",
+    "nameCs": "Kyslík",
+    "nameLat": "Oxygenium",
+    "period": 2,
+    "group": 16,
+    "atomicWeight": 15.999,
+    "valenceConfiguration": "2s2 2p4",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.009-f",
+    "atomicNumber": 9,
+    "symbol": "F",
+    "nameCs": "Fluor",
+    "nameLat": "Fluorum",
+    "period": 2,
+    "group": 17,
+    "atomicWeight": 18.998,
+    "valenceConfiguration": "2s2 2p5",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.010-ne",
+    "atomicNumber": 10,
+    "symbol": "Ne",
+    "nameCs": "Neon",
+    "nameLat": "Neon",
+    "period": 2,
+    "group": 18,
+    "atomicWeight": 20.18,
+    "valenceConfiguration": "2s2 2p6",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.011-na",
+    "atomicNumber": 11,
+    "symbol": "Na",
+    "nameCs": "Sodík",
+    "nameLat": "Natrium",
+    "period": 3,
+    "group": 1,
+    "atomicWeight": 22.99,
+    "valenceConfiguration": "3s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.012-mg",
+    "atomicNumber": 12,
+    "symbol": "Mg",
+    "nameCs": "Hořčík",
+    "nameLat": "Magnesium",
+    "period": 3,
+    "group": 2,
+    "atomicWeight": 24.305,
+    "valenceConfiguration": "3s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.013-al",
+    "atomicNumber": 13,
+    "symbol": "Al",
+    "nameCs": "Hliník",
+    "nameLat": "Aluminium",
+    "period": 3,
+    "group": 13,
+    "atomicWeight": 26.982,
+    "valenceConfiguration": "3s2 3p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.014-si",
+    "atomicNumber": 14,
+    "symbol": "Si",
+    "nameCs": "Křemík",
+    "nameLat": "Silicium",
+    "period": 3,
+    "group": 14,
+    "atomicWeight": 28.085,
+    "valenceConfiguration": "3s2 3p2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.015-p",
+    "atomicNumber": 15,
+    "symbol": "P",
+    "nameCs": "Fosfor",
+    "nameLat": "Phosphorus",
+    "period": 3,
+    "group": 15,
+    "atomicWeight": 30.974,
+    "valenceConfiguration": "3s2 3p3",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.016-s",
+    "atomicNumber": 16,
+    "symbol": "S",
+    "nameCs": "Síra",
+    "nameLat": "Sulfur",
+    "period": 3,
+    "group": 16,
+    "atomicWeight": 32.06,
+    "valenceConfiguration": "3s2 3p4",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.017-cl",
+    "atomicNumber": 17,
+    "symbol": "Cl",
+    "nameCs": "Chlor",
+    "nameLat": "Chlorum",
+    "period": 3,
+    "group": 17,
+    "atomicWeight": 35.45,
+    "valenceConfiguration": "3s2 3p5",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.018-ar",
+    "atomicNumber": 18,
+    "symbol": "Ar",
+    "nameCs": "Argon",
+    "nameLat": "Argon",
+    "period": 3,
+    "group": 18,
+    "atomicWeight": 39.95,
+    "valenceConfiguration": "3s2 3p6",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.019-k",
+    "atomicNumber": 19,
+    "symbol": "K",
+    "nameCs": "Draslík",
+    "nameLat": "Kalium",
+    "period": 4,
+    "group": 1,
+    "atomicWeight": 39.098,
+    "valenceConfiguration": "4s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.020-ca",
+    "atomicNumber": 20,
+    "symbol": "Ca",
+    "nameCs": "Vápník",
+    "nameLat": "Calcium",
+    "period": 4,
+    "group": 2,
+    "atomicWeight": 40.078,
+    "valenceConfiguration": "4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.021-sc",
+    "atomicNumber": 21,
+    "symbol": "Sc",
+    "nameCs": "Skandium",
+    "nameLat": "Scandium",
+    "period": 4,
+    "group": 3,
+    "atomicWeight": 44.956,
+    "valenceConfiguration": "3d1 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.022-ti",
+    "atomicNumber": 22,
+    "symbol": "Ti",
+    "nameCs": "Titan",
+    "nameLat": "Titanium",
+    "period": 4,
+    "group": 4,
+    "atomicWeight": 47.867,
+    "valenceConfiguration": "3d2 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.023-v",
+    "atomicNumber": 23,
+    "symbol": "V",
+    "nameCs": "Vanad",
+    "nameLat": "Vanadium",
+    "period": 4,
+    "group": 5,
+    "atomicWeight": 50.942,
+    "valenceConfiguration": "3d3 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.024-cr",
+    "atomicNumber": 24,
+    "symbol": "Cr",
+    "nameCs": "Chrom",
+    "nameLat": "Chromium",
+    "period": 4,
+    "group": 6,
+    "atomicWeight": 51.996,
+    "valenceConfiguration": "3d5 4s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.025-mn",
+    "atomicNumber": 25,
+    "symbol": "Mn",
+    "nameCs": "Mangan",
+    "nameLat": "Manganum",
+    "period": 4,
+    "group": 7,
+    "atomicWeight": 54.938,
+    "valenceConfiguration": "3d5 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.026-fe",
+    "atomicNumber": 26,
+    "symbol": "Fe",
+    "nameCs": "Železo",
+    "nameLat": "Ferrum",
+    "period": 4,
+    "group": 8,
+    "atomicWeight": 55.845,
+    "valenceConfiguration": "3d6 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.027-co",
+    "atomicNumber": 27,
+    "symbol": "Co",
+    "nameCs": "Kobalt",
+    "nameLat": "Cobaltum",
+    "period": 4,
+    "group": 9,
+    "atomicWeight": 58.933,
+    "valenceConfiguration": "3d7 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.028-ni",
+    "atomicNumber": 28,
+    "symbol": "Ni",
+    "nameCs": "Nikl",
+    "nameLat": "Niccolum",
+    "period": 4,
+    "group": 10,
+    "atomicWeight": 58.693,
+    "valenceConfiguration": "3d8 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.029-cu",
+    "atomicNumber": 29,
+    "symbol": "Cu",
+    "nameCs": "Měď",
+    "nameLat": "Cuprum",
+    "period": 4,
+    "group": 11,
+    "atomicWeight": 63.546,
+    "valenceConfiguration": "3d10 4s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.030-zn",
+    "atomicNumber": 30,
+    "symbol": "Zn",
+    "nameCs": "Zinek",
+    "nameLat": "Zincum",
+    "period": 4,
+    "group": 12,
+    "atomicWeight": 65.38,
+    "valenceConfiguration": "3d10 4s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.031-ga",
+    "atomicNumber": 31,
+    "symbol": "Ga",
+    "nameCs": "Gallium",
+    "nameLat": "Gallium",
+    "period": 4,
+    "group": 13,
+    "atomicWeight": 69.723,
+    "valenceConfiguration": "4s2 4p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.032-ge",
+    "atomicNumber": 32,
+    "symbol": "Ge",
+    "nameCs": "Germanium",
+    "nameLat": "Germanium",
+    "period": 4,
+    "group": 14,
+    "atomicWeight": 72.63,
+    "valenceConfiguration": "4s2 4p2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.033-as",
+    "atomicNumber": 33,
+    "symbol": "As",
+    "nameCs": "Arsen",
+    "nameLat": "Arsenicum",
+    "period": 4,
+    "group": 15,
+    "atomicWeight": 74.922,
+    "valenceConfiguration": "4s2 4p3",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.034-se",
+    "atomicNumber": 34,
+    "symbol": "Se",
+    "nameCs": "Selen",
+    "nameLat": "Selenium",
+    "period": 4,
+    "group": 16,
+    "atomicWeight": 78.971,
+    "valenceConfiguration": "4s2 4p4",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.035-br",
+    "atomicNumber": 35,
+    "symbol": "Br",
+    "nameCs": "Brom",
+    "nameLat": "Bromum",
+    "period": 4,
+    "group": 17,
+    "atomicWeight": 79.904,
+    "valenceConfiguration": "4s2 4p5",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.036-kr",
+    "atomicNumber": 36,
+    "symbol": "Kr",
+    "nameCs": "Krypton",
+    "nameLat": "Krypton",
+    "period": 4,
+    "group": 18,
+    "atomicWeight": 83.798,
+    "valenceConfiguration": "4s2 4p6",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.037-rb",
+    "atomicNumber": 37,
+    "symbol": "Rb",
+    "nameCs": "Rubidium",
+    "nameLat": "Rubidium",
+    "period": 5,
+    "group": 1,
+    "atomicWeight": 85.468,
+    "valenceConfiguration": "5s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.038-sr",
+    "atomicNumber": 38,
+    "symbol": "Sr",
+    "nameCs": "Stroncium",
+    "nameLat": "Strontium",
+    "period": 5,
+    "group": 2,
+    "atomicWeight": 87.62,
+    "valenceConfiguration": "5s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.039-y",
+    "atomicNumber": 39,
+    "symbol": "Y",
+    "nameCs": "Yttrium",
+    "nameLat": "Yttrium",
+    "period": 5,
+    "group": 3,
+    "atomicWeight": 88.906,
+    "valenceConfiguration": "4d1 5s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.040-zr",
+    "atomicNumber": 40,
+    "symbol": "Zr",
+    "nameCs": "Zirkonium",
+    "nameLat": "Zirconium",
+    "period": 5,
+    "group": 4,
+    "atomicWeight": 91.224,
+    "valenceConfiguration": "4d2 5s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.041-nb",
+    "atomicNumber": 41,
+    "symbol": "Nb",
+    "nameCs": "Niob",
+    "nameLat": "Niobium",
+    "period": 5,
+    "group": 5,
+    "atomicWeight": 92.906,
+    "valenceConfiguration": "4d4 5s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.042-mo",
+    "atomicNumber": 42,
+    "symbol": "Mo",
+    "nameCs": "Molybden",
+    "nameLat": "Molybdaenum",
+    "period": 5,
+    "group": 6,
+    "atomicWeight": 95.95,
+    "valenceConfiguration": "4d5 5s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.043-tc",
+    "atomicNumber": 43,
+    "symbol": "Tc",
+    "nameCs": "Technecium",
+    "nameLat": "Technetium",
+    "period": 5,
+    "group": 7,
+    "atomicWeight": 97,
+    "valenceConfiguration": "4d5 5s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.044-ru",
+    "atomicNumber": 44,
+    "symbol": "Ru",
+    "nameCs": "Ruthenium",
+    "nameLat": "Ruthenium",
+    "period": 5,
+    "group": 8,
+    "atomicWeight": 101.07,
+    "valenceConfiguration": "4d7 5s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.045-rh",
+    "atomicNumber": 45,
+    "symbol": "Rh",
+    "nameCs": "Rhodium",
+    "nameLat": "Rhodium",
+    "period": 5,
+    "group": 9,
+    "atomicWeight": 102.91,
+    "valenceConfiguration": "4d8 5s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.046-pd",
+    "atomicNumber": 46,
+    "symbol": "Pd",
+    "nameCs": "Palladium",
+    "nameLat": "Palladium",
+    "period": 5,
+    "group": 10,
+    "atomicWeight": 106.42,
+    "valenceConfiguration": "4d10",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.047-ag",
+    "atomicNumber": 47,
+    "symbol": "Ag",
+    "nameCs": "Stříbro",
+    "nameLat": "Argentum",
+    "period": 5,
+    "group": 11,
+    "atomicWeight": 107.87,
+    "valenceConfiguration": "4d10 5s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.048-cd",
+    "atomicNumber": 48,
+    "symbol": "Cd",
+    "nameCs": "Kadmium",
+    "nameLat": "Cadmium",
+    "period": 5,
+    "group": 12,
+    "atomicWeight": 112.41,
+    "valenceConfiguration": "4d10 5s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.049-in",
+    "atomicNumber": 49,
+    "symbol": "In",
+    "nameCs": "Indium",
+    "nameLat": "Indium",
+    "period": 5,
+    "group": 13,
+    "atomicWeight": 114.82,
+    "valenceConfiguration": "5s2 5p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.050-sn",
+    "atomicNumber": 50,
+    "symbol": "Sn",
+    "nameCs": "Cín",
+    "nameLat": "Stannum",
+    "period": 5,
+    "group": 14,
+    "atomicWeight": 118.71,
+    "valenceConfiguration": "5s2 5p2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.051-sb",
+    "atomicNumber": 51,
+    "symbol": "Sb",
+    "nameCs": "Antimon",
+    "nameLat": "Stibium",
+    "period": 5,
+    "group": 15,
+    "atomicWeight": 121.76,
+    "valenceConfiguration": "5s2 5p3",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.052-te",
+    "atomicNumber": 52,
+    "symbol": "Te",
+    "nameCs": "Tellur",
+    "nameLat": "Tellurium",
+    "period": 5,
+    "group": 16,
+    "atomicWeight": 127.6,
+    "valenceConfiguration": "5s2 5p4",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.053-i",
+    "atomicNumber": 53,
+    "symbol": "I",
+    "nameCs": "Jod",
+    "nameLat": "Iodium",
+    "period": 5,
+    "group": 17,
+    "atomicWeight": 126.9,
+    "valenceConfiguration": "5s2 5p5",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.054-xe",
+    "atomicNumber": 54,
+    "symbol": "Xe",
+    "nameCs": "Xenon",
+    "nameLat": "Xenon",
+    "period": 5,
+    "group": 18,
+    "atomicWeight": 131.29,
+    "valenceConfiguration": "5s2 5p6",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.055-cs",
+    "atomicNumber": 55,
+    "symbol": "Cs",
+    "nameCs": "Cesium",
+    "nameLat": "Caesium",
+    "period": 6,
+    "group": 1,
+    "atomicWeight": 132.91,
+    "valenceConfiguration": "6s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.056-ba",
+    "atomicNumber": 56,
+    "symbol": "Ba",
+    "nameCs": "Baryum",
+    "nameLat": "Barium",
+    "period": 6,
+    "group": 2,
+    "atomicWeight": 137.33,
+    "valenceConfiguration": "6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.057-la",
+    "atomicNumber": 57,
+    "symbol": "La",
+    "nameCs": "Lanthan",
+    "nameLat": "Lanthanum",
+    "period": 6,
+    "group": 3,
+    "atomicWeight": 138.91,
+    "valenceConfiguration": "5d1 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.058-ce",
+    "atomicNumber": 58,
+    "symbol": "Ce",
+    "nameCs": "Cer",
+    "nameLat": "Cerium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 140.12,
+    "valenceConfiguration": "4f1 5d1 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.059-pr",
+    "atomicNumber": 59,
+    "symbol": "Pr",
+    "nameCs": "Praseodym",
+    "nameLat": "Praseodymium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 140.91,
+    "valenceConfiguration": "4f3 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.060-nd",
+    "atomicNumber": 60,
+    "symbol": "Nd",
+    "nameCs": "Neodym",
+    "nameLat": "Neodymium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 144.24,
+    "valenceConfiguration": "4f4 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.061-pm",
+    "atomicNumber": 61,
+    "symbol": "Pm",
+    "nameCs": "Promethium",
+    "nameLat": "Promethium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 145,
+    "valenceConfiguration": "4f5 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.062-sm",
+    "atomicNumber": 62,
+    "symbol": "Sm",
+    "nameCs": "Samarium",
+    "nameLat": "Samarium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 150.36,
+    "valenceConfiguration": "4f6 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.063-eu",
+    "atomicNumber": 63,
+    "symbol": "Eu",
+    "nameCs": "Europium",
+    "nameLat": "Europium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 151.96,
+    "valenceConfiguration": "4f7 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.064-gd",
+    "atomicNumber": 64,
+    "symbol": "Gd",
+    "nameCs": "Gadolinium",
+    "nameLat": "Gadolinium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 157.25,
+    "valenceConfiguration": "4f7 5d1 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.065-tb",
+    "atomicNumber": 65,
+    "symbol": "Tb",
+    "nameCs": "Terbium",
+    "nameLat": "Terbium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 158.93,
+    "valenceConfiguration": "4f9 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.066-dy",
+    "atomicNumber": 66,
+    "symbol": "Dy",
+    "nameCs": "Dysprosium",
+    "nameLat": "Dysprosium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 162.5,
+    "valenceConfiguration": "4f10 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.067-ho",
+    "atomicNumber": 67,
+    "symbol": "Ho",
+    "nameCs": "Holmium",
+    "nameLat": "Holmium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 164.93,
+    "valenceConfiguration": "4f11 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.068-er",
+    "atomicNumber": 68,
+    "symbol": "Er",
+    "nameCs": "Erbium",
+    "nameLat": "Erbium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 167.26,
+    "valenceConfiguration": "4f12 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.069-tm",
+    "atomicNumber": 69,
+    "symbol": "Tm",
+    "nameCs": "Thulium",
+    "nameLat": "Thulium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 168.93,
+    "valenceConfiguration": "4f13 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.070-yb",
+    "atomicNumber": 70,
+    "symbol": "Yb",
+    "nameCs": "Ytterbium",
+    "nameLat": "Ytterbium",
+    "period": 6,
+    "group": null,
+    "atomicWeight": 173.05,
+    "valenceConfiguration": "4f14 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.071-lu",
+    "atomicNumber": 71,
+    "symbol": "Lu",
+    "nameCs": "Lutecium",
+    "nameLat": "Lutetium",
+    "period": 6,
+    "group": 3,
+    "atomicWeight": 174.97,
+    "valenceConfiguration": "4f14 5d1 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.072-hf",
+    "atomicNumber": 72,
+    "symbol": "Hf",
+    "nameCs": "Hafnium",
+    "nameLat": "Hafnium",
+    "period": 6,
+    "group": 4,
+    "atomicWeight": 178.49,
+    "valenceConfiguration": "5d2 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.073-ta",
+    "atomicNumber": 73,
+    "symbol": "Ta",
+    "nameCs": "Tantal",
+    "nameLat": "Tantalum",
+    "period": 6,
+    "group": 5,
+    "atomicWeight": 180.95,
+    "valenceConfiguration": "5d3 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.074-w",
+    "atomicNumber": 74,
+    "symbol": "W",
+    "nameCs": "Wolfram",
+    "nameLat": "Wolframium",
+    "period": 6,
+    "group": 6,
+    "atomicWeight": 183.84,
+    "valenceConfiguration": "5d4 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.075-re",
+    "atomicNumber": 75,
+    "symbol": "Re",
+    "nameCs": "Rhenium",
+    "nameLat": "Rhenium",
+    "period": 6,
+    "group": 7,
+    "atomicWeight": 186.21,
+    "valenceConfiguration": "5d5 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.076-os",
+    "atomicNumber": 76,
+    "symbol": "Os",
+    "nameCs": "Osmium",
+    "nameLat": "Osmium",
+    "period": 6,
+    "group": 8,
+    "atomicWeight": 190.23,
+    "valenceConfiguration": "5d6 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.077-ir",
+    "atomicNumber": 77,
+    "symbol": "Ir",
+    "nameCs": "Iridium",
+    "nameLat": "Iridium",
+    "period": 6,
+    "group": 9,
+    "atomicWeight": 192.22,
+    "valenceConfiguration": "5d7 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.078-pt",
+    "atomicNumber": 78,
+    "symbol": "Pt",
+    "nameCs": "Platina",
+    "nameLat": "Platinum",
+    "period": 6,
+    "group": 10,
+    "atomicWeight": 195.08,
+    "valenceConfiguration": "5d9 6s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.079-au",
+    "atomicNumber": 79,
+    "symbol": "Au",
+    "nameCs": "Zlato",
+    "nameLat": "Aurum",
+    "period": 6,
+    "group": 11,
+    "atomicWeight": 196.97,
+    "valenceConfiguration": "5d10 6s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.080-hg",
+    "atomicNumber": 80,
+    "symbol": "Hg",
+    "nameCs": "Rtuť",
+    "nameLat": "Hydrargyrum",
+    "period": 6,
+    "group": 12,
+    "atomicWeight": 200.59,
+    "valenceConfiguration": "5d10 6s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.081-tl",
+    "atomicNumber": 81,
+    "symbol": "Tl",
+    "nameCs": "Thallium",
+    "nameLat": "Thallium",
+    "period": 6,
+    "group": 13,
+    "atomicWeight": 204.38,
+    "valenceConfiguration": "6s2 6p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.082-pb",
+    "atomicNumber": 82,
+    "symbol": "Pb",
+    "nameCs": "Olovo",
+    "nameLat": "Plumbum",
+    "period": 6,
+    "group": 14,
+    "atomicWeight": 207.2,
+    "valenceConfiguration": "6s2 6p2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.083-bi",
+    "atomicNumber": 83,
+    "symbol": "Bi",
+    "nameCs": "Bismut",
+    "nameLat": "Bismuthum",
+    "period": 6,
+    "group": 15,
+    "atomicWeight": 208.98,
+    "valenceConfiguration": "6s2 6p3",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.084-po",
+    "atomicNumber": 84,
+    "symbol": "Po",
+    "nameCs": "Polonium",
+    "nameLat": "Polonium",
+    "period": 6,
+    "group": 16,
+    "atomicWeight": 209,
+    "valenceConfiguration": "6s2 6p4",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.085-at",
+    "atomicNumber": 85,
+    "symbol": "At",
+    "nameCs": "Astat",
+    "nameLat": "Astatium",
+    "period": 6,
+    "group": 17,
+    "atomicWeight": 210,
+    "valenceConfiguration": "6s2 6p5",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.086-rn",
+    "atomicNumber": 86,
+    "symbol": "Rn",
+    "nameCs": "Radon",
+    "nameLat": "Radon",
+    "period": 6,
+    "group": 18,
+    "atomicWeight": 222,
+    "valenceConfiguration": "6s2 6p6",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.087-fr",
+    "atomicNumber": 87,
+    "symbol": "Fr",
+    "nameCs": "Francium",
+    "nameLat": "Francium",
+    "period": 7,
+    "group": 1,
+    "atomicWeight": 223,
+    "valenceConfiguration": "7s1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.088-ra",
+    "atomicNumber": 88,
+    "symbol": "Ra",
+    "nameCs": "Radium",
+    "nameLat": "Radium",
+    "period": 7,
+    "group": 2,
+    "atomicWeight": 226,
+    "valenceConfiguration": "7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.089-ac",
+    "atomicNumber": 89,
+    "symbol": "Ac",
+    "nameCs": "Aktinium",
+    "nameLat": "Actinium",
+    "period": 7,
+    "group": 3,
+    "atomicWeight": 227,
+    "valenceConfiguration": "6d1 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.090-th",
+    "atomicNumber": 90,
+    "symbol": "Th",
+    "nameCs": "Thorium",
+    "nameLat": "Thorium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 232.04,
+    "valenceConfiguration": "6d2 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.091-pa",
+    "atomicNumber": 91,
+    "symbol": "Pa",
+    "nameCs": "Protaktinium",
+    "nameLat": "Protactinium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 231.04,
+    "valenceConfiguration": "5f2 6d1 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.092-u",
+    "atomicNumber": 92,
+    "symbol": "U",
+    "nameCs": "Uran",
+    "nameLat": "Uranium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 238.03,
+    "valenceConfiguration": "5f3 6d1 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.093-np",
+    "atomicNumber": 93,
+    "symbol": "Np",
+    "nameCs": "Neptunium",
+    "nameLat": "Neptunium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 237,
+    "valenceConfiguration": "5f4 6d1 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.094-pu",
+    "atomicNumber": 94,
+    "symbol": "Pu",
+    "nameCs": "Plutonium",
+    "nameLat": "Plutonium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 244,
+    "valenceConfiguration": "5f6 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.095-am",
+    "atomicNumber": 95,
+    "symbol": "Am",
+    "nameCs": "Americium",
+    "nameLat": "Americium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 243,
+    "valenceConfiguration": "5f7 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.096-cm",
+    "atomicNumber": 96,
+    "symbol": "Cm",
+    "nameCs": "Curium",
+    "nameLat": "Curium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 247,
+    "valenceConfiguration": "5f7 6d1 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.097-bk",
+    "atomicNumber": 97,
+    "symbol": "Bk",
+    "nameCs": "Berkelium",
+    "nameLat": "Berkelium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 247,
+    "valenceConfiguration": "5f9 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.098-cf",
+    "atomicNumber": 98,
+    "symbol": "Cf",
+    "nameCs": "Kalifornium",
+    "nameLat": "Californium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 251,
+    "valenceConfiguration": "5f10 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.099-es",
+    "atomicNumber": 99,
+    "symbol": "Es",
+    "nameCs": "Einsteinium",
+    "nameLat": "Einsteinium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 252,
+    "valenceConfiguration": "5f11 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.100-fm",
+    "atomicNumber": 100,
+    "symbol": "Fm",
+    "nameCs": "Fermium",
+    "nameLat": "Fermium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 257,
+    "valenceConfiguration": "5f12 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.101-md",
+    "atomicNumber": 101,
+    "symbol": "Md",
+    "nameCs": "Mendelevium",
+    "nameLat": "Mendelevium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 258,
+    "valenceConfiguration": "5f13 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.102-no",
+    "atomicNumber": 102,
+    "symbol": "No",
+    "nameCs": "Nobelium",
+    "nameLat": "Nobelium",
+    "period": 7,
+    "group": null,
+    "atomicWeight": 259,
+    "valenceConfiguration": "5f14 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.103-lr",
+    "atomicNumber": 103,
+    "symbol": "Lr",
+    "nameCs": "Lawrencium",
+    "nameLat": "Laurentium",
+    "period": 7,
+    "group": 3,
+    "atomicWeight": 266,
+    "valenceConfiguration": "7s2 7p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.104-rf",
+    "atomicNumber": 104,
+    "symbol": "Rf",
+    "nameCs": "Rutherfordium",
+    "nameLat": "Rutherfordium",
+    "period": 7,
+    "group": 4,
+    "atomicWeight": 267,
+    "valenceConfiguration": "6d2 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.105-db",
+    "atomicNumber": 105,
+    "symbol": "Db",
+    "nameCs": "Dubnium",
+    "nameLat": "Dubnium",
+    "period": 7,
+    "group": 5,
+    "atomicWeight": 268,
+    "valenceConfiguration": "6d3 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.106-sg",
+    "atomicNumber": 106,
+    "symbol": "Sg",
+    "nameCs": "Seaborgium",
+    "nameLat": "Seaborgium",
+    "period": 7,
+    "group": 6,
+    "atomicWeight": 269,
+    "valenceConfiguration": "6d4 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.107-bh",
+    "atomicNumber": 107,
+    "symbol": "Bh",
+    "nameCs": "Bohrium",
+    "nameLat": "Bohrium",
+    "period": 7,
+    "group": 7,
+    "atomicWeight": 270,
+    "valenceConfiguration": "6d5 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.108-hs",
+    "atomicNumber": 108,
+    "symbol": "Hs",
+    "nameCs": "Hassium",
+    "nameLat": "Hassium",
+    "period": 7,
+    "group": 8,
+    "atomicWeight": 277,
+    "valenceConfiguration": "6d6 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.109-mt",
+    "atomicNumber": 109,
+    "symbol": "Mt",
+    "nameCs": "Meitnerium",
+    "nameLat": "Meitnerium",
+    "period": 7,
+    "group": 9,
+    "atomicWeight": 278,
+    "valenceConfiguration": "6d7 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.110-ds",
+    "atomicNumber": 110,
+    "symbol": "Ds",
+    "nameCs": "Darmstadtium",
+    "nameLat": "Darmstadtium",
+    "period": 7,
+    "group": 10,
+    "atomicWeight": 281,
+    "valenceConfiguration": "6d8 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.111-rg",
+    "atomicNumber": 111,
+    "symbol": "Rg",
+    "nameCs": "Roentgenium",
+    "nameLat": "Roentgenium",
+    "period": 7,
+    "group": 11,
+    "atomicWeight": 282,
+    "valenceConfiguration": "6d9 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.112-cn",
+    "atomicNumber": 112,
+    "symbol": "Cn",
+    "nameCs": "Kopernicium",
+    "nameLat": "Copernicium",
+    "period": 7,
+    "group": 12,
+    "atomicWeight": 285,
+    "valenceConfiguration": "6d10 7s2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.113-nh",
+    "atomicNumber": 113,
+    "symbol": "Nh",
+    "nameCs": "Nihonium",
+    "nameLat": "Nihonium",
+    "period": 7,
+    "group": 13,
+    "atomicWeight": 286,
+    "valenceConfiguration": "7s2 7p1",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.114-fl",
+    "atomicNumber": 114,
+    "symbol": "Fl",
+    "nameCs": "Flerovium",
+    "nameLat": "Flerovium",
+    "period": 7,
+    "group": 14,
+    "atomicWeight": 289,
+    "valenceConfiguration": "7s2 7p2",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.115-mc",
+    "atomicNumber": 115,
+    "symbol": "Mc",
+    "nameCs": "Moscovium",
+    "nameLat": "Moscovium",
+    "period": 7,
+    "group": 15,
+    "atomicWeight": 290,
+    "valenceConfiguration": "7s2 7p3",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.116-lv",
+    "atomicNumber": 116,
+    "symbol": "Lv",
+    "nameCs": "Livermorium",
+    "nameLat": "Livermorium",
+    "period": 7,
+    "group": 16,
+    "atomicWeight": 293,
+    "valenceConfiguration": "7s2 7p4",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.117-ts",
+    "atomicNumber": 117,
+    "symbol": "Ts",
+    "nameCs": "Tennessin",
+    "nameLat": "Tennessine",
+    "period": 7,
+    "group": 17,
+    "atomicWeight": 294,
+    "valenceConfiguration": "7s2 7p5",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "element.118-og",
+    "atomicNumber": 118,
+    "symbol": "Og",
+    "nameCs": "Oganesson",
+    "nameLat": "Oganesson",
+    "period": 7,
+    "group": 18,
+    "atomicWeight": 294,
+    "valenceConfiguration": "7s2 7p6",
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-elements"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  }
+]

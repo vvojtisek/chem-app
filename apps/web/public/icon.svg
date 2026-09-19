@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Anorganická chemie</title>
+  <rect width="512" height="512" rx="112" fill="#087f5b"/>
+  <path d="M176 96h160v48l-32 45v67l84 124c13 20-1 36-23 36H147c-22 0-36-16-23-36l84-124v-67l-32-45V96Z" fill="#f4f7f8"/>
+  <path d="M174 324h164l43 64H131l43-64Z" fill="#9ce0c8"/>
+  <circle cx="216" cy="286" r="17" fill="#087f5b"/>
+  <circle cx="283" cy="349" r="13" fill="#087f5b"/>
+</svg>

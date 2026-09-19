@@ -1,0 +1,138 @@
+[
+  {
+    "id": "periodic-group.1",
+    "groupNumber": 1,
+    "nameCs": "Alkalické kovy (+ H)",
+    "mnemonicCs": "Helenu Líbal Na Koleno Robustní Cestář Francouz.",
+    "elementSymbols": ["H", "Li", "Na", "K", "Rb", "Cs", "Fr"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.2",
+    "groupNumber": 2,
+    "nameCs": "Kovy alkalických zemin",
+    "mnemonicCs": "Běžela Magda Celou Strání Balit Radima.",
+    "elementSymbols": ["Be", "Mg", "Ca", "Sr", "Ba", "Ra"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.13",
+    "groupNumber": 13,
+    "nameCs": "Triely",
+    "mnemonicCs": "Bohatý Alfréd Galský Inhaloval Tlakem.",
+    "elementSymbols": ["B", "Al", "Ga", "In", "Tl"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.14",
+    "groupNumber": 14,
+    "nameCs": "Tetrely",
+    "mnemonicCs": "Co Si Gerd Snadno Poplete.",
+    "elementSymbols": ["C", "Si", "Ge", "Sn", "Pb"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.15",
+    "groupNumber": 15,
+    "nameCs": "Pniktogeny",
+    "mnemonicCs": "Náš Pes Asi Sbaštil Bismut.",
+    "elementSymbols": ["N", "P", "As", "Sb", "Bi"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.16",
+    "groupNumber": 16,
+    "nameCs": "Chalkogeny",
+    "mnemonicCs": "O Slečno Sedněte Též Povedle.",
+    "elementSymbols": ["O", "S", "Se", "Te", "Po"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.17",
+    "groupNumber": 17,
+    "nameCs": "Halogeny",
+    "mnemonicCs": "Fikaní Chlapíci Brousili Ivetě Atom.",
+    "elementSymbols": ["F", "Cl", "Br", "I", "At"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  },
+  {
+    "id": "periodic-group.18",
+    "groupNumber": 18,
+    "nameCs": "Vzácné plyny",
+    "mnemonicCs": "Helium Nechce Armádě Koupit Xenonové Ráno.",
+    "elementSymbols": ["He", "Ne", "Ar", "Kr", "Xe", "Rn"],
+    "status": "reviewed",
+    "author": "Project curriculum",
+    "sources": [
+      {
+        "title": "User-provided element and group curriculum",
+        "locator": "conversation:2026-09-19:user-provided-groups"
+      }
+    ],
+    "reviewedBy": "Project curriculum approval",
+    "reviewedAt": "2026-09-19"
+  }
+]
