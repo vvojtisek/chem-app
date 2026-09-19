@@ -55,12 +55,20 @@ export default function HomePage() {
               <h3 className="mt-6 text-xl font-semibold text-slate-950">{mode.title}</h3>
               <p className="mt-2 leading-7 text-slate-600">{mode.description}</p>
               {mode.title === "Periodická tabulka" ? (
-                <Link
-                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-slate-950 px-4 font-semibold text-white"
-                  href="/flashcards/prvky"
-                >
-                  Otevřít karty prvků
-                </Link>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link
+                    className="inline-flex min-h-11 items-center rounded-xl bg-slate-950 px-4 font-semibold text-white"
+                    href="/flashcards/prvky"
+                  >
+                    Otevřít karty prvků
+                  </Link>
+                  <Link
+                    className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+                    href="/procvicovani/prvky"
+                  >
+                    Procvičit názvy
+                  </Link>
+                </div>
               ) : null}
             </li>
           ))}

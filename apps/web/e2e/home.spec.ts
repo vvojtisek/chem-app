@@ -40,3 +40,15 @@ test("shows a Czech element card and saves a local edit", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Vodík — moje poznámka" })).toBeVisible();
   await expect(page.getByRole("status")).toContainText("Lokální úprava byla uložena");
 });
+
+test("practices a Czech element name with immediate feedback", async ({ page }) => {
+  await page.goto("/procvicovani/prvky");
+  await page.getByRole("button", { name: "Začít cvičení" }).click();
+  await expect(page.getByText("H", { exact: true })).toBeVisible();
+
+  await page.getByLabel("Český název").fill("  VODÍK ");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+  await expect(page.getByText(/H je Vodík/)).toBeVisible();
+});
