@@ -52,3 +52,12 @@ test("practices a Czech element name with immediate feedback", async ({ page }) 
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
   await expect(page.getByText(/H je Vodík/)).toBeVisible();
 });
+
+test("accepts a Czech element name without diacritics and gives a hint", async ({ page }) => {
+  await page.goto("/procvicovani/prvky");
+  await page.getByRole("button", { name: "Začít cvičení" }).click();
+  await page.getByLabel("Český název").fill("vodik");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+  await expect(page.getByText(/doplňte českou diakritiku/)).toBeVisible();
+});

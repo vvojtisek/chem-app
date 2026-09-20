@@ -1,7 +1,7 @@
 "use client";
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
-import { normalizeAnswer } from "@inorganic/chemistry";
+import { normalizeAnswer, normalizeAnswerWithoutDiacritics } from "@inorganic/chemistry";
 import { useState } from "react";
 
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
@@ -21,6 +21,7 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
   const [session, setSession] = useState<ExerciseSessionState<ElementFlashcardData> | null>(null);
   const [answer, setAnswer] = useState("");
   const [notice, setNotice] = useState("");
+  const [feedbackNotice, setFeedbackNotice] = useState("");
   function start() {
     const created = createExerciseSession(elements.slice(0, QUESTION_LIMIT));
     if (!created.ok) {
@@ -30,10 +31,18 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
     setSession(created.state);
     setAnswer("");
     setNotice("");
+    setFeedbackNotice("");
   }
   async function submit() {
     if (!session || session.status !== "active") return;
-    const isCorrect = normalizeAnswer(answer) === normalizeAnswer(session.current.nameCs);
+    const expected = normalizeAnswer(session.current.nameCs);
+    const exact = normalizeAnswer(answer) === expected;
+    const isCorrect =
+      exact ||
+      normalizeAnswerWithoutDiacritics(answer) === normalizeAnswerWithoutDiacritics(expected);
+    setFeedbackNotice(
+      exact || !isCorrect ? "" : "Správně — příště prosím doplňte českou diakritiku.",
+    );
     setSession(submitExerciseAnswer(session, isCorrect));
     try {
       await createBrowserProgressStore().appendAttempt({
@@ -101,6 +110,7 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
         <p className="mt-3 text-lg text-slate-700">
           {session.current.symbol} je <strong>{session.current.nameCs}</strong>.
         </p>
+        {feedbackNotice ? <p className="mt-3 text-sm text-amber-800">{feedbackNotice}</p> : null}
         <button
           autoFocus
           className="mt-6 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"

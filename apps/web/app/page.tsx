@@ -36,7 +36,7 @@ export default function HomePage() {
       <section aria-labelledby="learning-modes" className="mt-12">
         <div className="flex items-end justify-between gap-4">
           <h2 id="learning-modes" className="text-2xl font-semibold text-slate-950">
-            Výukové režimy
+            Vyberte, co chcete trénovat
           </h2>
           <span className="rounded-full border border-emerald-700/20 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-900">
             Příprava MVP
@@ -69,6 +69,9 @@ export default function HomePage() {
                     Procvičit názvy
                   </Link>
                 </div>
+              ) : null}
+              {mode.title !== "Periodická tabulka" ? (
+                <p className="mt-5 text-sm font-medium text-slate-500">Připravujeme obsah</p>
               ) : null}
             </li>
           ))}
