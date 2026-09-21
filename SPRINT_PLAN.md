@@ -246,3 +246,48 @@ Do not descope data validation, chemistry review, accessible feedback, local pro
 - Localization beyond Czech.
 - Rich worked solutions and reaction-mechanism explanations.
 - Anonymous product analytics only after consent, data minimization, and a clear privacy decision.
+
+## 9. Delivery status (audited 2026-09-21, HEAD 4571e98)
+
+### Sprint 1 — Application foundation and shared exercise engine (IN PROGRESS)
+
+- [x] Shared exercise-session state machine with one bounded retry round
+- [x] Runtime curriculum validation for element/group IDs, symbols, and atomic numbers
+- [x] Versioned IndexedDB attempt-event and element-card stores
+- [x] PWA manifest, service worker, offline reopen of the application shell
+- [ ] Responsive shell — settings screen and error boundary outstanding
+- [ ] Recoverable reset/migration path for corrupt or unsupported local data (BUG-004)
+- [ ] Formula display and input primitives
+- [ ] FastAPI persistence baseline beyond `GET /api/v1/health`; no Alembic revision exists
+- [ ] Authenticated idempotent attempt-event synchronization
+- [ ] Accessible focus management (blocked by BUG-001)
+
+### Sprint 2 — Mode 1: blind periodic table (BLOCKED)
+
+Cannot start until BLOCK-001 is resolved. Resolve BUG-006 before this sprint records
+any real attempt data; critical-path item 4 makes the attempt model a prerequisite,
+not a follow-up.
+
+### Sprint 3 — Mode 3: inorganic nomenclature (NOT STARTED)
+
+`docs/exec-plans/active/nomenclature-foundation.md` is written. No reviewed records exist.
+The diacritics behavior shipped in 4571e98 contradicts that plan and must be reconciled
+before nomenclature content lands (BUG-002).
+
+## 10. Blockers and defect backlog
+
+| ID | Sev | Title | Detail |
+|---|---|---|---|
+| BLOCK-001 | 1 | Group-3 membership makes the periodic grid ambiguous | `content/data/elements.json` assigns La, Lu, Ac and Lr all to group 3, so cells (period 6, group 3) and (period 7, group 3) hold two elements each; 92 elements with a group occupy 90 distinct cells. Needs a documented membership decision recorded as an ADR (IUPAC 2021 provisional recommends Sc, Y, Lu, Lr; many Czech textbooks still print La/Ac — the dispute is live and must be decided explicitly, not inherited), plus a `duplicate_position` validator in `content/src/validation.ts`. Sprint 2 AC "all 118 elements render in their correct positions" is unreachable until then. |
+| BUG-001 | 2 | `pnpm lint` fails on main | `apps/web/components/element-name-practice.tsx`: `a11y/noAutofocus` at :115 and :140; `complexity/useOptionalChain` at :37 and :64. CI job `quality` is red; `main` is not releasable. |
+| BUG-002 | 2 | Answer policy is unconditional and lives in a React component | `element-name-practice.tsx:38-45` decides tolerance inline with no strict/tolerant switch. Violates the AGENTS.md prohibition on chemistry validation inside React components and the `packages/chemistry` ownership of answer normalization and nomenclature rules. |
+| BUG-003 | 2 | Error notices are unreachable | `notice` renders only in the active-question form. The empty-session message (:27) and the IndexedDB write-failure message (:56) are never visible to the learner. |
+| BUG-004 | 2 | IndexedDB open has no blocked/version-error path | `apps/web/lib/browser-learning-database.ts:6` — no `onblocked` handler, so a blocked upgrade leaves the promise unsettled; no `VersionError` recovery for a downgraded client. |
+| BUG-005 | 3 | `contentVersion` hardcoded in the UI | `element-name-practice.tsx:51` writes the literal `"elements-2026-09-19"`. `content/src/runtime.ts` must export a generated content version and the UI must consume it. |
+| BUG-006 | 3 | Attempt model cannot support Sprint 6 mastery | `AttemptEvent` lacks `round`, `mode`, `direction` and `matchPolicy`, and is validated by a hand-rolled type guard rather than Zod. Fix before Sprint 2 records real data. |
+| BUG-007 | 3 | Import statement placed after the component body | `apps/web/app/page.tsx:83`. Enable `assist.actions.source.organizeImports` in `biome.json`. |
+| BUG-008 | 3 | Test-layer gaps | No component tests for `ElementNamePractice` or `ElementFlashcards`; no incorrect-answer/retry E2E for any mode (AGENTS.md requires one per mode); `page.test.tsx` not updated for the 4571e98 copy change. |
+| BUG-009 | 3 | Element content review provenance is not SME-grade | All 118 records cite `reviewedBy: "Project curriculum approval"` against a conversation locator. Sprint 2 AC requires named chemistry-SME approval of identity, symbol, group, period and category. |
+| BUG-010 | 3 | Sprint 5 scope built early without tests | `apps/web/components/element-flashcards.tsx` (413 lines) implements local card override/custom/reset ahead of its sprint, with no component test. |
+| BUG-011 | 4 | Content inconsistencies pending SME adjudication | `Lr.valenceConfiguration` omits `5f14` while `Lu` includes `4f14`; `Lr.nameLat` is `Laurentium` rather than `Lawrencium`. |
+| BUG-012 | 4 | Production build dirties tracked `next-env.d.ts` | `pnpm build` rewrites `.next/dev/types/…` to `.next/types/…`. Regenerate and commit, or untrack. |
