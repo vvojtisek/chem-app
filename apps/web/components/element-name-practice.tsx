@@ -1,6 +1,7 @@
 "use client";
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
+import { curriculumContentVersion } from "@inorganic/content/runtime";
 import { normalizeAnswer, normalizeAnswerWithoutDiacritics } from "@inorganic/chemistry";
 import { useState } from "react";
 
@@ -15,6 +16,7 @@ import {
 interface ElementNamePracticeProps {
   readonly elements: readonly ElementFlashcardData[];
 }
+
 const QUESTION_LIMIT = 10;
 
 export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
@@ -22,33 +24,39 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
   const [answer, setAnswer] = useState("");
   const [notice, setNotice] = useState("");
   const [feedbackNotice, setFeedbackNotice] = useState("");
+
   function start() {
     const created = createExerciseSession(elements.slice(0, QUESTION_LIMIT));
     if (!created.ok) {
       setNotice("Cvičení nelze zahájit: chybí ověřené otázky.");
       return;
     }
+
     setSession(created.state);
     setAnswer("");
     setNotice("");
     setFeedbackNotice("");
   }
+
   async function submit() {
-    if (!session || session.status !== "active") return;
+    if (session?.status !== "active") return;
+
     const expected = normalizeAnswer(session.current.nameCs);
     const exact = normalizeAnswer(answer) === expected;
     const isCorrect =
       exact ||
       normalizeAnswerWithoutDiacritics(answer) === normalizeAnswerWithoutDiacritics(expected);
+
     setFeedbackNotice(
       exact || !isCorrect ? "" : "Správně — příště prosím doplňte českou diakritiku.",
     );
     setSession(submitExerciseAnswer(session, isCorrect));
+
     try {
       await createBrowserProgressStore().appendAttempt({
         id: crypto.randomUUID(),
         questionId: session.current.id,
-        contentVersion: "elements-2026-09-19",
+        contentVersion: curriculumContentVersion,
         occurredAt: new Date().toISOString(),
         isCorrect,
       });
@@ -60,22 +68,30 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
       );
     }
   }
+
   function advance() {
-    if (!session || session.status !== "feedback") return;
+    if (session?.status !== "feedback") return;
+
     setSession(advanceExerciseSession(session));
     setAnswer("");
   }
-  if (!session)
+
+  if (!session) {
     return (
-      <button
-        className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
-        onClick={start}
-        type="button"
-      >
-        Začít cvičení (10 prvků)
-      </button>
+      <div>
+        <button
+          className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+          onClick={start}
+          type="button"
+        >
+          Začít cvičení (10 prvků)
+        </button>
+        <PracticeNotice notice={notice} />
+      </div>
     );
-  if (session.status === "complete")
+  }
+
+  if (session.status === "complete") {
     return (
       <section
         aria-labelledby="practice-summary"
@@ -96,9 +112,12 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
         >
           Začít znovu
         </button>
+        <PracticeNotice notice={notice} />
       </section>
     );
-  if (session.status === "feedback")
+  }
+
+  if (session.status === "feedback") {
     return (
       <section aria-live="polite" className="rounded-3xl border border-slate-200 bg-white p-6">
         <p className="text-sm font-semibold text-slate-600">
@@ -112,15 +131,17 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
         </p>
         {feedbackNotice ? <p className="mt-3 text-sm text-amber-800">{feedbackNotice}</p> : null}
         <button
-          autoFocus
           className="mt-6 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
           onClick={advance}
           type="button"
         >
           Pokračovat
         </button>
+        <PracticeNotice notice={notice} />
       </section>
     );
+  }
+
   return (
     <form
       className="rounded-3xl border border-slate-200 bg-white p-6"
@@ -137,7 +158,6 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
       <label className="mt-7 grid gap-2 text-sm font-medium text-slate-800">
         Český název
         <input
-          autoFocus
           className="min-h-11 rounded-xl border border-slate-300 px-3 text-base"
           onChange={(event) => setAnswer(event.target.value)}
           value={answer}
@@ -149,11 +169,15 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
       >
         Vyhodnotit
       </button>
-      {notice ? (
-        <p className="mt-4 text-sm text-slate-700" role="status">
-          {notice}
-        </p>
-      ) : null}
+      <PracticeNotice notice={notice} />
     </form>
   );
+}
+
+function PracticeNotice({ notice }: { readonly notice: string }) {
+  return notice ? (
+    <p className="mt-4 text-sm text-slate-700" role="status">
+      {notice}
+    </p>
+  ) : null;
 }

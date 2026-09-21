@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const modes = [
   {
     title: "Periodická tabulka",
@@ -80,4 +82,3 @@ export default function HomePage() {
     </main>
   );
 }
-import Link from "next/link";
