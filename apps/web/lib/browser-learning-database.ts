@@ -1,5 +1,5 @@
 export const LEARNING_DATABASE_NAME = "inorganic-learning";
-export const LEARNING_DATABASE_VERSION = 2;
+export const LEARNING_DATABASE_VERSION = 3;
 export const ATTEMPT_EVENT_STORE = "attempt-events";
 export const ELEMENT_CARD_STORE = "element-cards";
 
@@ -34,13 +34,16 @@ export function resetLearningDatabase(indexedDb: IDBFactory): Promise<void> {
 function openCurrentLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase> {
   const request = indexedDb.open(LEARNING_DATABASE_NAME, LEARNING_DATABASE_VERSION);
 
-  request.onupgradeneeded = () => {
+  request.onupgradeneeded = (event) => {
     const database = request.result;
     if (!database.objectStoreNames.contains(ATTEMPT_EVENT_STORE)) {
       database.createObjectStore(ATTEMPT_EVENT_STORE, { keyPath: "id" });
     }
     if (!database.objectStoreNames.contains(ELEMENT_CARD_STORE)) {
       database.createObjectStore(ELEMENT_CARD_STORE, { keyPath: "id" });
+    }
+    if (event.oldVersion < 3 && database.objectStoreNames.contains(ATTEMPT_EVENT_STORE)) {
+      migrateAttemptEvents(request.transaction?.objectStore(ATTEMPT_EVENT_STORE));
     }
   };
 
@@ -54,6 +57,41 @@ function openCurrentLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase
         ),
       );
   });
+}
+
+function migrateAttemptEvents(store: IDBObjectStore | undefined): void {
+  if (!store) return;
+
+  const request = store.openCursor();
+  request.onsuccess = () => {
+    const cursor = request.result;
+    if (!cursor) return;
+
+    if (isLegacyAttemptEvent(cursor.value)) {
+      cursor.update({
+        ...cursor.value,
+        round: "initial",
+        mode: "element-name",
+        direction: "symbol-to-name",
+        matchPolicy: "diacritics-tolerant",
+      });
+    }
+    cursor.continue();
+  };
+}
+
+function isLegacyAttemptEvent(value: unknown): value is Record<string, unknown> {
+  if (typeof value !== "object" || value === null) return false;
+
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.questionId === "string" &&
+    typeof candidate.contentVersion === "string" &&
+    typeof candidate.occurredAt === "string" &&
+    typeof candidate.isCorrect === "boolean" &&
+    !("round" in candidate)
+  );
 }
 
 function isVersionError(error: unknown): boolean {
