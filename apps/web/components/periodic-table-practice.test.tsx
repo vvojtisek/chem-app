@@ -95,4 +95,27 @@ describe("PeriodicTablePractice", () => {
       );
     });
   });
+
+  it("accepts a Czech name for a highlighted position", async () => {
+    render(<PeriodicTablePractice direction="position-to-name" elements={[hydrogen]} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /začít cvičení/i }));
+    expect(screen.getByRole("heading", { name: /Jak se jmenuje prvek/ })).toBeInTheDocument();
+    expect(screen.getByText("Vybraná pozice: Perioda 1, skupina 1.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Český název"), { target: { value: "vodik" } });
+    fireEvent.click(screen.getByRole("button", { name: "Vyhodnotit" }));
+
+    expect(screen.getByRole("heading", { name: "Správně" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(appendAttempt).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mode: "periodic-table",
+          direction: "position-to-name",
+          matchPolicy: "diacritics-tolerant",
+          isCorrect: true,
+        }),
+      );
+    });
+  });
 });

@@ -98,3 +98,14 @@ test("retries an incorrect blind periodic-table position once", async ({ page })
   await page.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
 });
+
+test("answers a highlighted periodic-table position with its Czech name", async ({ page }) => {
+  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
+
+  await page.getByRole("button", { name: "Začít cvičení (10 pozic)" }).click();
+  await page.getByLabel("Český název").fill("vodik");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+  await expect(page.getByText(/Perioda 1, skupina 1 je Vodík/)).toBeVisible();
+});
