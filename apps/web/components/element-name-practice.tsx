@@ -59,6 +59,10 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
         contentVersion: curriculumContentVersion,
         occurredAt: new Date().toISOString(),
         isCorrect,
+        round: session.round,
+        mode: "element-name",
+        direction: "symbol-to-name",
+        matchPolicy: "diacritics-tolerant",
       });
     } catch (error: unknown) {
       setNotice(

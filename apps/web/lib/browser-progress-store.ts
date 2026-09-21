@@ -10,12 +10,21 @@ import {
 export const PROGRESS_DATABASE_NAME = LEARNING_DATABASE_NAME;
 export const PROGRESS_DATABASE_VERSION = LEARNING_DATABASE_VERSION;
 
+export type AttemptRound = "initial" | "retry";
+export type AttemptMode = "element-name";
+export type AttemptDirection = "symbol-to-name";
+export type AttemptMatchPolicy = "diacritics-tolerant";
+
 export interface AttemptEvent {
   readonly id: string;
   readonly questionId: string;
   readonly contentVersion: string;
   readonly occurredAt: string;
   readonly isCorrect: boolean;
+  readonly round: AttemptRound;
+  readonly mode: AttemptMode;
+  readonly direction: AttemptDirection;
+  readonly matchPolicy: AttemptMatchPolicy;
 }
 
 export interface BrowserProgressStore {
@@ -81,6 +90,10 @@ function isAttemptEvent(value: unknown): value is AttemptEvent {
     typeof candidate.questionId === "string" &&
     typeof candidate.contentVersion === "string" &&
     typeof candidate.occurredAt === "string" &&
-    typeof candidate.isCorrect === "boolean"
+    typeof candidate.isCorrect === "boolean" &&
+    (candidate.round === "initial" || candidate.round === "retry") &&
+    candidate.mode === "element-name" &&
+    candidate.direction === "symbol-to-name" &&
+    candidate.matchPolicy === "diacritics-tolerant"
   );
 }

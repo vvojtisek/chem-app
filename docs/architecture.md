@@ -61,7 +61,7 @@ The API may distribute the same snapshot and record progress, but it is not the 
 
 ### Progress and synchronization
 
-1. A completed answer creates an immutable local attempt event with a stable client event ID and content version.
+1. A completed answer creates an immutable local attempt event with a stable client event ID, content version, round, learning mode, answer direction, and match policy.
 2. The UI updates local session state and derived mastery immediately, even while offline.
 3. When authenticated and online, a sync worker sends pending events through the generated client.
 4. The API enforces identity, ownership, schema, idempotency, and ordering, then persists accepted events in PostgreSQL.

@@ -12,6 +12,10 @@ const earlierAttempt: AttemptEvent = {
   contentVersion: "2026-09-19",
   occurredAt: "2026-09-19T08:00:00.000Z",
   isCorrect: true,
+  round: "initial",
+  mode: "element-name",
+  direction: "symbol-to-name",
+  matchPolicy: "diacritics-tolerant",
 };
 
 const laterAttempt: AttemptEvent = {
@@ -20,6 +24,10 @@ const laterAttempt: AttemptEvent = {
   contentVersion: "2026-09-19",
   occurredAt: "2026-09-19T09:00:00.000Z",
   isCorrect: false,
+  round: "retry",
+  mode: "element-name",
+  direction: "symbol-to-name",
+  matchPolicy: "diacritics-tolerant",
 };
 
 beforeEach(async () => {
