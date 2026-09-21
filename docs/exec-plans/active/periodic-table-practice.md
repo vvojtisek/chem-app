@@ -11,6 +11,7 @@ repeats an original error once, and records the full immutable attempt context.
 - A pure layout adapter that assigns all 118 reviewed elements to one visible
   main-grid or f-block position.
 - A Czech position-to-answer route with deterministic ten-question sessions.
+- A Czech position-to-name route with the same deterministic session and retry behavior.
 - Pointer, touch, and keyboard-selectable blank cells with accessible position
   names and text feedback.
 - Local attempt events using the periodic-table/name-to-position/exact-position
@@ -19,8 +20,8 @@ repeats an original error once, and records the full immutable attempt context.
 
 ## Non-goals
 
-- Scope filters, random selection, reverse position-to-name questions, mastery
-  reporting, account synchronization, or new chemistry content.
+- Scope filters, random selection, mastery reporting, account synchronization,
+  or new chemistry content.
 - A new persisted schema: IndexedDB version 3 already stores mode, direction,
   match policy, and round. The new discriminator combination is backwards
   compatible with existing events.
@@ -37,8 +38,8 @@ repeats an original error once, and records the full immutable attempt context.
 
 1. Layout adapter proves 118 unique positions and the Group-3 decision in unit
    tests.
-2. Interactive route evaluates selections through the shared exercise-session
-   state machine and writes a contextual local attempt event.
+2. Both directions evaluate answers through the shared exercise-session state
+   machine and write contextual local attempt events.
 3. Component and Playwright tests cover both a correct answer and an
    incorrect-answer/retry path.
 4. Run the full gate from `docs/testing.md`; record any environment limitation

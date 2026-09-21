@@ -42,6 +42,18 @@ const periodicTableAttempt: AttemptEvent = {
   matchPolicy: "exact-position",
 };
 
+const reversePeriodicTableAttempt: AttemptEvent = {
+  id: "attempt.004",
+  questionId: "element.hydrogen",
+  contentVersion: "2026-09-21",
+  occurredAt: "2026-09-19T11:00:00.000Z",
+  isCorrect: true,
+  round: "retry",
+  mode: "periodic-table",
+  direction: "position-to-name",
+  matchPolicy: "diacritics-tolerant",
+};
+
 beforeEach(async () => {
   await new Promise<void>((resolve, reject) => {
     const request = indexedDB.deleteDatabase(PROGRESS_DATABASE_NAME);
@@ -57,11 +69,13 @@ describe("BrowserProgressStore", () => {
     await store.appendAttempt(laterAttempt);
     await store.appendAttempt(earlierAttempt);
     await store.appendAttempt(periodicTableAttempt);
+    await store.appendAttempt(reversePeriodicTableAttempt);
 
     await expect(store.listAttempts()).resolves.toEqual([
       earlierAttempt,
       laterAttempt,
       periodicTableAttempt,
+      reversePeriodicTableAttempt,
     ]);
   });
 

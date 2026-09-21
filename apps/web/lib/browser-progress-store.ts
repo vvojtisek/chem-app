@@ -12,7 +12,7 @@ export const PROGRESS_DATABASE_VERSION = LEARNING_DATABASE_VERSION;
 
 export type AttemptRound = "initial" | "retry";
 export type AttemptMode = "element-name" | "periodic-table";
-export type AttemptDirection = "symbol-to-name" | "name-to-position";
+export type AttemptDirection = "symbol-to-name" | "name-to-position" | "position-to-name";
 export type AttemptMatchPolicy = "diacritics-tolerant" | "exact-position";
 
 export interface AttemptEvent {
@@ -103,6 +103,9 @@ function isKnownAttemptContext(candidate: Record<string, unknown>): boolean {
       candidate.matchPolicy === "diacritics-tolerant") ||
     (candidate.mode === "periodic-table" &&
       candidate.direction === "name-to-position" &&
-      candidate.matchPolicy === "exact-position")
+      candidate.matchPolicy === "exact-position") ||
+    (candidate.mode === "periodic-table" &&
+      candidate.direction === "position-to-name" &&
+      candidate.matchPolicy === "diacritics-tolerant")
   );
 }

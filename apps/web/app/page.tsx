@@ -76,6 +76,12 @@ export default function HomePage() {
                   >
                     Procvičit pozice
                   </Link>
+                  <Link
+                    className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+                    href="/procvicovani/periodicka-tabulka/nazvy"
+                  >
+                    Procvičit názvy podle pozice
+                  </Link>
                 </div>
               ) : null}
               {mode.title !== "Periodická tabulka" ? (
