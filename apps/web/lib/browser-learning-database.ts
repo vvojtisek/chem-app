@@ -21,8 +21,7 @@ export function resetLearningDatabase(indexedDb: IDBFactory): Promise<void> {
 
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve();
-    request.onerror = () =>
-      reject(request.error ?? new Error("IndexedDB database reset failed."));
+    request.onerror = () => reject(request.error ?? new Error("IndexedDB database reset failed."));
     request.onblocked = () =>
       reject(
         new Error(
@@ -47,8 +46,7 @@ function openCurrentLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase
 
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () =>
-      reject(request.error ?? new Error("IndexedDB database open failed."));
+    request.onerror = () => reject(request.error ?? new Error("IndexedDB database open failed."));
     request.onblocked = () =>
       reject(
         new Error(

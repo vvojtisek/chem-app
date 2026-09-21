@@ -42,7 +42,9 @@ export const curriculumContentVersion = createCurriculumContentVersion({
   groups: curatedGroups,
 });
 
-export function createCurriculumContentVersion(snapshot: Readonly<Record<string, unknown>>): string {
+export function createCurriculumContentVersion(
+  snapshot: Readonly<Record<string, unknown>>,
+): string {
   const serializedSnapshot = JSON.stringify(snapshot);
   let hash = 0x811c9dc5;
 
