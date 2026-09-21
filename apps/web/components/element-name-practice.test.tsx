@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 
@@ -22,6 +22,8 @@ const hydrogen: ElementFlashcardData = {
   atomicWeight: 1.008,
   valenceConfiguration: "1s1",
 };
+
+afterEach(cleanup);
 
 beforeEach(() => {
   appendAttempt.mockReset();
