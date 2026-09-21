@@ -30,6 +30,18 @@ const laterAttempt: AttemptEvent = {
   matchPolicy: "diacritics-tolerant",
 };
 
+const periodicTableAttempt: AttemptEvent = {
+  id: "attempt.003",
+  questionId: "element.lithium",
+  contentVersion: "2026-09-21",
+  occurredAt: "2026-09-19T10:00:00.000Z",
+  isCorrect: true,
+  round: "initial",
+  mode: "periodic-table",
+  direction: "name-to-position",
+  matchPolicy: "exact-position",
+};
+
 beforeEach(async () => {
   await new Promise<void>((resolve, reject) => {
     const request = indexedDB.deleteDatabase(PROGRESS_DATABASE_NAME);
@@ -44,8 +56,13 @@ describe("BrowserProgressStore", () => {
 
     await store.appendAttempt(laterAttempt);
     await store.appendAttempt(earlierAttempt);
+    await store.appendAttempt(periodicTableAttempt);
 
-    await expect(store.listAttempts()).resolves.toEqual([earlierAttempt, laterAttempt]);
+    await expect(store.listAttempts()).resolves.toEqual([
+      earlierAttempt,
+      laterAttempt,
+      periodicTableAttempt,
+    ]);
   });
 
   it("clears only the application's attempt event store", async () => {
