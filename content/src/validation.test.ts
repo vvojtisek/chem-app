@@ -30,4 +30,27 @@ describe("findElementCollectionProblems", () => {
       { code: "duplicate_symbol", recordId: "element.hydrogen" },
     ]);
   });
+
+  it("reports two different elements assigned to the same periodic-table position", () => {
+    const lanthanum: ElementRecord = {
+      ...hydrogen,
+      id: "element.lanthanum",
+      atomicNumber: 57,
+      symbol: "La",
+      period: 6,
+      group: 3,
+    };
+    const lutetium: ElementRecord = {
+      ...hydrogen,
+      id: "element.lutetium",
+      atomicNumber: 71,
+      symbol: "Lu",
+      period: 6,
+      group: 3,
+    };
+
+    expect(findElementCollectionProblems([lanthanum, lutetium])).toEqual([
+      { code: "duplicate_position", recordId: "element.lutetium" },
+    ]);
+  });
 });

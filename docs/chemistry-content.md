@@ -10,6 +10,8 @@ This document defines canonical chemistry input, normalization, validation, alia
 
 User-created or locally edited cards are browser-local learning notes. They are not reviewed curriculum and must not be exported or treated as canonical content without a separate authoring and review workflow.
 
+Every non-null `(period, group)` pair identifies exactly one element. Records with `group: null` are f-block entries and do not occupy a main 18-group grid cell.
+
 ## Principles
 
 - Canonical stored data is plain text plus structured fields; typographic subscripts and rich rendering are derived.
