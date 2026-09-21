@@ -11,9 +11,9 @@ export const PROGRESS_DATABASE_NAME = LEARNING_DATABASE_NAME;
 export const PROGRESS_DATABASE_VERSION = LEARNING_DATABASE_VERSION;
 
 export type AttemptRound = "initial" | "retry";
-export type AttemptMode = "element-name";
-export type AttemptDirection = "symbol-to-name";
-export type AttemptMatchPolicy = "diacritics-tolerant";
+export type AttemptMode = "element-name" | "periodic-table";
+export type AttemptDirection = "symbol-to-name" | "name-to-position";
+export type AttemptMatchPolicy = "diacritics-tolerant" | "exact-position";
 
 export interface AttemptEvent {
   readonly id: string;
@@ -92,8 +92,17 @@ function isAttemptEvent(value: unknown): value is AttemptEvent {
     typeof candidate.occurredAt === "string" &&
     typeof candidate.isCorrect === "boolean" &&
     (candidate.round === "initial" || candidate.round === "retry") &&
-    candidate.mode === "element-name" &&
-    candidate.direction === "symbol-to-name" &&
-    candidate.matchPolicy === "diacritics-tolerant"
+    isKnownAttemptContext(candidate)
+  );
+}
+
+function isKnownAttemptContext(candidate: Record<string, unknown>): boolean {
+  return (
+    (candidate.mode === "element-name" &&
+      candidate.direction === "symbol-to-name" &&
+      candidate.matchPolicy === "diacritics-tolerant") ||
+    (candidate.mode === "periodic-table" &&
+      candidate.direction === "name-to-position" &&
+      candidate.matchPolicy === "exact-position")
   );
 }

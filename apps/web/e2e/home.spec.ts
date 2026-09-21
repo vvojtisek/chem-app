@@ -61,3 +61,40 @@ test("accepts a Czech element name without diacritics and gives a hint", async (
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
   await expect(page.getByText(/doplňte českou diakritiku/)).toBeVisible();
 });
+
+test("practices a blind periodic-table position with immediate feedback", async ({ page }) => {
+  await page.goto("/procvicovani/periodicka-tabulka");
+
+  await page.getByRole("button", { name: "Začít cvičení (10 prvků)" }).click();
+  await page.getByRole("button", { name: "Perioda 1, skupina 1" }).click();
+
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+  await expect(page.getByText(/Vodík patří na pozici Perioda 1, skupina 1/)).toBeVisible();
+});
+
+test("retries an incorrect blind periodic-table position once", async ({ page }) => {
+  await page.goto("/procvicovani/periodicka-tabulka");
+
+  await page.getByRole("button", { name: "Začít cvičení (10 prvků)" }).click();
+  await page.getByRole("button", { name: "Perioda 2, skupina 1" }).click();
+  await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Pokračovat" }).click();
+  for (const position of [
+    "Perioda 1, skupina 18",
+    "Perioda 2, skupina 1",
+    "Perioda 2, skupina 2",
+    "Perioda 2, skupina 13",
+    "Perioda 2, skupina 14",
+    "Perioda 2, skupina 15",
+    "Perioda 2, skupina 16",
+    "Perioda 2, skupina 17",
+    "Perioda 2, skupina 18",
+  ]) {
+    await page.getByRole("button", { name: position }).click();
+    await page.getByRole("button", { name: "Pokračovat" }).click();
+  }
+  await expect(page.getByText("Opakování chyby")).toBeVisible();
+  await page.getByRole("button", { name: "Perioda 1, skupina 1" }).click();
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+});
