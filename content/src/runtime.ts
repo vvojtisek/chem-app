@@ -36,6 +36,26 @@ export const curatedGroups: readonly ElementGroupData[] = groupCollectionSchema
   .map(toElementGroupData)
   .sort((left, right) => left.groupNumber - right.groupNumber);
 
+export const curriculumContentVersion = createCurriculumContentVersion({
+  schemaVersion: 1,
+  elements: curatedElements,
+  groups: curatedGroups,
+});
+
+export function createCurriculumContentVersion(
+  snapshot: Readonly<Record<string, unknown>>,
+): string {
+  const serializedSnapshot = JSON.stringify(snapshot);
+  let hash = 0x811c9dc5;
+
+  for (let index = 0; index < serializedSnapshot.length; index += 1) {
+    hash ^= serializedSnapshot.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+
+  return `curriculum-v1-${(hash >>> 0).toString(16).padStart(8, "0")}`;
+}
+
 function toElementFlashcardData(record: ElementRecord): ElementFlashcardData {
   return {
     id: record.id,
