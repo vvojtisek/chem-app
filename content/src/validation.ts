@@ -5,6 +5,7 @@ export interface ValidationProblem {
     | "duplicate_id"
     | "duplicate_atomic_number"
     | "duplicate_symbol"
+    | "duplicate_position"
     | "duplicate_group_number"
     | "duplicate_group_element_symbol"
     | "unknown_group_element_symbol"
@@ -52,6 +53,7 @@ export function findElementCollectionProblems(
   const ids = new Set<string>();
   const atomicNumbers = new Set<number>();
   const symbols = new Set<string>();
+  const positions = new Map<string, string>();
 
   for (const record of records) {
     if (ids.has(record.id)) {
@@ -62,6 +64,16 @@ export function findElementCollectionProblems(
     }
     if (symbols.has(record.symbol)) {
       problems.push({ code: "duplicate_symbol", recordId: record.id });
+    }
+    if (record.group !== null) {
+      const position = `${record.period}:${record.group}`;
+      const occupyingRecordId = positions.get(position);
+
+      if (occupyingRecordId && occupyingRecordId !== record.id) {
+        problems.push({ code: "duplicate_position", recordId: record.id });
+      } else {
+        positions.set(position, record.id);
+      }
     }
 
     ids.add(record.id);
