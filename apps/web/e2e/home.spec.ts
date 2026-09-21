@@ -66,7 +66,7 @@ test("practices a blind periodic-table position with immediate feedback", async 
   await page.goto("/procvicovani/periodicka-tabulka");
 
   await page.getByRole("button", { name: "Začít cvičení (10 prvků)" }).click();
-  await page.getByRole("button", { name: "Perioda 1, skupina 1" }).click();
+  await page.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
 
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
   await expect(page.getByText(/Vodík patří na pozici Perioda 1, skupina 1/)).toBeVisible();
@@ -76,7 +76,7 @@ test("retries an incorrect blind periodic-table position once", async ({ page })
   await page.goto("/procvicovani/periodicka-tabulka");
 
   await page.getByRole("button", { name: "Začít cvičení (10 prvků)" }).click();
-  await page.getByRole("button", { name: "Perioda 2, skupina 1" }).click();
+  await page.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
 
   await page.getByRole("button", { name: "Pokračovat" }).click();
@@ -91,10 +91,10 @@ test("retries an incorrect blind periodic-table position once", async ({ page })
     "Perioda 2, skupina 17",
     "Perioda 2, skupina 18",
   ]) {
-    await page.getByRole("button", { name: position }).click();
+    await page.getByRole("button", { name: position, exact: true }).click();
     await page.getByRole("button", { name: "Pokračovat" }).click();
   }
   await expect(page.getByText("Opakování chyby")).toBeVisible();
-  await page.getByRole("button", { name: "Perioda 1, skupina 1" }).click();
+  await page.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
 });
