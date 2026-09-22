@@ -1,7 +1,7 @@
 "use client";
 
 import { curriculumContentVersion, type ElementFlashcardData } from "@inorganic/content/runtime";
-import { normalizeAnswer, normalizeAnswerWithoutDiacritics } from "@inorganic/chemistry";
+import { evaluateAnswer } from "@inorganic/chemistry";
 import { useState } from "react";
 
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
@@ -69,11 +69,7 @@ export function PeriodicTablePractice({
   function submitName() {
     if (session?.status !== "active") return;
 
-    const expected = normalizeAnswer(session.current.nameCs);
-    const exact = normalizeAnswer(answer) === expected;
-    const isCorrect =
-      exact ||
-      normalizeAnswerWithoutDiacritics(answer) === normalizeAnswerWithoutDiacritics(expected);
+    const { isCorrect } = evaluateAnswer(answer, session.current.nameCs, { policy: "tolerant" });
 
     setSession(submitExerciseAnswer(session, isCorrect));
     void saveAttempt(session, isCorrect, direction, setNotice);
