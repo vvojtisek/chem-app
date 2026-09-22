@@ -11,7 +11,9 @@ export interface ValidationProblem {
     | "unknown_group_element_symbol"
     | "group_element_mismatch"
     | "duplicate_reviewer_id"
-    | "unknown_reviewer";
+    | "unknown_reviewer"
+    | "missing_review_fingerprint"
+    | "stale_review_fingerprint";
   readonly recordId: string;
 }
 

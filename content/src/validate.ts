@@ -1,32 +1,22 @@
-import { readFile } from "node:fs/promises";
+import { findContentProblems, loadAuthoringContent } from "./authoring-content";
+import { summarizeSmeReviewCoverage } from "./review";
 
-import { elementCollectionSchema, groupCollectionSchema, reviewerCollectionSchema } from "./schema";
-import {
-  findElementCollectionProblems,
-  findGroupCollectionProblems,
-  findReviewerReferenceProblems,
-} from "./validation";
-
-const elementFile = new URL("../data/elements.json", import.meta.url);
-const groupFile = new URL("../data/groups.json", import.meta.url);
-const reviewerFile = new URL("../data/reviewers.json", import.meta.url);
-const rawElements: unknown = JSON.parse(await readFile(elementFile, "utf8"));
-const rawGroups: unknown = JSON.parse(await readFile(groupFile, "utf8"));
-const rawReviewers: unknown = JSON.parse(await readFile(reviewerFile, "utf8"));
-const elements = elementCollectionSchema.parse(rawElements);
-const groups = groupCollectionSchema.parse(rawGroups);
-const reviewers = reviewerCollectionSchema.parse(rawReviewers);
-const problems = [
-  ...findElementCollectionProblems(elements),
-  ...findGroupCollectionProblems(elements, groups),
-  ...findReviewerReferenceProblems([...elements, ...groups], reviewers),
-];
+const content = await loadAuthoringContent();
+const problems = findContentProblems(content);
 
 if (problems.length > 0) {
   throw new Error(`Content validation failed:\n${JSON.stringify(problems, null, 2)}`);
 }
 
-const reviewedCount = elements.filter((element) => element.status === "reviewed").length;
+const reviewedCount = content.elements.filter((element) => element.status === "reviewed").length;
+const elementCoverage = summarizeSmeReviewCoverage(content.elements, content.reviewers);
+const groupCoverage = summarizeSmeReviewCoverage(content.groups, content.reviewers);
+const shippedCount = (coverage: typeof elementCoverage) =>
+  coverage.smeReviewed.length + coverage.pending.length;
+
 console.log(
-  `Content validation passed: ${elements.length} elements (${reviewedCount} reviewed), ${groups.length} named groups.`,
+  `Content validation passed: ${content.elements.length} elements (${reviewedCount} reviewed), ${content.groups.length} named groups.`,
+);
+console.log(
+  `Chemistry-SME review: ${elementCoverage.smeReviewed.length}/${shippedCount(elementCoverage)} shipped elements, ${groupCoverage.smeReviewed.length}/${shippedCount(groupCoverage)} shipped groups. Release gate: pnpm content:release-check.`,
 );

@@ -70,12 +70,20 @@ The root scripts have these responsibilities:
 - `lint` — Biome lint plus framework/package-specific lint rules.
 - `typecheck` — strict TypeScript checking across every workspace package.
 - `test` — all Vitest unit and component suites, including `packages/chemistry`.
-- `content:validate` — schemas, stable-ID uniqueness, references, formula parsing, equation balance, review status, aliases, and coverage reports.
+- `content:validate` — schemas, stable-ID uniqueness, references, formula parsing, equation balance, review status and review fingerprints, aliases, and coverage reports, including chemistry-SME review coverage.
 - `contracts:check` — regenerate OpenAPI/client artifacts in a temporary location and fail if committed generated artifacts differ.
 - `build` — production builds for all deployable applications and packages.
 - `test:e2e` — production-like Playwright tests, including offline startup and each learning mode's happy/error path.
 
 No gate may silently skip a workspace because it has no matching files. Intentional exclusions must be explicit in configuration.
+
+## Release gate
+
+```bash
+pnpm content:release-check
+```
+
+This command fails until every shipped curriculum record has a current chemistry-SME review (see `docs/chemistry-content.md`). It is a release requirement, not part of the per-PR gate above, because it depends on human review rather than on the code in a change. Report its result in release notes, and in any PR that changes curriculum content.
 
 ## Scope matrix
 
@@ -85,7 +93,7 @@ No gate may silently skip a workspace because it has no matching files. Intentio
 | `apps/web` | focused Vitest, web typecheck/lint, production web build; Playwright for behavior |
 | `apps/api` | focused Pytest, Ruff, API suite; migration test when schema changes |
 | `packages/chemistry` | full chemistry unit suite and `content:validate` |
-| `content` | `content:validate`, affected chemistry fixtures, SME review status |
+| `content` | `content:validate`, affected chemistry fixtures, SME review status (`content:release-check`) |
 | API schema/contracts | API tests, OpenAPI generation, `contracts:check`, web typecheck/build |
 | Offline persistence/service worker | migration tests plus online-to-offline and update Playwright scenarios |
 | Authentication/authorization | positive and negative API tests plus relevant browser flow |

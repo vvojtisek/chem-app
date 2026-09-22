@@ -5,6 +5,8 @@
   "packageManager": "pnpm@11.7.0",
   "scripts": {
     "build": "pnpm -r --if-present build",
+    "content:record-review": "pnpm --filter @inorganic/content record-review",
+    "content:release-check": "pnpm --filter @inorganic/content release-check",
     "content:validate": "pnpm --filter @inorganic/content validate",
     "contracts:check": "node scripts/check-contracts.mjs",
     "contracts:generate": "node scripts/generate-contracts.mjs",

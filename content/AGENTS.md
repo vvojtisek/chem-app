@@ -19,10 +19,12 @@ Every authoring record must include or inherit:
 - authoring status: `draft`, `in-review`, `reviewed`, or `deprecated`;
 - author or responsible editor;
 - source references;
-- reviewer and review date when status is `reviewed`;
+- reviewer ID from `data/reviewers.json` and review date when status is `reviewed`, plus a review fingerprint for chemistry-SME reviews;
 - a content/schema version where required by the collection.
 
 Personal reviewer metadata may be kept in authoring sources and removed from runtime output. Build tooling must exclude non-reviewed records from production curriculum bundles.
+
+Agents must never register a reviewer, run `content:record-review`, or otherwise record a review that a named person has not explicitly confirmed performing. A review record is an attestation by that person.
 
 ## Sources and scientific claims
 

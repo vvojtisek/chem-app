@@ -6,6 +6,7 @@ const sourceSchema = z.object({
 });
 
 const reviewerIdSchema = z.string().regex(/^reviewer\.[a-z0-9]+(?:-[a-z0-9]+)*$/u);
+const reviewFingerprintSchema = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 
 export const reviewerRecordSchema = z
   .object({
@@ -41,6 +42,7 @@ export const elementRecordSchema = z
     sources: z.array(sourceSchema).min(1),
     reviewedBy: reviewerIdSchema.optional(),
     reviewedAt: z.iso.date().optional(),
+    reviewFingerprint: reviewFingerprintSchema.optional(),
   })
   .superRefine((record, context) => {
     if (record.status === "reviewed" && (!record.reviewedBy || !record.reviewedAt)) {
@@ -65,6 +67,7 @@ export const groupRecordSchema = z
     sources: z.array(sourceSchema).min(1),
     reviewedBy: reviewerIdSchema.optional(),
     reviewedAt: z.iso.date().optional(),
+    reviewFingerprint: reviewFingerprintSchema.optional(),
   })
   .superRefine((record, context) => {
     if (record.status === "reviewed" && (!record.reviewedBy || !record.reviewedAt)) {

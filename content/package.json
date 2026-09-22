@@ -8,6 +8,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "record-review": "node --import tsx src/record-review.ts",
+    "release-check": "node --import tsx src/release-check.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "validate": "node --import tsx src/validate.ts"
