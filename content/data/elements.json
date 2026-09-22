@@ -66,7 +66,7 @@
     "id": "element.004-be",
     "atomicNumber": 4,
     "symbol": "Be",
-    "nameCs": "Berylium",
+    "nameCs": "Beryllium",
     "nameLat": "Beryllium",
     "period": 2,
     "group": 2,
@@ -2150,7 +2150,7 @@
     "period": 7,
     "group": 3,
     "atomicWeight": 266,
-    "valenceConfiguration": "7s2 7p1",
+    "valenceConfiguration": "5f14 7s2 7p1",
     "status": "reviewed",
     "author": "Project curriculum",
     "sources": [
@@ -2360,7 +2360,7 @@
     "period": 7,
     "group": 13,
     "atomicWeight": 286,
-    "valenceConfiguration": "7s2 7p1",
+    "valenceConfiguration": "5f14 7s2 7p1",
     "status": "reviewed",
     "author": "Project curriculum",
     "sources": [
