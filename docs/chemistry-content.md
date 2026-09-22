@@ -95,9 +95,14 @@ Each factual record includes or inherits:
 status: draft | in-review | reviewed | deprecated
 author: responsible editor
 sources: one or more identifiable references
-reviewedBy: required for reviewed records
+reviewedBy: reviewer ID from content/data/reviewers.json, required for reviewed records
 reviewedAt: ISO date required for reviewed records
+reviewFingerprint: sha256 digest of the reviewed fields, required for chemistry-SME reviews
 ```
+
+`content/data/reviewers.json` registers each reviewer once with a stable `reviewer.*` ID, a name, and a role: `chemistry-sme` (must state a qualification) or `curriculum-editor`. Only a `chemistry-sme` review satisfies the SME release requirement. A `curriculum-editor` approval keeps a record shippable during development but is reported as pending SME review.
+
+`reviewFingerprint` covers every record field, including `sources`, except `status`, `author`, and the review fields themselves. If any covered field changes after the review, `pnpm content:validate` fails with `stale_review_fingerprint`. This enforces the rule below that a scientific change reopens review.
 
 Runtime generation includes only `reviewed` records that pass all validators and excludes authoring-only personal metadata where appropriate.
 
@@ -124,7 +129,8 @@ Each fixture has a stable ID, input/options, expected structured result or stabl
 2. Automated validation checks schema, IDs, references, grammar, balance, aliases, and coverage.
 3. Chemistry SME reviews scientific meaning, equations, Czech nomenclature, industrial conditions, and intended difficulty.
 4. Author resolves findings and adds/updates negative fixtures where ambiguity was discovered.
-5. Reviewer marks the record reviewed with identity/date.
+5. The reviewer, registered as a `chemistry-sme`, records the review: `pnpm content:record-review --reviewer <reviewer-id> --date <YYYY-MM-DD> <record-id>...` (or `--all`). The command marks the records reviewed, stores the fingerprint, and refuses unknown or non-SME reviewers. Only the named reviewer, or someone acting on their explicit instruction, runs it.
 6. Production generation proves that drafts, failed records, and deprecated records do not ship.
+7. Before a release, `pnpm content:release-check` must pass: every shipped record has a current chemistry-SME review.
 
-Review is reopened when a scientific field, canonical answer, alias, equation, production condition, or source changes. Pure formatting or metadata corrections may follow the documented lightweight review path once one exists.
+Review is reopened when a scientific field, canonical answer, alias, equation, production condition, or source changes. For an SME-reviewed record, validation enforces this. Either the SME re-records the review for the changed record, or the author sets `status: in-review` and removes the review fields, which stops the record from shipping until it is reviewed again. Pure formatting or metadata corrections may follow the documented lightweight review path once one exists.

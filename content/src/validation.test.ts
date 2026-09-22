@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import type { ElementRecord } from "./schema";
-import { findElementCollectionProblems } from "./validation";
+import { elementRecordSchema, type ElementRecord, reviewerRecordSchema } from "./schema";
+import { findElementCollectionProblems, findReviewerReferenceProblems } from "./validation";
 
 const hydrogen: ElementRecord = {
   id: "element.hydrogen",
@@ -52,5 +52,53 @@ describe("findElementCollectionProblems", () => {
     expect(findElementCollectionProblems([lanthanum, lutetium])).toEqual([
       { code: "duplicate_position", recordId: "element.lutetium" },
     ]);
+  });
+});
+
+describe("reviewer provenance", () => {
+  const editor = {
+    id: "reviewer.project-curriculum",
+    name: "Project curriculum approval",
+    role: "curriculum-editor",
+  } as const;
+  const reviewedHydrogen: ElementRecord = {
+    ...hydrogen,
+    status: "reviewed",
+    reviewedBy: editor.id,
+    reviewedAt: "2026-09-22",
+  };
+
+  it("accepts a reviewed record that references a registered reviewer", () => {
+    expect(findReviewerReferenceProblems([reviewedHydrogen], [editor])).toEqual([]);
+  });
+
+  it("reports an unregistered reviewer and a duplicate reviewer ID", () => {
+    expect(
+      findReviewerReferenceProblems(
+        [{ ...reviewedHydrogen, reviewedBy: "reviewer.unknown" }],
+        [editor, editor],
+      ),
+    ).toEqual([
+      { code: "duplicate_reviewer_id", recordId: "reviewer.project-curriculum" },
+      { code: "unknown_reviewer", recordId: "element.hydrogen" },
+    ]);
+  });
+
+  it("rejects a free-text reviewer name instead of a reviewer ID", () => {
+    expect(
+      elementRecordSchema.safeParse({
+        ...reviewedHydrogen,
+        reviewedBy: "Project curriculum approval",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("requires a qualification for a chemistry SME reviewer", () => {
+    const sme = { id: "reviewer.sme", name: "Fixture SME", role: "chemistry-sme" };
+
+    expect(reviewerRecordSchema.safeParse(sme).success).toBe(false);
+    expect(
+      reviewerRecordSchema.safeParse({ ...sme, qualification: "Fixture qualification" }).success,
+    ).toBe(true);
   });
 });

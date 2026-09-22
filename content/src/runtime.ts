@@ -26,15 +26,13 @@ export interface ElementGroupData {
   readonly mnemonicCs: string;
 }
 
-export const curatedElements: readonly ElementFlashcardData[] = elementCollectionSchema
-  .parse(rawElements)
-  .map(toElementFlashcardData)
-  .sort((left, right) => left.atomicNumber - right.atomicNumber);
+export const curatedElements: readonly ElementFlashcardData[] = toRuntimeElements(
+  elementCollectionSchema.parse(rawElements),
+);
 
-export const curatedGroups: readonly ElementGroupData[] = groupCollectionSchema
-  .parse(rawGroups)
-  .map(toElementGroupData)
-  .sort((left, right) => left.groupNumber - right.groupNumber);
+export const curatedGroups: readonly ElementGroupData[] = toRuntimeGroups(
+  groupCollectionSchema.parse(rawGroups),
+);
 
 export const curriculumContentVersion = createCurriculumContentVersion({
   schemaVersion: 1,
@@ -54,6 +52,26 @@ export function createCurriculumContentVersion(
   }
 
   return `curriculum-v1-${(hash >>> 0).toString(16).padStart(8, "0")}`;
+}
+
+export function toRuntimeElements(
+  records: readonly ElementRecord[],
+): readonly ElementFlashcardData[] {
+  return records
+    .filter(isReviewed)
+    .map(toElementFlashcardData)
+    .sort((left, right) => left.atomicNumber - right.atomicNumber);
+}
+
+export function toRuntimeGroups(records: readonly GroupRecord[]): readonly ElementGroupData[] {
+  return records
+    .filter(isReviewed)
+    .map(toElementGroupData)
+    .sort((left, right) => left.groupNumber - right.groupNumber);
+}
+
+function isReviewed(record: { readonly status: ElementRecord["status"] }): boolean {
+  return record.status === "reviewed";
 }
 
 function toElementFlashcardData(record: ElementRecord): ElementFlashcardData {
