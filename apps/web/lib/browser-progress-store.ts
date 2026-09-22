@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   ATTEMPT_EVENT_STORE,
   LEARNING_DATABASE_NAME,
@@ -38,6 +40,10 @@ export function createBrowserProgressStore(
 ): BrowserProgressStore {
   return {
     async appendAttempt(event) {
+      if (!attemptEventSchema.safeParse(event).success) {
+        throw new Error("Pokus má neplatný kontext procvičování.");
+      }
+
       const database = await openLearningDatabase(indexedDb);
       try {
         const transaction = database.transaction(ATTEMPT_EVENT_STORE, "readwrite");
@@ -67,11 +73,16 @@ export function createBrowserProgressStore(
         const storedValues = await requestCompleted<unknown[]>(request);
         await transactionCompleted(transaction);
 
-        return [...storedValues.filter(isAttemptEvent)].sort((left, right) =>
-          left.occurredAt === right.occurredAt
-            ? left.id.localeCompare(right.id)
-            : left.occurredAt.localeCompare(right.occurredAt),
-        );
+        return storedValues
+          .flatMap((value) => {
+            const parsed = attemptEventSchema.safeParse(value);
+            return parsed.success ? [parsed.data] : [];
+          })
+          .sort((left, right) =>
+            left.occurredAt === right.occurredAt
+              ? left.id.localeCompare(right.id)
+              : left.occurredAt.localeCompare(right.occurredAt),
+          );
       } finally {
         database.close();
       }
@@ -79,33 +90,29 @@ export function createBrowserProgressStore(
   };
 }
 
-function isAttemptEvent(value: unknown): value is AttemptEvent {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
+const attemptBaseSchema = z.object({
+  id: z.string().min(1),
+  questionId: z.string().min(1),
+  contentVersion: z.string().min(1),
+  occurredAt: z.iso.datetime(),
+  isCorrect: z.boolean(),
+  round: z.enum(["initial", "retry"]),
+});
 
-  const candidate = value as Record<string, unknown>;
-  return (
-    typeof candidate.id === "string" &&
-    typeof candidate.questionId === "string" &&
-    typeof candidate.contentVersion === "string" &&
-    typeof candidate.occurredAt === "string" &&
-    typeof candidate.isCorrect === "boolean" &&
-    (candidate.round === "initial" || candidate.round === "retry") &&
-    isKnownAttemptContext(candidate)
-  );
-}
-
-function isKnownAttemptContext(candidate: Record<string, unknown>): boolean {
-  return (
-    (candidate.mode === "element-name" &&
-      candidate.direction === "symbol-to-name" &&
-      candidate.matchPolicy === "diacritics-tolerant") ||
-    (candidate.mode === "periodic-table" &&
-      candidate.direction === "name-to-position" &&
-      candidate.matchPolicy === "exact-position") ||
-    (candidate.mode === "periodic-table" &&
-      candidate.direction === "position-to-name" &&
-      candidate.matchPolicy === "diacritics-tolerant")
-  );
-}
+const attemptEventSchema = z.union([
+  attemptBaseSchema.extend({
+    mode: z.literal("element-name"),
+    direction: z.literal("symbol-to-name"),
+    matchPolicy: z.literal("diacritics-tolerant"),
+  }),
+  attemptBaseSchema.extend({
+    mode: z.literal("periodic-table"),
+    direction: z.literal("name-to-position"),
+    matchPolicy: z.literal("exact-position"),
+  }),
+  attemptBaseSchema.extend({
+    mode: z.literal("periodic-table"),
+    direction: z.literal("position-to-name"),
+    matchPolicy: z.literal("diacritics-tolerant"),
+  }),
+]) satisfies z.ZodType<AttemptEvent>;
