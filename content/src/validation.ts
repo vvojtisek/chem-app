@@ -1,4 +1,4 @@
-import type { ElementRecord, GroupRecord } from "./schema";
+import type { ElementRecord, GroupRecord, ReviewerRecord } from "./schema";
 
 export interface ValidationProblem {
   readonly code:
@@ -9,7 +9,9 @@ export interface ValidationProblem {
     | "duplicate_group_number"
     | "duplicate_group_element_symbol"
     | "unknown_group_element_symbol"
-    | "group_element_mismatch";
+    | "group_element_mismatch"
+    | "duplicate_reviewer_id"
+    | "unknown_reviewer";
   readonly recordId: string;
 }
 
@@ -79,6 +81,29 @@ export function findElementCollectionProblems(
     ids.add(record.id);
     atomicNumbers.add(record.atomicNumber);
     symbols.add(record.symbol);
+  }
+
+  return problems;
+}
+
+export function findReviewerReferenceProblems(
+  records: readonly (ElementRecord | GroupRecord)[],
+  reviewers: readonly ReviewerRecord[],
+): readonly ValidationProblem[] {
+  const problems: ValidationProblem[] = [];
+  const reviewerIds = new Set<string>();
+
+  for (const reviewer of reviewers) {
+    if (reviewerIds.has(reviewer.id)) {
+      problems.push({ code: "duplicate_reviewer_id", recordId: reviewer.id });
+    }
+    reviewerIds.add(reviewer.id);
+  }
+
+  for (const record of records) {
+    if (record.reviewedBy && !reviewerIds.has(record.reviewedBy)) {
+      problems.push({ code: "unknown_reviewer", recordId: record.id });
+    }
   }
 
   return problems;

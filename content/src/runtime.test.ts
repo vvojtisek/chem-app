@@ -23,7 +23,7 @@ const reviewedHydrogen: ElementRecord = {
   status: "reviewed",
   author: "fixture",
   sources: [{ title: "Fixture source", locator: "fixture:hydrogen" }],
-  reviewedBy: "Fixture reviewer",
+  reviewedBy: "reviewer.fixture",
   reviewedAt: "2026-09-22",
 };
 
@@ -36,7 +36,7 @@ const reviewedGroup: GroupRecord = {
   status: "reviewed",
   author: "fixture",
   sources: [{ title: "Fixture source", locator: "fixture:group-1" }],
-  reviewedBy: "Fixture reviewer",
+  reviewedBy: "reviewer.fixture",
   reviewedAt: "2026-09-22",
 };
 

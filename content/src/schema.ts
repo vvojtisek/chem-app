@@ -5,6 +5,26 @@ const sourceSchema = z.object({
   locator: z.string().min(1),
 });
 
+const reviewerIdSchema = z.string().regex(/^reviewer\.[a-z0-9]+(?:-[a-z0-9]+)*$/u);
+
+export const reviewerRecordSchema = z
+  .object({
+    id: reviewerIdSchema,
+    name: z.string().min(1),
+    role: z.enum(["chemistry-sme", "curriculum-editor"]),
+    qualification: z.string().min(1).optional(),
+  })
+  .superRefine((reviewer, context) => {
+    if (reviewer.role === "chemistry-sme" && !reviewer.qualification) {
+      context.addIssue({
+        code: "custom",
+        message: "Chemistry SME reviewers require a stated qualification.",
+      });
+    }
+  });
+
+export const reviewerCollectionSchema = z.array(reviewerRecordSchema);
+
 export const elementRecordSchema = z
   .object({
     id: z.string().regex(/^element\.[a-z0-9]+(?:-[a-z0-9]+)*$/u),
@@ -19,7 +39,7 @@ export const elementRecordSchema = z
     status: z.enum(["draft", "in-review", "reviewed", "deprecated"]),
     author: z.string().min(1),
     sources: z.array(sourceSchema).min(1),
-    reviewedBy: z.string().min(1).optional(),
+    reviewedBy: reviewerIdSchema.optional(),
     reviewedAt: z.iso.date().optional(),
   })
   .superRefine((record, context) => {
@@ -43,7 +63,7 @@ export const groupRecordSchema = z
     status: z.enum(["draft", "in-review", "reviewed", "deprecated"]),
     author: z.string().min(1),
     sources: z.array(sourceSchema).min(1),
-    reviewedBy: z.string().min(1).optional(),
+    reviewedBy: reviewerIdSchema.optional(),
     reviewedAt: z.iso.date().optional(),
   })
   .superRefine((record, context) => {
@@ -59,3 +79,4 @@ export const groupCollectionSchema = z.array(groupRecordSchema);
 
 export type ElementRecord = z.infer<typeof elementRecordSchema>;
 export type GroupRecord = z.infer<typeof groupRecordSchema>;
+export type ReviewerRecord = z.infer<typeof reviewerRecordSchema>;
