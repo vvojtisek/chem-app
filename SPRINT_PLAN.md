@@ -103,6 +103,81 @@ Content volume is a release variable. Chemical correctness is not: unreviewed it
 - The table is usable at 360 px width and at desktop width using touch, mouse, and keyboard.
 - Chemistry SME approves the identity, symbol, group, period, and category dataset.
 
+#### Sprint 2 follow-up — Plynulé procvičování pozic (2026-09-22)
+
+**Stav:** naplánováno, dosud neimplementováno. Prioritní doplnění Sprintu 2 na základě uživatelské zpětné vazby k `/procvicovani/periodicka-tabulka/nazvy`; musí být dokončeno před označením tohoto režimu za hotový.
+
+**Cíl:** umožnit rychlé procvičování na jedné stabilní obrazovce, se zachováním již určených prvků, volbou skupin a odpovědí českým názvem nebo chemickou značkou.
+
+**Zjištěný výchozí stav**
+
+- `apps/web/components/periodic-table-practice.tsx` při stavu `feedback` vrací samostatný panel místo tabulky. Nejde o přesměrování na jinou URL, ale výměna celého obsahu působí jako odchod na jinou stránku.
+- Buňky vykreslují pouze `?` nebo značku aktuální pozice `●`; chybí stav vyřešených prvků a zobrazení jejich chemických značek.
+- `advance()` přepne otázku, ale nevymaže `answer`, takže řízený vstup zachová předchozí odpověď.
+- `start()` používá `elements.slice(0, 10)` bez nastavení skupin. Vyhodnocení přijímá pouze český název s existující tolerancí diakritiky.
+- Toto doplnění rozšiřuje původní minimální rozsah v [aktivním plánu periodické tabulky](docs/exec-plans/active/periodic-table-practice.md), který filtry výslovně odkládal. Pro následující implementaci platí rozsah níže; původní plán zůstává záznamem předchozího přírůstku. Architektura ani přijatá ADR se nemění.
+
+**PT-UX-1 — Stálá tabulka a vyhodnocení na místě (P1; požadavky 1 a 2)**
+
+- Zachovat jednu tabulku během otázky, zpětné vazby i přechodu na další prvek. Výsledek zobrazit přímo vedle formuláře pod tabulkou, bez navigace a bez odmontování mřížky.
+- Po správné odpovědi trvale zobrazit v příslušné buňce kanonickou chemickou značku z ověřených dat. Evidovat vyřešené prvky podle stabilního ID odděleně od zvýraznění aktuální otázky; značky zůstanou viditelné až do restartu včetně závěrečného souhrnu.
+- Po chybě zobrazit správný název a značku v místní zpětné vazbě, ale prvek neoznačit za vyřešený. Při pokračování skrýt tuto nápovědu. V opakovacím kole nesmí být odpověď na aktuální otázku prozrazena v buňce ani v jejím přístupném názvu.
+- Zachovat jeden opakovací pokus pro každou původně chybnou odpověď a oddělené výsledky prvního průchodu a opakování. Ani druhá chyba nesmí vyvolat nekonečné opakování.
+- Rozlišit aktuální, vyřešenou a chybnou pozici textem nebo ikonou vedle barvy. Oznámit výsledek krátkým `aria-live` stavem, nikoli opětovným čtením celé tabulky.
+
+**Akceptace:** po dvou správných odpovědích zůstávají obě značky na správných místech při třetí otázce i v souhrnu; chyba není označena jako vyřešená. URL se nemění, tabulka nezmizí a její vodorovné posunutí se zachová. Je-li další pozice mimo výřez, posunout pouze kontejner tabulky nezbytně pro její zobrazení; stránka neskáče na začátek.
+
+**PT-UX-2 — Prázdný vstup a plynulé ovládání klávesnicí (P1; požadavek 3)**
+
+- Při přechodu na každou další otázku, vstupu do opakování a restartu vymazat odpověď i předchozí zpětnou vazbu a zaměřit vstup. Odeslanou odpověď lze ponechat pouze ve zpětné vazbě aktuální otázky.
+- Enter ve vstupu vyhodnotí neprázdnou odpověď. Ve zpětné vazbě nabídnout tlačítko „Další prvek“ ovladatelné Enterem; po přechodu vrátit fokus do vstupu. Nezavádět automatický časovaný přechod.
+- Prázdný nebo pouze mezerový vstup nepočítat jako chybný pokus. Každou otázku vyhodnotit a uložit nejvýše jednou; ošetřit dvojklik, opakovaný Enter i drženou klávesu proti dvojímu odeslání nebo přeskočení otázky.
+- Místní uložení pokusu nesmí blokovat zobrazení výsledku. Při selhání úložiště ponechat srozumitelné upozornění a umožnit pokračovat bez předstírání úspěšného uložení.
+
+**Akceptace:** správná i chybná odpověď vedou po pokračování k prázdnému zaměřenému vstupu; totéž platí v opakovacím kole. Celé cvičení lze dokončit klávesnicí, bez duplicitních pokusů a bez nechtěného odeslání předchozí hodnoty.
+
+**PT-UX-3 — Výběr procvičovaných skupin (P1; požadavek 4)**
+
+- Před spuštěním nabídnout vícenásobný výběr skupin 1–18, ovládání „Vybrat vše“ / „Zrušit výběr“, počet dostupných prvků a samostatné volby pro dvě spodní řady. Číslované skupiny odlišit od pojmenovaných chemických kategorií; schválené názvy skupin čerpat pouze z obsahu.
+- Členství určit z ověřených polí `group` a z existujícího adaptéru rozložení, nikoli z ručně opsaných seznamů. Respektovat [ADR skupiny 3](docs/decisions/group-3-membership.md): Sc, Y, Lu a Lr patří do skupiny 3; spodní řady obsahují záznamy s `group: null`. Volby spodních řad pojmenovat tak, aby bylo jejich vymezení v tomto rozložení zřejmé.
+- Množinu otázek vytvořit jako sjednocení vybraných skupin/řad bez duplicit. Ponechat viditelnou celou tabulku pro orientaci, ale otázky i opakování vybírat pouze z vybraného rozsahu.
+- Odstranit pevný výběr prvních deseti prvků. Výchozí rozsah je celá tabulka, délka série `min(10, počet vybraných prvků)`; před každou novou sérií promíchat celý filtrovaný seznam bez opakování a až potom uplatnit limit. Generátor náhody musí být injektovatelný pro deterministické testy.
+- Při prázdném výběru nespouštět cvičení a vysvětlit proč. Tlačítko spuštění i průběh zobrazují skutečný počet otázek, včetně výběru jediného prvku.
+- Nastavení uzamknout po dobu série; jeho změnu nabídnout po dokončení nebo přes výslovné ukončení rozehrané série. Změna nesmí potichu přepsat otázky ani smíchat výsledky různých rozsahů.
+
+**Akceptace:** kombinace například skupin 1 a 17 nabídne pouze jejich prvky, výběr skupiny 3 odpovídá ADR, spodní řady nezpůsobí duplicity a menší množina se dokončí se správným počtem otázek. Opakované série nejsou trvale omezené na prvních deset prvků filtrovaného seznamu.
+
+**PT-UX-4 — Odpověď názvem nebo značkou (P1; požadavek 5)**
+
+- Na stávající URL přijímat v jednom vstupu buď český název, nebo chemickou značku očekávaného prvku. Výchozí popisek změnit na „Český název nebo značka“ a sjednotit nadpis, zadání i nápovědu, aby funkce nevyžadovala hledání jiné stránky nebo přepínání před každou odpovědí.
+- Vyhodnocení umístit do čisté funkce v `packages/chemistry`: názvy používají existující normalizaci a toleranci chybějící diakritiky, značky přesně odpovídají kanonickému zápisu po odstranění krajních mezer. Neopravovat velikost písmen značek a nepoužívat fuzzy porovnávání ani libovolné aliasy.
+- Pozitivní fixture pro sodík: `sodík`, `sodik`, `Na`, ` Na `. Negativní fixture pro tutéž otázku: `na`, `NA`, `N`, jiný název, překlep a vzorec sloučeniny. Chybu velikosti písmen lze vysvětlit, ale nesmí být vyhodnocena jako správná odpověď.
+- Ve zpětné vazbě vždy ukázat ověřený název i kanonickou značku. Do lokálního pokusu zaznamenat pravdivý kontext směru a kombinované politiky vyhodnocení; nový režim nesmí být označen jen jako historické `position-to-name` / `diacritics-tolerant`.
+
+**Akceptace:** v jedné sérii lze střídavě odpovídat názvy a značkami bez změny nastavení. Správné varianty projdou, jiné prvky a nesprávně psané značky neprojdou; uložený kontext umožní odlišit nové pokusy od starého režimu.
+
+**Pořadí implementace a dotčené oblasti**
+
+1. PT-UX-1 + PT-UX-2: stabilní rozvržení a stav vyřešených buněk v `apps/web/components/periodic-table-practice.tsx`, přechody v `apps/web/lib/exercise-session.ts` pouze podle potřeby. Zachovat chování druhého směru procvičování a jeho regresní testy.
+2. PT-UX-3: čistá deterministicky testovatelná selekce otázek, nastavení série a využití `apps/web/lib/periodic-table-layout.ts`; bez nových závislostí a bez změn chemických zdrojových dat.
+3. PT-UX-4: doménový vyhodnocovač, integrace formuláře a textů v `apps/web/app/procvicovani/periodicka-tabulka/nazvy/page.tsx`, rozšíření a runtime validace kontextu v `apps/web/lib/browser-progress-store.ts`.
+4. Sjednotit popis chování v `docs/product-spec.md`, případné změny uloženého formátu v `docs/architecture.md` a přesnou politiku značek v `docs/chemistry-content.md`. Doplnit níže uvedené testy a dokončit kvalitativní bránu.
+
+**Offline, kompatibilita a hranice rozsahu**
+
+- Výběr, vyhodnocení, zpětná vazba i opakování fungují lokálně bez API. Průběh série zahrnuje nastavení, aktuální otázku, frontu chyb a vyřešená ID; při obnovení nesmí vzniknout další pokus ani únik správné odpovědi. Po restartu série se vyřešené buňky vyčistí, historické pokusy zůstanou zachované.
+- Před zavedením uloženého stavu série prověřit současnou implementaci úložiště proti požadavku obnovení po reloadu. Chybějící obnovení doplnit v rámci tohoto přírůstku jako verzovaný IndexedDB záznam podle ADR 0003, ne jako nevalidovaný obsah `localStorage`. Pro změny schématu přidat testovanou migraci a bezpečnou obnovu poškozené série bez smazání historie pokusů.
+- Staré pokusy ponechat čitelné a beze změny jejich významu; nové kombinace směru/politiky ověřovat na runtime hranici. Při změně API schématu postupovat přes FastAPI OpenAPI a generované kontrakty, nevytvářet ruční kopie DTO. Návrat na starší klient nesmí tiše zahazovat nové záznamy; popsat podporovaný postup obnovy.
+- Tento přírůstek nevyžaduje nové chemické údaje. Případné nové názvy skupin či aliasy podléhají validaci a SME review. Ostatní filtry Sprintu 2 (prvních 36, kategorie kovů apod.) zůstávají samostatnými již naplánovanými položkami.
+
+**Ověření a dokončení přírůstku**
+
+- Unit testy: sjednocení a prázdný výběr skupin, skupina 3 a spodní řady, výběr bez duplicit se seedem, limity série, pozitivní i negativní názvy/značky, přesně jedno opakování chyb.
+- Komponentové testy: vyřešené značky přetrvají, tabulka zůstává během výsledku, vstup se čistí a správně získává fokus, ochrana před dvojím odesláním, žádná prozrazená odpověď při opakování, chyba místního ukládání a izolace nastavení série.
+- Playwright: kompletní správná série se smíšenými názvy/značkami; kompletní chybná série s jedním opakováním; výběr více skupin; prázdný/jednoprvkový rozsah; neměnná URL; zachované značky a posunutí tabulky; klávesnice; rozložení 360 px; offline dokončení a obnovení rozpracované série po reloadu; regrese směru název → pozice.
+- Migrace/kompatibilita: staré pokusy se načtou beze změny, nová série a kontext odpovědi projdou validací, poškozený stav nabídne bezpečnou obnovu. Ručně ověřit čtečku obrazovky, fokus a dotykové ovládání.
+- Před dokončením implementace spustit celou bránu z [docs/testing.md](docs/testing.md): `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm content:validate`, `pnpm contracts:check`, `uv --directory apps/api run ruff format --check .`, `uv --directory apps/api run ruff check .`, `uv --directory apps/api run pytest -q`, `pnpm build`, `pnpm test:e2e`. Zapsat skutečné výsledky a případné blokace; plánování samo o sobě nesplňuje akceptaci implementace.
+
 ### Sprint 3 — Mode 3: inorganic nomenclature
 
 **Goal:** support fast Czech formula/name practice without input friction.
