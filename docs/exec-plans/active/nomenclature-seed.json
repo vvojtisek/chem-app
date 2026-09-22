@@ -1,0 +1,506 @@
+{
+  "AgCl": {
+    "nazev": "chlorid stříbrný",
+    "napoveda": "Kation: Ag(+I) (koncovka -ný). Anion: chloridový Cl(-I) (bezpříponová koncovka bezkyslíkaté soli -id). Celkově: (+1) + (-1) = 0 -> chlorid stříbrný."
+  },
+  "AgNO3": {
+    "nazev": "dusičnan stříbrný",
+    "napoveda": "Kation: Ag(+I) -> stříbrný. Anion: (NO3)(-I). V aniontu: 3 × O(-II) = -6; dusík N = +V (-ičnan/-ečnan), součet: +5 + (-6) = -1. Celkově: dusičnan stříbrný."
+  },
+  "Al2(SO4)3": {
+    "nazev": "síran hlinitý",
+    "napoveda": "Kation: 2 × Al(+III) -> hlinitý (náboj +6). Anion: 3 × (SO4)(-II) (náboj -6). V síranu: 4 × O(-II) = -8; síra S = +VI (-an), součet: +6 + (-8) = -2 -> síran hlinitý."
+  },
+  "Al(OH)3": {
+    "nazev": "hydroxid hlinitý",
+    "napoveda": "Kation: Al(+III) -> hlinitý. Hydroxidová skupina: (OH)(-I), 3 × (-1) = -3. Sloučenina hydroxidového typu s trojmocným hliníkem -> hydroxid hlinitý."
+  },
+  "Al2O3": {
+    "nazev": "oxid hlinitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Hliník: 2 × Al(+III) = +6 (koncovka -itý). Křížové pravidlo poměru 2:3 -> oxid hlinitý."
+  },
+  "B2O3": {
+    "nazev": "oxid boritý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Bór: 2 × B(+III) = +6 (koncovka -itý). Křížové pravidlo poměru 2:3 -> oxid boritý."
+  },
+  "BaCl2": {
+    "nazev": "chlorid barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id). Celkově: (+2) + 2 × (-1) = 0 -> chlorid barnatý."
+  },
+  "BaCl2.2H2O": {
+    "nazev": "dihydrát chloridu barnatého",
+    "napoveda": "Základ tvoří BaCl2 (chlorid barnatý, Ba+II, Cl-I). Přítomnost dvou vázaných molekul krystalové vody určuje předponu di- a slovo hydrát -> dihydrát chloridu barnatého."
+  },
+  "Be(NO3)2": {
+    "nazev": "dusičnan beryllnatý",
+    "napoveda": "Kation: Be(+II) -> beryllnatý. Anion: 2 × (NO3)(-I) = -2. V aniontu NO3-: N(+V) a 3 × O(-II) -> dusičnan. Výsledný náboj (+2) + (-2) = 0 -> dusičnan beryllnatý."
+  },
+  "Be(NO3)2.4H2O": {
+    "nazev": "tetrahydrát dusičnanu beryllnatého",
+    "napoveda": "Základní sůl Be(NO3)2 (dusičnan beryllnatý) krystalizuje se čtyřmi molekulami vody (předpona tetra- a hydrát) -> tetrahydrát dusičnanu beryllnatého."
+  },
+  "Ca(H2PO4)2": {
+    "nazev": "dihydrogenfosforečnan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × (H2PO4)(-I). Fosforečnanový zbytek obsahuje P(+V) a dva nevyměněné kyselé vodíky H(+I) -> dihydrogenfosforečnan vápenatý."
+  },
+  "Ca3(PO4)2": {
+    "nazev": "fosforečnan vápenatý",
+    "napoveda": "Kation: 3 × Ca(+II) = +6 -> vápenatý. Anion: 2 × (PO4)(-III) = -6. V aniontu: P(+V) + 4 × O(-II) = -3 (-ečnan/-ičnan). Celkově -> fosforečnan vápenatý."
+  },
+  "Ca3P2": {
+    "nazev": "fosfid vápenatý",
+    "napoveda": "Kation: 3 × Ca(+II) = +6. Fosfor jako bezkyslíkatý elektronegativní partner: 2 × P(-III) = -6 (koncovka -id) -> fosfid vápenatý."
+  },
+  "CaCl2": {
+    "nazev": "chlorid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × Cl(-I) = -2 (koncovka -id). Celkově: (+2) + 2 × (-1) = 0 -> chlorid vápenatý."
+  },
+  "CaCO3": {
+    "nazev": "uhličitan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: (CO3)(-II). V uhličitanovém aniontu: C(+IV) (-ičitan) + 3 × O(-II) = -2. Celkově: (+2) + (-2) = 0 -> uhličitan vápenatý."
+  },
+  "CaF2": {
+    "nazev": "fluorid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × F(-I) = -2 (koncovka -id). Celkově: (+2) + (-2) = 0 -> fluorid vápenatý."
+  },
+  "CaHPO4": {
+    "nazev": "hydrogenfosforečnan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Kyselý anion: (HPO4)(-II). Obsahuje fosforečnan se zachovaným jedním protonem H(+I) -> hydrogenfosforečnan vápenatý."
+  },
+  "CaO": {
+    "nazev": "oxid vápenatý",
+    "napoveda": "Kyslík: O(-II). Vápník: Ca(+II) (koncovka -natý). Poměr 1:1, celkově neutrální -> oxid vápenatý."
+  },
+  "Cd(NO3)2": {
+    "nazev": "dusičnan kademnatý",
+    "napoveda": "Kation: Cd(+II) -> kademnatý. Anion: 2 × (NO3)(-I) = -2. V dusičnanovém aniontu je N(+V) -> dusičnan kademnatý."
+  },
+  "CdCl2": {
+    "nazev": "chlorid kademnatý",
+    "napoveda": "Kation: Cd(+II) -> kademnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id). Celkově: (+2) + (-2) = 0 -> chlorid kademnatý."
+  },
+  "CdI2": {
+    "nazev": "jodid kademnatý",
+    "napoveda": "Kation: Cd(+II) -> kademnatý. Anion: 2 × I(-I) = -2 (koncovka -id). Celkově: (+2) + (-2) = 0 -> jodid kademnatý."
+  },
+  "CO2": {
+    "nazev": "oxid uhličitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Uhlík: C(+IV) (koncovka -ičitý). Celkově: (+4) + (-4) = 0 -> oxid uhličitý."
+  },
+  "Cr2(SO4)3": {
+    "nazev": "síran chromitý",
+    "napoveda": "Kation: 2 × Cr(+III) = +6 -> chromitý. Anion: 3 × (SO4)(-II) = -6 (síran, S(+VI)). Poměr 2:3 -> síran chromitý."
+  },
+  "Cr2O3": {
+    "nazev": "oxid chromitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Chrom: 2 × Cr(+III) = +6 (koncovka -itý). Poměr 2:3 -> oxid chromitý."
+  },
+  "Cu(NO3)2": {
+    "nazev": "dusičnan měďnatý",
+    "napoveda": "Kation: Cu(+II) -> měďnatý. Anion: 2 × (NO3)(-I) = -2 (dusičnan, N(+V)). Celkově: (+2) + (-2) = 0 -> dusičnan měďnatý."
+  },
+  "Cu(NO3)2.3H2O": {
+    "nazev": "trihydrát dusičnanu měďnatého",
+    "napoveda": "Základní sůl Cu(NO3)2 (dusičnan měďnatý, Cu+II) vázaná se třemi molekulami krystalové vody (tri- a hydrát) -> trihydrát dusičnanu měďnatého."
+  },
+  "Cu(OH)2": {
+    "nazev": "hydroxid měďnatý",
+    "napoveda": "Kation: Cu(+II) -> měďnatý. Hydroxidová skupina: 2 × (OH)(-I) = -2. Hydroxid s dvojmocnou mědí -> hydroxid měďnatý."
+  },
+  "CuCl2": {
+    "nazev": "chlorid měďnatý",
+    "napoveda": "Kation: Cu(+II) -> měďnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id). Celkově: (+2) + (-2) = 0 -> chlorid měďnatý."
+  },
+  "CuCl2.2H2O": {
+    "nazev": "dihydrát chloridu měďnatého",
+    "napoveda": "Základem je CuCl2 (chlorid měďnatý, Cu+II, Cl-I) spolu se dvěma molekulami vody (di- a hydrát) -> dihydrát chloridu měďnatého."
+  },
+  "CuI": {
+    "nazev": "jodid měďný",
+    "napoveda": "Kation: Cu(+I) -> měďný. Anion: I(-I) -> jodid (koncovka -id). Poměr 1:1, (+1) + (-1) = 0 -> jodid měďný."
+  },
+  "CuO": {
+    "nazev": "oxid měďnatý",
+    "napoveda": "Kyslík: O(-II). Měď: Cu(+II) (koncovka -natý). Poměr 1:1, (+2) + (-2) = 0 -> oxid měďnatý."
+  },
+  "Cu2O": {
+    "nazev": "oxid měďný",
+    "napoveda": "Kyslík: O(-II). Měď: 2 × Cu(+I) = +2 (koncovka -ný). Poměr 2:1 -> oxid měďný."
+  },
+  "CuSO4": {
+    "nazev": "síran měďnatý",
+    "napoveda": "Kation: Cu(+II) -> měďnatý. Anion: (SO4)(-II). V síranové skupině: S(+VI) + 4 × O(-II) = -2 (-an). Celkově: (+2) + (-2) = 0 -> síran měďnatý."
+  },
+  "CuSO4.5H2O": {
+    "nazev": "pentahydrát síranu měďnatého",
+    "napoveda": "Základ tvoří CuSO4 (síran měďnatý) krystalizující s pěti molekulami vody (předpona penta- a hydrát) -> pentahydrát síranu měďnatého."
+  },
+  "FeCr2O4": {
+    "nazev": "chromitan železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: (Cr2O4)(-II) resp. podvojný oxid: Cr(+III) (-itan), 2 × (+3) + 4 × (-2) = -2. Celkově -> chromitan železnatý."
+  },
+  "FeS": {
+    "nazev": "sulfid železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: S(-II) (koncovka -id). Poměr 1:1, (+2) + (-2) = 0 -> sulfid železnatý."
+  },
+  "FeS2": {
+    "nazev": "disulfid železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: disulfidový můstek (S2)(-II), kde každý atom síry formálně nese náboj -I -> disulfid železnatý."
+  },
+  "FeSO4": {
+    "nazev": "síran železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: (SO4)(-II) (síran, S(+VI)). Poměr 1:1, (+2) + (-2) = 0 -> síran železnatý."
+  },
+  "FeSO4.7H2O": {
+    "nazev": "heptahydrát síranu železnatého",
+    "napoveda": "Základ FeSO4 (síran železnatý) krystalizuje se sedmi molekulami vody (předpona hepta- a hydrát) -> heptahydrát síranu železnatého."
+  },
+  "H[AuCl4]": {
+    "nazev": "kyselina tetrachlorozlatitá",
+    "napoveda": "Kation: H(+I). Koordinační anion: [AuCl4](-I). Centrální atom Au(+III) (koncovka -itá), 4 chloridové ligandy (tetrachloro-) s nábojem 4 × (-1) = -4. Celkem anion -1 -> kyselina tetrachlorozlatitá."
+  },
+  "H2C2O4": {
+    "nazev": "kyselina šťavelová",
+    "napoveda": "Triviální název pro kyselinu ethanovou/dikarboxylovou (HOOC-COOH). Dva kyselé vodíky H(+I) a šťavelanový anion (C2O4)(-II) -> kyselina šťavelová."
+  },
+  "H2C2O4.2H2O": {
+    "nazev": "dihydrát kyseliny šťavelové",
+    "napoveda": "Kyselina šťavelová H2C2O4 v pevném stavu se dvěma molekulami krystalové vody (di- a hydrát) -> dihydrát kyseliny šťavelové."
+  },
+  "H2O": {
+    "nazev": "voda",
+    "napoveda": "Běžný triviální název (systematicky oxidan či oxid vodný). 2 × H(+I) + O(-II) = 0 -> voda."
+  },
+  "H2O2": {
+    "nazev": "peroxid vodíku",
+    "napoveda": "Obsahuje peroxidickou vazbu -O-O-, kde má kyslík oxidační číslo -I: (O2)(-II). 2 × H(+I) doplňuje neutrální stav -> peroxid vodíku."
+  },
+  "H2S": {
+    "nazev": "sulfan",
+    "napoveda": "Binární sloučenina vodíku a síry: 2 × H(+I) + S(-II) = 0. Systematický název hydridu síry -> sulfan (či sulfidovodík)."
+  },
+  "H2SO4": {
+    "nazev": "kyselina sírová",
+    "napoveda": "Kyslíkatá kyselina: 2 × H(+I) = +2; 4 × O(-II) = -8. Síra S musí mít (+VI) (+2 + 6 - 8 = 0), což odpovídá koncovce -ová -> kyselina sírová."
+  },
+  "H3BO3": {
+    "nazev": "kyselina trihydrogenboritá",
+    "napoveda": "Kyselina: 3 × H(+I) = +3; 3 × O(-II) = -6. Bór má číslo (+III) (+3 + 3 - 6 = 0, koncovka -itá). Tři atomy vodíku určují předponu trihydrogen- -> kyselina trihydrogenboritá."
+  },
+  "H3PO4": {
+    "nazev": "kyselina trihydrogenfosforečná",
+    "napoveda": "Kyselina: 3 × H(+I) = +3; 4 × O(-II) = -8. Fosfor P má (+V) (+3 + 5 - 8 = 0, koncovka -ečná). Tři atomy vodíku dávají trihydrogen- -> kyselina trihydrogenfosforečná."
+  },
+  "HBr": {
+    "nazev": "bromovodík",
+    "napoveda": "Binární sloučenina: H(+I) a Br(-I). Halogenovodík se v plynném stavu nazývá bromovodík (ve vodě kyselina bromovodíková)."
+  },
+  "HCl": {
+    "nazev": "chlorovodík",
+    "napoveda": "Binární sloučenina: H(+I) a Cl(-I). Halogenovodík s polární kovalentní vazbou -> chlorovodík (vodný roztok = kyselina chlorovodíková)."
+  },
+  "HF": {
+    "nazev": "fluorovodík",
+    "napoveda": "Binární sloučenina: H(+I) a F(-I). Halogenovodík fluoru s vysokou elektronegativitou halogenu -> fluorovodík."
+  },
+  "Hg(NO3)2": {
+    "nazev": "dusičnan rtuťnatý",
+    "napoveda": "Kation: Hg(+II) -> rtuťnatý. Anion: 2 × (NO3)(-I) = -2 (dusičnan, N(+V)). Celkově: (+2) + (-2) = 0 -> dusičnan rtuťnatý."
+  },
+  "HNO3": {
+    "nazev": "kyselina dusičná",
+    "napoveda": "Kyselina: H(+I) = +1; 3 × O(-II) = -6. Dusík má oxidační číslo N(+V) (+1 + 5 - 6 = 0), což odpovídá koncovce -ičná/-ná -> kyselina dusičná."
+  },
+  "CH3COOH": {
+    "nazev": "kyselina octová",
+    "napoveda": "Triviální název pro kyselinu ethanovou. Odštěpením H+ z karboxylové skupiny -COOH vzniká octanový anion (CH3COO)- -> kyselina octová."
+  },
+  "CH4": {
+    "nazev": "methan",
+    "napoveda": "Nejjednodušší nasycený uhlovodík (alkan) o jednom atomu uhlíku: C(-IV) a 4 × H(+I). Základní organické názvosloví -> methan."
+  },
+  "K2[HgI4]": {
+    "nazev": "tetrajodortuťnatan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Koordinační anion: [HgI4](-II). Centrální atom Hg(+II) (-atan) se 4 jodidovými ligandy (4 × I(-I) = -4) -> tetrajodortuťnatan draselný."
+  },
+  "K2C2O4": {
+    "nazev": "šťavelan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: šťavelanový (C2O4)(-II) odvozený od kyseliny šťavelové -> šťavelan draselný."
+  },
+  "K2Cr2O7": {
+    "nazev": "dichroman draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (Cr2O7)(-II). V aniontu: 7 × O(-II) = -14; 2 × Cr(+VI) = +12 (koncovka -an), celkem (+12 - 14 = -2). Dva atomy chromu znamenají předponu di- -> dichroman draselný."
+  },
+  "K2CrO4": {
+    "nazev": "chroman draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (CrO4)(-II). V aniontu: 4 × O(-II) = -8; Cr(+VI) = +6 (koncovka -an), součet +6 + (-8) = -2 -> chroman draselný."
+  },
+  "K2O": {
+    "nazev": "oxid draselný",
+    "napoveda": "Kyslík: O(-II). Draslík: 2 × K(+I) = +2 (koncovka -ný). Poměr 2:1 -> oxid draselný."
+  },
+  "K2SO3": {
+    "nazev": "siřičitan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (SO3)(-II). V aniontu: 3 × O(-II) = -6; S(+IV) = +4 (koncovka -ičitan), součet +4 + (-6) = -2 -> siřičitan draselný."
+  },
+  "K2SO3.2H2O": {
+    "nazev": "dihydrát siřičitanu draselného",
+    "napoveda": "Základ tvoří K2SO3 (siřičitan draselný, K+I, S+IV) doplněný o dvě molekuly krystalové vody (di- a hydrát) -> dihydrát siřičitanu draselného."
+  },
+  "K2SO4": {
+    "nazev": "síran draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (SO4)(-II). V aniontu: S(+VI) a 4 × O(-II) -> síran. Celkově: (+2) + (-2) = 0 -> síran draselný."
+  },
+  "KAl(SO4)2.12H2O": {
+    "nazev": "dodekahydrát síranu draselno-hlinitého",
+    "napoveda": "Podvojná sůl: K(+I) a Al(+III) doplňují dva síranové anionty 2 × (SO4)(-II) (celkem +4 a -4). 12 molekul vody značí dodekahydrát -> dodekahydrát síranu draselno-hlinitého (kamenec)."
+  },
+  "KClO3": {
+    "nazev": "chlorečnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (ClO3)(-I). V aniontu: 3 × O(-II) = -6; Cl(+V) = +5 (koncovka -ečnan), součet: +5 - 6 = -1 -> chlorečnan draselný."
+  },
+  "KCl": {
+    "nazev": "chlorid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: Cl(-I) (koncovka -id). Poměr 1:1, (+1) + (-1) = 0 -> chlorid draselný."
+  },
+  "KCN": {
+    "nazev": "kyanid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: kyanidový (CN)(-I) odvozený od kyanovodíku (koncovka -id). Celkově -> kyanid draselný."
+  },
+  "KCr(SO4)2.12H2O": {
+    "nazev": "dodekahydrát síranu draselno-chromitého",
+    "napoveda": "Podvojná sůl kationtů K(+I) a Cr(+III) se dvěma anionty (SO4)(-II) krystalizující s 12 molekulami vody (dodekahydrát) -> dodekahydrát síranu draselno-chromitého."
+  },
+  "KI": {
+    "nazev": "jodid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: I(-I) (koncovka -id). Poměr 1:1, (+1) + (-1) = 0 -> jodid draselný."
+  },
+  "KIO3": {
+    "nazev": "jodičnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (IO3)(-I). V aniontu: 3 × O(-II) = -6; jod I(+V) = +5 (koncovka -ičnan), součet: +5 - 6 = -1 -> jodičnan draselný."
+  },
+  "KMnO4": {
+    "nazev": "manganistan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (MnO4)(-I). V aniontu: 4 × O(-II) = -8; mangan Mn(+VII) = +7 (koncovka -istan), součet: +7 - 8 = -1 -> manganistan draselný."
+  },
+  "KNO2": {
+    "nazev": "dusitan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (NO2)(-I). V aniontu: 2 × O(-II) = -4; dusík N(+III) = +3 (koncovka -itan), součet: +3 - 4 = -1 -> dusitan draselný."
+  },
+  "KNO3": {
+    "nazev": "dusičnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (NO3)(-I). V aniontu: 3 × O(-II) = -6; dusík N(+V) = +5 (koncovka -ičnan), součet: +5 - 6 = -1 -> dusičnan draselný."
+  },
+  "KOH": {
+    "nazev": "hydroxid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: hydroxidový (OH)(-I). Zásada jednomocného draslíku -> hydroxid draselný."
+  },
+  "Mg3N2": {
+    "nazev": "nitrid hořečnatý",
+    "napoveda": "Kation: 3 × Mg(+II) = +6 -> hořečnatý. Anion: 2 × N(-III) = -6 (koncovka -id). Poměr 3:2 -> nitrid hořečnatý."
+  },
+  "MgCO3": {
+    "nazev": "uhličitan hořečnatý",
+    "napoveda": "Kation: Mg(+II) -> hořečnatý. Anion: (CO3)(-II) (uhličitan, C(+IV)). Poměr 1:1, (+2) + (-2) = 0 -> uhličitan hořečnatý."
+  },
+  "MgCl2": {
+    "nazev": "chlorid hořečnatý",
+    "napoveda": "Kation: Mg(+II) -> hořečnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id). Celkově: (+2) + (-2) = 0 -> chlorid hořečnatý."
+  },
+  "MgCl2.6H2O": {
+    "nazev": "hexahydrát chloridu hořečnatého",
+    "napoveda": "Základ MgCl2 (chlorid hořečnatý, Mg+II, Cl-I) se šesti molekulami vody (předpona hexa- a hydrát) -> hexahydrát chloridu hořečnatého."
+  },
+  "MgO": {
+    "nazev": "oxid hořečnatý",
+    "napoveda": "Kyslík: O(-II). Hořčík: Mg(+II) (koncovka -natý). Poměr 1:1, (+2) + (-2) = 0 -> oxid hořečnatý."
+  },
+  "MgSO4": {
+    "nazev": "síran hořečnatý",
+    "napoveda": "Kation: Mg(+II) -> hořečnatý. Anion: (SO4)(-II) (síran, S(+VI)). Poměr 1:1, (+2) + (-2) = 0 -> síran hořečnatý."
+  },
+  "MgSO4.7H2O": {
+    "nazev": "heptahydrát síranu hořečnatého",
+    "napoveda": "Základ MgSO4 (síran hořečnatý) vázaný se sedmi molekulami krystalové vody (hepta- a hydrát) -> heptahydrát síranu hořečnatého."
+  },
+  "MnO2": {
+    "nazev": "oxid manganičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Mangan: Mn(+IV) (koncovka -ičitý). Celkově: (+4) + (-4) = 0 -> oxid manganičitý."
+  },
+  "Na2B4O7": {
+    "nazev": "tetraboritan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (B4O7)(-II). 7 × O(-II) = -14; 4 atomy bóru B(+III) = +12 (-itan). Čtyři bóry značí tetraboritan -> tetraboritan sodný."
+  },
+  "Na2B4O7.10H2O": {
+    "nazev": "dekahydrát tetraboritanu sodného",
+    "napoveda": "Základ Na2B4O7 (tetraboritan sodný) s deseti molekulami vody (deka- a hydrát) -> dekahydrát tetraboritanu sodného (borax)."
+  },
+  "Na2CO3": {
+    "nazev": "uhličitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (CO3)(-II) (uhličitan, C(+IV)). Celkově: (+2) + (-2) = 0 -> uhličitan sodný."
+  },
+  "Na2CrO4": {
+    "nazev": "chroman sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (CrO4)(-II). V aniontu: Cr(+VI) + 4 × O(-II) = -2 (koncovka -an) -> chroman sodný."
+  },
+  "Na2SO3": {
+    "nazev": "siřičitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (SO3)(-II). V aniontu: S(+IV) + 3 × O(-II) = -2 (koncovka -ičitan) -> siřičitan sodný."
+  },
+  "Na2SO3.2H2O": {
+    "nazev": "dihydrát siřičitanu sodného",
+    "napoveda": "Základ Na2SO3 (siřičitan sodný) se dvěma molekulami vody (di- a hydrát) -> dihydrát siřičitanu sodného."
+  },
+  "Na2SO3.7H2O": {
+    "nazev": "heptahydrát siřičitanu sodného",
+    "napoveda": "Základ Na2SO3 (siřičitan sodný) se sedmi molekulami vody (hepta- a hydrát) -> heptahydrát siřičitanu sodného."
+  },
+  "Na2S2O3": {
+    "nazev": "thiosíran sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (S2O3)(-II). Odvozen od síranu náhradou jednoho atomu O atomem S (předpona thio-, centrální síra +VI) -> thiosíran sodný."
+  },
+  "Na2S2O3.5H2O": {
+    "nazev": "pentahydrát thiosíranu sodného",
+    "napoveda": "Základ Na2S2O3 (thiosíran sodný) s pěti molekulami vody (penta- a hydrát) -> pentahydrát thiosíranu sodného."
+  },
+  "Na2SO4": {
+    "nazev": "síran sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (SO4)(-II). V aniontu: S(+VI) + 4 × O(-II) = -2 (koncovka -an) -> síran sodný."
+  },
+  "Na2SO4.10H2O": {
+    "nazev": "dekahydrát síranu sodného",
+    "napoveda": "Základ Na2SO4 (síran sodný) s deseti molekulami krystalové vody (deka- a hydrát) -> dekahydrát síranu sodného (Glauberova sůl)."
+  },
+  "Na3N": {
+    "nazev": "nitrid sodný",
+    "napoveda": "Kationty: 3 × Na(+I) = +3 -> sodný. Anion: dusík N(-III) = -3 (koncovka -id). Poměr 3:1 -> nitrid sodný."
+  },
+  "NaCl": {
+    "nazev": "chlorid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: Cl(-I) (koncovka -id). Poměr 1:1, (+1) + (-1) = 0 -> chlorid sodný."
+  },
+  "NaH2PO4": {
+    "nazev": "dihydrogenfosforečnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Kyselý anion: (H2PO4)(-I). Fosforečnan P(+V) se dvěma nevyměněnými vodíky H(+I) -> dihydrogenfosforečnan sodný."
+  },
+  "NaN3": {
+    "nazev": "azid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: azidový lineární ion (N3)(-I) odvozený od kyseliny azidovodíkové HN3 -> azid sodný."
+  },
+  "NaNH2": {
+    "nazev": "amid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: amidový (NH2)(-I), kde N(-III) váže 2 × H(+I). Zásaditá sůl amoniaku -> amid sodný."
+  },
+  "NaNO3": {
+    "nazev": "dusičnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (NO3)(-I). V aniontu: N(+V) (-ičnan) + 3 × O(-II) = -1. Celkově: (+1) + (-1) = 0 -> dusičnan sodný."
+  },
+  "NaOH": {
+    "nazev": "hydroxid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: hydroxidový (OH)(-I). Jednomocná hydroxidová báze -> hydroxid sodný."
+  },
+  "(NH4)2Fe(SO4)2.6H2O": {
+    "nazev": "hexahydrát síranu amonno-železnatého",
+    "napoveda": "Podvojná sůl: 2 × (NH4)(+I) = +2 a Fe(+II) vyrovnávají 2 × (SO4)(-II) = -4. Šest molekul krystalové vody (hexa- a hydrát) -> hexahydrát síranu amonno-železnatého (Mohrova sůl)."
+  },
+  "(NH4)2SO4": {
+    "nazev": "síran amonný",
+    "napoveda": "Kation: 2 × amonný (NH4)(+I) = +2. Anion: síran (SO4)(-II) = -2 (S(+VI)). Celkově: (+2) + (-2) = 0 -> síran amonný."
+  },
+  "NH3": {
+    "nazev": "amoniak",
+    "napoveda": "Triviální název pro hydrid dusíku: N(-III) + 3 × H(+I) = 0. Systematicky azan -> amoniak."
+  },
+  "NH4Cl": {
+    "nazev": "chlorid amonný",
+    "napoveda": "Kation: amonný (NH4)(+I). Anion: chloridový Cl(-I) (koncovka -id). Celkově: (+1) + (-1) = 0 -> chlorid amonný (salmiak)."
+  },
+  "NH4NO2": {
+    "nazev": "dusitan amonný",
+    "napoveda": "Kation: amonný (NH4)(+I). Anion: dusitanový (NO2)(-I) obsahující N(+III) (-itan). Součet nábojů: (+1) + (-1) = 0 -> dusitan amonný."
+  },
+  "NH4NO3": {
+    "nazev": "dusičnan amonný",
+    "napoveda": "Kation: amonný (NH4)(+I). Anion: dusičnanový (NO3)(-I) obsahující N(+V) (-ičnan). Součet nábojů: (+1) + (-1) = 0 -> dusičnan amonný."
+  },
+  "NiCl2.6H2O": {
+    "nazev": "hexahydrát chloridu nikelnatého",
+    "napoveda": "Základ NiCl2 (chlorid nikelnatý, Ni+II, 2 × Cl-I) vázaný se 6 molekulami krystalové vody (hexa- a hydrát) -> hexahydrát chloridu nikelnatého."
+  },
+  "NO": {
+    "nazev": "oxid dusnatý",
+    "napoveda": "Kyslík: O(-II). Dusík: N(+II) (koncovka -natý). Poměr 1:1, (+2) + (-2) = 0 -> oxid dusnatý."
+  },
+  "NO2": {
+    "nazev": "oxid dusičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Dusík: N(+IV) (koncovka -ičitý). Celkově: (+4) + (-4) = 0 -> oxid dusičitý."
+  },
+  "P4O10": {
+    "nazev": "oxid fosforečný",
+    "napoveda": "Dimerní forma P2O5: 10 × O(-II) = -20; 4 × P(+V) = +20 (koncovka -ečný). Poměr atomů 2:5 odpovídá stechiometrii oxidu fosforečného."
+  },
+  "Pb3O4": {
+    "nazev": "tetraoxid olovnato-olovičitý",
+    "napoveda": "Směsný oxid: 4 × O(-II) = -8; vyrovnáno dvěma atomy Pb(+II) (+4) a jedním Pb(+IV) (+4) -> tetraoxid olovnato-olovičitý (minium)."
+  },
+  "PbCO3": {
+    "nazev": "uhličitan olovnatý",
+    "napoveda": "Kation: Pb(+II) -> olovnatý. Anion: (CO3)(-II) (uhličitan, C(+IV)). Poměr 1:1, (+2) + (-2) = 0 -> uhličitan olovnatý."
+  },
+  "PbCrO4": {
+    "nazev": "chroman olovnatý",
+    "napoveda": "Kation: Pb(+II) -> olovnatý. Anion: (CrO4)(-II) (chroman, Cr(+VI)). Celkově: (+2) + (-2) = 0 -> chroman olovnatý."
+  },
+  "PbO2": {
+    "nazev": "oxid olovičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Olovo: Pb(+IV) (koncovka -ičitý). Celkově: (+4) + (-4) = 0 -> oxid olovičitý."
+  },
+  "PBr3": {
+    "nazev": "bromid fosforitý",
+    "napoveda": "Kation: P(+III) -> fosforitý. Anion: 3 × Br(-I) = -3 (koncovka -id). Celkově: (+3) + (-3) = 0 -> bromid fosforitý."
+  },
+  "PH3": {
+    "nazev": "fosfan",
+    "napoveda": "Binární hydrid fosforu: P(-III) + 3 × H(+I) = 0. Systematický název dle standardního hydridového názvosloví -> fosfan."
+  },
+  "RbNO3": {
+    "nazev": "dusičnan rubidný",
+    "napoveda": "Kation: Rb(+I) -> rubidný. Anion: (NO3)(-I) (dusičnan, N(+V)). Celkově: (+1) + (-1) = 0 -> dusičnan rubidný."
+  },
+  "SF6": {
+    "nazev": "fluorid sírový",
+    "napoveda": "Fluor: 6 × F(-I) = -6 (koncovka -id). Síra: S(+VI) (koncovka -ový). Celkově: (+6) + (-6) = 0 -> fluorid sírový."
+  },
+  "SiCl4": {
+    "nazev": "chlorid křemičitý",
+    "napoveda": "Kation: Si(+IV) -> křemičitý. Anion: 4 × Cl(-I) = -4 (koncovka -id). Celkově: (+4) + (-4) = 0 -> chlorid křemičitý."
+  },
+  "SiF4": {
+    "nazev": "fluorid křemičitý",
+    "napoveda": "Kation: Si(+IV) -> křemičitý. Anion: 4 × F(-I) = -4 (koncovka -id). Celkově: (+4) + (-4) = 0 -> fluorid křemičitý."
+  },
+  "SiO2": {
+    "nazev": "oxid křemičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Křemík: Si(+IV) (koncovka -ičitý). Celkově: (+4) + (-4) = 0 -> oxid křemičitý."
+  },
+  "SO2": {
+    "nazev": "oxid siřičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Síra: S(+IV) (koncovka -ičitý). Celkově: (+4) + (-4) = 0 -> oxid siřičitý."
+  },
+  "SO3": {
+    "nazev": "oxid sírový",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Síra: S(+VI) (koncovka -ový). Celkově: (+6) + (-6) = 0 -> oxid sírový."
+  },
+  "ZnO": {
+    "nazev": "oxid zinečnatý",
+    "napoveda": "Kyslík: O(-II). Zinek: Zn(+II) (koncovka -natý). Poměr 1:1, (+2) + (-2) = 0 -> oxid zinečnatý."
+  },
+  "ZnSO4": {
+    "nazev": "síran zinečnatý",
+    "napoveda": "Kation: Zn(+II) -> zinečnatý. Anion: (SO4)(-II) (síran, S(+VI)). Celkově: (+2) + (-2) = 0 -> síran zinečnatý."
+  },
+  "ZnSO4.7H2O": {
+    "nazev": "heptahydrát síranu zinečnatého",
+    "napoveda": "Základ ZnSO4 (síran zinečnatý) se sedmi molekulami krystalové vody (hepta- a hydrát) -> heptahydrát síranu zinečnatého (bílá skalice)."
+  }
+}
