@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
+  ATTEMPT_EVENT_STORE,
+  openLearningDatabase,
+  transactionCompleted,
+} from "./browser-learning-database";
+import {
   createBrowserProgressStore,
   PROGRESS_DATABASE_NAME,
   type AttemptEvent,
@@ -85,6 +90,32 @@ describe("BrowserProgressStore", () => {
 
     await store.clearAttempts();
 
+    await expect(store.listAttempts()).resolves.toEqual([]);
+  });
+
+  it("ignores stored records with an unknown learning context or timestamp", async () => {
+    const store = createBrowserProgressStore();
+    await store.appendAttempt(earlierAttempt);
+
+    const database = await openLearningDatabase(indexedDB);
+    const transaction = database.transaction(ATTEMPT_EVENT_STORE, "readwrite");
+    const attempts = transaction.objectStore(ATTEMPT_EVENT_STORE);
+    attempts.add({ ...laterAttempt, id: "attempt.mixed", direction: "name-to-position" });
+    attempts.add({ ...laterAttempt, id: "attempt.unknown", mode: "nomenclature" });
+    attempts.add({ ...laterAttempt, id: "attempt.time", occurredAt: "yesterday" });
+    attempts.add({ ...laterAttempt, id: "attempt.round", round: "second" });
+    await transactionCompleted(transaction);
+    database.close();
+
+    await expect(store.listAttempts()).resolves.toEqual([earlierAttempt]);
+  });
+
+  it("rejects an attempt whose mode, direction, and policy do not belong together", async () => {
+    const store = createBrowserProgressStore();
+
+    await expect(
+      store.appendAttempt({ ...periodicTableAttempt, matchPolicy: "diacritics-tolerant" }),
+    ).rejects.toThrow("Pokus má neplatný kontext procvičování.");
     await expect(store.listAttempts()).resolves.toEqual([]);
   });
 });

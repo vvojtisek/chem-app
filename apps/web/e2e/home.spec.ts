@@ -62,6 +62,29 @@ test("accepts a Czech element name without diacritics and gives a hint", async (
   await expect(page.getByText(/doplňte českou diakritiku/)).toBeVisible();
 });
 
+test("retries an incorrect Czech element name once", async ({ page }) => {
+  await page.goto("/procvicovani/prvky");
+  await page.getByRole("button", { name: "Začít cvičení" }).click();
+
+  await page.getByLabel("Český název").fill("Helium");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+  await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
+  await expect(page.getByText(/H je Vodík/)).toBeVisible();
+  await page.getByRole("button", { name: "Pokračovat" }).click();
+
+  for (let question = 2; question <= 10; question += 1) {
+    await page.getByLabel("Český název").fill("chybně");
+    await page.getByRole("button", { name: "Vyhodnotit" }).click();
+    await page.getByRole("button", { name: "Pokračovat" }).click();
+  }
+
+  await expect(page.getByText("Opakování chyby")).toBeVisible();
+  await expect(page.getByText("H", { exact: true })).toBeVisible();
+  await page.getByLabel("Český název").fill("Vodík");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+});
+
 test("practices a blind periodic-table position with immediate feedback", async ({ page }) => {
   await page.goto("/procvicovani/periodicka-tabulka");
 
@@ -108,4 +131,27 @@ test("answers a highlighted periodic-table position with its Czech name", async 
 
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
   await expect(page.getByText(/Perioda 1, skupina 1 je Vodík/)).toBeVisible();
+});
+
+test("retries an incorrectly named periodic-table position once", async ({ page }) => {
+  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
+  await page.getByRole("button", { name: "Začít cvičení (10 pozic)" }).click();
+
+  await page.getByLabel("Český název").fill("Helium");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+  await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
+  await expect(page.getByText(/Perioda 1, skupina 1 je Vodík/)).toBeVisible();
+  await page.getByRole("button", { name: "Pokračovat" }).click();
+
+  for (let question = 2; question <= 10; question += 1) {
+    await page.getByLabel("Český název").fill("chybně");
+    await page.getByRole("button", { name: "Vyhodnotit" }).click();
+    await page.getByRole("button", { name: "Pokračovat" }).click();
+  }
+
+  await expect(page.getByText("Opakování chyby")).toBeVisible();
+  await expect(page.getByText("Vybraná pozice: Perioda 1, skupina 1.")).toBeVisible();
+  await page.getByLabel("Český název").fill("Vodík");
+  await page.getByRole("button", { name: "Vyhodnotit" }).click();
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
 });

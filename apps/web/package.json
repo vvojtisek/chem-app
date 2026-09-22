@@ -9,7 +9,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@inorganic/chemistry": "workspace:*",
