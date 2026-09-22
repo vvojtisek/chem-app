@@ -5,7 +5,40 @@ import {
   curatedElements,
   curatedGroups,
   curriculumContentVersion,
+  toRuntimeElements,
+  toRuntimeGroups,
 } from "./runtime";
+import type { ElementRecord, GroupRecord } from "./schema";
+
+const reviewedHydrogen: ElementRecord = {
+  id: "element.001-h",
+  atomicNumber: 1,
+  symbol: "H",
+  nameCs: "Vodík",
+  nameLat: "Hydrogenium",
+  period: 1,
+  group: 1,
+  atomicWeight: 1.008,
+  valenceConfiguration: "1s1",
+  status: "reviewed",
+  author: "fixture",
+  sources: [{ title: "Fixture source", locator: "fixture:hydrogen" }],
+  reviewedBy: "Fixture reviewer",
+  reviewedAt: "2026-09-22",
+};
+
+const reviewedGroup: GroupRecord = {
+  id: "periodic-group.1",
+  groupNumber: 1,
+  nameCs: "Alkalické kovy",
+  mnemonicCs: "Fixture mnemonic",
+  elementSymbols: ["H"],
+  status: "reviewed",
+  author: "fixture",
+  sources: [{ title: "Fixture source", locator: "fixture:group-1" }],
+  reviewedBy: "Fixture reviewer",
+  reviewedAt: "2026-09-22",
+};
 
 describe("curriculumContentVersion", () => {
   it("is deterministically generated from the runtime curriculum snapshot", () => {
@@ -29,5 +62,33 @@ describe("curriculumContentVersion", () => {
     });
 
     expect(changedVersion).not.toBe(curriculumContentVersion);
+  });
+});
+
+describe("runtime curriculum selection", () => {
+  it("ships only reviewed element records", () => {
+    const unreviewed = (["draft", "in-review", "deprecated"] as const).map((status, index) => ({
+      ...reviewedHydrogen,
+      id: `element.unreviewed-${status}`,
+      atomicNumber: index + 2,
+      status,
+    }));
+
+    expect(toRuntimeElements([...unreviewed, reviewedHydrogen]).map(({ id }) => id)).toEqual([
+      "element.001-h",
+    ]);
+  });
+
+  it("ships only reviewed group records", () => {
+    const draftGroup: GroupRecord = {
+      ...reviewedGroup,
+      id: "periodic-group.2",
+      groupNumber: 2,
+      status: "draft",
+    };
+
+    expect(
+      toRuntimeGroups([draftGroup, reviewedGroup]).map(({ groupNumber }) => groupNumber),
+    ).toEqual([1]);
   });
 });
