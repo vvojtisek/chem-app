@@ -118,4 +118,37 @@ describe("PeriodicTablePractice", () => {
       );
     });
   });
+
+  it("repeats an incorrectly named position once", async () => {
+    render(<PeriodicTablePractice direction="position-to-name" elements={[hydrogen]} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /začít cvičení/i }));
+    fireEvent.change(screen.getByLabelText("Český název"), { target: { value: "Lithium" } });
+    fireEvent.click(screen.getByRole("button", { name: "Vyhodnotit" }));
+
+    expect(screen.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeInTheDocument();
+    expect(screen.getByText(/Perioda 1, skupina 1 je/)).toHaveTextContent(
+      "Perioda 1, skupina 1 je Vodík.",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Pokračovat" }));
+    expect(screen.getByText("Opakování chyby")).toBeInTheDocument();
+    expect(screen.getByText("Vybraná pozice: Perioda 1, skupina 1.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Český název"), { target: { value: "Vodík" } });
+    fireEvent.click(screen.getByRole("button", { name: "Vyhodnotit" }));
+    expect(screen.getByRole("heading", { name: "Správně" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Pokračovat" }));
+    expect(screen.getByRole("heading", { name: "Cvičení dokončeno" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(appendAttempt).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          direction: "position-to-name",
+          round: "retry",
+          isCorrect: true,
+        }),
+      );
+    });
+  });
 });
