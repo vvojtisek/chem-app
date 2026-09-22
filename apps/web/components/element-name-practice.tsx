@@ -2,7 +2,7 @@
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { curriculumContentVersion } from "@inorganic/content/runtime";
-import { normalizeAnswer, normalizeAnswerWithoutDiacritics } from "@inorganic/chemistry";
+import { evaluateAnswer, type AnswerPolicy } from "@inorganic/chemistry";
 import { useState } from "react";
 
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
@@ -18,6 +18,7 @@ interface ElementNamePracticeProps {
 }
 
 const QUESTION_LIMIT = 10;
+const ANSWER_POLICY: AnswerPolicy = "tolerant";
 
 export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
   const [session, setSession] = useState<ExerciseSessionState<ElementFlashcardData> | null>(null);
@@ -41,16 +42,14 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
   async function submit() {
     if (session?.status !== "active") return;
 
-    const expected = normalizeAnswer(session.current.nameCs);
-    const exact = normalizeAnswer(answer) === expected;
-    const isCorrect =
-      exact ||
-      normalizeAnswerWithoutDiacritics(answer) === normalizeAnswerWithoutDiacritics(expected);
+    const evaluation = evaluateAnswer(answer, session.current.nameCs, { policy: ANSWER_POLICY });
 
     setFeedbackNotice(
-      exact || !isCorrect ? "" : "Správně — příště prosím doplňte českou diakritiku.",
+      evaluation.match === "missing-diacritics"
+        ? "Správně — příště prosím doplňte českou diakritiku."
+        : "",
     );
-    setSession(submitExerciseAnswer(session, isCorrect));
+    setSession(submitExerciseAnswer(session, evaluation.isCorrect));
 
     try {
       await createBrowserProgressStore().appendAttempt({
@@ -58,7 +57,7 @@ export function ElementNamePractice({ elements }: ElementNamePracticeProps) {
         questionId: session.current.id,
         contentVersion: curriculumContentVersion,
         occurredAt: new Date().toISOString(),
-        isCorrect,
+        isCorrect: evaluation.isCorrect,
         round: session.round,
         mode: "element-name",
         direction: "symbol-to-name",

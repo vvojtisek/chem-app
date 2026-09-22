@@ -176,12 +176,9 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
         </div>
 
         {selectedGroupInfo ? (
-          <aside className="mt-10 rounded-2xl border border-emerald-900/15 bg-emerald-50 p-5 text-left">
-            <h3 className="font-semibold text-slate-950">{selectedGroupInfo.nameCs}</h3>
-            <p className="mt-2 leading-7 text-slate-700">
-              Mnemotechnika: {selectedGroupInfo.mnemonicCs}
-            </p>
-          </aside>
+          <p className="mt-10 text-sm text-slate-600">
+            Skupina: {selectedGroupInfo.nameCs}. Mnemotechniky najdete v přípravě před cvičením.
+          </p>
         ) : null}
 
         <div className="mt-10 flex flex-wrap justify-center gap-3">
