@@ -17,8 +17,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9fc52554404a2ff91d23d9d34dcfe5e4c0b13e432568c2d06c003b8c23239f8d"
   },
   {
     "id": "element.002-he",
@@ -38,8 +39,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:2df7e0b96aa6b386166cfbeae9b3ad5b7429fe3587491429af20505eb17ecf63"
   },
   {
     "id": "element.003-li",
@@ -59,8 +61,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:b71eb57e6aa3ab7a1b6dadb8eab5a67fbbe90cf36343e78c3f59f84709d0ffb4"
   },
   {
     "id": "element.004-be",
@@ -80,8 +83,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:da07caea2187cce1e9289b31a109bf174f653c45c1c19ab4a66430a1a026820f"
   },
   {
     "id": "element.005-b",
@@ -101,8 +105,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:1128cbf4df3593aec75acc0cb8eb0fddc13e00ebd7ebb00a12a34b2c387f9fc4"
   },
   {
     "id": "element.006-c",
@@ -122,8 +127,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:706903987dbba57a5d97f3f4466aa912f4ace6ff4b80402122e345080f14e49e"
   },
   {
     "id": "element.007-n",
@@ -143,8 +149,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:b8e988350c24a1685d82b6adbc1f61c161276e5229b254fe561dfba0dc414cb6"
   },
   {
     "id": "element.008-o",
@@ -164,8 +171,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:792cb2efc65cc120264039ac8e47cd334b4d5959cb82bed836d912233eaa22d7"
   },
   {
     "id": "element.009-f",
@@ -185,8 +193,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:8a1f8e45e4c14971c0523142f1aee27f35382be3550937235984c82ef3f2227e"
   },
   {
     "id": "element.010-ne",
@@ -206,8 +215,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:ce612433265ee66b4a5e89abf23adb8fc332f2979ec18dd6535b51836f1a0258"
   },
   {
     "id": "element.011-na",
@@ -227,8 +237,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:d9a004a2df758b0e9ae4f203e7adbc0f041b5e9b1183ee52ca2c3b9dfc2ef0c5"
   },
   {
     "id": "element.012-mg",
@@ -248,8 +259,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:a3939ee2255c42e197449f6c958cc120c42e1668d4e68a404c547916615af291"
   },
   {
     "id": "element.013-al",
@@ -269,8 +281,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:16eb91ea5262ead8292801f1efbabdc0239f8a5068f8f20842acebcfb1b13535"
   },
   {
     "id": "element.014-si",
@@ -290,8 +303,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:acd4cf1b0ca1fc6384e4bb1ad8d3452f0487a07a4abeb0bd42ab684dc6e32e1f"
   },
   {
     "id": "element.015-p",
@@ -311,8 +325,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c2b7a8c6428fe72aee20278102e77db543bc46c03b0715135b8b805f05628a50"
   },
   {
     "id": "element.016-s",
@@ -332,8 +347,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:f2026f3988f150cf2cc843832dd2c319d3e99f9247e64846acd3d71126b551dc"
   },
   {
     "id": "element.017-cl",
@@ -353,8 +369,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c4107c4a8f0958733832f43f7d3aeb17ed6b51eb36cb236a388dcc2b5a0fafe2"
   },
   {
     "id": "element.018-ar",
@@ -374,8 +391,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:4aba1418810276698f48910a8531ecad5ac437d931a721137a93a2b59c6c01f1"
   },
   {
     "id": "element.019-k",
@@ -395,8 +413,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:1d20fa04a8fb7993c317027219904be7b72a226b922073d9637be5391662e94c"
   },
   {
     "id": "element.020-ca",
@@ -416,8 +435,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:527ab577bf54ca94b4f092af562f4ef509346891d8c5263237b355b51e767e5d"
   },
   {
     "id": "element.021-sc",
@@ -437,8 +457,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:958d287ba41ddf48a1fd0102af075024a236a65846fed630957b8bab73dd689e"
   },
   {
     "id": "element.022-ti",
@@ -458,8 +479,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:5ab87c4dd6ba25acee1c467ac4c2904afec8e2c827b2d478d81b262997e62dc6"
   },
   {
     "id": "element.023-v",
@@ -479,8 +501,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c5508e6a8c499b39e3ead7849bb2a45f7bb3792737f514d5b6efe4e094b3e0f3"
   },
   {
     "id": "element.024-cr",
@@ -500,8 +523,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c715eb9f6d3a3dd3f05b159c680205b2e9704e76cc24fcf09af86840a95820b7"
   },
   {
     "id": "element.025-mn",
@@ -521,8 +545,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:db2fc9beb8e11702ef67e569cbb636b865888155dfb79735c0344ada1519699f"
   },
   {
     "id": "element.026-fe",
@@ -542,8 +567,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:70bf441dd97597c1ab71aa2a35c68b754693ab6d23eac7e25d7afb63d225264c"
   },
   {
     "id": "element.027-co",
@@ -563,8 +589,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:53820a7c5e7dc1a9969b06eacc60ab574eb36a652f39a0cb0b288372537454ef"
   },
   {
     "id": "element.028-ni",
@@ -584,8 +611,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:f39f7e0167e96e5718af2cd8211d16790cd0371600dece7b6985eb467769f982"
   },
   {
     "id": "element.029-cu",
@@ -605,8 +633,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:3c637a90745961f5247ed71037da923d247a1b95d0ea07422b2f5c6807c014a7"
   },
   {
     "id": "element.030-zn",
@@ -626,8 +655,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c92dc4b3a7330a9a67ede9829c1fbe59daef3268ad571624b5048f637198e5ee"
   },
   {
     "id": "element.031-ga",
@@ -647,8 +677,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:929ca19eeb43279cc3482798af231b2dcbe0ee48fbebd6d4e0710c8b6b15d5ec"
   },
   {
     "id": "element.032-ge",
@@ -668,8 +699,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:ce9f5c6c3154219bee2f7011c4a41f8643c9403cf25af315290df201a6182f4a"
   },
   {
     "id": "element.033-as",
@@ -689,8 +721,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:541caeab6c6cc0fb8deba94c61cbff844fb56b3afcd8bb3e772d6eb7dacb2c56"
   },
   {
     "id": "element.034-se",
@@ -710,8 +743,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c908e144800a0befe9f15624cc1fe9d9921f1d3bf4a4a01f23207a799a72d7f5"
   },
   {
     "id": "element.035-br",
@@ -731,8 +765,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9944f01dd7cb4c7cc843859b47e219f7413dc24d26efee54fcf16d8d3007417a"
   },
   {
     "id": "element.036-kr",
@@ -752,8 +787,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:956b8515cb364acf557479919b218b614a617ebbe89d0e5df93d1588ed7df665"
   },
   {
     "id": "element.037-rb",
@@ -773,8 +809,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:e26ad95aaf5ab92a3a4b2b2632bd9c4adb081a98c4c169b2aaf3dbb5e705a5c4"
   },
   {
     "id": "element.038-sr",
@@ -794,8 +831,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:a3e98eb2bebb2cb95ab577ffc0757f84dfd26e7beebcad2c81ab575f00ef6c21"
   },
   {
     "id": "element.039-y",
@@ -815,8 +853,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:f14a590d47186df3a733435994cd5549c7ebc033148e8c00279cba2e6d350404"
   },
   {
     "id": "element.040-zr",
@@ -836,8 +875,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:7ee70a48dabc6946cf12824e30a60c8b17ce3ef362df4a3e100d85371b380bf2"
   },
   {
     "id": "element.041-nb",
@@ -857,8 +897,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:858d7f22258320ed918dace59284fcb77fd41f7a1768e8060e6d99f7e5e6238a"
   },
   {
     "id": "element.042-mo",
@@ -878,8 +919,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:1665263f01a0ded131e39abbd99914fef241a19c12ab633846f41a6b265ad0e7"
   },
   {
     "id": "element.043-tc",
@@ -899,8 +941,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:0c067f38bd930b25694119ddc05d9d4f5fe4a12d3f65a432b0a8ff51d9c0da7b"
   },
   {
     "id": "element.044-ru",
@@ -920,8 +963,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:0a3ebb0d5c401b57082d9da5750235d7cddd5930d22e96f95ccdf7e06016529b"
   },
   {
     "id": "element.045-rh",
@@ -941,8 +985,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:4a925344d17f73d8de097e932fb6ad85b2beb70a1ec888b799a0fe2357859bc6"
   },
   {
     "id": "element.046-pd",
@@ -962,8 +1007,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:d820dac58a09651527b3683f78be58d5134d0a3de2d26eb567b03dfda11eb6bd"
   },
   {
     "id": "element.047-ag",
@@ -983,8 +1029,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:a8d195562cdd79aaddf494d645e3c85663f700b9c66fb11453205450fff0df20"
   },
   {
     "id": "element.048-cd",
@@ -1004,8 +1051,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:326924907c9db55c3e293cef3cc7fe2127da125f0f73046da07caf396008cde3"
   },
   {
     "id": "element.049-in",
@@ -1025,8 +1073,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:4d09d113ecc93c029987fc3f7ffb7f13c8efacbdcf3b7a7654cfcdda69f3007a"
   },
   {
     "id": "element.050-sn",
@@ -1046,8 +1095,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:6962733c678cc6fe56ef27435c3bc8d066e23ea6a6ebeaa001e1c582b5762864"
   },
   {
     "id": "element.051-sb",
@@ -1067,8 +1117,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:6908fbc38fbdc478f810a7b625105ed537dd48eeae264c8d5348e0414afe8d87"
   },
   {
     "id": "element.052-te",
@@ -1088,8 +1139,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:86d426bc087c6b2e613bb133f3876339c521e1d562b983ecf05157f08abbc9fd"
   },
   {
     "id": "element.053-i",
@@ -1109,8 +1161,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:10db392fea9f0c809aa007255bd2a78b465c4099fd656f34a399b904271ee036"
   },
   {
     "id": "element.054-xe",
@@ -1130,8 +1183,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9f571fa2f3276e3fce18ba638aea8f15ce34f29daa95689b776e62e1b23241e0"
   },
   {
     "id": "element.055-cs",
@@ -1151,8 +1205,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c15050f58638005e828a38c9c05b2e21d80e6dce244417a94a67dca1e5048c53"
   },
   {
     "id": "element.056-ba",
@@ -1172,8 +1227,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:81d54222e2b3b8e2028f70056ca7a2c77cb6816b6723008f2fb7aa0de62e9f9f"
   },
   {
     "id": "element.057-la",
@@ -1193,8 +1249,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:2b727fcbeb133d2b597b714d2cd319b984022869dfad170505f4c93687b090e1"
   },
   {
     "id": "element.058-ce",
@@ -1214,8 +1271,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:4f9d3819fbc1c34bf49e8b58729721577dc5a9fb5189cfd82051ea36d52693a4"
   },
   {
     "id": "element.059-pr",
@@ -1235,8 +1293,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9958646c9c92f2d8deaf17abdfac9cdb30a2491fd6bea36b77d6681085a6e44a"
   },
   {
     "id": "element.060-nd",
@@ -1256,8 +1315,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:d2089a81fe5e1c40733306f9d18dd2c8f50d8bff4db1dcd60802b96fa62d8230"
   },
   {
     "id": "element.061-pm",
@@ -1277,8 +1337,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:b78bf71c524585dd929f853d8b68cde01dbc75974a10161390506dc7e466b894"
   },
   {
     "id": "element.062-sm",
@@ -1298,8 +1359,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:5f1d98e3c563ef51c3873ae5203e45daf63b917ddf62da76324b697cc571e6ef"
   },
   {
     "id": "element.063-eu",
@@ -1319,8 +1381,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:641e721585c8ce416f677f881c21e756998a57c7fd2dcea93ed4f790562e90d1"
   },
   {
     "id": "element.064-gd",
@@ -1340,8 +1403,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:bf5af265637d0a11b1ba3d4ee92c5e90bf79dc3b4e6cfabaa6e8fc91ec2bcabc"
   },
   {
     "id": "element.065-tb",
@@ -1361,8 +1425,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:f49a29aab0500a49d206a17445fb29cf6f1d241b38d9246c00025f222c4f1d33"
   },
   {
     "id": "element.066-dy",
@@ -1382,8 +1447,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:95076d286bb1c09b5144b610d75c36c8b0078b38e632b5d2f11c1b19d616a003"
   },
   {
     "id": "element.067-ho",
@@ -1403,8 +1469,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:fb9ec5edfbabe087237ba8cd9766600e40abf39694bfccf0783ab10674dbaa5b"
   },
   {
     "id": "element.068-er",
@@ -1424,8 +1491,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c824c0ec124bae80c1286677ef0dea6c855d6878365a705585c662f09ff3ae35"
   },
   {
     "id": "element.069-tm",
@@ -1445,8 +1513,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:c51fda00c78086a1a5df123330d7136a35c83f40370b5b2c5820b995dc1c1c08"
   },
   {
     "id": "element.070-yb",
@@ -1466,8 +1535,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:cec6fa8b65274aaaa79e661c82b880e4e753871daf4036acaadab18af7900520"
   },
   {
     "id": "element.071-lu",
@@ -1487,8 +1557,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:5f8caa8dade0c6c215fc90254998528fc1da1803df1bac5fa3e5d5d541006bc8"
   },
   {
     "id": "element.072-hf",
@@ -1508,8 +1579,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:aeede0c7d62c93552feeed8de7c193db188f8c32f1df515915e71062b9ee46e6"
   },
   {
     "id": "element.073-ta",
@@ -1529,8 +1601,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:50bf2d4a472cdc7db0b7e791b9dc69c1aaca9ded50438e6a0e7913431a7cbd0d"
   },
   {
     "id": "element.074-w",
@@ -1550,8 +1623,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:5edef1a82a57fc3cdd4166e06d3da509eb79cfc8db31d2ddb3bc05f90338f840"
   },
   {
     "id": "element.075-re",
@@ -1571,8 +1645,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:1a796b9ffe6623e9143cc34e2447f4cd55afd8e7e9eac923bc00ff064265da79"
   },
   {
     "id": "element.076-os",
@@ -1592,8 +1667,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:5b62f3a408cec9fa8eb52631724b4ae53dee84fcaca60f0a2341846d89af080a"
   },
   {
     "id": "element.077-ir",
@@ -1613,8 +1689,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:8989ff4439ee933d5fbc6a84f1a76e2d6ff85d24f036f52be7101c02515833ab"
   },
   {
     "id": "element.078-pt",
@@ -1634,8 +1711,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:3876b7f8aeb643797080bbb4d4f342162140494ba70c047007600f5cce44a600"
   },
   {
     "id": "element.079-au",
@@ -1655,8 +1733,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:05c096c57ece4647be986a435a2b28090c4898ed786dbe6a7ebe4d840e5259b6"
   },
   {
     "id": "element.080-hg",
@@ -1676,8 +1755,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:6df6984698132bf452838ccb4ff27af247fc267dd515c76ccaca25278fc8e8cd"
   },
   {
     "id": "element.081-tl",
@@ -1697,8 +1777,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:34b03a21d8df016b4cf9012bffe92c6b891024f668ee74689d98081c1449eaee"
   },
   {
     "id": "element.082-pb",
@@ -1718,8 +1799,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:a1bc1d26030cf66ce0e7fef1117d5b2f08619623db36e8e6ad3173209a38ce02"
   },
   {
     "id": "element.083-bi",
@@ -1739,8 +1821,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:86875c311cf0ae1971c0ecb9f384da2b8ea34dd04d88e83b962d1b75597336ad"
   },
   {
     "id": "element.084-po",
@@ -1760,8 +1843,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:040e4082aacc9b2fb9183c803cbaa275d1997fc8fb68982a8a4a9a949aff61cd"
   },
   {
     "id": "element.085-at",
@@ -1781,8 +1865,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:18b017d18ddfd241b7f520bd38282dc416f0c3a0440bbd9d6c97a7b11d2e66b1"
   },
   {
     "id": "element.086-rn",
@@ -1802,8 +1887,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:b5a0c19abd964f03d81e6835241f055cc312e7f27be561b5d75006c80ef4dec0"
   },
   {
     "id": "element.087-fr",
@@ -1823,8 +1909,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:161059c3c7087fefb81b078a1cfff919c7cc1c141e6c6f559026b1e173cc7364"
   },
   {
     "id": "element.088-ra",
@@ -1844,8 +1931,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9a827dd081bd3ba0df224842516c11826961ed842c391f2105a1425dc10aee53"
   },
   {
     "id": "element.089-ac",
@@ -1865,8 +1953,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:5cdb5c005921329f7b43599798e91baf0d5ef07129a7b071ff04a2029d9389c1"
   },
   {
     "id": "element.090-th",
@@ -1886,8 +1975,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9f67f0fa79e56deeab89081d62ca02e6c508d6987ed55cba4bb109686610237b"
   },
   {
     "id": "element.091-pa",
@@ -1907,8 +1997,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:fe4d0d3cdf4ce399573331dd5f23754694c41095dbeef528c41aace9c2453b30"
   },
   {
     "id": "element.092-u",
@@ -1928,8 +2019,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:063e7a7ea17e99d2181810d5714175f2e57c2c3708097cb693ce7251132943f2"
   },
   {
     "id": "element.093-np",
@@ -1949,8 +2041,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:f99657f64f8febdc13b127f237679c76138d2fef74574068e94fc105f5529a39"
   },
   {
     "id": "element.094-pu",
@@ -1970,8 +2063,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:6cceac3a70d881e83c5a14f6d5becc28aa3307fc14b914c05d9beb403a2c4b68"
   },
   {
     "id": "element.095-am",
@@ -1991,8 +2085,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:0a8434966175ce9051d201de036803e02fc825b80f0f187097545f676107551a"
   },
   {
     "id": "element.096-cm",
@@ -2012,8 +2107,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:338539dd0fde29110b10fadf8f0b4bdd62d293ac9f07cb09a7a8162dc1052176"
   },
   {
     "id": "element.097-bk",
@@ -2033,8 +2129,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:a78fe0dd0e56136a48ff9c6d8dcc6b081fe28d3f7d157be3d276202ea8ac6418"
   },
   {
     "id": "element.098-cf",
@@ -2054,8 +2151,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:0e7071a8ba3d03e81c871765b03307ff26fc8369e087a3f7b3a211c7c8643e3c"
   },
   {
     "id": "element.099-es",
@@ -2075,8 +2173,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:2b7d0501b73bff54bc653a14bd382bde842c41ef5dba598302de7abdd8d7b493"
   },
   {
     "id": "element.100-fm",
@@ -2096,8 +2195,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:535dcaa24ad769e855b66d34cd67064e963d535723a105489029432fdcf17e0c"
   },
   {
     "id": "element.101-md",
@@ -2117,8 +2217,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:31a27ea88194076b4e4f30dcf976db2e4d12cec4fe8deb621fad5a6b15756f5b"
   },
   {
     "id": "element.102-no",
@@ -2138,8 +2239,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:07bcc1350aa11315c0b3474901bbe61f661e5724ede143165ef37d6bbf5eb563"
   },
   {
     "id": "element.103-lr",
@@ -2159,8 +2261,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:18e62c6fa446b71a662ac6ec4d314671a1606f0057c8f3b551747f6b88df907e"
   },
   {
     "id": "element.104-rf",
@@ -2180,8 +2283,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:e860e4a67d1737d6b5e3244eb84505240323976055f51ff5a55b62261ba38e02"
   },
   {
     "id": "element.105-db",
@@ -2201,8 +2305,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:3419ee696bce3c486e605f3ecee58362b781cb1f0151118993d069dfd4e2289c"
   },
   {
     "id": "element.106-sg",
@@ -2222,8 +2327,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:eeb4f83f55a516a9703d0745fee069fcdc8db6d9c239e124817538ad2b909d9b"
   },
   {
     "id": "element.107-bh",
@@ -2243,8 +2349,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:2026cce52d890d5e6c24e9e5c4c247a5b17cfe62be90cc1efb4717879724fd18"
   },
   {
     "id": "element.108-hs",
@@ -2264,8 +2371,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:3e75989eceae1e6b440d8774d60dee09af6c0434ae53c9bfd3133cc2e204e7cf"
   },
   {
     "id": "element.109-mt",
@@ -2285,8 +2393,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:26aebde51e3686b86b0545ad939a5ebc0f210b15f199d1ae66f06112994e6d5a"
   },
   {
     "id": "element.110-ds",
@@ -2306,8 +2415,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:7ca7c18c3f4ebc9d2c9aba78036761c60062d8e456bdfb0f19f3d4632ce66434"
   },
   {
     "id": "element.111-rg",
@@ -2327,8 +2437,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:8900ea27eb9c824c45beab641ddc4e7b3c1f5eba154e3bb20369b88ba182ccd3"
   },
   {
     "id": "element.112-cn",
@@ -2348,8 +2459,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:14b203c140dac5ac570432ad048bf0c88e72ac65a269a8d1e225b47d753051ea"
   },
   {
     "id": "element.113-nh",
@@ -2369,8 +2481,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:dd335522a166c4f32ffe4fd35b48ce757763424cbfd853e74bc14cd89e6de8ab"
   },
   {
     "id": "element.114-fl",
@@ -2390,8 +2503,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:9062fc9a945213cf3b6f508ef76ece84c76cfbcaa18e589b008fa1cc69f2dc84"
   },
   {
     "id": "element.115-mc",
@@ -2411,8 +2525,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:d1feb27149ba699c803061fdb7521173d545135015430af4bf724990cd1b8d46"
   },
   {
     "id": "element.116-lv",
@@ -2432,8 +2547,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:7b2397eb7f3521078a1bbad74bb5059f5e409d0f78627ab4426fa929b9dddca5"
   },
   {
     "id": "element.117-ts",
@@ -2453,8 +2569,9 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:7ab8c3d2423e478e2c5d7dbbf4774a954c0d0b98688ca1805f70967fe364653c"
   },
   {
     "id": "element.118-og",
@@ -2474,7 +2591,8 @@
         "locator": "conversation:2026-09-19:user-provided-elements"
       }
     ],
-    "reviewedBy": "reviewer.project-curriculum",
-    "reviewedAt": "2026-09-19"
+    "reviewedBy": "reviewer.vvojtisek",
+    "reviewedAt": "2026-09-22",
+    "reviewFingerprint": "sha256:39084b6a743a18efd641163f642b0fc2395700fe4c66372e13f2995944b9c89a"
   }
 ]

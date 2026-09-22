@@ -3,5 +3,11 @@
     "id": "reviewer.project-curriculum",
     "name": "Project curriculum approval",
     "role": "curriculum-editor"
+  },
+  {
+    "id": "reviewer.vvojtisek",
+    "name": "vvojtisek",
+    "role": "chemistry-sme",
+    "qualification": "Completed organic chemistry studies at VŠCHT"
   }
 ]
