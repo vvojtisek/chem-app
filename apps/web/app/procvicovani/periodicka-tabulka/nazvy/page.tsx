@@ -1,4 +1,4 @@
-import { curatedElements } from "@inorganic/content/runtime";
+import { curatedElements, curatedGroups } from "@inorganic/content/runtime";
 
 import { PeriodicTableNamePractice } from "@/components/periodic-table-name-practice";
 
@@ -16,7 +16,7 @@ export default function PeriodicTableNamePracticePage() {
         dostanou jeden opakovací pokus na konci cvičení.
       </p>
       <div className="mt-8">
-        <PeriodicTableNamePractice elements={curatedElements} />
+        <PeriodicTableNamePractice elements={curatedElements} groups={curatedGroups} />
       </div>
     </main>
   );

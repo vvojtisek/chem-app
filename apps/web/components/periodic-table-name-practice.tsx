@@ -1,7 +1,7 @@
 "use client";
 
 import { evaluateAnswer } from "@inorganic/chemistry";
-import type { ElementFlashcardData } from "@inorganic/content/runtime";
+import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -9,6 +9,7 @@ import {
   type PeriodicTableCellState,
   PeriodicTableGrid,
 } from "@/components/periodic-table-grid";
+import { PeriodicTableScopePicker } from "@/components/periodic-table-scope-picker";
 import {
   advanceExerciseSession,
   createExerciseSession,
@@ -24,9 +25,19 @@ import {
   createPeriodicTableLayout,
   describePeriodicTablePosition,
 } from "@/lib/periodic-table-layout";
+import {
+  drawSeries,
+  fullScope,
+  listScopeOptions,
+  type PeriodicTableScope,
+  SERIES_LENGTH,
+  selectScopeElements,
+} from "@/lib/periodic-table-scope";
 
 interface PeriodicTableNamePracticeProps {
   readonly elements: readonly ElementFlashcardData[];
+  readonly groups?: readonly ElementGroupData[];
+  readonly random?: () => number;
 }
 
 interface SubmittedAnswer {
@@ -34,10 +45,26 @@ interface SubmittedAnswer {
   readonly missingDiacritics: boolean;
 }
 
-const QUESTION_LIMIT = 10;
+const NO_GROUPS: readonly ElementGroupData[] = [];
 
-export function PeriodicTableNamePractice({ elements }: PeriodicTableNamePracticeProps) {
+type ActiveSession = Exclude<
+  ExerciseSessionState<ElementFlashcardData>,
+  { readonly status: "complete" }
+>;
+
+export function PeriodicTableNamePractice({
+  elements,
+  groups = NO_GROUPS,
+  random = Math.random,
+}: PeriodicTableNamePracticeProps) {
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
+  const scopeOptions = useMemo(() => listScopeOptions(layout), [layout]);
+  const groupNames = useMemo(
+    () => new Map(groups.map((group) => [group.groupNumber, group.nameCs])),
+    [groups],
+  );
+  const [scope, setScope] = useState<PeriodicTableScope>(() => fullScope(scopeOptions));
+  const [seriesLength, setSeriesLength] = useState(0);
   const [session, setSession] = useState<ExerciseSessionState<ElementFlashcardData> | null>(null);
   const [results, setResults] = useState<ReadonlyMap<string, PeriodicTableCellResult>>(
     () => new Map(),
@@ -58,14 +85,19 @@ export function PeriodicTableNamePractice({ elements }: PeriodicTableNamePractic
     if (status === "complete") restartButtonRef.current?.focus();
   }, [status]);
 
+  const scopeElements = selectScopeElements(layout, scope);
+  const plannedLength = Math.min(SERIES_LENGTH, scopeElements.length);
+
   function start() {
-    const created = createExerciseSession(elements.slice(0, QUESTION_LIMIT));
+    const questions = drawSeries(scopeElements, SERIES_LENGTH, random);
+    const created = createExerciseSession(questions);
     if (!created.ok) {
-      setNotice("Cvičení nelze zahájit: chybí ověřené otázky.");
+      setNotice("Cvičení nelze zahájit: vyberte alespoň jednu skupinu nebo spodní řadu.");
       return;
     }
 
     submitGuardRef.current = false;
+    setSeriesLength(questions.length);
     setSession(created.state);
     setResults(new Map());
     setAnswer("");
@@ -100,6 +132,15 @@ export function PeriodicTableNamePractice({ elements }: PeriodicTableNamePractic
     }).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
   }
 
+  function returnToSettings() {
+    submitGuardRef.current = false;
+    setSession(null);
+    setResults(new Map());
+    setAnswer("");
+    setSubmitted(null);
+    setInputHint("");
+  }
+
   function advance() {
     if (session?.status !== "feedback") return;
 
@@ -111,16 +152,40 @@ export function PeriodicTableNamePractice({ elements }: PeriodicTableNamePractic
 
   if (!session) {
     return (
-      <div>
+      <section
+        aria-labelledby="periodic-name-setup"
+        className="rounded-3xl border border-slate-200 bg-white p-6"
+      >
+        <h2 id="periodic-name-setup" className="text-2xl font-semibold text-slate-950">
+          Nastavení série
+        </h2>
+        <p className="mt-2 leading-7 text-slate-600">
+          Otázky se vyberou náhodně jen z vybraných skupin a řad; tabulka zůstane celá kvůli
+          orientaci.
+        </p>
+        <div className="mt-5">
+          <PeriodicTableScopePicker
+            groupNames={groupNames}
+            onChange={setScope}
+            options={scopeOptions}
+            scope={scope}
+          />
+        </div>
+        <p aria-live="polite" className="mt-5 text-slate-700">
+          {scopeElements.length === 0
+            ? "Vyberte alespoň jednu skupinu nebo spodní řadu, jinak nelze cvičení zahájit."
+            : `Vybráno ${czechCount(scopeElements.length, ELEMENT_FORMS)}. Série bude mít ${czechCount(plannedLength, QUESTION_FORMS)}.`}
+        </p>
         <button
-          className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+          className="mt-4 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+          disabled={scopeElements.length === 0}
           onClick={start}
           type="button"
         >
-          Začít cvičení (10 pozic)
+          Začít cvičení ({czechCount(plannedLength, QUESTION_FORMS)})
         </button>
         <PracticeNotice notice={notice} />
-      </div>
+      </section>
     );
   }
 
@@ -142,9 +207,18 @@ export function PeriodicTableNamePractice({ elements }: PeriodicTableNamePractic
       className="rounded-3xl border border-slate-200 bg-white p-6"
     >
       {session.status === "complete" ? null : (
-        <p className="text-sm font-semibold text-slate-600">
-          {session.round === "retry" ? "Opakování chyby" : "Otázka"}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-slate-600">
+            {progressLabel(session, seriesLength)}
+          </p>
+          <button
+            className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+            onClick={returnToSettings}
+            type="button"
+          >
+            Ukončit sérii
+          </button>
+        </div>
       )}
       <h2 id="periodic-name-heading" className="mt-3 text-3xl font-semibold text-slate-950">
         {session.status === "complete"
@@ -233,21 +307,47 @@ export function PeriodicTableNamePractice({ elements }: PeriodicTableNamePractic
             </button>
           ) : null}
           {session.status === "complete" ? (
-            <button
-              className="mt-4 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
-              onClick={start}
-              onKeyDown={preventRepeatedEnter}
-              ref={restartButtonRef}
-              type="button"
-            >
-              Začít znovu
-            </button>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+                onClick={start}
+                onKeyDown={preventRepeatedEnter}
+                ref={restartButtonRef}
+                type="button"
+              >
+                Začít znovu
+              </button>
+              <button
+                className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+                onClick={returnToSettings}
+                type="button"
+              >
+                Změnit nastavení
+              </button>
+            </div>
           ) : null}
         </div>
       </div>
       <PracticeNotice notice={notice} />
     </section>
   );
+}
+
+const QUESTION_FORMS = ["otázka", "otázky", "otázek"] as const;
+const ELEMENT_FORMS = ["prvek", "prvky", "prvků"] as const;
+
+function czechCount(count: number, forms: readonly [string, string, string]): string {
+  if (count === 1) return `${count} ${forms[0]}`;
+  if (count >= 2 && count <= 4) return `${count} ${forms[1]}`;
+  return `${count} ${forms[2]}`;
+}
+
+function progressLabel(session: ActiveSession, seriesLength: number): string {
+  if (session.round === "retry") {
+    const retryTotal = session.summary.initialIncorrect;
+    return `Opakování chyby ${retryTotal - session.remaining.length} z ${retryTotal}`;
+  }
+  return `Otázka ${seriesLength - session.remaining.length} z ${seriesLength}`;
 }
 
 function feedbackVerdict(isCorrect: boolean, round: ExerciseRound): string {
