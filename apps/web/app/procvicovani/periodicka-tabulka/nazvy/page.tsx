@@ -1,11 +1,6 @@
 import { curatedElements } from "@inorganic/content/runtime";
 
-import {
-  PeriodicTablePractice,
-  type PeriodicTablePracticeDirection,
-} from "@/components/periodic-table-practice";
-
-const direction: PeriodicTablePracticeDirection = "position-to-name";
+import { PeriodicTableNamePractice } from "@/components/periodic-table-name-practice";
 
 export default function PeriodicTableNamePracticePage() {
   return (
@@ -21,7 +16,7 @@ export default function PeriodicTableNamePracticePage() {
         dostanou jeden opakovací pokus na konci cvičení.
       </p>
       <div className="mt-8">
-        <PeriodicTablePractice elements={curatedElements} direction={direction} />
+        <PeriodicTableNamePractice elements={curatedElements} />
       </div>
     </main>
   );
