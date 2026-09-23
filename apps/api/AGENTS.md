@@ -47,6 +47,7 @@ Routers must not contain queries or business workflows. Repositories must not re
 - Follow `docs/api-contracts.md` for versioning, pagination, errors, and idempotency.
 - Do not expose ORM objects directly. Map explicitly to response models.
 - Use semantic status codes and document non-success responses in OpenAPI.
+- Never return HTTP `200` for a failed operation.
 - Add stable client operation IDs to retryable offline mutations and enforce idempotency in the service/persistence layer.
 - Put slow or failure-prone integrations behind adapters with timeouts and deterministic error translation.
 - Do not perform unbounded list queries or accept unbounded payload collections.
@@ -64,6 +65,10 @@ The API may validate transport shape, ownership, sync ordering, and content-vers
 - API integration tests must exercise the real error envelope, authorization failures, transaction behavior, and OpenAPI schema.
 - Use isolated test databases. Tests must not depend on execution order or a developer's local database.
 - Run the backend commands in `docs/testing.md`; report anything not run.
+- Do not disable type, lint, validation, or test rules merely to make CI pass.
+- Use narrow exception handling. Do not catch `Exception` unless the boundary
+  genuinely requires it and the error is subsequently logged, translated, or
+  re-raised appropriately.
 
 ## Completion checks
 

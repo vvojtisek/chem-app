@@ -67,311 +67,74 @@ All user-visible chemistry content must originate from validated structured data
 
 ## Architecture
 
-This is a monorepo.
+This is a monorepo with these primary boundaries:
 
-Baseline architecture:
+- `apps/web` — Next.js, React, TypeScript, Tailwind CSS;
+- `apps/api` — FastAPI, Python, Pydantic;
+- PostgreSQL — persistent server-side storage;
+- `packages/chemistry` — framework-independent chemistry/domain logic;
+- `packages/contracts` — generated or shared API contracts;
+- `packages/ui` — reusable presentation components;
+- `content` — reviewed curriculum source data.
 
-- `apps/web` — Next.js, React, TypeScript, Tailwind CSS
-- `apps/api` — FastAPI, Python, Pydantic
-- PostgreSQL — persistent server-side storage
-- `packages/chemistry` — domain logic independent of UI and transport
-- `packages/contracts` — generated or shared API-contract artifacts
-- `packages/ui` — reusable presentation components
-- `content` — reviewed curriculum source data
+Prefer explicit, maintainable architecture over unnecessary abstraction.
 
-Do not introduce another frontend framework or backend runtime without an accepted ADR.
+Do not introduce competing frameworks, runtimes, persistence strategies, or
+duplicate domain implementations without an accepted ADR.
 
-In particular:
+An ADR is required before introducing or replacing:
 
-- do not introduce Vite as a second application architecture;
-- do not introduce Go alongside FastAPI without an ADR replacing the backend architecture;
-- do not duplicate domain logic between frontend and backend;
-- do not place chemistry validation logic inside React components;
-- do not couple domain models directly to persistence models.
+- frontend or backend framework/runtime;
+- database technology or ORM/data-access strategy;
+- state-management framework;
+- authentication architecture;
+- API style;
+- persistence model;
+- major external service;
+- MCP trust model.
 
-Prefer boring, explicit architecture over unnecessary abstraction.
-
-Create abstractions only when at least two real consumers justify them.
+Do not make architectural changes implicitly as part of feature implementation.
 
 ---
 
 ## Module boundaries
 
-### `apps/web`
+Keep dependencies aligned with the monorepo architecture:
 
-May depend on:
+- `apps/web` owns routing, presentation, browser state, offline behavior, and API-client orchestration. It must not depend on backend implementation internals.
+- `apps/api` owns HTTP transport, authentication/authorization, persistence orchestration, server-side validation, and OpenAPI publication. It must not contain frontend concerns.
+- `packages/chemistry` owns pure deterministic chemistry/domain behavior and must remain independent of UI, transport, persistence, and application frameworks.
+- `packages/contracts` owns generated or shared API-contract artifacts.
+- `packages/ui` owns reusable presentation primitives.
+- `content` contains reviewed curriculum data, not application logic.
 
-- UI packages;
-- generated API contracts;
-- chemistry presentation helpers;
-- browser persistence abstractions.
+Do not duplicate domain logic across applications or layers.
 
-It must not depend on backend implementation internals.
+Applications may depend on shared packages; shared domain packages must not depend on applications.
 
-### `apps/api`
+Keep domain models separate from persistence and transport models.
 
-Owns:
-
-- HTTP transport;
-- authentication and authorization;
-- persistence orchestration;
-- server-side validation;
-- OpenAPI publication.
-
-It must not contain frontend concerns.
-
-### `packages/chemistry`
-
-Owns pure chemistry/domain behavior such as:
-
-- formula parsing;
-- formula normalization;
-- atom counting;
-- equation validation;
-- coefficient reduction;
-- answer normalization;
-- nomenclature rules;
-- mastery calculations where independent of persistence.
-
-Keep this package deterministic and easy to unit test.
-
-### `content`
-
-Contains curriculum data, not application logic.
-
-Every record must have:
-
-- a stable ID;
-- schema validation;
-- referential integrity where applicable;
-- review metadata in the authoring source;
-- deterministic validation.
-
----
-
-## TypeScript
-
-TypeScript strict mode is mandatory.
-
-Do not use:
-
-- `any` unless interacting with an unavoidable untyped boundary;
-- unchecked type assertions to silence compiler errors;
-- `@ts-ignore` without a documented reason;
-- duplicated manually maintained API DTO types.
-
-Prefer:
-
-- `unknown` followed by validation;
-- discriminated unions;
-- readonly data where mutation is unnecessary;
-- exhaustive `switch` handling;
-- explicit domain types for identifiers and constrained values.
-
-Use Zod at untrusted runtime boundaries where client-side validation is required.
-
-Compile-time TypeScript types are not runtime validation.
-
----
-
-## Python
-
-Use type annotations for production Python code.
-
-Use:
-
-- Pydantic for API input/output validation;
-- Ruff for formatting and linting;
-- Pytest for testing.
-
-Do not disable type, lint, or validation rules merely to make CI pass.
-
-Use narrow exception handling.
-
-Do not catch `Exception` unless the boundary genuinely requires it and the error is subsequently logged, translated, or re-raised appropriately.
-
----
-
-## API contracts
-
-The FastAPI OpenAPI specification is the canonical HTTP contract.
-
-Generate frontend API types/client bindings from OpenAPI where practical.
-
-Do not maintain equivalent request/response interfaces independently in Python and TypeScript.
-
-All JSON API errors must use one documented error envelope.
-
-An error response should provide machine-readable information such as:
-
-```json
-{
-  "error": {
-    "code": "invalid_answer",
-    "message": "Human-readable description",
-    "details": {}
-  }
-}
-```
-
-Use HTTP status codes semantically.
-
-Do not return HTTP `200` for failed operations.
-
-Validate all input at the service boundary.
-
-Do not expose internal exceptions, SQL errors, stack traces, secrets, or infrastructure details to clients.
-
----
-
-## Data and migrations
-
-Database schema changes must use migrations.
-
-Never modify an existing migration that may already have been applied.
-
-Every schema-changing PR must include:
-
-- migration;
-- model changes;
-- relevant tests;
-- rollback or backward-compatibility consideration.
-
-Seed data must be deterministic and idempotent where possible.
-
-Curriculum content and database seed data are different concepts. Do not make PostgreSQL the only source of chemistry curriculum content unless an ADR explicitly changes the content architecture.
-
----
-
-## Offline behavior
-
-Offline capability is a product requirement, not an optional enhancement.
-
-Network failure must not turn the application into a blank or unusable screen.
-
-Clearly distinguish:
-
-- server state;
-- browser-local state;
-- cached curriculum;
-- unsynchronized changes.
-
-Do not assume that a network connection exists.
-
-Offline persistence must be versioned and migrations must be testable.
-
-If changing persistence format, provide a migration or an explicit recoverable reset path.
-
----
-
-## State management and data fetching
-
-Prefer React Server Components where they provide a clear benefit.
-
-Use Client Components only when browser state, interaction, or browser APIs require them.
-
-Use TanStack Query for asynchronous client-side server state.
-
-Do not copy server state into a second global store without a concrete reason.
-
-Keep transient component state local.
-
-Query keys must be deterministic and centrally structured.
-
-Mutation success must invalidate or update the relevant cached state explicitly.
-
-Do not hide cache invalidation inside unrelated UI components.
-
----
-
-## UI and UX
-
-Design should be clean, restrained, responsive, and content-first.
-
-Use an Apple-inspired level of visual simplicity, not imitation of Apple branding.
-
-Use Tailwind CSS consistently.
-
-Prefer reusable primitives and composition over large one-off components.
-
-Avoid:
-
-- oversized decorative UI;
-- unnecessary gradients;
-- excessive animation;
-- inconsistent spacing;
-- decorative controls without semantic meaning.
-
-Every core interaction must work with:
-
-- mouse;
-- keyboard;
-- touch.
-
-Accessibility target: WCAG 2.2 AA for core flows.
-
-Do not rely on color alone to communicate correctness, mastery, errors, or state.
-
-Minimum supported narrow layout must remain usable at 360 px.
-
----
-
-## Chemistry-specific correctness
-
-Chemistry calculations and answer evaluation must be deterministic.
-
-Important behavior requires positive and negative fixtures.
-
-Examples include:
-
-- formula normalization;
-- hydrate notation;
-- diacritics handling;
-- coefficient normalization;
-- lowest-whole-number equation ratios;
-- atom conservation;
-- acceptable nomenclature aliases;
-- invalid but superficially similar answers.
-
-“Tolerant” answer matching must never become fuzzy semantic guessing.
-
-Only explicitly approved equivalent answers may be accepted.
-
-Reaction equations stored as content must pass automated atom-balance validation.
-
-Content involving industrial conditions, catalysts, temperatures, pressures, nomenclature, or nontrivial chemical facts requires SME review before being marked releasable.
+Introduce abstractions only when real consumers justify them.
 
 ---
 
 ## Naming
 
-Use meaningful English names in source code.
+Use meaningful English names that describe intent rather than implementation mechanics.
 
-Repository and general file naming follows lowercase, hyphenated, versionless naming where the platform or language does not impose another convention.
+Follow language and platform conventions:
 
-Examples:
+- repository/general files: lowercase hyphenated names where appropriate;
+- TypeScript variables/functions: `camelCase`;
+- TypeScript types/classes/components: `PascalCase`;
+- Python modules/functions/variables: `snake_case`;
+- Python classes: `PascalCase`;
+- database tables/columns: `snake_case`;
+- environment variables: `UPPER_SNAKE_CASE`.
 
-- `answer-normalizer.ts`
-- `periodic-table-grid.tsx`
-- `reaction-validator.test.ts`
-- `chemistry-content.md`
-
-Language conventions override filename conventions where required.
-
-Python modules use `snake_case.py`.
-
-Identifiers:
-
-- TypeScript variables/functions: `camelCase`
-- TypeScript types/classes/components: `PascalCase`
-- Python functions/variables/modules: `snake_case`
-- Python classes: `PascalCase`
-- database tables/columns: `snake_case`
-- environment variables: `UPPER_SNAKE_CASE`
+Language-specific conventions override generic filename conventions.
 
 Avoid abbreviations unless they are established domain terms.
-
-Names should describe intent, not implementation mechanics.
 
 ---
 
@@ -390,63 +153,51 @@ Delete dead code rather than commenting it out.
 Avoid TODO comments without an issue/reference explaining why the work is deferred.
 
 ---
-
 ## Testing
 
 Every behavioral change requires appropriate automated verification.
 
-Expected layers:
+Tests must cover the changed behavior at the lowest useful level and include
+integration or end-to-end coverage where the risk or user flow warrants it.
 
-- unit tests;
-- component tests;
-- API/integration tests;
-- end-to-end tests;
-- chemistry-content validation tests.
+Bug fixes require a regression test when practical.
 
-Frontend:
+Do not weaken assertions, skip checks, or disable validation merely to make CI
+pass. Fix the underlying cause.
 
-- Vitest for unit tests;
-- appropriate React component testing;
-- Playwright for critical end-to-end flows.
+Use the testing tools and commands defined by the applicable scoped
+`AGENTS.md` and `docs/testing.md`.
 
-Backend:
+Run focused tests during development and the relevant repository quality gate
+before declaring the work complete.
 
-- Pytest;
-- isolated service/domain tests;
-- API integration tests.
-
-Chemistry domain logic requires unit coverage for both valid and invalid cases.
-
-For every learning mode, maintain at least:
-
-- one complete happy-path E2E test;
-- one incorrect-answer/retry-path E2E test.
-
-Do not weaken assertions merely to make a failing test pass.
-
-Fix the cause.
+Never claim a test or check passed unless it was actually executed
+successfully.
 
 ---
 
-## Verification before completion
+## Verification and definition of done
 
-Before declaring work complete, run all checks relevant to the changed scope.
+Before declaring work complete:
 
-At minimum verify:
-
-- formatting;
-- linting;
-- type checking;
-- unit tests;
-- integration/component tests where relevant;
-- production build;
-- content validation when chemistry data changes.
-
-Run the narrowest relevant tests during development and the repository quality gate before commit or PR completion.
+- verify the requested behavior and applicable acceptance criteria;
+- run formatting, linting, type checking, tests, build, and domain validation
+  relevant to the changed scope;
+- use the narrowest useful checks during development and the applicable
+  repository quality gate before commit or PR completion;
+- review the final diff for unintended changes;
+- verify no secrets, generated junk, or unrelated modifications were introduced;
+- preserve responsive, accessibility, compatibility, and domain invariants
+  applicable to the changed area;
+- update documentation when behavior, contracts, architecture, or operational
+  requirements change.
 
 If a required check cannot be executed, report exactly what was not run and why.
 
-Never claim tests passed unless they were actually executed successfully.
+Never claim that a check passed unless it was actually executed successfully.
+
+A change is complete only when the requested behavior works, relevant
+verification passes, and the final diff contains only intentional changes.
 
 ---
 
@@ -512,39 +263,28 @@ Secrets used by MCP integrations must come from environment or secret-management
 
 Create one logical change per branch and PR.
 
-Branch names:
+Use branch prefixes:
 
-```text
-feat/short-description
-fix/short-description
-refactor/short-description
-docs/short-description
-test/short-description
-chore/short-description
-```
+- `feat/`
+- `fix/`
+- `refactor/`
+- `docs/`
+- `test/`
+- `chore/`
 
 Use Conventional Commits:
 
-```text
-feat(scope): description
-fix(scope): description
-refactor(scope): description
-test(scope): description
-docs(scope): description
-chore(scope): description
-```
+`<type>(<scope>): <description>`
 
 Commits must be atomic.
 
-Do not mix:
+Do not mix feature work, bug fixes, refactoring, formatting sweeps, dependency
+upgrades, or other unrelated changes in one commit or PR.
 
-- feature development with unrelated refactoring;
-- formatting sweeps with behavioral changes;
-- dependency upgrades with unrelated implementation work.
+Prefer small independently reviewable PRs.
 
-Prefer small PRs that can be reviewed independently.
-
-Do not rewrite, amend, squash, force-push, merge, or delete another contributor's work unless explicitly instructed.
+Do not rewrite, amend, squash, force-push, merge, or delete another
+contributor's work unless explicitly instructed.
 
 ---
 
@@ -552,65 +292,25 @@ Do not rewrite, amend, squash, force-push, merge, or delete another contributor'
 
 Before implementation:
 
-1. inspect relevant code and documentation;
-2. identify applicable `AGENTS.md` files;
-3. confirm existing patterns before introducing new ones;
-4. check active ADRs and execution plans;
-5. determine the smallest coherent implementation.
+1. inspect relevant code, documentation, scoped `AGENTS.md`, ADRs, and active plans;
+2. confirm existing patterns and architectural boundaries;
+3. choose the smallest coherent implementation;
+4. apply the adaptive model-routing policy before substantial work.
 
 During implementation:
 
-1. preserve module boundaries;
-2. make incremental changes;
-3. run focused tests;
-4. avoid unrelated cleanup;
-5. update documentation when behavior or architecture changes.
+- make incremental, scoped changes;
+- preserve module boundaries;
+- run focused verification;
+- avoid unrelated cleanup;
+- update documentation when behavior, contracts, or architecture change.
 
-After implementation:
+Before completion:
 
-1. run required verification;
-2. review the diff for accidental changes;
-3. verify no secrets or generated junk are included;
-4. summarize what changed;
-5. report tests actually executed;
-6. identify remaining limitations explicitly.
-
----
-
-## Architecture changes
-
-An ADR is required before introducing or replacing:
-
-- frontend framework;
-- backend runtime/framework;
-- database technology;
-- ORM/data-access strategy;
-- state-management framework;
-- authentication architecture;
-- API style;
-- persistence model;
-- major external service;
-- MCP trust model.
-
-Do not make architecture changes implicitly as part of feature implementation.
-
----
-
-## Definition of done
-
-A change is complete only when:
-
-- requested behavior works;
-- relevant acceptance criteria are satisfied;
-- automated tests pass;
-- type checking and linting pass;
-- responsive behavior is preserved;
-- keyboard/accessibility behavior is preserved where applicable;
-- chemistry data is validated and reviewed where applicable;
-- documentation is updated;
-- no secrets are introduced;
-- the final diff contains only intentional changes.
-
+- run the applicable verification defined above;
+- review the diff for accidental changes;
+- report what changed, checks actually executed, and any remaining limitations.
+  
 ---
 
 ## Repository mirror constraints
@@ -620,3 +320,31 @@ This directory is a local mirror of the ChatGPT project “Anorganická_chemie�
 - Treat every file under `sources/` as read-only reference material.
 - Do not edit, rename, move, or delete synced project files.
 - Synced files may be replaced the next time a task is created from this ChatGPT project.
+
+---
+
+## Adaptive Codex model routing
+
+For software-engineering work, use the `adaptive-model-router` skill to select
+the least expensive appropriate agent before substantial implementation or
+debugging work begins.
+
+The parent coordinator normally runs on GPT-6 Luna High.
+
+Use the routing policy defined by the skill instead of choosing stronger models
+by default.
+
+Delegate implementation or investigation to the configured specialized agent
+when the skill indicates that a stronger model is appropriate.
+
+Do not escalate merely because:
+- a command fails once
+- a test fails once
+- the first implementation attempt is incorrect
+- additional repository inspection is required
+
+Preserve useful evidence when escalating so stronger agents do not repeat work
+already performed.
+
+The parent coordinator remains responsible for validating the final result
+against the original request.

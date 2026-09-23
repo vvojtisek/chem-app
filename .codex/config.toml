@@ -1,0 +1,60 @@
+model = "gpt-6-luna"
+model_reasoning_effort = "high"
+
+[agents]
+enabled = true
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "high"
+
+[agents.quick_worker]
+description = """
+Use for small, well-scoped changes such as formatting, lint fixes,
+simple test repairs, typo fixes, localized bugs, and mechanical edits.
+"""
+config_file = "agents/quick-worker.toml"
+
+[agents.implementer]
+description = """
+Use for normal software-engineering tasks such as implementing a GitHub issue,
+adding a well-defined feature, fixing a moderately scoped bug,
+or modifying several related files with clear requirements.
+"""
+config_file = "agents/implementer.toml"
+
+[agents.feature_engineer]
+description = """
+Use for substantial features spanning multiple modules or layers,
+non-trivial refactoring, coordinated backend/frontend work,
+API plus persistence changes, or tasks with meaningful architectural impact.
+"""
+config_file = "agents/feature-engineer.toml"
+
+[agents.deep_debugger]
+description = """
+Use for difficult debugging such as unexplained CI failures,
+race conditions, concurrency problems, intermittent failures,
+environment-specific bugs, or deployment inconsistencies
+where the root cause is unclear.
+"""
+config_file = "agents/deep-debugger.toml"
+
+[agents.hard_problem_solver]
+description = """
+Use only for unusually difficult problems that remain unresolved after
+a serious lower-cost attempt, especially when assumptions must be
+reconsidered or reasoning must span code, tests, configuration,
+infrastructure, and runtime behavior.
+"""
+config_file = "agents/hard-problem-solver.toml"
+
+[agents.migration_architect]
+description = """
+Use for difficult repo-wide migrations, architecture transitions,
+major framework upgrades, database migrations, cross-service changes,
+or other high-risk work requiring dependency mapping, compatibility,
+migration ordering, and rollback planning.
+"""
+config_file = "agents/migration-architect.toml"
+
+[projects."/home/vlad/Desktop/Projects/VSCHT/chem-app/chem-app"]
+trust_level = "trusted"

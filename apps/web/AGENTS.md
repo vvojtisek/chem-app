@@ -6,6 +6,29 @@ These instructions apply to `apps/web`. Read the repository-root `AGENTS.md`, `d
 
 The web application owns routing, presentation, accessibility, browser persistence, offline behavior, and orchestration of generated API clients. It must not import from `apps/api`, duplicate API DTOs, embed curriculum records in components, or implement chemistry rules that belong in `packages/chemistry`.
 
+## TypeScript
+
+TypeScript strict mode is mandatory.
+
+Do not use:
+
+- `any` unless interacting with an unavoidable untyped boundary;
+- unchecked type assertions to silence compiler errors;
+- `@ts-ignore` without a documented reason;
+- duplicated manually maintained API DTO types.
+
+Prefer:
+
+- `unknown` followed by validation;
+- discriminated unions;
+- readonly data where mutation is unnecessary;
+- exhaustive `switch` handling;
+- explicit domain types for identifiers and constrained values.
+
+Use Zod at untrusted runtime boundaries where client-side validation is required.
+
+Compile-time TypeScript types are not runtime validation.
+
 ## Next.js App Router
 
 - Use the App Router. Keep route segments small and colocate route-only loading, error, and not-found UI.
@@ -42,6 +65,10 @@ The web application owns routing, presentation, accessibility, browser persisten
 - Keep variants explicit and typed. Do not encode behavior in visual class names.
 - Avoid global CSS except for tokens, resets, typography, and third-party integration fixes.
 - Preserve a usable 360 px layout. Periodic-table overflow must be discoverable and must not shrink targets below usable size.
+- Keep the design clean, restrained, responsive, and content-first.
+- Aim for Apple-like visual restraint without imitating Apple branding.
+- Avoid unnecessary gradients, excessive animation, inconsistent spacing,
+  oversized decorative UI, and controls without semantic purpose.
 
 ## Accessibility and learning feedback
 
