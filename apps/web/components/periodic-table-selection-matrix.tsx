@@ -28,10 +28,13 @@ const SELECTED_STYLE = "border-2 border-sky-700 bg-sky-50 text-slate-950";
 const UNSELECTED_STYLE =
   "border border-dashed border-slate-400 bg-slate-50 text-slate-950 opacity-60 grayscale";
 
+// Group headers and row toggles are pills in green (selected), amber (partly) or red (not
+// selected), deliberately unlike the element cells; the border style and the struck-through
+// label repeat the state for anyone who cannot tell the colors apart.
 const TOGGLE_STYLE: Readonly<Record<SelectionCoverage, string>> = {
-  all: SELECTED_STYLE,
-  some: "border-2 border-dashed border-sky-700 bg-white text-slate-950",
-  none: UNSELECTED_STYLE,
+  all: "border-2 border-emerald-700 bg-emerald-100 text-emerald-900",
+  some: "border-2 border-dotted border-amber-600 bg-amber-50 text-amber-950",
+  none: "border-2 border-dashed border-rose-600 bg-rose-100 text-rose-800 line-through",
 };
 
 export function PeriodicTableSelectionMatrix({
@@ -54,7 +57,7 @@ export function PeriodicTableSelectionMatrix({
           <button
             aria-label={`Skupina ${group}`}
             aria-pressed={PRESSED[coverage]}
-            className={`min-h-11 w-full rounded-md text-sm font-semibold ${TOGGLE_STYLE[coverage]}`}
+            className={`min-h-11 w-full rounded-full text-sm font-bold ${TOGGLE_STYLE[coverage]}`}
             onClick={() => onChange(toggleSelection(selection, elementIds))}
             type="button"
           >
@@ -93,7 +96,7 @@ export function PeriodicTableSelectionMatrix({
           <h3 className="mb-2">
             <button
               aria-pressed={PRESSED[coverage]}
-              className={`min-h-11 rounded-md px-3 text-sm font-semibold ${TOGGLE_STYLE[coverage]}`}
+              className={`min-h-11 rounded-full px-4 text-sm font-bold ${TOGGLE_STYLE[coverage]}`}
               onClick={() => onChange(toggleSelection(selection, row.elementIds))}
               type="button"
             >

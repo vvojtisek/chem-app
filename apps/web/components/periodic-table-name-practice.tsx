@@ -12,9 +12,13 @@ import {
   useState,
 } from "react";
 
-import { type PeriodicTableCellState, PeriodicTableGrid } from "@/components/periodic-table-grid";
-import { PeriodicTableSelectionMatrix } from "@/components/periodic-table-selection-matrix";
+import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
+import {
+  PeriodicTableSelectionStep,
+  useSharedElementSelection,
+} from "@/components/periodic-table-selection-step";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { useWrongMarks } from "@/components/use-wrong-marks";
 import {
   appendPeriodicTableAttempt,
   describeAttemptSaveFailure,
@@ -24,11 +28,9 @@ import {
   DEFAULT_ELEMENT_PROMPT_MODE,
   type ElementPromptMode,
   loadNamePracticeMode,
-  loadNamePracticeSelection,
   saveNamePracticeMode,
-  saveNamePracticeSelection,
-} from "@/lib/periodic-table-name-preferences";
-import { defaultSelection, selectElements } from "@/lib/periodic-table-scope";
+} from "@/lib/periodic-table-preferences";
+import { selectElements } from "@/lib/periodic-table-scope";
 import {
   answerPracticeQueue,
   createPracticeQueue,
@@ -49,7 +51,8 @@ interface LastAnswer {
   readonly match: ElementAnswerMatch;
 }
 
-export const WRONG_FLASH_DURATION_MS = 1_000;
+/** The answer input flashes red briefly; the missed cell keeps its ✗ for WRONG_MARK_DURATION_MS. */
+export const INPUT_FLASH_DURATION_MS = 1_000;
 
 const MODE_OPTIONS: readonly { readonly mode: ElementPromptMode; readonly label: string }[] = [
   { mode: "name-to-symbol", label: "Název → Značka" },
@@ -61,11 +64,10 @@ export function PeriodicTableNamePractice({
   random = Math.random,
 }: PeriodicTableNamePracticeProps) {
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
-  const [selection, setSelection] = useState<ReadonlySet<string>>(() => defaultSelection(layout));
+  const [selection, changeSelection] = useSharedElementSelection(layout);
   const [mode, setMode] = useState<ElementPromptMode>(DEFAULT_ELEMENT_PROMPT_MODE);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
-  const [practisedIds, setPractisedIds] = useState<ReadonlySet<string>>(() => new Set());
   const [runId, setRunId] = useState(0);
   const [answer, setAnswer] = useState("");
   const answerRef = useRef("");
@@ -73,24 +75,21 @@ export function PeriodicTableNamePractice({
   const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const [notice, setNotice] = useState("");
-  const [flashElementId, setFlashElementId] = useState<string | null>(null);
+  const [inputFlash, setInputFlash] = useState(false);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
   const stopwatch = useStopwatch();
+  const wrongMarks = useWrongMarks();
   const modeGroupName = useId();
 
   useEffect(() => {
-    const storedSelection = loadNamePracticeSelection(
-      new Set(layout.map(({ element }) => element.id)),
-    );
-    if (storedSelection) setSelection(storedSelection);
     const storedMode = loadNamePracticeMode();
     if (storedMode) setMode(storedMode);
-  }, [layout]);
+  }, []);
 
   const clearFlash = useCallback(() => {
     clearTimeout(flashTimerRef.current);
-    setFlashElementId(null);
+    setInputFlash(false);
   }, []);
 
   useEffect(() => clearFlash, [clearFlash]);
@@ -98,16 +97,6 @@ export function PeriodicTableNamePractice({
   useEffect(() => {
     if (runId > 0) inputRef.current?.focus();
   }, [runId]);
-
-  const selectedCount = useMemo(
-    () => selectElements(layout, selection).length,
-    [layout, selection],
-  );
-
-  function changeSelection(next: ReadonlySet<string>) {
-    setSelection(next);
-    saveNamePracticeSelection(next);
-  }
 
   function updateAnswer(value: string) {
     answerRef.current = value;
@@ -126,10 +115,10 @@ export function PeriodicTableNamePractice({
     if (questions.length === 0) return;
 
     clearFlash();
+    wrongMarks.clear();
     const next = createPracticeQueue(questions, random);
     sessionRef.current = next;
     setSession(next);
-    setPractisedIds(new Set(questions.map(({ id }) => id)));
     setRunId((previous) => previous + 1);
     stopwatch.start();
     updateAnswer("");
@@ -141,6 +130,7 @@ export function PeriodicTableNamePractice({
 
   function returnToSelection() {
     clearFlash();
+    wrongMarks.clear();
     sessionRef.current = null;
     setSession(null);
     stopwatch.stop();
@@ -159,10 +149,10 @@ export function PeriodicTableNamePractice({
     setAnnouncement("Cvičení ukončeno.");
   }
 
-  function flash(elementId: string) {
+  function flashInput() {
     clearTimeout(flashTimerRef.current);
-    setFlashElementId(elementId);
-    flashTimerRef.current = setTimeout(() => setFlashElementId(null), WRONG_FLASH_DURATION_MS);
+    setInputFlash(true);
+    flashTimerRef.current = setTimeout(() => setInputFlash(false), INPUT_FLASH_DURATION_MS);
   }
 
   function submit() {
@@ -194,8 +184,10 @@ export function PeriodicTableNamePractice({
     setLastAnswer({ element: question, isCorrect: evaluation.isCorrect, match: evaluation.match });
     if (evaluation.isCorrect) {
       clearFlash();
+      wrongMarks.unmark(question.id);
     } else {
-      flash(question.id);
+      flashInput();
+      wrongMarks.mark(question.id);
     }
     if (result.state.status === "finished") stopwatch.stop();
     setAnnouncement(
@@ -217,58 +209,20 @@ export function PeriodicTableNamePractice({
 
   if (!session) {
     return (
-      <section
-        aria-labelledby="periodic-name-selection"
-        className="rounded-3xl border border-slate-200 bg-white p-6"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="periodic-name-selection" className="text-2xl font-semibold text-slate-950">
-            Výběr prvků
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            <button
-              className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
-              onClick={() => changeSelection(new Set(layout.map(({ element }) => element.id)))}
-              type="button"
-            >
-              Vybrat vše
-            </button>
-            <button
-              className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
-              onClick={() => changeSelection(new Set())}
-              type="button"
-            >
-              Zrušit výběr
-            </button>
-          </div>
-        </div>
-        <PeriodicTableSelectionMatrix
-          layout={layout}
-          onChange={changeSelection}
-          selection={selection}
-        />
-        <button
-          className="mt-4 min-h-11 rounded-xl bg-slate-950 px-5 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
-          disabled={selectedCount === 0}
-          onClick={start}
-          type="button"
-        >
-          Přejít na cvičení ({czechCount(selectedCount, ELEMENT_FORMS)})
-        </button>
-        {selectedCount === 0 ? (
-          <p className="mt-2 text-sm text-slate-700">Vyberte alespoň jeden prvek.</p>
-        ) : null}
-      </section>
+      <PeriodicTableSelectionStep
+        layout={layout}
+        onChange={changeSelection}
+        onStart={start}
+        selection={selection}
+      />
     );
   }
 
   const prompt = session.current;
 
-  function cellState(elementId: string): PeriodicTableCellState {
-    const current = elementId === prompt?.id;
-    if (session?.solvedIds.has(elementId)) return { current, result: "solved" };
-    if (elementId === flashElementId) return { current, result: "incorrect" };
-    return { current, result: null, excluded: !practisedIds.has(elementId) };
+  function cellResult(elementId: string): PeriodicTableCellResult | null {
+    if (session?.solvedIds.has(elementId)) return "solved";
+    return wrongMarks.marked.has(elementId) ? "incorrect" : null;
   }
 
   return (
@@ -323,11 +277,11 @@ export function PeriodicTableNamePractice({
                 autoComplete="off"
                 autoCorrect="off"
                 className={`min-h-11 rounded-xl border px-3 text-base ${
-                  flashElementId === null
-                    ? "border-slate-300 bg-white"
-                    : "border-rose-600 bg-rose-50 ring-2 ring-rose-300"
+                  inputFlash
+                    ? "border-rose-600 bg-rose-50 ring-2 ring-rose-300"
+                    : "border-slate-300 bg-white"
                 }`}
-                data-flash={flashElementId === null ? undefined : "incorrect"}
+                data-flash={inputFlash ? "incorrect" : undefined}
                 onChange={(event) => {
                   updateAnswer(event.target.value);
                   setInputHint("");
@@ -371,7 +325,7 @@ export function PeriodicTableNamePractice({
         {announcement}
       </p>
 
-      <PeriodicTableGrid cellState={cellState} layout={layout} />
+      <PeriodicTableGrid cellResult={cellResult} layout={layout} />
       {notice ? (
         <p className="mt-4 text-sm text-slate-700" role="status">
           {notice}
@@ -412,14 +366,6 @@ function answerHint(match: ElementAnswerMatch): string {
 
 function promptOf(element: ElementFlashcardData, mode: ElementPromptMode): string {
   return mode === "name-to-symbol" ? element.nameCs : element.symbol;
-}
-
-const ELEMENT_FORMS = ["prvek", "prvky", "prvků"] as const;
-
-function czechCount(count: number, forms: readonly [string, string, string]): string {
-  if (count === 1) return `${count} ${forms[0]}`;
-  if (count >= 2 && count <= 4) return `${count} ${forms[1]}`;
-  return `${count} ${forms[2]}`;
 }
 
 function preventRepeatedEnter(event: KeyboardEvent<HTMLElement>): void {
