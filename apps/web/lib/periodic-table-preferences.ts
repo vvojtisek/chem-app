@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { readStoredJson, removeStored, writeStoredJson } from "./local-preferences";
+
 export type ElementPromptMode = "name-to-symbol" | "symbol-to-name";
 
 export const DEFAULT_ELEMENT_PROMPT_MODE: ElementPromptMode = "name-to-symbol";
@@ -58,40 +60,4 @@ export function saveNamePracticeMode(mode: ElementPromptMode): void {
     schemaVersion: 1,
     mode,
   } satisfies z.infer<typeof modeSchema>);
-}
-
-// Preferences are a convenience: blocked or full storage (DOMException) and
-// corrupt JSON (SyntaxError) fall back to defaults instead of breaking practice.
-function readStoredJson(key: string): unknown {
-  let raw: string | null;
-  try {
-    raw = window.localStorage.getItem(key);
-  } catch (error) {
-    if (error instanceof DOMException) return null;
-    throw error;
-  }
-  if (raw === null) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch (error) {
-    if (error instanceof SyntaxError) return null;
-    throw error;
-  }
-}
-
-function writeStoredJson(key: string, value: unknown): void {
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    if (!(error instanceof DOMException)) throw error;
-  }
-}
-
-function removeStored(key: string): void {
-  try {
-    window.localStorage.removeItem(key);
-  } catch (error) {
-    if (!(error instanceof DOMException)) throw error;
-  }
 }

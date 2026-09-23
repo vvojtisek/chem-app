@@ -6,14 +6,21 @@ const CLOCK_TICK_MS = 250;
 
 export interface Stopwatch {
   readonly elapsedMs: number;
-  readonly start: () => void;
+  /** Starts from zero, or from an earlier elapsed time when a practice is resumed. */
+  readonly start: (offsetMs?: number) => void;
   readonly stop: () => void;
+  /** The exact elapsed time at this moment, for saving a resumable practice. */
+  readonly readElapsed: () => number;
 }
 
 export function useStopwatch(): Stopwatch {
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [stoppedAt, setStoppedAt] = useState<number | null>(null);
   const [now, setNow] = useState(0);
+  const timesRef = useRef<{ startedAt: number | null; stoppedAt: number | null }>({
+    startedAt: null,
+    stoppedAt: null,
+  });
   const running = startedAt !== null && stoppedAt === null;
 
   useEffect(() => {
@@ -22,18 +29,28 @@ export function useStopwatch(): Stopwatch {
     return () => clearInterval(interval);
   }, [running]);
 
-  const start = useCallback(() => {
-    const startTime = Date.now();
-    setStartedAt(startTime);
-    setNow(startTime);
+  const start = useCallback((offsetMs = 0) => {
+    const current = Date.now();
+    timesRef.current = { startedAt: current - offsetMs, stoppedAt: null };
+    setStartedAt(current - offsetMs);
+    setNow(current);
     setStoppedAt(null);
   }, []);
-  const stop = useCallback(() => setStoppedAt((previous) => previous ?? Date.now()), []);
+  const stop = useCallback(() => {
+    const stopTime = timesRef.current.stoppedAt ?? Date.now();
+    timesRef.current = { ...timesRef.current, stoppedAt: stopTime };
+    setStoppedAt(stopTime);
+  }, []);
+  const readElapsed = useCallback(() => {
+    const { startedAt: started, stoppedAt: stopped } = timesRef.current;
+    return started === null ? 0 : Math.max(0, (stopped ?? Date.now()) - started);
+  }, []);
 
   return {
     elapsedMs: startedAt === null ? 0 : Math.max(0, (stoppedAt ?? now) - startedAt),
     start,
     stop,
+    readElapsed,
   };
 }
 

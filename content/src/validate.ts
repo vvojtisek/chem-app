@@ -16,17 +16,15 @@ const nomenclature = nomenclatureCollectionSchema.parse(
     await readFile(new URL("../data/nomenclature.json", import.meta.url), "utf8"),
   ) as unknown,
 );
-const nomenclatureProblems = validateNomenclatureRecords(
-  nomenclature.records,
-  new Set(content.elements.map((element) => element.symbol)),
-);
+const elementSymbols = new Set(content.elements.map((element) => element.symbol));
+const nomenclatureProblems = validateNomenclatureRecords(nomenclature.records, elementSymbols);
 if (nomenclatureProblems.length > 0) {
   throw new Error(
     `Nomenclature validation failed:\n${JSON.stringify(nomenclatureProblems, null, 2)}`,
   );
 }
 
-const expectedSnapshot = createNomenclatureSnapshot(nomenclature.records);
+const expectedSnapshot = createNomenclatureSnapshot(nomenclature.records, elementSymbols);
 const generatedSnapshot: unknown = JSON.parse(
   await readFile(new URL("../generated/nomenclature-runtime.json", import.meta.url), "utf8"),
 );

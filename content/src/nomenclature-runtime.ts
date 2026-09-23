@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { normalizeAnswer, parseFormula } from "@inorganic/chemistry";
+import { compactLenientAnswer, listFormulaElements, parseFormula } from "@inorganic/chemistry";
 import type { NomenclatureRecord, NomenclatureRuntimeRecord } from "./nomenclature-schema";
 
 export interface NomenclatureProblem {
@@ -13,6 +13,19 @@ export interface NomenclatureProblem {
     | "ambiguous_formula"
     | "unknown_alias_source";
   readonly recordId: string;
+}
+
+const SALT_CATEGORIES: ReadonlySet<NomenclatureRecord["baseCategory"]> = new Set([
+  "binary-salt",
+  "oxoacid-salt",
+]);
+
+function isPublished(record: NomenclatureRecord): boolean {
+  return record.status === "reviewed" || record.status === "owner-approved";
+}
+
+function formulaPrompt(record: NomenclatureRecord): string {
+  return record.charge === 0 ? record.formula : `${record.formula} ${record.charge}`;
 }
 
 export function validateNomenclatureRecords(
@@ -31,9 +44,15 @@ export function validateNomenclatureRecords(
       problems.push({ code: "duplicate_source_key", recordId: record.id });
     ids.add(record.id);
     keys.add(record.sourceKey);
-    if (record.status !== "reviewed" && record.status !== "owner-approved") continue;
+    if (!isPublished(record)) continue;
+
+    const asksForFormula = record.directions.includes("name-to-formula");
     const parsed = parseFormula(record.formula, allowedSymbols);
-    if (!parsed.ok || parsed.canonical !== record.formula) {
+    const typeable = parsed.ok && parsed.canonical === record.formula && record.charge === 0;
+    if (
+      listFormulaElements(record.formula, allowedSymbols) === null ||
+      (asksForFormula && !typeable)
+    ) {
       problems.push({ code: "invalid_formula", recordId: record.id });
       continue;
     }
@@ -49,46 +68,65 @@ export function validateNomenclatureRecords(
       }
     }
     for (const direction of record.directions) {
-      const question =
-        direction +
-        ":" +
-        (direction === "formula-to-name" ? record.formula : normalizeAnswer(record.nameCs));
+      const question = `${direction}:${
+        direction === "formula-to-name"
+          ? formulaPrompt(record)
+          : compactLenientAnswer(record.nameCs)
+      }`;
       if (prompts.has(question)) problems.push({ code: "duplicate_question", recordId: record.id });
       prompts.add(question);
     }
-    for (const name of [record.nameCs, ...record.aliases.names.map((alias) => alias.value)]) {
-      const normalized = normalizeAnswer(name).normalize("NFD").replaceAll(/\p{M}/gu, "");
-      const owner = nameOwners.get(normalized);
-      if (owner && owner !== record.id) {
-        problems.push({ code: "ambiguous_name", recordId: record.id });
+    // A name asked for its formula must lead to exactly one record, also after the lenient
+    // normalization that the practice applies to typed names.
+    if (asksForFormula) {
+      for (const name of [record.nameCs, ...record.aliases.names.map((alias) => alias.value)]) {
+        const normalized = compactLenientAnswer(name);
+        const owner = nameOwners.get(normalized);
+        if (owner && owner !== record.id) {
+          problems.push({ code: "ambiguous_name", recordId: record.id });
+        }
+        nameOwners.set(normalized, record.id);
       }
-      nameOwners.set(normalized, record.id);
     }
     for (const formula of [
       record.formula,
       ...record.aliases.formulas.map((alias) => alias.value),
     ]) {
       const normalized = parseFormula(formula, allowedSymbols);
-      if (!normalized.ok) continue;
-      const owner = formulaOwners.get(normalized.canonical);
+      const key = `${normalized.ok ? normalized.canonical : formula} ${record.charge}`;
+      const owner = formulaOwners.get(key);
       if (owner && owner !== record.id) {
         problems.push({ code: "ambiguous_formula", recordId: record.id });
       }
-      formulaOwners.set(normalized.canonical, record.id);
+      formulaOwners.set(key, record.id);
     }
   }
   return problems;
 }
 
-export function createNomenclatureSnapshot(records: readonly NomenclatureRecord[]): {
-  readonly schemaVersion: 2;
+/**
+ * The anion word that opens a salt name (or follows a hydrate prefix), without a hydrogen
+ * prefix: "hexahydrát chloridu barnatého" -> "chlorid", "hydrogensíran sodný" -> "síran".
+ */
+export function deriveAnionFamily(nameCs: string): string {
+  const [first = "", second = ""] = nameCs.trim().split(/\s+/u);
+  const word = /hydrát$/u.test(first) && second ? second.replace(/u$/u, "") : first;
+  return word.replace(/^(?:di)?hydrogen(?=\p{L})/u, "");
+}
+
+export function createNomenclatureSnapshot(
+  records: readonly NomenclatureRecord[],
+  allowedSymbols: ReadonlySet<string>,
+): {
+  readonly schemaVersion: 3;
   readonly contentVersion: string;
   readonly compounds: readonly NomenclatureRuntimeRecord[];
 } {
   const compounds: NomenclatureRuntimeRecord[] = records
-    .filter((record) => record.status === "reviewed" || record.status === "owner-approved")
+    .filter(isPublished)
     .map((record) => {
-      if (!record.baseCategory || !record.difficulty) {
+      const elements = listFormulaElements(record.formula, allowedSymbols);
+      if (!record.baseCategory || !elements) {
         throw new Error("Published nomenclature record has incomplete classification.");
       }
       const reviewLevel: NomenclatureRuntimeRecord["reviewLevel"] =
@@ -97,11 +135,15 @@ export function createNomenclatureSnapshot(records: readonly NomenclatureRecord[
         id: record.id,
         reviewLevel,
         formula: record.formula,
+        charge: record.charge,
         nameCs: record.nameCs,
         explanationCs: record.explanationCs,
-        baseCategory: record.baseCategory,
+        category: record.baseCategory,
+        elementCount: elements.length,
+        anionFamily: SALT_CATEGORIES.has(record.baseCategory)
+          ? deriveAnionFamily(record.nameCs)
+          : null,
         tags: record.tags,
-        difficulty: record.difficulty,
         contextCs: record.contextCs,
         directions: record.directions,
         nameAliases: record.aliases.names.map((alias) => alias.value),
@@ -110,10 +152,10 @@ export function createNomenclatureSnapshot(records: readonly NomenclatureRecord[
     })
     .sort((a, b) => a.id.localeCompare(b.id));
   const contentVersion =
-    "nomenclature-v2-" +
+    "nomenclature-v3-" +
     createHash("sha256")
-      .update(JSON.stringify({ schemaVersion: 2, compounds }))
+      .update(JSON.stringify({ schemaVersion: 3, compounds }))
       .digest("hex")
       .slice(0, 12);
-  return { schemaVersion: 2, contentVersion, compounds };
+  return { schemaVersion: 3, contentVersion, compounds };
 }
