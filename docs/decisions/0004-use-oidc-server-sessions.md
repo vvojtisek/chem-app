@@ -1,6 +1,6 @@
 # ADR 0004: Use OIDC authorization code flow with server-side sessions
 
-- Status: Accepted
+- Status: Superseded in part by ADR 0005
 - Date: 2026-09-19
 - Decision owners: Product, engineering, and security
 
@@ -41,6 +41,10 @@ Deploy the web and API as same-site origins. CORS remains an explicit allowlist.
 ## Implementation gate
 
 This ADR authorizes the architecture, not a placeholder login. Do not expose authentication routes until provider configuration, encrypted server-side token handling where required, session schema/migration, CSRF defense, expiry/revocation, rate limits, and positive/negative integration tests are implemented together.
+
+The OIDC provider choice and anonymous offline access described here are
+superseded by ADR 0005. The opaque server-side session, cookie, and CSRF
+requirements remain applicable where they do not conflict with ADR 0005.
 
 ## Revisit when
 

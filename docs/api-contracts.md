@@ -69,7 +69,19 @@ Never use `200` for a failed operation.
 
 ## Authentication and authorization
 
-The chosen authentication transport must be documented in an ADR before implementation. Regardless of transport, authorization is enforced server-side for every protected resource. OpenAPI security requirements must match actual middleware/dependency behavior.
+ADR 0005 defines local accounts and opaque server sessions. `POST
+/api/v1/auth/login` accepts a username and password and sets the session and CSRF
+cookies; its JSON response contains the current account only. `GET
+/api/v1/auth/me` returns the authenticated account or `401`. `POST
+/api/v1/auth/logout` requires CSRF, revokes the session, clears cookies, and
+returns `204`. Invalid credentials use one generic `401` response; throttled
+login returns `429` with `Retry-After`.
+
+The session cookie is HttpOnly; the separate CSRF cookie is readable by the
+same-origin web client. Mutating requests send its value in `X-CSRF-Token` and
+must include the configured public `Origin`. No session or CSRF token appears
+in JSON or OpenAPI schemas. Protected operations declare authentication and
+role requirements in OpenAPI and enforce them server-side.
 
 ## Offline mutation and idempotency
 

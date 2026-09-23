@@ -44,7 +44,23 @@ Apply least privilege, explicit validation, deny-by-default authorization, short
 
 ## Authentication
 
-Authentication architecture requires an ADR. The implementation must validate issuer, audience, signature, expiry, and state/nonce where applicable. Account enumeration must not be exposed through unnecessarily specific login or recovery errors.
+ADR 0005 selects local username/password accounts with no public registration.
+Use Argon2id with current library defaults, reject passwords above 1024 bytes,
+and require at least 12 characters during provisioning. Login must verify a
+dummy hash for unknown users, return the same error for an unknown username and
+wrong password, and apply database-backed per-user and per-IP throttles.
+
+Session identifiers are random opaque values; store only SHA-256 token hashes
+in PostgreSQL. Enforce idle and absolute expiry and revoke sessions when an
+account is disabled or its password changes. Browser cookies use the
+`__Host-` prefix, `Secure`, `HttpOnly` for the session, `SameSite=Strict`, and
+`Path=/`. Mutations require a matching CSRF cookie/header pair and a validated
+same-origin `Origin`. Keep cookie and CSRF values out of logs and browser
+storage. The offline account marker is a UX gate only and grants no server
+authorization.
+
+The API must enforce ownership in service operations. Admin diagnostics require
+the `admin` role, and tester activity must not affect aggregate statistics.
 
 Authorization and session tests must include missing, expired, malformed, wrong-user, and insufficient-role cases. Administrative and content-review actions require separate explicit capabilities.
 
