@@ -53,7 +53,7 @@ Circular dependencies and imports between `apps/web` and `apps/api` are forbidde
 
 1. Authors edit structured records under `content/` with sources and review metadata.
 2. Validation checks schema, IDs, references, formula parsing, equation balance, aliases, and review status.
-3. The build emits a versioned runtime snapshot containing only reviewed, non-deprecated records.
+3. The build emits a versioned runtime snapshot containing only publishable, non-deprecated records. For nomenclature, an explicitly owner-approved first set is marked separately from SME-reviewed records in the snapshot and UI.
 4. The PWA caches that snapshot for offline use.
 5. Exercise selection and answer evaluation execute locally through pure `packages/chemistry` functions.
 
@@ -78,6 +78,7 @@ The application does not use last-write-wins for immutable attempt events. User 
 - The initial `Prvky` flashcard route reads reviewed element and named-group records from `@inorganic/content/runtime`. Locally edited or user-added cards are stored separately in IndexedDB and overlay the reviewed records only in that browser; they never mutate authored curriculum.
 - `localStorage` is limited to small, non-sensitive startup preferences.
 - React component state owns transient UI state that need not survive navigation.
+- Nomenclature practice pins its selected reviewed questions and state in a versioned IndexedDB checkpoint. Attempts are appended atomically with checkpoint transitions. A content-version mismatch shows recovery rather than silently regrading with changed content. This increment is browser-local; server synchronization remains future work.
 
 Do not mirror one category into another without a specific synchronization contract.
 

@@ -14,7 +14,7 @@ const SUBSCRIPT_DIGITS: Readonly<Record<string, string>> = {
 const ALLOWED_CHARACTERS = /^[A-Za-z0-9₀-₉().·⋅\s]+$/u;
 
 export interface FormulaNormalizationError {
-  readonly code: "empty_formula" | "unsupported_character";
+  readonly code: "empty_formula" | "unsupported_character" | "invalid_spacing";
   readonly message: string;
 }
 
@@ -43,6 +43,21 @@ export function normalizeFormulaInput(input: string): FormulaNormalizationResult
         message: "Formula contains a character outside the supported grammar.",
       },
     };
+  }
+
+  for (const whitespace of unicodeNormalized.matchAll(/\s+/gu)) {
+    const position = whitespace.index;
+    const before = unicodeNormalized[position - 1];
+    const after = unicodeNormalized[position + whitespace[0].length];
+    if (!before || !after || !/[().·⋅]/u.test(before + after)) {
+      return {
+        ok: false,
+        error: {
+          code: "invalid_spacing",
+          message: "Whitespace may only surround a group or hydrate separator.",
+        },
+      };
+    }
   }
 
   const value = Array.from(unicodeNormalized)

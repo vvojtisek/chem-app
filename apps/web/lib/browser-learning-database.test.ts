@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   ATTEMPT_EVENT_STORE,
   ELEMENT_CARD_STORE,
+  NOMENCLATURE_SESSION_STORE,
   LEARNING_DATABASE_NAME,
   LEARNING_DATABASE_VERSION,
   openLearningDatabase,
@@ -22,25 +23,19 @@ beforeEach(async () => {
 });
 
 describe("Learning database", () => {
-  it("resets an unsupported newer local database before reopening it", async () => {
+  it("preserves an unsupported newer local database", async () => {
     const newerDatabase = await openDatabaseAtVersion(LEARNING_DATABASE_VERSION + 1);
     newerDatabase.close();
-
-    const recoveredDatabase = await openLearningDatabase(indexedDB);
-
-    expect(recoveredDatabase.version).toBe(LEARNING_DATABASE_VERSION);
-    expect(recoveredDatabase.objectStoreNames.contains(ATTEMPT_EVENT_STORE)).toBe(true);
-    expect(recoveredDatabase.objectStoreNames.contains(ELEMENT_CARD_STORE)).toBe(true);
-
-    recoveredDatabase.close();
+    await expect(openLearningDatabase(indexedDB)).rejects.toThrow("data nebyla smazána");
+    const stillNewer = await openDatabaseAtVersion(LEARNING_DATABASE_VERSION + 1);
+    expect(stillNewer.version).toBe(LEARNING_DATABASE_VERSION + 1);
+    stillNewer.close();
   });
 
-  it("reports a blocked reset instead of waiting indefinitely", async () => {
+  it("closes an open connection when another tab resets the database", async () => {
     const database = await openLearningDatabase(indexedDB);
 
-    await expect(resetLearningDatabase(indexedDB)).rejects.toThrow(
-      "protože je aplikace otevřená v jiném okně",
-    );
+    await expect(resetLearningDatabase(indexedDB)).resolves.toBeUndefined();
 
     database.close();
   });
@@ -56,6 +51,7 @@ describe("Learning database", () => {
     legacyDatabase.close();
 
     const migratedDatabase = await openLearningDatabase(indexedDB);
+    expect(migratedDatabase.objectStoreNames.contains(NOMENCLATURE_SESSION_STORE)).toBe(true);
     const migratedTransaction = migratedDatabase.transaction(ATTEMPT_EVENT_STORE, "readonly");
     const migratedValues = await requestComplete<unknown[]>(
       migratedTransaction.objectStore(ATTEMPT_EVENT_STORE).getAll(),
@@ -72,6 +68,37 @@ describe("Learning database", () => {
         matchPolicy: "diacritics-tolerant",
       },
     ]);
+  });
+
+  it("upgrades version three while preserving attempts and local cards", async () => {
+    const old = await openDatabaseAtVersion(3, (database) => {
+      database.createObjectStore(ATTEMPT_EVENT_STORE, { keyPath: "id" });
+      database.createObjectStore(ELEMENT_CARD_STORE, { keyPath: "id" });
+    });
+    const transaction = old.transaction([ATTEMPT_EVENT_STORE, ELEMENT_CARD_STORE], "readwrite");
+    transaction.objectStore(ATTEMPT_EVENT_STORE).add({
+      ...legacyAttempt,
+      round: "initial",
+      mode: "element-name",
+      direction: "symbol-to-name",
+      matchPolicy: "diacritics-tolerant",
+    });
+    transaction.objectStore(ELEMENT_CARD_STORE).add({ id: "card.test", nameCs: "Lokální karta" });
+    await transactionComplete(transaction);
+    old.close();
+
+    const upgraded = await openLearningDatabase(indexedDB);
+    expect(upgraded.version).toBe(4);
+    expect(upgraded.objectStoreNames.contains(NOMENCLATURE_SESSION_STORE)).toBe(true);
+    const read = upgraded.transaction([ATTEMPT_EVENT_STORE, ELEMENT_CARD_STORE], "readonly");
+    expect(
+      await requestComplete(read.objectStore(ATTEMPT_EVENT_STORE).get("attempt.legacy")),
+    ).toBeDefined();
+    expect(
+      await requestComplete(read.objectStore(ELEMENT_CARD_STORE).get("card.test")),
+    ).toMatchObject({ nameCs: "Lokální karta" });
+    await transactionComplete(read);
+    upgraded.close();
   });
 });
 

@@ -1,19 +1,11 @@
 export const LEARNING_DATABASE_NAME = "inorganic-learning";
-export const LEARNING_DATABASE_VERSION = 3;
+export const LEARNING_DATABASE_VERSION = 4;
 export const ATTEMPT_EVENT_STORE = "attempt-events";
 export const ELEMENT_CARD_STORE = "element-cards";
+export const NOMENCLATURE_SESSION_STORE = "nomenclature-sessions";
 
 export async function openLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase> {
-  try {
-    return await openCurrentLearningDatabase(indexedDb);
-  } catch (error: unknown) {
-    if (!isVersionError(error)) {
-      throw error;
-    }
-
-    await resetLearningDatabase(indexedDb);
-    return openCurrentLearningDatabase(indexedDb);
-  }
+  return openCurrentLearningDatabase(indexedDb);
 }
 
 export function resetLearningDatabase(indexedDb: IDBFactory): Promise<void> {
@@ -42,14 +34,27 @@ function openCurrentLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase
     if (!database.objectStoreNames.contains(ELEMENT_CARD_STORE)) {
       database.createObjectStore(ELEMENT_CARD_STORE, { keyPath: "id" });
     }
+    if (!database.objectStoreNames.contains(NOMENCLATURE_SESSION_STORE)) {
+      database.createObjectStore(NOMENCLATURE_SESSION_STORE, { keyPath: "id" });
+    }
     if (event.oldVersion < 3 && database.objectStoreNames.contains(ATTEMPT_EVENT_STORE)) {
       migrateAttemptEvents(request.transaction?.objectStore(ATTEMPT_EVENT_STORE));
     }
   };
 
   return new Promise((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error("IndexedDB database open failed."));
+    request.onsuccess = () => {
+      request.result.onversionchange = () => request.result.close();
+      resolve(request.result);
+    };
+    request.onerror = () =>
+      reject(
+        isVersionError(request.error)
+          ? new Error(
+              "Lokální data vytvořila novější verze aplikace. Aktualizujte tuto stránku; data nebyla smazána.",
+            )
+          : (request.error ?? new Error("IndexedDB database open failed.")),
+      );
     request.onblocked = () =>
       reject(
         new Error(

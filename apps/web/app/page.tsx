@@ -84,7 +84,15 @@ export default function HomePage() {
                   </Link>
                 </div>
               ) : null}
-              {mode.title !== "Periodická tabulka" ? (
+              {mode.title === "Názvosloví" ? (
+                <Link
+                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-slate-950 px-4 font-semibold text-white"
+                  href="/procvicovani/nazvoslovi"
+                >
+                  Procvičit názvosloví
+                </Link>
+              ) : null}
+              {mode.title !== "Periodická tabulka" && mode.title !== "Názvosloví" ? (
                 <p className="mt-5 text-sm font-medium text-slate-500">Připravujeme obsah</p>
               ) : null}
             </li>

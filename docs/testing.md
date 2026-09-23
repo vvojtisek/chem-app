@@ -112,6 +112,8 @@ Running a focused command never replaces the full gate before a PR is declared r
 - Each core mode has at least one complete correct path and one incorrect-answer/retry path.
 - Accessibility checks supplement, but do not replace, keyboard and screen-reader-oriented manual verification.
 
+Nomenclature changes also run `pnpm --dir content generate:nomenclature` before `pnpm content:validate`. Unit/component fixtures verify draft exclusion, owner-approval attribution, both answer directions, retry scoring, and local recovery. Production Playwright tests exercise both directions with the owner-approved set, wrong-answer retry, 360 px layout, and an offline resume. SME review remains a separate content-quality gate; passing tests does not upgrade `owner-approved` to `reviewed`.
+
 ## Reporting
 
 Completion and PR summaries list the exact commands executed and their results. If a required command cannot run, state the command, reason, and resulting risk. Never imply that an unrun check passed.
