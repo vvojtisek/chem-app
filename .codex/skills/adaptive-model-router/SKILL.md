@@ -204,3 +204,15 @@ The parent coordinator remains responsible for:
 - identifying incomplete work
 - deciding whether escalation is justified
 - presenting the final result
+
+## Routing visibility
+
+When a specialized agent is delegated work, include one concise line in the
+final task summary:
+
+`Routing: <agent-role> — <model> <reasoning-effort>`
+
+If multiple specialized agents were used, list each unique routing decision.
+
+Do not include routing information when the parent Luna coordinator handled
+the entire task without delegation.
