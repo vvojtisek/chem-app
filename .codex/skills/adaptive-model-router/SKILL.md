@@ -216,3 +216,152 @@ If multiple specialized agents were used, list each unique routing decision.
 
 Do not include routing information when the parent Luna coordinator handled
 the entire task without delegation.
+
+## Cost and concurrency guardrails
+
+Optimize for successful completion per unit of compute, not maximum model strength.
+
+### Default concurrency
+
+Use at most one specialized implementation agent at a time.
+
+Spawn multiple agents only when the subtasks are genuinely independent and
+parallel execution provides a clear benefit.
+
+Do not create multiple agents to solve the same problem unless explicitly
+performing independent hypothesis analysis.
+
+### Parallel-agent limit
+
+Without explicit user instruction:
+
+- maximum 2 concurrent specialized agents;
+- maximum 3 concurrent read-only exploration agents;
+- maximum 1 agent allowed to modify a given area of the repository.
+
+Never let multiple agents concurrently modify overlapping files.
+
+### Escalation budget
+
+Do not escalate solely because an implementation or test failed.
+
+Before escalating to a stronger model, determine whether the failure is caused by:
+
+1. an implementation mistake;
+2. missing repository context;
+3. an incorrect assumption;
+4. task scope being larger than classified;
+5. genuinely insufficient reasoning capability.
+
+Cases 1 and 2 should normally be retried at the current level.
+
+Case 3 may justify a different approach at the current level.
+
+Cases 4 and 5 may justify escalation.
+
+### Astra guardrail
+
+Astra is expensive and must not be selected merely for convenience.
+
+Before spawning `hard_problem_solver`, the parent must have evidence that a
+serious Sol-level attempt failed or that important assumptions require
+reconsideration.
+
+Before spawning `migration_architect`, the task must inherently involve a
+high-risk migration or architecture transition.
+
+Do not use Astra for:
+
+- ordinary implementation;
+- repository exploration;
+- formatting or linting;
+- routine test failures;
+- simple CI failures with an obvious cause;
+- normal feature development;
+- code review that can be handled by Luna or Sol.
+
+### Repeated failure protection
+
+Track materially different approaches, not command failures.
+
+Do not retry essentially the same reasoning path more than twice.
+
+If two materially different approaches fail at the same capability level,
+either:
+
+- escalate one level with an evidence summary; or
+- stop and report the blocker if stronger reasoning is unlikely to help.
+
+Never enter an open-ended retry loop.
+
+### Delegation depth
+
+Prefer shallow delegation:
+
+parent coordinator
+→ specialized worker
+
+A specialized worker should not normally spawn another specialized worker.
+
+Return unresolved work to the parent coordinator for reclassification and
+possible escalation.
+
+### Completion economy
+
+Do not spawn another agent merely to confirm work that can be verified
+deterministically with tests, linters, type checking, builds, or direct
+inspection.
+
+Prefer deterministic verification over model-based re-review.
+
+## Escalation handoff format
+
+When escalating from one agent to a stronger agent, do not restart the task
+from zero.
+
+The parent coordinator must provide the new agent with a concise structured
+handoff containing:
+
+### Objective
+What must ultimately be achieved.
+
+### Current scope
+Files, modules, services, or subsystems currently believed to be relevant.
+
+### Evidence
+Concrete observations from code, logs, tests, CI, runtime behavior, or
+repository state.
+
+### Attempts
+For each materially different approach already tried:
+
+- hypothesis;
+- action taken;
+- result;
+- why the approach is considered unsuccessful or incomplete.
+
+### Known-good facts
+Facts already verified and not worth re-investigating unless contradictory
+evidence appears.
+
+### Open questions
+What remains unexplained or unresolved.
+
+### Verification state
+Tests, builds, linters, type checks, reproduction steps, or diagnostics already
+executed and their results.
+
+### Constraints
+Relevant requirements from AGENTS.md, ADRs, issue acceptance criteria,
+architecture, compatibility, security, or user instructions.
+
+The receiving agent must:
+
+1. read the handoff before exploring;
+2. avoid repeating completed investigation without a concrete reason;
+3. challenge previous assumptions only when evidence justifies it;
+4. continue from the highest-value unresolved question;
+5. return new evidence to the parent if another escalation is required.
+
+Keep the handoff concise. Include evidence and conclusions, not full transcripts
+or unnecessary command output.
