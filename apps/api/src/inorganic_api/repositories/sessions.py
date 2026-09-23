@@ -25,3 +25,8 @@ def purge_expired(session: Session, now: datetime) -> int:
         )
     )
     return result.rowcount or 0
+
+
+def revoke_all(session: Session) -> int:
+    result = session.execute(delete(AuthSession))
+    return result.rowcount or 0

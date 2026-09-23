@@ -40,7 +40,12 @@ class Settings(BaseSettings):
         if self.session_idle_ttl > self.session_absolute_ttl:
             raise ValueError("session_idle_ttl must not exceed session_absolute_ttl")
         if self.app_env == "production":
-            if len(self.secret_key) < 32 or self.secret_key == DEFAULT_SECRET_KEY:
+            secret_marker = self.secret_key.lower()
+            if (
+                len(self.secret_key) < 32
+                or self.secret_key == DEFAULT_SECRET_KEY
+                or any(marker in secret_marker for marker in ("replace", "placeholder", "change"))
+            ):
                 raise ValueError("production SECRET_KEY must be at least 32 characters and unique")
             if self.database_url == DEFAULT_DATABASE_URL:
                 raise ValueError("production DATABASE_URL must be configured")

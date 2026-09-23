@@ -30,6 +30,10 @@ def test_password_hash_uses_argon2id_and_checks_input_size() -> None:
     ("overrides", "reason"),
     [
         ({"secret_key": DEFAULT_SECRET_KEY}, "SECRET_KEY"),
+        (
+            {"secret_key": "REPLACE_WITH_FRESH_RANDOM_SECRET_OF_AT_LEAST_32_CHARACTERS"},
+            "SECRET_KEY",
+        ),
         ({"database_url": DEFAULT_DATABASE_URL}, "DATABASE_URL"),
         ({"public_origin": "http://example.test"}, "PUBLIC_ORIGIN"),
         ({"session_cookie_secure": False}, "secure session cookies"),

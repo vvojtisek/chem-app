@@ -1,6 +1,318 @@
 {
   "components": {
     "schemas": {
+      "AdminUser": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "title": "Createdat",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "isActive": {
+            "title": "Isactive",
+            "type": "boolean"
+          },
+          "lastLoginAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastloginat"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "user",
+              "tester"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "role",
+          "isActive",
+          "createdAt",
+          "lastLoginAt"
+        ],
+        "title": "AdminUser",
+        "type": "object"
+      },
+      "AdminUserPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminUser"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextcursor"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "title": "AdminUserPage",
+        "type": "object"
+      },
+      "AttemptItem": {
+        "additionalProperties": false,
+        "properties": {
+          "event": {
+            "discriminator": {
+              "mapping": {
+                "element-name": "#/components/schemas/ElementNameAttempt",
+                "nomenclature": "#/components/schemas/NomenclatureAttempt",
+                "periodic-table": "#/components/schemas/PeriodicTableAttempt"
+              },
+              "propertyName": "mode"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ElementNameAttempt"
+              },
+              {
+                "$ref": "#/components/schemas/PeriodicTableAttempt"
+              },
+              {
+                "$ref": "#/components/schemas/NomenclatureAttempt"
+              }
+            ],
+            "title": "Event"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "title": "Receivedat",
+            "type": "string"
+          },
+          "serverSeq": {
+            "title": "Serverseq",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "event",
+          "serverSeq",
+          "receivedAt"
+        ],
+        "title": "AttemptItem",
+        "type": "object"
+      },
+      "AttemptPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AttemptItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextcursor"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "title": "AttemptPage",
+        "type": "object"
+      },
+      "AttemptStats": {
+        "additionalProperties": false,
+        "properties": {
+          "byMode": {
+            "items": {
+              "$ref": "#/components/schemas/ModeStats"
+            },
+            "title": "Bymode",
+            "type": "array"
+          },
+          "correctAttempts": {
+            "title": "Correctattempts",
+            "type": "integer"
+          },
+          "totalAttempts": {
+            "title": "Totalattempts",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "totalAttempts",
+          "correctAttempts",
+          "byMode"
+        ],
+        "title": "AttemptStats",
+        "type": "object"
+      },
+      "BatchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "events": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "element-name": "#/components/schemas/ElementNameAttempt",
+                  "nomenclature": "#/components/schemas/NomenclatureAttempt",
+                  "periodic-table": "#/components/schemas/PeriodicTableAttempt"
+                },
+                "propertyName": "mode"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ElementNameAttempt"
+                },
+                {
+                  "$ref": "#/components/schemas/PeriodicTableAttempt"
+                },
+                {
+                  "$ref": "#/components/schemas/NomenclatureAttempt"
+                }
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "events"
+        ],
+        "title": "BatchRequest",
+        "type": "object"
+      },
+      "BatchResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Accepted",
+            "type": "array"
+          },
+          "duplicates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Duplicates",
+            "type": "array"
+          }
+        },
+        "required": [
+          "accepted",
+          "duplicates"
+        ],
+        "title": "BatchResponse",
+        "type": "object"
+      },
+      "ElementNameAttempt": {
+        "additionalProperties": false,
+        "properties": {
+          "contentVersion": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Contentversion",
+            "type": "string"
+          },
+          "direction": {
+            "const": "symbol-to-name",
+            "title": "Direction",
+            "type": "string"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "isCorrect": {
+            "title": "Iscorrect",
+            "type": "boolean"
+          },
+          "matchPolicy": {
+            "const": "diacritics-tolerant",
+            "title": "Matchpolicy",
+            "type": "string"
+          },
+          "mode": {
+            "const": "element-name",
+            "title": "Mode",
+            "type": "string"
+          },
+          "occurredAt": {
+            "format": "date-time",
+            "title": "Occurredat",
+            "type": "string"
+          },
+          "questionId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Questionid",
+            "type": "string"
+          },
+          "round": {
+            "enum": [
+              "initial",
+              "retry"
+            ],
+            "title": "Round",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "questionId",
+          "contentVersion",
+          "occurredAt",
+          "isCorrect",
+          "round",
+          "mode",
+          "direction",
+          "matchPolicy"
+        ],
+        "title": "ElementNameAttempt",
+        "type": "object"
+      },
       "ErrorBody": {
         "properties": {
           "code": {
@@ -119,6 +431,239 @@
         ],
         "title": "MeResponse",
         "type": "object"
+      },
+      "ModeStats": {
+        "additionalProperties": false,
+        "properties": {
+          "correctAttempts": {
+            "title": "Correctattempts",
+            "type": "integer"
+          },
+          "mode": {
+            "enum": [
+              "element-name",
+              "periodic-table",
+              "nomenclature"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "totalAttempts": {
+            "title": "Totalattempts",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "mode",
+          "totalAttempts",
+          "correctAttempts"
+        ],
+        "title": "ModeStats",
+        "type": "object"
+      },
+      "NomenclatureAttempt": {
+        "additionalProperties": false,
+        "properties": {
+          "compoundId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Compoundid",
+            "type": "string"
+          },
+          "contentVersion": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Contentversion",
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "formula-to-name",
+              "name-to-formula"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "eventSchemaVersion": {
+            "const": 1,
+            "title": "Eventschemaversion",
+            "type": "integer"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "isCorrect": {
+            "title": "Iscorrect",
+            "type": "boolean"
+          },
+          "match": {
+            "enum": [
+              "canonical",
+              "alias",
+              "missing-diacritics",
+              "normalized",
+              "none"
+            ],
+            "title": "Match",
+            "type": "string"
+          },
+          "matchPolicy": {
+            "enum": [
+              "name-strict",
+              "name-diacritics-tolerant",
+              "name-lenient",
+              "formula-canonical"
+            ],
+            "title": "Matchpolicy",
+            "type": "string"
+          },
+          "mode": {
+            "const": "nomenclature",
+            "title": "Mode",
+            "type": "string"
+          },
+          "occurredAt": {
+            "format": "date-time",
+            "title": "Occurredat",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "correct",
+              "incorrect",
+              "revealed"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "questionId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Questionid",
+            "type": "string"
+          },
+          "round": {
+            "enum": [
+              "initial",
+              "retry"
+            ],
+            "title": "Round",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "sessionId": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Sessionid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "questionId",
+          "contentVersion",
+          "occurredAt",
+          "isCorrect",
+          "round",
+          "mode",
+          "eventSchemaVersion",
+          "sessionId",
+          "sequence",
+          "compoundId",
+          "outcome",
+          "match",
+          "direction",
+          "matchPolicy"
+        ],
+        "title": "NomenclatureAttempt",
+        "type": "object"
+      },
+      "PeriodicTableAttempt": {
+        "additionalProperties": false,
+        "properties": {
+          "contentVersion": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Contentversion",
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "name-to-position",
+              "position-to-name",
+              "position-to-name-or-symbol",
+              "name-to-symbol",
+              "symbol-to-name"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "isCorrect": {
+            "title": "Iscorrect",
+            "type": "boolean"
+          },
+          "matchPolicy": {
+            "enum": [
+              "exact-position",
+              "diacritics-tolerant",
+              "name-tolerant-or-symbol-exact",
+              "symbol-exact"
+            ],
+            "title": "Matchpolicy",
+            "type": "string"
+          },
+          "mode": {
+            "const": "periodic-table",
+            "title": "Mode",
+            "type": "string"
+          },
+          "occurredAt": {
+            "format": "date-time",
+            "title": "Occurredat",
+            "type": "string"
+          },
+          "questionId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Questionid",
+            "type": "string"
+          },
+          "round": {
+            "enum": [
+              "initial",
+              "retry"
+            ],
+            "title": "Round",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "questionId",
+          "contentVersion",
+          "occurredAt",
+          "isCorrect",
+          "round",
+          "mode",
+          "direction",
+          "matchPolicy"
+        ],
+        "title": "PeriodicTableAttempt",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -137,6 +682,336 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/stats": {
+      "get": {
+        "operationId": "getAdminStats",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptStats"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Admin Stats",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "listAdminUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "List Admin Users",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}/attempt-events": {
+      "get": {
+        "operationId": "listUserAttemptEvents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "List User Attempt Events",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "login",
@@ -410,6 +1285,283 @@
         "summary": "Check API database readiness",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/me/attempt-events": {
+      "get": {
+        "operationId": "listMyAttemptEvents",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "List My Attempt Events",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/api/v1/me/attempt-events/batch": {
+      "post": {
+        "operationId": "uploadAttemptEvents",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Upload Attempt Events",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/api/v1/me/stats": {
+      "get": {
+        "operationId": "getMyStats",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptStats"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "My Stats",
+        "tags": [
+          "attempts"
         ]
       }
     }

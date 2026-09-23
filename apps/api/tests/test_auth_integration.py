@@ -16,6 +16,7 @@ from inorganic_api.cli import seed_accounts, set_password
 from inorganic_api.database import session_dependency
 from inorganic_api.main import app
 from inorganic_api.models import AuthSession, User
+from inorganic_api.repositories import sessions
 from inorganic_api.services.passwords import hash_password, verify_password
 
 API_DIR = Path(__file__).resolve().parents[1]
@@ -290,4 +291,18 @@ def test_seed_is_idempotent_and_password_change_revokes_sessions(
     set_password(db, account.username)
     assert account.password_hash != original_hash
     assert verify_password(account.password_hash, "Fresh-Strong-User-Passphrase")
+    assert db.query(AuthSession).filter_by(user_id=account.id).count() == 0
+    for token_hash in ("c" * 64, "d" * 64):
+        db.add(
+            AuthSession(
+                user_id=account.id,
+                token_hash=token_hash,
+                csrf_hash=token_hash[::-1],
+                last_seen_at=datetime.now(UTC),
+                idle_expires_at=datetime.now(UTC) + timedelta(days=1),
+                absolute_expires_at=datetime.now(UTC) + timedelta(days=2),
+            )
+        )
+    db.flush()
+    assert sessions.revoke_all(db) == 2
     assert db.query(AuthSession).filter_by(user_id=account.id).count() == 0

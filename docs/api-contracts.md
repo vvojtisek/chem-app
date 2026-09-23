@@ -89,6 +89,12 @@ Retryable client mutations include a stable client-generated operation/event ID 
 
 Attempt-event sync is append-only. Each event carries its content version and client occurrence time; the server records its receipt time separately and never treats the client clock as authoritative for authorization or ordering across devices.
 
+The attempt pull endpoint returns an opaque `nextCursor` after every nonempty
+page. Clients persist that cursor and continue requesting pages until the API
+returns an empty page with `nextCursor: null`; a short nonempty page is still a
+valid checkpoint. This lets an offline client resume from its last durable
+event while new events can arrive during synchronization.
+
 ## Concurrency
 
 Mutable resources that can be edited concurrently expose a version or ETag. Updates include the expected version; stale updates return `409` or `412` with enough safe information to refresh. Do not silently overwrite concurrent changes.

@@ -80,7 +80,10 @@ def main() -> None:
     subparsers.add_parser("seed-accounts")
     set_password_parser = subparsers.add_parser("set-password")
     set_password_parser.add_argument("username")
-    subparsers.add_parser("purge-sessions")
+    purge_parser = subparsers.add_parser("purge-sessions")
+    purge_parser.add_argument(
+        "--all", action="store_true", help="revoke all sessions, including active ones"
+    )
     args = parser.parse_args()
     try:
         with create_session_factory()() as db:
@@ -90,9 +93,14 @@ def main() -> None:
                 set_password(db, args.username)
                 print("Password updated and sessions revoked.")
             else:
-                count = sessions.purge_expired(db, datetime.now(UTC))
+                count = (
+                    sessions.revoke_all(db)
+                    if args.all
+                    else sessions.purge_expired(db, datetime.now(UTC))
+                )
                 db.commit()
-                print(f"Purged {count} expired session(s).")
+                description = "all" if args.all else "expired"
+                print(f"Purged {count} {description} session(s).")
     except ValueError as exc:
         parser.exit(2, f"Error: {exc}\n")
 
