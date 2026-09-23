@@ -35,6 +35,10 @@ The initial grammar does not silently support coordination complexes, structural
 
 Canonical formulas use ASCII digits, exact element capitalization, parentheses, and `·` for hydrates. Store `H2SO4`, not visually subscripted `H₂SO₄`. Store `CuSO4·5H2O` as the canonical hydrate representation.
 
+The current nomenclature parser accepts neutral formulas with non-nested parentheses, positive subscripts, and one terminal hydrate segment of the form `·nH2O` or `.nH2O`. It rejects charges, square brackets, phases, arbitrary adducts, nested groups, and partial parses. Input is limited to 256 characters, 128 terms, and count values of 1–999; accumulated atom counts must remain safe integers. Formula answers compare canonical notation or individually reviewed aliases, never atom counts alone. Czech names use the strict/tolerant rules below.
+
+`content/data/nomenclature.json` preserves the 126-item seed. `pnpm --dir content import:nomenclature` reports new drafts; add `--write` to import them without overwriting edits. `pnpm --dir content generate:nomenclature` creates the versioned runtime snapshot, and `pnpm content:validate` verifies it is current. An explicit content-owner release authorization on 2026-09-23 made 86 core entries `owner-approved`; 40 remain drafts. This state is not chemistry-SME review. The generated record carries `reviewLevel`, which the learner flow discloses. A `reviewed` record requires a scientific reference, real reviewer/date, resolved issues, category, difficulty, direction, and valid formulas. The seed review ledger remains in `docs/exec-plans/active/nomenclature-seed-review.md`.
+
 ## Formula normalization
 
 Normalization occurs before parsing and may:
@@ -92,19 +96,20 @@ Aliases are stored per content record and answer direction. Each alias needs a r
 Each factual record includes or inherits:
 
 ```text
-status: draft | in-review | reviewed | deprecated
+status: draft | in-review | owner-approved | reviewed | deprecated
 author: responsible editor
 sources: one or more identifiable references
 reviewedBy: reviewer ID from content/data/reviewers.json, required for reviewed records
 reviewedAt: ISO date required for reviewed records
 reviewFingerprint: sha256 digest of the reviewed fields, required for chemistry-SME reviews
+ownerApprovedBy/ownerApprovedAt: required for explicitly owner-approved nomenclature records
 ```
 
 `content/data/reviewers.json` registers each reviewer once with a stable `reviewer.*` ID, a name, and a role: `chemistry-sme` (must state a qualification) or `curriculum-editor`. Only a `chemistry-sme` review satisfies the SME release requirement. A `curriculum-editor` approval keeps a record shippable during development but is reported as pending SME review.
 
 `reviewFingerprint` covers every record field, including `sources`, except `status`, `author`, and the review fields themselves. If any covered field changes after the review, `pnpm content:validate` fails with `stale_review_fingerprint`. This enforces the rule below that a scientific change reopens review.
 
-Runtime generation includes only `reviewed` records that pass all validators and excludes authoring-only personal metadata where appropriate.
+Runtime generation of element and group records includes only `reviewed` records that pass all validators. Nomenclature runtime generation includes `reviewed` records and the explicitly authorized `owner-approved` set, both subject to parser, collision, issue, and source validation. It excludes authoring-only personal metadata and every draft, in-review, or deprecated record. `owner-approved` must not be presented as SME-reviewed.
 
 ## Required fixtures
 

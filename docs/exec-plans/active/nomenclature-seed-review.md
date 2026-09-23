@@ -3,11 +3,14 @@
 Prepared: 2026-09-22. Input: [archived seed](nomenclature-seed.json).
 Implementation contract: [developer plan](nomenclature-foundation.md).
 
-This is a preliminary editorial/engineering triage, not chemistry approval. Every
-entry is unreviewed. Preserve the supplied names/explanations in the archive;
+This began as preliminary editorial/engineering triage, not chemistry approval.
+On 2026-09-23 the content owner explicitly authorized release after a cursory check:
+86 `core-candidate` entries became `owner-approved` for practice, while 40 remain
+drafts. None has been marked SME-reviewed. Preserve the supplied names/explanations in the archive;
 corrections belong in separately reviewed authoring records. Categories below are
-proposals, not runtime data. Difficulty and allowed directions await editor/SME
-assignment. No item becomes releasable merely because it has no specific issue.
+editorial proposals. The 86 owner-approved entries now have runtime difficulty
+and both question directions; those assignments still await SME confirmation.
+No item becomes releasable merely because it has no specific issue.
 
 ## Disposition
 

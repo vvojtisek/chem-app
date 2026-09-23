@@ -1,6 +1,6 @@
 # Nomenclature practice — developer implementation plan
 
-Status: engineering handoff; implementation and chemistry review pending.
+Status: implemented with owner-approved initial content; chemistry-SME review and deployment compatibility pending.
 Prepared: 2026-09-22. Repository baseline inspected: `30c93a4`.
 
 ## 1. Outcome, scope, and deliverables
@@ -15,9 +15,12 @@ product. This plan also specifies the automated tests developers must add. Timed
 examinations, deferred grading, teacher administration, and trusted assessment
 are separate product increments.
 
-Use the supplied 126-entry JSON as authoring seed. Preserve every entry, but
-publish only questions passing validation and chemistry-SME review. Parser
-acceptance alone does not establish scientific correctness.
+Use the supplied 126-entry JSON as authoring seed. Preserve every entry. The
+original release requirement was chemistry-SME review; on 2026-09-23 the user
+explicitly authorized publishing a cursory-checked core subset before that review.
+Its `owner-approved` status and learner disclosure distinguish this exception from
+SME-reviewed material. Parser acceptance alone does not establish scientific
+correctness.
 
 Deliver:
 
@@ -562,16 +565,20 @@ before treating the expanded increment as complete.
 - [x] Preserved/audited the seed and defined per-record review disposition.
 - [x] Defined contracts, work packages, tests, release gates, and downgrade risk.
 - [ ] Assign content editor and chemistry SME; approve fixtures and candidate data.
-- [ ] Implement NOM-01 through NOM-08 and record actual validation evidence.
+- [x] Implement draft import, publishable snapshot generation, parser, evaluator, practice flow, local checkpoints, and offline route; record validation evidence.
+- [x] Publish 86 core entries as owner-approved under the user's explicit authorization; retain 40 drafts.
 - [ ] Complete production quality gate and release acceptance.
 
-This planning task does not implement the feature, mark records reviewed, or claim
-application tests passed.
+The route, tests, and local-first practice flow are implemented. The authoring
+collection contains 86 owner-approved entries and 40 drafts; none is marked
+SME-reviewed. Both directions are enabled for the published subset, yielding 172
+possible prompts. Chemistry-SME approval and the staged IndexedDB v3-to-v4
+deployment compatibility check remain release gates. The owner-approved content
+exception does not silently satisfy the original SME requirement.
 
 Planning validation on 2026-09-22: `git diff --check` passed. A Python audit verified
 all 126 seed values against the attachment, unique keys, hashes, all 126 ledger
 rows, disposition counts, local Markdown links, and balanced code fences. The
 ledger routes 86 records as core candidates, 34 for additional decisions, two to
-deferred grammar, and four to deferred scope; all remain unreviewed. Biome is not
-installed in this checkout. Application tests/build and the implementation quality
-gate were not run for this documentation-only handoff.
+deferred grammar, and four to deferred scope. This paragraph records the original
+planning audit; implementation checks and the later owner approval are tracked above.

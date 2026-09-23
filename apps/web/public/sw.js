@@ -1,8 +1,20 @@
-const CACHE_NAME = "inorganic-shell-v1";
-const APP_SHELL = ["/", "/manifest.webmanifest"];
+const CACHE_PREFIX = "inorganic-shell-";
+const CACHE_NAME = "inorganic-shell-v3";
+const APP_SHELL = ["/", "/procvicovani/nazvoslovi", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(APP_SHELL);
+      const page = await cache.match("/procvicovani/nazvoslovi");
+      if (!page) throw new Error("The nomenclature offline route was not cached.");
+      const html = await page.text();
+      const assets = new Set(
+        Array.from(html.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g), (match) => match[1]),
+      );
+      await cache.addAll([...assets]);
+    }),
+  );
   self.skipWaiting();
 });
 
@@ -11,7 +23,11 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((names) =>
-        Promise.all(names.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))),
+        Promise.all(
+          names
+            .filter((name) => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME)
+            .map((name) => caches.delete(name)),
+        ),
       )
       .then(() => self.clients.claim()),
   );

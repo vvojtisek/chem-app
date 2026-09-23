@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./runtime": "./src/runtime.ts"
+    "./runtime": "./src/runtime.ts",
+    "./nomenclature-schema": "./src/nomenclature-schema.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -12,7 +13,9 @@
     "release-check": "node --import tsx src/release-check.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "validate": "node --import tsx src/validate.ts"
+    "validate": "node --import tsx src/validate.ts",
+    "generate:nomenclature": "node --import tsx src/generate-nomenclature.ts",
+    "import:nomenclature": "node --import tsx src/import-nomenclature-seed.ts"
   },
   "dependencies": {
     "@inorganic/chemistry": "workspace:*",

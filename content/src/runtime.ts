@@ -1,5 +1,7 @@
 import rawElements from "../data/elements.json";
 import rawGroups from "../data/groups.json";
+import rawNomenclature from "../generated/nomenclature-runtime.json";
+import { nomenclatureSnapshotSchema } from "./nomenclature-schema";
 
 import {
   elementCollectionSchema,
@@ -33,6 +35,10 @@ export const curatedElements: readonly ElementFlashcardData[] = toRuntimeElement
 export const curatedGroups: readonly ElementGroupData[] = toRuntimeGroups(
   groupCollectionSchema.parse(rawGroups),
 );
+
+export const nomenclatureSnapshot = nomenclatureSnapshotSchema.parse(rawNomenclature);
+export const curatedNomenclature = nomenclatureSnapshot.compounds;
+export const nomenclatureContentVersion = nomenclatureSnapshot.contentVersion;
 
 export const curriculumContentVersion = createCurriculumContentVersion({
   schemaVersion: 1,

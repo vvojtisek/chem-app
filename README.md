@@ -85,3 +85,19 @@ pnpm test:e2e
 ```
 
 Chemistry-content changes additionally require SME review; passing validation alone is not approval.
+
+## Nomenclature authoring and practice
+
+The `/procvicovani/nazvoslovi` route reads `content/generated/nomenclature-runtime.json`. Of the 126 supplied entries in `content/data/nomenclature.json`, 86 core entries are available for practice after the content owner explicitly authorized release on 2026-09-23. The other 40 remain drafts with unresolved review or scope decisions. The owner described their check as cursory; `owner-approved` is deliberately distinct from `reviewed` (chemistry-SME review), and the practice screen tells learners about that distinction. Both question directions are enabled for the 86 entries, yielding 172 possible prompts.
+
+The seed is a user-provided conversion of online [VŠCHT Praha nomenclature materials](https://e-learning.vscht.cz/echo/anorganika/nazvoslovi/index.html). Its formula/name pairs were compared with the [VŠCHT ECHO index](https://e-learning.vscht.cz/echo/anorganika/nazvoslovi/indexes/namesIndex.html): 59 of the released pairs match exactly; 26 do not appear there, and the index spells `NH4Cl` differently from the supplied name. [Other VŠCHT material](https://old.vscht.cz/fch/prikladnik/prikladnik/tab/termod.html) supports the supplied `NH4Cl` spelling. The ECHO project states a [CC BY-NC-ND 3.0 CZ license](https://e-learning.vscht.cz/echo/index.html); keep source attribution and review reuse terms before redistributing the underlying material outside this project.
+
+After editing the authoring data, run:
+
+```bash
+pnpm --dir content import:nomenclature
+pnpm --dir content generate:nomenclature
+pnpm content:validate
+```
+
+The import command reports missing drafts without writing; `--write` adds them while preserving existing edits. It refuses a changed seed archive so source changes require a deliberate review. Generation and validation fail on invalid published content or a stale generated snapshot. A chemistry reviewer must verify each formula, Czech name, explanation, difficulty, context, and alias against traceable sources, resolve findings, and record reviewer and date before changing an entry to `reviewed`. Local practice and attempt history use IndexedDB; an unavailable store is reported in the UI. The IndexedDB schema is version 4, so a production rollout must first retire older clients that delete databases on `VersionError`.
