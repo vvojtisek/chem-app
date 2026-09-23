@@ -55,6 +55,8 @@ pnpm dev:web
 
 The web application is served at `http://localhost:3000`; API documentation is available at `http://localhost:8000/docs` during local development.
 
+To refresh and restart the local stack in one command, run `pnpm local:update` from the repository. It updates the currently checked-out branch from its tracking branch using fast-forward only, syncs locked dependencies, starts the local database, builds the current checkout, and runs the API and frontend on ports 8000 and 3000. Press Ctrl+C to stop the API and frontend; the database keeps running. It refuses to merge incoming commits over uncommitted changes and never switches branches. In Codex, select **Update local app** from the `/` menu or invoke `$update`; this workflow is only installed in this repository.
+
 ## Generated API contracts
 
 FastAPI OpenAPI is canonical. After an API schema change, regenerate and verify the committed artifacts:

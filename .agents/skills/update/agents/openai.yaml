@@ -1,0 +1,6 @@
+interface:
+  display_name: "Update local app"
+  short_description: "Fetch this branch and restart the local frontend and API"
+  default_prompt: "Run /update for this project."
+policy:
+  allow_implicit_invocation: false
