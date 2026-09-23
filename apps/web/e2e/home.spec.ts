@@ -133,25 +133,97 @@ test("answers a highlighted periodic-table position with its Czech name", async 
   await expect(page.getByText(/Perioda 1, skupina 1 je Vodík/)).toBeVisible();
 });
 
-test("retries an incorrectly named periodic-table position once", async ({ page }) => {
+test("completes a named-position series by keyboard with a persistent table", async ({ page }) => {
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
-  await page.getByRole("button", { name: "Začít cvičení (10 pozic)" }).click();
+  const url = page.url();
+  const input = page.getByLabel("Český název");
+  const nextElement = page.getByRole("button", { name: "Další prvek" });
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  const cell = (name: string) => table.getByRole("button", { name, exact: true });
 
-  await page.getByLabel("Český název").fill("Helium");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-  await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
-  await expect(page.getByText(/Perioda 1, skupina 1 je Vodík/)).toBeVisible();
-  await page.getByRole("button", { name: "Pokračovat" }).click();
+  await page.getByRole("button", { name: "Začít cvičení (10 pozic)" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(input).toBeFocused();
 
-  for (let question = 2; question <= 10; question += 1) {
-    await page.getByLabel("Český název").fill("chybně");
-    await page.getByRole("button", { name: "Vyhodnotit" }).click();
-    await page.getByRole("button", { name: "Pokračovat" }).click();
+  await page.keyboard.type("Vodík");
+  await page.keyboard.down("Enter");
+  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+  await expect(nextElement).toBeFocused();
+  await page.keyboard.down("Enter");
+  await page.keyboard.up("Enter");
+  await expect(page.getByText("Vybraná pozice: Perioda 1, skupina 1.")).toBeVisible();
+  await expect(cell("Vybraná pozice: Perioda 1, skupina 1: H, vyřešeno")).toHaveText("H");
+
+  await page.keyboard.press("Enter");
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue("");
+  await page.keyboard.type("Helium");
+  await page.keyboard.press("Enter");
+  await expect(nextElement).toBeFocused();
+  await page.keyboard.press("Enter");
+
+  await expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveText("H");
+  await expect(cell("Perioda 1, skupina 18: He, vyřešeno")).toHaveText("He");
+
+  for (let question = 3; question <= 10; question += 1) {
+    await expect(input).toBeFocused();
+    await expect(input).toHaveValue("");
+    await page.keyboard.type("chybně");
+    await page.keyboard.press("Enter");
+    await expect(nextElement).toBeFocused();
+    await page.keyboard.press("Enter");
   }
 
   await expect(page.getByText("Opakování chyby")).toBeVisible();
-  await expect(page.getByText("Vybraná pozice: Perioda 1, skupina 1.")).toBeVisible();
+  await expect(cell("Vybraná pozice: Perioda 2, skupina 1")).toHaveText("●");
+  await expect(table.getByText("Li", { exact: true })).toHaveCount(0);
+
+  for (let question = 1; question <= 8; question += 1) {
+    await expect(input).toBeFocused();
+    await expect(input).toHaveValue("");
+    await page.keyboard.type("chybně");
+    await page.keyboard.press("Enter");
+    await expect(nextElement).toBeFocused();
+    await page.keyboard.press("Enter");
+  }
+
+  await expect(page.getByRole("heading", { name: "Cvičení dokončeno" })).toBeVisible();
+  await expect(
+    page.getByText("První průchod: 2 správně, 8 chybně. Opakování: 0 správně, 8 chybně."),
+  ).toBeVisible();
+  await expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveText("H");
+  await expect(cell("Perioda 1, skupina 18: He, vyřešeno")).toHaveText("He");
+  await expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveText("✗");
+  expect(page.url()).toBe(url);
+});
+
+test("keeps the named-position table and its scroll position on a 360 px screen", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
+  await page.getByRole("button", { name: "Začít cvičení (10 pozic)" }).click();
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  const tableScroll = () => table.evaluate((element) => element.scrollLeft);
+  const pageScroll = () => page.evaluate(() => window.scrollY);
+
+  expect(await table.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
+  await table.evaluate((element) => {
+    element.scrollLeft = 40;
+  });
+
   await page.getByLabel("Český název").fill("Vodík");
   await page.getByRole("button", { name: "Vyhodnotit" }).click();
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+  expect(await tableScroll()).toBe(40);
+  const pageScrollBeforeNext = await pageScroll();
+  expect(pageScrollBeforeNext).toBeGreaterThan(0);
+
+  await page.getByRole("button", { name: "Další prvek" }).click();
+  await expect(
+    table.getByRole("button", { name: "Vybraná pozice: Perioda 1, skupina 18", exact: true }),
+  ).toBeInViewport();
+  expect(await tableScroll()).toBeGreaterThan(40);
+  expect(await pageScroll()).toBeGreaterThan(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
