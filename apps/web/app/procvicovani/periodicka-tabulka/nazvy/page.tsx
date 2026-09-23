@@ -1,10 +1,12 @@
 import { curatedElements } from "@inorganic/content/runtime";
 
 import { PeriodicTableNamePractice } from "@/components/periodic-table-name-practice";
+import { PRACTICE_HUB_HREF, PracticeNavigation } from "@/components/practice-navigation";
 
 export default function PeriodicTableNamePracticePage() {
   return (
     <main className="mx-auto min-h-dvh w-full max-w-6xl px-5 py-10 sm:px-8 lg:py-16">
+      <PracticeNavigation backHref={PRACTICE_HUB_HREF} />
       <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
         Procvičování
       </p>

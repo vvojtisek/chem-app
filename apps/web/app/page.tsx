@@ -1,23 +1,4 @@
-import Link from "next/link";
-
-const modes = [
-  {
-    title: "Periodická tabulka",
-    description: "Procvičování značek, názvů a pozic prvků.",
-  },
-  {
-    title: "Chemické rovnice",
-    description: "Vyčíslování a doplňování reaktantů a produktů.",
-  },
-  {
-    title: "Názvosloví",
-    description: "Převod mezi českými názvy a chemickými vzorci.",
-  },
-  {
-    title: "Výskyt a výroba",
-    description: "Minerály, průmyslové procesy a opakovací karty.",
-  },
-] as const;
+import { PracticeCategoryList } from "@/components/practice-category-list";
 
 export default function HomePage() {
   return (
@@ -45,59 +26,7 @@ export default function HomePage() {
           </span>
         </div>
 
-        <ul className="mt-6 grid list-none gap-4 p-0 sm:grid-cols-2">
-          {modes.map((mode, index) => (
-            <li
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_16px_45px_rgb(15_23_42/0.06)]"
-              key={mode.title}
-            >
-              <span aria-hidden="true" className="text-sm font-semibold text-emerald-700">
-                0{index + 1}
-              </span>
-              <h3 className="mt-6 text-xl font-semibold text-slate-950">{mode.title}</h3>
-              <p className="mt-2 leading-7 text-slate-600">{mode.description}</p>
-              {mode.title === "Periodická tabulka" ? (
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <Link
-                    className="inline-flex min-h-11 items-center rounded-xl bg-slate-950 px-4 font-semibold text-white"
-                    href="/flashcards/prvky"
-                  >
-                    Otevřít karty prvků
-                  </Link>
-                  <Link
-                    className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
-                    href="/procvicovani/prvky"
-                  >
-                    Procvičit názvy
-                  </Link>
-                  <Link
-                    className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
-                    href="/procvicovani/periodicka-tabulka"
-                  >
-                    Procvičit pozice
-                  </Link>
-                  <Link
-                    className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
-                    href="/procvicovani/periodicka-tabulka/nazvy"
-                  >
-                    Procvičit názvy a značky
-                  </Link>
-                </div>
-              ) : null}
-              {mode.title === "Názvosloví" ? (
-                <Link
-                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-slate-950 px-4 font-semibold text-white"
-                  href="/procvicovani/nazvoslovi"
-                >
-                  Procvičit názvosloví
-                </Link>
-              ) : null}
-              {mode.title !== "Periodická tabulka" && mode.title !== "Názvosloví" ? (
-                <p className="mt-5 text-sm font-medium text-slate-500">Připravujeme obsah</p>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+        <PracticeCategoryList />
       </section>
     </main>
   );

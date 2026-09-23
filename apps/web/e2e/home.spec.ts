@@ -57,50 +57,6 @@ test("shows a Czech element card and saves a local edit", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText("Lokální úprava byla uložena");
 });
 
-test("practices a Czech element name with immediate feedback", async ({ page }) => {
-  await page.goto("/procvicovani/prvky");
-  await page.getByRole("button", { name: "Začít cvičení" }).click();
-  await expect(page.getByText("H", { exact: true })).toBeVisible();
-
-  await page.getByLabel("Český název").fill("  VODÍK ");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-  await expect(page.getByText(/H je Vodík/)).toBeVisible();
-});
-
-test("accepts a Czech element name without diacritics and gives a hint", async ({ page }) => {
-  await page.goto("/procvicovani/prvky");
-  await page.getByRole("button", { name: "Začít cvičení" }).click();
-  await page.getByLabel("Český název").fill("vodik");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-  await expect(page.getByText(/doplňte českou diakritiku/)).toBeVisible();
-});
-
-test("retries an incorrect Czech element name once", async ({ page }) => {
-  await page.goto("/procvicovani/prvky");
-  await page.getByRole("button", { name: "Začít cvičení" }).click();
-
-  await page.getByLabel("Český název").fill("Helium");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-  await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
-  await expect(page.getByText(/H je Vodík/)).toBeVisible();
-  await page.getByRole("button", { name: "Pokračovat" }).click();
-
-  for (let question = 2; question <= 10; question += 1) {
-    await page.getByLabel("Český název").fill("chybně");
-    await page.getByRole("button", { name: "Vyhodnotit" }).click();
-    await page.getByRole("button", { name: "Pokračovat" }).click();
-  }
-
-  await expect(page.getByText("Opakování chyby")).toBeVisible();
-  await expect(page.getByText("H", { exact: true })).toBeVisible();
-  await page.getByLabel("Český název").fill("Vodík");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-});
-
 test("places a blind periodic-table element inline and moves straight on", async ({ page }) => {
   await keepQuestionOrder(page);
   await page.setViewportSize({ width: 360, height: 780 });
@@ -108,8 +64,10 @@ test("places a blind periodic-table element inline and moves straight on", async
   const url = page.url();
   const table = page.getByRole("region", { name: "Periodická tabulka" });
 
+  await page.getByRole("button", { name: "Přejít na cvičení (90 prvků)" }).click();
   await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();
-  await expect(page.getByText(/Vyberte|Kam patří|posuňte tabulku/)).toHaveCount(0);
+  await expect(page.getByText(/Kam patří|posuňte tabulku/)).toHaveCount(0);
+  await expect(table.getByText("?", { exact: true })).toHaveCount(118);
 
   await table.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
 
@@ -132,6 +90,8 @@ test("completes the whole blind table and asks a missed element again at the end
   const table = page.getByRole("region", { name: "Periodická tabulka" });
   const sought = page.getByRole("heading", { name: /^Hledaný prvek:/ });
 
+  await page.getByRole("button", { name: "Vybrat vše" }).click();
+  await page.getByRole("button", { name: "Přejít na cvičení (118 prvků)" }).click();
   await expect(sought).toHaveAccessibleName("Hledaný prvek: Vodík");
   await table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
   await expect(page.getByText("Špatně: 1")).toBeVisible();
@@ -158,6 +118,7 @@ test("keeps a wrong blind-table mark for 10 seconds and times the exercise", asy
   await page.goto("/procvicovani/periodicka-tabulka");
   const table = page.getByRole("region", { name: "Periodická tabulka" });
 
+  await page.getByRole("button", { name: "Přejít na cvičení (90 prvků)" }).click();
   await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();
   await table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
 
@@ -167,7 +128,11 @@ test("keeps a wrong blind-table mark for 10 seconds and times the exercise", asy
   ).toHaveText("✗");
   await expect(page.getByRole("heading", { name: "Hledaný prvek: Helium" })).toBeVisible();
 
-  await page.clock.runFor(10_000);
+  await page.clock.runFor(9_000);
+  await expect(
+    table.getByRole("button", { name: "Perioda 2, skupina 1: chybná odpověď" }),
+  ).toHaveText("✗");
+  await page.clock.runFor(1_000);
   await expect(table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true })).toHaveText(
     "?",
   );
@@ -175,7 +140,7 @@ test("keeps a wrong blind-table mark for 10 seconds and times the exercise", asy
 
   await page.getByRole("button", { name: "Ukončit" }).click();
   const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
-  await expect(summary.getByText("0 z 118")).toBeVisible();
+  await expect(summary.getByText("0 z 90")).toBeVisible();
   await page.clock.runFor(5_000);
   await expect(page.getByRole("timer")).toHaveText("00:10");
 
@@ -200,9 +165,7 @@ test("completes a selected group by keyboard in the name-to-symbol mode", async 
 
   await expect(input).toBeFocused();
   await expect(page.getByRole("radio", { name: "Název → Značka" })).toBeChecked();
-  await expect(
-    table.getByRole("button", { name: "Perioda 1, skupina 1: mimo výběr", exact: true }),
-  ).toBeDisabled();
+  await expect(table.getByText("?", { exact: true })).toHaveCount(118);
 
   for (const [period, name, symbol] of [
     [1, "Helium", "He"],
@@ -215,8 +178,8 @@ test("completes a selected group by keyboard in the name-to-symbol mode", async 
   ] as const) {
     await expect(page.getByRole("heading", { name: `Zadání: ${name}` })).toBeVisible();
     await expect(
-      table.getByRole("button", { name: `Vybraná pozice: Perioda ${period}, skupina 18` }),
-    ).toHaveText("●");
+      table.getByRole("button", { name: `Perioda ${period}, skupina 18`, exact: true }),
+    ).toHaveText("?");
     await expect(input).toBeFocused();
     await page.keyboard.type(symbol);
     await page.keyboard.press("Enter");
@@ -324,23 +287,67 @@ test("keeps the element selection and the name exercise usable on a 360 px scree
   await input.fill("H");
   await input.press("Enter");
 
-  const heliumCell = table.getByRole("button", {
-    name: "Vybraná pozice: Perioda 1, skupina 18",
-    exact: true,
-  });
-  await expect
-    .poll(async () => {
-      const [cellBox, tableBox] = await Promise.all([
-        heliumCell.boundingBox(),
-        table.boundingBox(),
-      ]);
-      return (
-        cellBox !== null &&
-        tableBox !== null &&
-        cellBox.x >= tableBox.x &&
-        cellBox.x + cellBox.width <= tableBox.x + tableBox.width
-      );
-    })
-    .toBe(true);
+  await expect(page.getByRole("heading", { name: "Zadání: Helium" })).toBeVisible();
+  await expect(input).toBeFocused();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
+test("opens the same name and symbol practice at /procvicovani/prvky", async ({ page }) => {
+  await keepQuestionOrder(page);
+  await page.goto("/procvicovani/prvky");
+  const input = page.getByRole("textbox", { name: "Značka prvku" });
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Názvy a značky prvků");
+  await page.getByRole("button", { name: "Přejít na cvičení (90 prvků)" }).click();
+  await expect(page.getByRole("heading", { name: "Zadání: Vodík" })).toBeVisible();
+  await input.fill("H");
+  await input.press("Enter");
+  await expect(page.getByText("Správně: 1")).toBeVisible();
+  expect(new URL(page.url()).pathname).toBe("/procvicovani/prvky");
+});
+
+test("shares the element selection between the name practice and the blind table", async ({
+  page,
+}) => {
+  await keepQuestionOrder(page);
+  await page.goto("/procvicovani/prvky");
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+
+  await page.getByRole("button", { name: "Zrušit výběr" }).click();
+  await table.getByRole("button", { name: "Skupina 2" }).click();
+  await expect(page.getByRole("button", { name: "Přejít na cvičení (6 prvků)" })).toBeVisible();
+  await expect(table.getByRole("button", { name: "Skupina 2" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.goto("/procvicovani/periodicka-tabulka");
+  await expect(page.getByRole("button", { name: "Přejít na cvičení (6 prvků)" })).toBeVisible();
+  await page.getByRole("button", { name: "Přejít na cvičení (6 prvků)" }).click();
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Beryllium" })).toBeVisible();
+  await expect(table.getByText("?", { exact: true })).toHaveCount(118);
+});
+
+test("returns from an exercise to the practice categories and to the dashboard", async ({
+  page,
+}) => {
+  await page.goto("/procvicovani/periodicka-tabulka");
+  const navigation = page.getByRole("navigation", { name: "Navigace procvičování" });
+
+  await navigation.getByRole("link", { name: "Zpět" }).click();
+  await expect(page).toHaveURL(/\/procvicovani$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Vyberte kategorii");
+
+  await expect(page.getByRole("link", { name: "Procvičit názvosloví" })).toHaveCSS(
+    "color",
+    "rgb(255, 255, 255)",
+  );
+  await page.getByRole("link", { name: "Procvičit názvosloví" }).click();
+  await expect(page).toHaveURL(/\/procvicovani\/nazvoslovi$/);
+  await page
+    .getByRole("navigation", { name: "Navigace procvičování" })
+    .getByRole("link", { name: "Domů" })
+    .click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
 });

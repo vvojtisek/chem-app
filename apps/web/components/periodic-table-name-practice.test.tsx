@@ -9,11 +9,9 @@ vi.mock("@/lib/browser-progress-store", () => ({
   createBrowserProgressStore: () => ({ appendAttempt }),
 }));
 
-import {
-  NAME_PRACTICE_MODE_KEY,
-  NAME_PRACTICE_SELECTION_KEY,
-} from "@/lib/periodic-table-name-preferences";
-import { PeriodicTableNamePractice, WRONG_FLASH_DURATION_MS } from "./periodic-table-name-practice";
+import { ELEMENT_SELECTION_KEY, NAME_PRACTICE_MODE_KEY } from "@/lib/periodic-table-preferences";
+import { INPUT_FLASH_DURATION_MS, PeriodicTableNamePractice } from "./periodic-table-name-practice";
+import { WRONG_MARK_DURATION_MS } from "./use-wrong-marks";
 
 const hydrogen: ElementFlashcardData = {
   id: "element.001-h",
@@ -108,7 +106,7 @@ function answer(value: string): void {
 }
 
 function storedSelection(): unknown {
-  return JSON.parse(window.localStorage.getItem(NAME_PRACTICE_SELECTION_KEY) ?? "null");
+  return JSON.parse(window.localStorage.getItem(ELEMENT_SELECTION_KEY) ?? "null");
 }
 
 describe("PeriodicTableNamePractice selection", () => {
@@ -128,7 +126,9 @@ describe("PeriodicTableNamePractice selection", () => {
   it("toggles a whole group column from its header and reports a partial column as mixed", () => {
     renderPractice();
 
+    expect(cell("Skupina 1")).toHaveClass("bg-emerald-100");
     fireEvent.click(cell("Skupina 1"));
+    expect(cell("Skupina 1")).toHaveClass("bg-rose-100", "line-through");
     expect(cell("Vodík (H)")).toHaveAttribute("aria-pressed", "false");
     expect(cell("Lithium (Li)")).toHaveAttribute("aria-pressed", "false");
     expect(cell("Skupina 1")).toHaveAttribute("aria-pressed", "false");
@@ -136,6 +136,7 @@ describe("PeriodicTableNamePractice selection", () => {
 
     fireEvent.click(cell("Lithium (Li)"));
     expect(cell("Skupina 1")).toHaveAttribute("aria-pressed", "mixed");
+    expect(cell("Skupina 1")).toHaveClass("bg-amber-50");
     expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");
 
     fireEvent.click(cell("Skupina 1"));
@@ -146,7 +147,9 @@ describe("PeriodicTableNamePractice selection", () => {
   it("toggles the lanthanide row as a whole", () => {
     renderPractice([hydrogen, lanthanum]);
 
+    expect(cell("Lanthanidy (La–La)")).toHaveClass("bg-rose-100");
     fireEvent.click(cell("Lanthanidy (La–La)"));
+    expect(cell("Lanthanidy (La–La)")).toHaveClass("bg-emerald-100");
     expect(cell("Lanthan (La)")).toHaveAttribute("aria-pressed", "true");
     expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");
 
@@ -181,8 +184,21 @@ describe("PeriodicTableNamePractice selection", () => {
     expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");
   });
 
+  it("uses the selection shared with the blind table", () => {
+    window.localStorage.setItem(
+      ELEMENT_SELECTION_KEY,
+      JSON.stringify({ schemaVersion: 1, elementIds: [lithium.id] }),
+    );
+
+    renderPractice();
+
+    expect(startButton()).toHaveTextContent("Přejít na cvičení (1 prvek)");
+    fireEvent.click(startButton());
+    expect(prompt()).toHaveAccessibleName("Zadání: Lithium");
+  });
+
   it("falls back to the default selection when the stored preference is corrupt", () => {
-    window.localStorage.setItem(NAME_PRACTICE_SELECTION_KEY, "{broken");
+    window.localStorage.setItem(ELEMENT_SELECTION_KEY, "{broken");
 
     renderPractice([hydrogen, lanthanum]);
 
@@ -191,7 +207,7 @@ describe("PeriodicTableNamePractice selection", () => {
 });
 
 describe("PeriodicTableNamePractice exercise", () => {
-  it("starts with a focused input, the dashboard, the Název → Značka mode, and a highlighted cell", () => {
+  it("starts with a focused input, the dashboard, the Název → Značka mode, and a blind table", () => {
     renderPractice();
     fireEvent.click(startButton());
 
@@ -201,8 +217,9 @@ describe("PeriodicTableNamePractice exercise", () => {
     expect(screen.getByText("Správně: 0")).toBeInTheDocument();
     expect(screen.getByText("Špatně: 0")).toBeInTheDocument();
     expect(screen.getByRole("timer")).toHaveTextContent("00:00");
-    expect(cell("Vybraná pozice: Perioda 1, skupina 1")).toHaveTextContent("●");
-    expect(cell("Perioda 1, skupina 18")).toHaveTextContent("?");
+    expect(cell("Perioda 1, skupina 1")).toHaveTextContent("?");
+    expect(cell("Perioda 1, skupina 1").className).toBe(cell("Perioda 1, skupina 18").className);
+    expect(within(table()).queryAllByRole("button", { name: /Vybraná pozice/ })).toHaveLength(0);
   });
 
   it("fills a correct symbol green, clears and refocuses the input, and moves on", () => {
@@ -229,7 +246,7 @@ describe("PeriodicTableNamePractice exercise", () => {
     );
   });
 
-  it("flashes a wrong answer red, moves on at once, and asks the element again later", () => {
+  it("flashes a wrong answer, keeps the ✗ for 10 seconds, moves on at once, and asks again later", () => {
     vi.useFakeTimers();
     renderPractice();
     fireEvent.click(startButton());
@@ -247,8 +264,12 @@ describe("PeriodicTableNamePractice exercise", () => {
       expect.objectContaining({ questionId: hydrogen.id, round: "initial", isCorrect: false }),
     );
 
-    act(() => vi.advanceTimersByTime(WRONG_FLASH_DURATION_MS));
+    act(() => vi.advanceTimersByTime(INPUT_FLASH_DURATION_MS));
     expect(screen.getByRole("textbox")).not.toHaveAttribute("data-flash");
+    expect(cell("Perioda 1, skupina 1: chybná odpověď")).toHaveTextContent("✗");
+    act(() => vi.advanceTimersByTime(WRONG_MARK_DURATION_MS - INPUT_FLASH_DURATION_MS - 1));
+    expect(cell("Perioda 1, skupina 1: chybná odpověď")).toHaveTextContent("✗");
+    act(() => vi.advanceTimersByTime(1));
     expect(cell("Perioda 1, skupina 1")).toHaveTextContent("?");
 
     answer("He");
@@ -351,14 +372,19 @@ describe("PeriodicTableNamePractice exercise", () => {
     expect(appendAttempt).toHaveBeenCalledTimes(1);
   });
 
-  it("asks only the selected elements and dims the rest of the table", () => {
+  it("asks only the selected elements and keeps the rest of the table identically blind", () => {
     renderPractice([hydrogen, helium, lithium, lanthanum]);
     fireEvent.click(cell("Skupina 1"));
     fireEvent.click(startButton());
 
     expect(prompt()).toHaveAccessibleName("Zadání: Helium");
-    expect(cell("Perioda 1, skupina 1: mimo výběr")).toHaveTextContent("");
-    expect(cell("Lanthanidy, pozice 1: mimo výběr")).toHaveClass("opacity-35");
+    const blindCells = [
+      "Perioda 1, skupina 1",
+      "Perioda 1, skupina 18",
+      "Lanthanidy, pozice 1",
+    ].map(cell);
+    for (const blind of blindCells) expect(blind).toHaveTextContent("?");
+    expect(new Set(blindCells.map((blind) => blind.className)).size).toBe(1);
 
     answer("He");
 
@@ -401,7 +427,9 @@ describe("PeriodicTableNamePractice exercise", () => {
     expect(screen.getByText("Správně: 0")).toBeInTheDocument();
     expect(screen.getByText("Špatně: 0")).toBeInTheDocument();
     expect(screen.getByRole("timer")).toHaveTextContent("00:00");
-    expect(cell("Vybraná pozice: Perioda 1, skupina 1")).toHaveTextContent("●");
+    expect(cell("Perioda 1, skupina 1")).toHaveTextContent("?");
+    expect(cell("Perioda 2, skupina 1")).toHaveTextContent("?");
+    expect(prompt()).toHaveAccessibleName("Zadání: Vodík");
     expect(screen.getByRole("textbox")).toHaveFocus();
   });
 

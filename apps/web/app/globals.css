@@ -1,15 +1,5 @@
 @import "tailwindcss";
 
-@keyframes current-cell-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 2px rgb(2 132 199 / 70%);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgb(2 132 199 / 15%);
-  }
-}
-
 :root {
   color-scheme: light;
   --background: #f4f7f8;
@@ -27,6 +17,8 @@
 
 html {
   background: var(--background);
+  /* Keeps focused controls clear of the sticky practice navigation. */
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -38,8 +30,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-a {
-  color: inherit;
+/* In the base layer so that Tailwind utilities such as text-white still apply to links. */
+@layer base {
+  a {
+    color: inherit;
+  }
 }
 
 :focus-visible {

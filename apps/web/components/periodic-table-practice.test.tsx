@@ -9,7 +9,9 @@ vi.mock("@/lib/browser-progress-store", () => ({
   createBrowserProgressStore: () => ({ appendAttempt }),
 }));
 
-import { PeriodicTablePractice, WRONG_MARK_DURATION_MS } from "./periodic-table-practice";
+import { ELEMENT_SELECTION_KEY } from "@/lib/periodic-table-preferences";
+import { PeriodicTablePractice } from "./periodic-table-practice";
+import { WRONG_MARK_DURATION_MS } from "./use-wrong-marks";
 
 const hydrogen: ElementFlashcardData = {
   id: "element.001-h",
@@ -55,6 +57,7 @@ afterEach(() => {
 });
 
 beforeEach(() => {
+  window.localStorage.clear();
   appendAttempt.mockReset();
   appendAttempt.mockResolvedValue(undefined);
 });
@@ -64,6 +67,11 @@ function renderPractice(
   random: () => number = keepOrder,
 ): void {
   render(<PeriodicTablePractice elements={elements} random={random} />);
+  fireEvent.click(startButton());
+}
+
+function startButton(): HTMLElement {
+  return screen.getByRole("button", { name: /^Přejít na cvičení/ });
 }
 
 function table(): HTMLElement {
@@ -90,10 +98,41 @@ describe("PeriodicTablePractice", () => {
     expect(screen.queryByRole("button", { name: "Pokračovat" })).toBeNull();
   });
 
-  it("renders all reviewed elements as clickable table cells", () => {
+  it("renders all reviewed elements as identical blind cells", () => {
     render(<PeriodicTablePractice elements={curatedElements} />);
+    fireEvent.click(startButton());
 
-    expect(document.querySelectorAll("[data-element-id]")).toHaveLength(118);
+    const cells = [...document.querySelectorAll<HTMLButtonElement>("[data-element-id]")];
+    expect(cells).toHaveLength(118);
+    expect(new Set(cells.map((candidate) => candidate.className)).size).toBe(1);
+    expect(new Set(cells.map((candidate) => candidate.textContent)).size).toBe(1);
+    expect(cells[0]).toHaveTextContent("?");
+    expect(cells.every((candidate) => !candidate.disabled)).toBe(true);
+    expect(within(table()).queryAllByRole("button", { name: /Vybraná pozice/ })).toHaveLength(0);
+  });
+
+  it("starts with the shared element selection and asks only the selected elements", () => {
+    render(<PeriodicTablePractice elements={curatedElements} random={keepOrder} />);
+
+    expect(startButton()).toHaveTextContent("Přejít na cvičení (90 prvků)");
+    fireEvent.click(screen.getByRole("button", { name: "Zrušit výběr" }));
+    fireEvent.click(within(table()).getByRole("button", { name: "Vodík (H)" }));
+    expect(startButton()).toHaveTextContent("Přejít na cvičení (1 prvek)");
+    expect(JSON.parse(window.localStorage.getItem(ELEMENT_SELECTION_KEY) ?? "null")).toEqual({
+      schemaVersion: 1,
+      elementIds: ["element.001-h"],
+    });
+    fireEvent.click(startButton());
+
+    expect(sought()).toHaveAccessibleName("Hledaný prvek: Vodík");
+    fireEvent.click(cell("Perioda 1, skupina 18"));
+    expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
+    fireEvent.click(cell("Perioda 1, skupina 1"));
+
+    const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
+    expect(within(summary).getByText("Umístěno").nextElementSibling).toHaveTextContent("1 z 1");
+    fireEvent.click(within(summary).getByRole("button", { name: "Změnit výběr" }));
+    expect(startButton()).toHaveTextContent("Přejít na cvičení (1 prvek)");
   });
 
   it("marks a correct click green with the symbol and moves straight to the next element", () => {
@@ -118,6 +157,7 @@ describe("PeriodicTablePractice", () => {
 
   it("marks a wrong click red for 10 seconds, ignores it meanwhile, and asks the element again later", () => {
     vi.useFakeTimers();
+    expect(WRONG_MARK_DURATION_MS).toBe(10_000);
     renderPractice([hydrogen, helium, lithium]);
 
     fireEvent.click(cell("Perioda 2, skupina 1"));
