@@ -13,6 +13,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - Scopes: first 36 or all 118 elements; chemical groups; transition metals; metals, nonmetals, and metalloids.
 - Prompt to position: show a Czech name or symbol and ask the learner to select the correct table cell.
 - Position to answer: highlight a cell and request a symbol/name or a four-option choice.
+- In position-to-answer practice the table stays on screen through each question, its feedback, and the summary; correctly answered cells keep the element symbol until the series restarts, and incorrect cells are marked without revealing the answer.
 - Give immediate correct/incorrect feedback and repeat missed elements at the end of the session.
 
 ### Chemical equations
