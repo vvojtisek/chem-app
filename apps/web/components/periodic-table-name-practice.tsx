@@ -1,337 +1,419 @@
 "use client";
 
 import { type ElementAnswerMatch, evaluateElementAnswer } from "@inorganic/chemistry";
-import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
-import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import type { ElementFlashcardData } from "@inorganic/content/runtime";
+import {
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-import {
-  type PeriodicTableCellResult,
-  type PeriodicTableCellState,
-  PeriodicTableGrid,
-} from "@/components/periodic-table-grid";
-import { PeriodicTableScopePicker } from "@/components/periodic-table-scope-picker";
-import {
-  advanceExerciseSession,
-  createExerciseSession,
-  type ExerciseRound,
-  type ExerciseSessionState,
-  submitExerciseAnswer,
-} from "@/lib/exercise-session";
+import { type PeriodicTableCellState, PeriodicTableGrid } from "@/components/periodic-table-grid";
+import { PeriodicTableSelectionMatrix } from "@/components/periodic-table-selection-matrix";
+import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import {
   appendPeriodicTableAttempt,
   describeAttemptSaveFailure,
 } from "@/lib/periodic-table-attempts";
+import { createPeriodicTableLayout } from "@/lib/periodic-table-layout";
 import {
-  createPeriodicTableLayout,
-  describePeriodicTablePosition,
-} from "@/lib/periodic-table-layout";
+  DEFAULT_ELEMENT_PROMPT_MODE,
+  type ElementPromptMode,
+  loadNamePracticeMode,
+  loadNamePracticeSelection,
+  saveNamePracticeMode,
+  saveNamePracticeSelection,
+} from "@/lib/periodic-table-name-preferences";
+import { defaultSelection, selectElements } from "@/lib/periodic-table-scope";
 import {
-  drawSeries,
-  fullScope,
-  listScopeOptions,
-  type PeriodicTableScope,
-  SERIES_LENGTH,
-  selectScopeElements,
-} from "@/lib/periodic-table-scope";
+  answerPracticeQueue,
+  createPracticeQueue,
+  finishPracticeQueue,
+  type PracticeQueueState,
+} from "@/lib/practice-queue";
 
 interface PeriodicTableNamePracticeProps {
   readonly elements: readonly ElementFlashcardData[];
-  readonly groups?: readonly ElementGroupData[];
   readonly random?: () => number;
 }
 
-interface SubmittedAnswer {
-  readonly text: string;
+type Session = PracticeQueueState<ElementFlashcardData>;
+
+interface LastAnswer {
+  readonly element: ElementFlashcardData;
+  readonly isCorrect: boolean;
   readonly match: ElementAnswerMatch;
 }
 
-const NO_GROUPS: readonly ElementGroupData[] = [];
+export const WRONG_FLASH_DURATION_MS = 1_000;
 
-type ActiveSession = Exclude<
-  ExerciseSessionState<ElementFlashcardData>,
-  { readonly status: "complete" }
->;
+const MODE_OPTIONS: readonly { readonly mode: ElementPromptMode; readonly label: string }[] = [
+  { mode: "name-to-symbol", label: "Název → Značka" },
+  { mode: "symbol-to-name", label: "Značka → Název" },
+];
 
 export function PeriodicTableNamePractice({
   elements,
-  groups = NO_GROUPS,
   random = Math.random,
 }: PeriodicTableNamePracticeProps) {
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
-  const scopeOptions = useMemo(() => listScopeOptions(layout), [layout]);
-  const groupNames = useMemo(
-    () => new Map(groups.map((group) => [group.groupNumber, group.nameCs])),
-    [groups],
-  );
-  const [scope, setScope] = useState<PeriodicTableScope>(() => fullScope(scopeOptions));
-  const [seriesLength, setSeriesLength] = useState(0);
-  const [session, setSession] = useState<ExerciseSessionState<ElementFlashcardData> | null>(null);
-  const [results, setResults] = useState<ReadonlyMap<string, PeriodicTableCellResult>>(
-    () => new Map(),
-  );
+  const [selection, setSelection] = useState<ReadonlySet<string>>(() => defaultSelection(layout));
+  const [mode, setMode] = useState<ElementPromptMode>(DEFAULT_ELEMENT_PROMPT_MODE);
+  const [session, setSession] = useState<Session | null>(null);
+  const sessionRef = useRef<Session | null>(null);
+  const [practisedIds, setPractisedIds] = useState<ReadonlySet<string>>(() => new Set());
+  const [runId, setRunId] = useState(0);
   const [answer, setAnswer] = useState("");
-  const [submitted, setSubmitted] = useState<SubmittedAnswer | null>(null);
+  const answerRef = useRef("");
   const [inputHint, setInputHint] = useState("");
+  const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null);
+  const [announcement, setAnnouncement] = useState("");
   const [notice, setNotice] = useState("");
-  const submitGuardRef = useRef(false);
+  const [flashElementId, setFlashElementId] = useState<string | null>(null);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
-  const nextButtonRef = useRef<HTMLButtonElement>(null);
-  const restartButtonRef = useRef<HTMLButtonElement>(null);
-  const status = session?.status;
+  const stopwatch = useStopwatch();
+  const modeGroupName = useId();
 
   useEffect(() => {
-    if (status === "active") inputRef.current?.focus();
-    if (status === "feedback") nextButtonRef.current?.focus();
-    if (status === "complete") restartButtonRef.current?.focus();
-  }, [status]);
+    const storedSelection = loadNamePracticeSelection(
+      new Set(layout.map(({ element }) => element.id)),
+    );
+    if (storedSelection) setSelection(storedSelection);
+    const storedMode = loadNamePracticeMode();
+    if (storedMode) setMode(storedMode);
+  }, [layout]);
 
-  const scopeElements = selectScopeElements(layout, scope);
-  const plannedLength = Math.min(SERIES_LENGTH, scopeElements.length);
+  const clearFlash = useCallback(() => {
+    clearTimeout(flashTimerRef.current);
+    setFlashElementId(null);
+  }, []);
+
+  useEffect(() => clearFlash, [clearFlash]);
+
+  useEffect(() => {
+    if (runId > 0) inputRef.current?.focus();
+  }, [runId]);
+
+  const selectedCount = useMemo(
+    () => selectElements(layout, selection).length,
+    [layout, selection],
+  );
+
+  function changeSelection(next: ReadonlySet<string>) {
+    setSelection(next);
+    saveNamePracticeSelection(next);
+  }
+
+  function updateAnswer(value: string) {
+    answerRef.current = value;
+    setAnswer(value);
+  }
+
+  function changeMode(next: ElementPromptMode) {
+    setMode(next);
+    saveNamePracticeMode(next);
+    updateAnswer("");
+    setInputHint("");
+  }
 
   function start() {
-    const questions = drawSeries(scopeElements, SERIES_LENGTH, random);
-    const created = createExerciseSession(questions);
-    if (!created.ok) {
-      setNotice("Cvičení nelze zahájit: vyberte alespoň jednu skupinu nebo spodní řadu.");
-      return;
-    }
+    const questions = selectElements(layout, selection);
+    if (questions.length === 0) return;
 
-    submitGuardRef.current = false;
-    setSeriesLength(questions.length);
-    setSession(created.state);
-    setResults(new Map());
-    setAnswer("");
-    setSubmitted(null);
+    clearFlash();
+    const next = createPracticeQueue(questions, random);
+    sessionRef.current = next;
+    setSession(next);
+    setPractisedIds(new Set(questions.map(({ id }) => id)));
+    setRunId((previous) => previous + 1);
+    stopwatch.start();
+    updateAnswer("");
     setInputHint("");
+    setLastAnswer(null);
+    setAnnouncement("");
     setNotice("");
   }
 
+  function returnToSelection() {
+    clearFlash();
+    sessionRef.current = null;
+    setSession(null);
+    stopwatch.stop();
+    setLastAnswer(null);
+    setAnnouncement("");
+  }
+
+  function finish() {
+    const current = sessionRef.current;
+    if (current?.status !== "running") return;
+
+    const next = finishPracticeQueue(current);
+    sessionRef.current = next;
+    setSession(next);
+    stopwatch.stop();
+    setAnnouncement("Cvičení ukončeno.");
+  }
+
+  function flash(elementId: string) {
+    clearTimeout(flashTimerRef.current);
+    setFlashElementId(elementId);
+    flashTimerRef.current = setTimeout(() => setFlashElementId(null), WRONG_FLASH_DURATION_MS);
+  }
+
   function submit() {
-    if (session?.status !== "active" || submitGuardRef.current) return;
-    if (!answer.trim()) {
-      setInputHint("Napište český název nebo značku prvku.");
+    const current = sessionRef.current;
+    const question = current?.current;
+    if (current?.status !== "running" || !question) return;
+
+    const submitted = answerRef.current;
+    if (!submitted.trim()) {
+      setInputHint(
+        mode === "name-to-symbol" ? "Napište značku prvku." : "Napište český název prvku.",
+      );
       inputRef.current?.focus();
       return;
     }
 
-    submitGuardRef.current = true;
-    const question = session.current;
-    const evaluation = evaluateElementAnswer(answer, question);
-    setSubmitted({ text: answer, match: evaluation.match });
-    setInputHint("");
-    setResults((previous) =>
-      new Map(previous).set(question.id, evaluation.isCorrect ? "solved" : "incorrect"),
+    const evaluation = evaluateElementAnswer(
+      submitted,
+      question,
+      mode === "name-to-symbol" ? "symbol" : "name",
     );
-    setSession(submitExerciseAnswer(session, evaluation.isCorrect));
+    const result = answerPracticeQueue(current, evaluation.isCorrect);
+    if (!result) return;
+
+    sessionRef.current = result.state;
+    setSession(result.state);
+    updateAnswer("");
+    setInputHint("");
+    setLastAnswer({ element: question, isCorrect: evaluation.isCorrect, match: evaluation.match });
+    if (evaluation.isCorrect) {
+      clearFlash();
+    } else {
+      flash(question.id);
+    }
+    if (result.state.status === "finished") stopwatch.stop();
+    setAnnouncement(
+      `${describeAnswer(question, evaluation.isCorrect)} ${
+        result.state.current
+          ? `Zadání: ${promptOf(result.state.current, mode)}.`
+          : "Cvičení dokončeno."
+      }`,
+    );
+    inputRef.current?.focus();
 
     appendPeriodicTableAttempt({
       questionId: question.id,
-      round: session.round,
+      round: result.round,
       isCorrect: evaluation.isCorrect,
-      direction: "position-to-name-or-symbol",
+      direction: mode,
     }).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
-  }
-
-  function returnToSettings() {
-    submitGuardRef.current = false;
-    setSession(null);
-    setResults(new Map());
-    setAnswer("");
-    setSubmitted(null);
-    setInputHint("");
-  }
-
-  function advance() {
-    if (session?.status !== "feedback") return;
-
-    submitGuardRef.current = false;
-    setSession(advanceExerciseSession(session));
-    setAnswer("");
-    setSubmitted(null);
   }
 
   if (!session) {
     return (
       <section
-        aria-labelledby="periodic-name-setup"
+        aria-labelledby="periodic-name-selection"
         className="rounded-3xl border border-slate-200 bg-white p-6"
       >
-        <h2 id="periodic-name-setup" className="text-2xl font-semibold text-slate-950">
-          Nastavení série
-        </h2>
-        <p className="mt-2 leading-7 text-slate-600">
-          Otázky se vyberou náhodně jen z vybraných skupin a řad; tabulka zůstane celá kvůli
-          orientaci.
-        </p>
-        <div className="mt-5">
-          <PeriodicTableScopePicker
-            groupNames={groupNames}
-            onChange={setScope}
-            options={scopeOptions}
-            scope={scope}
-          />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="periodic-name-selection" className="text-2xl font-semibold text-slate-950">
+            Výběr prvků
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+              onClick={() => changeSelection(new Set(layout.map(({ element }) => element.id)))}
+              type="button"
+            >
+              Vybrat vše
+            </button>
+            <button
+              className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+              onClick={() => changeSelection(new Set())}
+              type="button"
+            >
+              Zrušit výběr
+            </button>
+          </div>
         </div>
-        <p aria-live="polite" className="mt-5 text-slate-700">
-          {scopeElements.length === 0
-            ? "Vyberte alespoň jednu skupinu nebo spodní řadu, jinak nelze cvičení zahájit."
-            : `Vybráno ${czechCount(scopeElements.length, ELEMENT_FORMS)}. Série bude mít ${czechCount(plannedLength, QUESTION_FORMS)}.`}
-        </p>
+        <PeriodicTableSelectionMatrix
+          layout={layout}
+          onChange={changeSelection}
+          selection={selection}
+        />
         <button
-          className="mt-4 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
-          disabled={scopeElements.length === 0}
+          className="mt-4 min-h-11 rounded-xl bg-slate-950 px-5 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+          disabled={selectedCount === 0}
           onClick={start}
           type="button"
         >
-          Začít cvičení ({czechCount(plannedLength, QUESTION_FORMS)})
+          Přejít na cvičení ({czechCount(selectedCount, ELEMENT_FORMS)})
         </button>
-        <PracticeNotice notice={notice} />
+        {selectedCount === 0 ? (
+          <p className="mt-2 text-sm text-slate-700">Vyberte alespoň jeden prvek.</p>
+        ) : null}
       </section>
     );
   }
 
-  const currentElementId = session.status === "complete" ? undefined : session.current.id;
-  const currentPosition = layout.find(({ element }) => element.id === currentElementId)?.position;
-  const positionText = currentPosition
-    ? describePeriodicTablePosition(currentPosition)
-    : "neurčeno";
+  const prompt = session.current;
 
   function cellState(elementId: string): PeriodicTableCellState {
-    const current = elementId === currentElementId;
-    if (current && status === "active") return { current, result: null };
-    return { current, result: results.get(elementId) ?? null };
+    const current = elementId === prompt?.id;
+    if (session?.solvedIds.has(elementId)) return { current, result: "solved" };
+    if (elementId === flashElementId) return { current, result: "incorrect" };
+    return { current, result: null, excluded: !practisedIds.has(elementId) };
   }
 
   return (
-    <section
-      aria-labelledby="periodic-name-heading"
-      className="rounded-3xl border border-slate-200 bg-white p-6"
-    >
-      {session.status === "complete" ? null : (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-600">
-            {progressLabel(session, seriesLength)}
-          </p>
-          <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
-            onClick={returnToSettings}
-            type="button"
-          >
-            Ukončit sérii
-          </button>
-        </div>
-      )}
-      <h2 id="periodic-name-heading" className="mt-3 text-3xl font-semibold text-slate-950">
-        {session.status === "complete" ? "Cvičení dokončeno" : "Který prvek je na vybrané pozici?"}
-      </h2>
-      {session.status === "complete" ? null : (
-        <p className="mt-3 leading-7 text-slate-600">Vybraná pozice: {positionText}.</p>
-      )}
-      <PeriodicTableGrid cellState={cellState} layout={layout} />
+    <div>
+      <PracticeDashboard
+        correct={session.correct}
+        elapsedMs={stopwatch.elapsedMs}
+        incorrect={session.incorrect}
+        onFinish={finish}
+        onReset={start}
+        running={session.status === "running"}
+      />
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        {session.status === "complete" ? null : (
+      <fieldset className="mt-4">
+        <legend className="sr-only">Režim procvičování</legend>
+        <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1">
+          {MODE_OPTIONS.map((option) => (
+            <label key={option.mode}>
+              <input
+                checked={mode === option.mode}
+                className="peer sr-only"
+                name={modeGroupName}
+                onChange={() => changeMode(option.mode)}
+                type="radio"
+                value={option.mode}
+              />
+              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-slate-700 peer-checked:bg-white peer-checked:text-slate-950 peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#0b7285]">
+                {mode === option.mode ? <span aria-hidden="true">✓</span> : null}
+                {option.label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      {prompt ? (
+        <>
+          <h2 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
+            <span className="sr-only">Zadání:</span> {promptOf(prompt, mode)}
+          </h2>
           <form
+            className="mt-4 flex max-w-xl flex-wrap items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
               submit();
             }}
           >
-            <label className="grid gap-2 text-sm font-medium text-slate-800">
-              Český název nebo značka
+            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-slate-800">
+              {mode === "name-to-symbol" ? "Značka prvku" : "Český název prvku"}
               <input
                 autoCapitalize="off"
                 autoComplete="off"
                 autoCorrect="off"
-                className="min-h-11 rounded-xl border border-slate-300 px-3 text-base disabled:bg-slate-100 disabled:text-slate-600"
-                disabled={session.status === "feedback"}
+                className={`min-h-11 rounded-xl border px-3 text-base ${
+                  flashElementId === null
+                    ? "border-slate-300 bg-white"
+                    : "border-rose-600 bg-rose-50 ring-2 ring-rose-300"
+                }`}
+                data-flash={flashElementId === null ? undefined : "incorrect"}
                 onChange={(event) => {
-                  setAnswer(event.target.value);
+                  updateAnswer(event.target.value);
                   setInputHint("");
                 }}
-                aria-describedby="periodic-name-answer-help"
                 onKeyDown={preventRepeatedEnter}
                 ref={inputRef}
                 spellCheck={false}
-                value={session.status === "feedback" ? (submitted?.text ?? "") : answer}
+                value={answer}
               />
             </label>
-            <p className="mt-2 text-sm text-slate-600" id="periodic-name-answer-help">
-              Odpovězte českým názvem prvku, nebo jeho chemickou značkou s přesnou velikostí písmen.
-            </p>
-            <p aria-live="polite" className="mt-1 min-h-5 text-sm text-amber-800">
-              {inputHint}
-            </p>
             <button
-              className="mt-2 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
-              disabled={session.status === "feedback"}
+              className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
               type="submit"
             >
-              Vyhodnotit
+              Odeslat
             </button>
           </form>
-        )}
+          <p className="mt-2 min-h-5 text-sm text-amber-800">{inputHint}</p>
+          <LastAnswerLine answer={lastAnswer} />
+        </>
+      ) : (
+        <PracticeSummary
+          correct={session.correct}
+          elapsedMs={stopwatch.elapsedMs}
+          focusOnMount
+          incorrect={session.incorrect}
+          solved={session.solvedIds.size}
+          solvedLabel="Určeno"
+          total={session.total}
+        >
+          <button
+            className="mt-4 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+            onClick={returnToSelection}
+            type="button"
+          >
+            Změnit výběr
+          </button>
+        </PracticeSummary>
+      )}
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
 
-        <div>
-          <div aria-live="polite">
-            {session.status === "feedback" ? (
-              <>
-                <h3 className="text-2xl font-semibold text-slate-950">
-                  {feedbackVerdict(session.isCorrect, session.round)}
-                </h3>
-                <p className="mt-2 text-lg text-slate-700">
-                  {positionText} je <strong>{session.current.nameCs}</strong> (
-                  {session.current.symbol}).
-                </p>
-                <AnswerHint match={submitted?.match} symbol={session.current.symbol} />
-              </>
-            ) : null}
-            {session.status === "complete" ? (
-              <p className="leading-7 text-slate-700">
-                První průchod: {session.summary.initialCorrect} správně,{" "}
-                {session.summary.initialIncorrect} chybně. Opakování: {session.summary.retryCorrect}{" "}
-                správně, {session.summary.retryIncorrect} chybně.
-              </p>
-            ) : null}
-          </div>
-          {session.status === "feedback" ? (
-            <button
-              className="mt-4 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
-              onClick={advance}
-              onKeyDown={preventRepeatedEnter}
-              ref={nextButtonRef}
-              type="button"
-            >
-              Další prvek
-            </button>
-          ) : null}
-          {session.status === "complete" ? (
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
-                onClick={start}
-                onKeyDown={preventRepeatedEnter}
-                ref={restartButtonRef}
-                type="button"
-              >
-                Začít znovu
-              </button>
-              <button
-                className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
-                onClick={returnToSettings}
-                type="button"
-              >
-                Změnit nastavení
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </div>
-      <PracticeNotice notice={notice} />
-    </section>
+      <PeriodicTableGrid cellState={cellState} layout={layout} />
+      {notice ? (
+        <p className="mt-4 text-sm text-slate-700" role="status">
+          {notice}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
-const QUESTION_FORMS = ["otázka", "otázky", "otázek"] as const;
+function LastAnswerLine({ answer }: { readonly answer: LastAnswer | null }) {
+  if (!answer) return <p className="min-h-5" />;
+
+  return (
+    <p className={`min-h-5 text-sm ${answer.isCorrect ? "text-emerald-800" : "text-rose-800"}`}>
+      <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
+      {describeAnswer(answer.element, answer.isCorrect)}
+      {answerHint(answer.match)}
+    </p>
+  );
+}
+
+function describeAnswer(element: ElementFlashcardData, isCorrect: boolean): string {
+  return `${isCorrect ? "Správně" : "Špatně"}: ${element.nameCs} (${element.symbol}).`;
+}
+
+function answerHint(match: ElementAnswerMatch): string {
+  switch (match) {
+    case "name-missing-diacritics":
+      return " Příště doplňte diakritiku.";
+    case "symbol-case-mismatch":
+      return " Značka musí mít přesnou velikost písmen.";
+    case "name":
+    case "symbol":
+    case "none":
+      return "";
+  }
+}
+
+function promptOf(element: ElementFlashcardData, mode: ElementPromptMode): string {
+  return mode === "name-to-symbol" ? element.nameCs : element.symbol;
+}
+
 const ELEMENT_FORMS = ["prvek", "prvky", "prvků"] as const;
 
 function czechCount(count: number, forms: readonly [string, string, string]): string {
@@ -340,54 +422,8 @@ function czechCount(count: number, forms: readonly [string, string, string]): st
   return `${count} ${forms[2]}`;
 }
 
-function progressLabel(session: ActiveSession, seriesLength: number): string {
-  if (session.round === "retry") {
-    const retryTotal = session.summary.initialIncorrect;
-    return `Opakování chyby ${retryTotal - session.remaining.length} z ${retryTotal}`;
-  }
-  return `Otázka ${seriesLength - session.remaining.length} z ${seriesLength}`;
-}
-
-function AnswerHint({
-  match,
-  symbol,
-}: {
-  readonly match: ElementAnswerMatch | undefined;
-  readonly symbol: string;
-}) {
-  if (match === "name-missing-diacritics") {
-    return (
-      <p className="mt-2 text-sm text-amber-800">
-        Správně — příště prosím doplňte českou diakritiku.
-      </p>
-    );
-  }
-  if (match === "symbol-case-mismatch") {
-    return (
-      <p className="mt-2 text-sm text-amber-800">
-        Značka musí mít přesnou velikost písmen: {symbol}. První písmeno je velké, případné druhé
-        malé.
-      </p>
-    );
-  }
-  return null;
-}
-
-function feedbackVerdict(isCorrect: boolean, round: ExerciseRound): string {
-  if (isCorrect) return "Správně";
-  return round === "initial" ? "Zkusíme to ještě jednou" : "Chybně";
-}
-
 function preventRepeatedEnter(event: KeyboardEvent<HTMLElement>): void {
   if (event.key === "Enter" && (event.repeat || event.nativeEvent.isComposing)) {
     event.preventDefault();
   }
-}
-
-function PracticeNotice({ notice }: { readonly notice: string }) {
-  return notice ? (
-    <p className="mt-4 text-sm text-slate-700" role="status">
-      {notice}
-    </p>
-  ) : null;
 }

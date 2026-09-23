@@ -185,107 +185,145 @@ test("keeps a wrong blind-table mark for 10 seconds and times the exercise", asy
   await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();
 });
 
-test("answers a highlighted periodic-table position with its Czech name", async ({ page }) => {
-  await keepQuestionOrder(page);
-  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
-
-  await page.getByRole("button", { name: "Začít cvičení (10 otázek)" }).click();
-  await page.getByLabel("Český název nebo značka").fill("vodik");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-  await expect(page.getByText(/Perioda 1, skupina 1 je Vodík/)).toBeVisible();
-});
-
-test("completes a named-position series by keyboard with a persistent table", async ({ page }) => {
+test("completes a selected group by keyboard in the name-to-symbol mode", async ({ page }) => {
   await keepQuestionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
   const url = page.url();
-  const input = page.getByLabel("Český název nebo značka");
-  const nextElement = page.getByRole("button", { name: "Další prvek" });
   const table = page.getByRole("region", { name: "Periodická tabulka" });
-  const cell = (name: string) => table.getByRole("button", { name, exact: true });
+  const input = page.getByRole("textbox", { name: "Značka prvku" });
 
-  await page.getByRole("button", { name: "Začít cvičení (10 otázek)" }).focus();
+  await expect(page.getByRole("button", { name: "Přejít na cvičení (90 prvků)" })).toBeVisible();
+  await page.getByRole("button", { name: "Zrušit výběr" }).click();
+  await table.getByRole("button", { name: "Skupina 18" }).click();
+  await page.getByRole("button", { name: "Přejít na cvičení (7 prvků)" }).focus();
   await page.keyboard.press("Enter");
+
   await expect(input).toBeFocused();
-
-  await page.keyboard.type("Vodík");
-  await page.keyboard.down("Enter");
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-  await expect(nextElement).toBeFocused();
-  await page.keyboard.down("Enter");
-  await page.keyboard.up("Enter");
-  await expect(page.getByText("Vybraná pozice: Perioda 1, skupina 1.")).toBeVisible();
-  await expect(cell("Vybraná pozice: Perioda 1, skupina 1: H, vyřešeno")).toHaveText("H");
-
-  await page.keyboard.press("Enter");
-  await expect(input).toBeFocused();
-  await expect(input).toHaveValue("");
-  await page.keyboard.type("Helium");
-  await page.keyboard.press("Enter");
-  await expect(nextElement).toBeFocused();
-  await page.keyboard.press("Enter");
-
-  await expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveText("H");
-  await expect(cell("Perioda 1, skupina 18: He, vyřešeno")).toHaveText("He");
-
-  for (let question = 3; question <= 10; question += 1) {
-    await expect(input).toBeFocused();
-    await expect(input).toHaveValue("");
-    await page.keyboard.type("chybně");
-    await page.keyboard.press("Enter");
-    await expect(nextElement).toBeFocused();
-    await page.keyboard.press("Enter");
-  }
-
-  await expect(page.getByText("Opakování chyby")).toBeVisible();
-  await expect(cell("Vybraná pozice: Perioda 2, skupina 1")).toHaveText("●");
-  await expect(table.getByText("Li", { exact: true })).toHaveCount(0);
-
-  for (let question = 1; question <= 8; question += 1) {
-    await expect(input).toBeFocused();
-    await expect(input).toHaveValue("");
-    await page.keyboard.type("chybně");
-    await page.keyboard.press("Enter");
-    await expect(nextElement).toBeFocused();
-    await page.keyboard.press("Enter");
-  }
-
-  await expect(page.getByRole("heading", { name: "Cvičení dokončeno" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Název → Značka" })).toBeChecked();
   await expect(
-    page.getByText("První průchod: 2 správně, 8 chybně. Opakování: 0 správně, 8 chybně."),
-  ).toBeVisible();
-  await expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveText("H");
-  await expect(cell("Perioda 1, skupina 18: He, vyřešeno")).toHaveText("He");
-  await expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveText("✗");
+    table.getByRole("button", { name: "Perioda 1, skupina 1: mimo výběr", exact: true }),
+  ).toBeDisabled();
+
+  for (const [period, name, symbol] of [
+    [1, "Helium", "He"],
+    [2, "Neon", "Ne"],
+    [3, "Argon", "Ar"],
+    [4, "Krypton", "Kr"],
+    [5, "Xenon", "Xe"],
+    [6, "Radon", "Rn"],
+    [7, "Oganesson", "Og"],
+  ] as const) {
+    await expect(page.getByRole("heading", { name: `Zadání: ${name}` })).toBeVisible();
+    await expect(
+      table.getByRole("button", { name: `Vybraná pozice: Perioda ${period}, skupina 18` }),
+    ).toHaveText("●");
+    await expect(input).toBeFocused();
+    await page.keyboard.type(symbol);
+    await page.keyboard.press("Enter");
+    await expect(
+      table.getByRole("button", { name: `Perioda ${period}, skupina 18: ${symbol}, vyřešeno` }),
+    ).toHaveText(symbol);
+  }
+
+  const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
+  await expect(summary.getByText("7 z 7")).toBeVisible();
+  await expect(summary.getByText("100 %")).toBeVisible();
+  await expect(page.getByText("Špatně: 0")).toBeVisible();
   expect(page.url()).toBe(url);
 });
 
-test("keeps the named-position table and its scroll position on a 360 px screen", async ({
+test("moves on after a wrong name and asks the element again in the symbol-to-name mode", async ({
+  page,
+}) => {
+  await keepQuestionOrder(page);
+  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  const input = page.getByRole("textbox", { name: "Český název prvku" });
+
+  await page.getByRole("button", { name: "Zrušit výběr" }).click();
+  await table.getByRole("button", { name: "Skupina 3" }).click();
+  await page.getByRole("button", { name: "Přejít na cvičení (4 prvky)" }).click();
+  await page.getByText("Značka → Název", { exact: true }).click();
+  await expect(page.getByRole("radio", { name: "Značka → Název" })).toBeChecked();
+
+  await expect(page.getByRole("heading", { name: "Zadání: Sc" })).toBeVisible();
+  await input.fill("Titan");
+  await input.press("Enter");
+
+  await expect(page.getByText("Špatně: 1")).toBeVisible();
+  await expect(page.getByText("✗ Špatně: Skandium (Sc).", { exact: true })).toBeVisible();
+  await expect(input).toHaveAttribute("data-flash", "incorrect");
+  await expect(page.getByRole("heading", { name: "Zadání: Y" })).toBeVisible();
+  await expect(input).toHaveValue("");
+  await expect(input).toBeFocused();
+
+  for (const [symbol, name] of [
+    ["Y", "Yttrium"],
+    ["Lu", "lutecium"],
+    ["Lr", "Lawrencium"],
+    ["Sc", "skandium"],
+  ] as const) {
+    await expect(page.getByRole("heading", { name: `Zadání: ${symbol}` })).toBeVisible();
+    await input.fill(name);
+    await input.press("Enter");
+  }
+
+  const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
+  await expect(summary.getByText("4 z 4")).toBeVisible();
+  await expect(summary.getByText("80 %")).toBeVisible();
+  await expect(
+    table.getByRole("button", { name: "Perioda 4, skupina 3: Sc, vyřešeno" }),
+  ).toHaveText("Sc");
+});
+
+test("restores the element selection and the mode after a reload", async ({ page }) => {
+  await keepQuestionOrder(page);
+  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  const lanthanides = table.getByRole("button", { name: "Lanthanidy (La–Yb)" });
+
+  await expect(lanthanides).toHaveAttribute("aria-pressed", "false");
+  await lanthanides.click();
+  await table.getByRole("button", { name: "Vodík (H)" }).click();
+  await expect(page.getByRole("button", { name: "Přejít na cvičení (103 prvků)" })).toBeVisible();
+  await page.getByRole("button", { name: "Přejít na cvičení (103 prvků)" }).click();
+  await page.getByText("Značka → Název", { exact: true }).click();
+  await expect(page.getByRole("radio", { name: "Značka → Název" })).toBeChecked();
+  await expect(page.getByRole("heading", { name: "Zadání: He" })).toBeVisible();
+
+  await page.reload();
+
+  await expect(page.getByRole("button", { name: "Přejít na cvičení (103 prvků)" })).toBeVisible();
+  await expect(lanthanides).toHaveAttribute("aria-pressed", "true");
+  await expect(table.getByRole("button", { name: "Vodík (H)" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  await page.getByRole("button", { name: "Přejít na cvičení (103 prvků)" }).click();
+  await expect(page.getByRole("radio", { name: "Značka → Název" })).toBeChecked();
+  await expect(page.getByRole("textbox", { name: "Český název prvku" })).toBeFocused();
+});
+
+test("keeps the element selection and the name exercise usable on a 360 px screen", async ({
   page,
 }) => {
   await keepQuestionOrder(page);
   await page.setViewportSize({ width: 360, height: 780 });
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
-  await page.getByRole("button", { name: "Začít cvičení (10 otázek)" }).click();
   const table = page.getByRole("region", { name: "Periodická tabulka" });
-  const tableScroll = () => table.evaluate((element) => element.scrollLeft);
-  const pageScroll = () => page.evaluate(() => window.scrollY);
 
   expect(await table.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
-  await table.evaluate((element) => {
-    element.scrollLeft = 40;
-  });
+  await table.getByRole("button", { name: "Skupina 18" }).click();
+  await expect(page.getByRole("button", { name: "Přejít na cvičení (83 prvků)" })).toBeVisible();
+  await table.getByRole("button", { name: "Skupina 18" }).click();
+  await page.getByRole("button", { name: "Přejít na cvičení (90 prvků)" }).click();
 
-  await page.getByLabel("Český název nebo značka").fill("Vodík");
-  await page.getByRole("button", { name: "Vyhodnotit" }).click();
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-  expect(await tableScroll()).toBe(40);
-  const pageScrollBeforeNext = await pageScroll();
-  expect(pageScrollBeforeNext).toBeGreaterThan(0);
+  const input = page.getByRole("textbox", { name: "Značka prvku" });
+  await expect(input).toBeFocused();
+  await expect(input).toBeInViewport();
+  await input.fill("H");
+  await input.press("Enter");
 
-  await page.getByRole("button", { name: "Další prvek" }).click();
   const heliumCell = table.getByRole("button", {
     name: "Vybraná pozice: Perioda 1, skupina 18",
     exact: true,
@@ -304,67 +342,5 @@ test("keeps the named-position table and its scroll position on a 360 px screen"
       );
     })
     .toBe(true);
-  expect(await tableScroll()).toBeGreaterThan(40);
-  expect(await pageScroll()).toBeGreaterThan(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
-});
-
-test("limits a named-position series to the selected groups", async ({ page }) => {
-  await keepQuestionOrder(page);
-  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
-  const start = page.getByRole("button", { name: /^Začít cvičení/ });
-
-  await expect(page.getByText("Vybráno 118 prvků. Série bude mít 10 otázek.")).toBeVisible();
-  await page.getByRole("button", { name: "Zrušit výběr" }).click();
-  await expect(start).toBeDisabled();
-  await expect(page.getByText(/Vyberte alespoň jednu skupinu nebo spodní řadu/)).toBeVisible();
-
-  await page.getByRole("checkbox", { name: /^1\. skupina/ }).check();
-  await page.getByRole("checkbox", { name: /^17\. skupina/ }).check();
-  await expect(page.getByText("Vybráno 13 prvků. Série bude mít 10 otázek.")).toBeVisible();
-  await start.click();
-  await expect(page.getByRole("checkbox")).toHaveCount(0);
-
-  for (let question = 1; question <= 10; question += 1) {
-    await expect(page.getByText(`Otázka ${question} z 10`)).toBeVisible();
-    await expect(page.getByText(/^Vybraná pozice: Perioda \d, skupina (1|17)\.$/)).toBeVisible();
-    await page.getByLabel("Český název nebo značka").fill("chybně");
-    await page.getByRole("button", { name: "Vyhodnotit" }).click();
-    await page.getByRole("button", { name: "Další prvek" }).click();
-  }
-
-  await expect(page.getByText("Opakování chyby 1 z 10")).toBeVisible();
-  await expect(page.getByText(/^Vybraná pozice: Perioda \d, skupina (1|17)\.$/)).toBeVisible();
-});
-
-test("asks group 3 as Sc, Y, Lu and Lr and accepts names and symbols in one series", async ({
-  page,
-}) => {
-  await keepQuestionOrder(page);
-  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
-
-  await page.getByRole("button", { name: "Zrušit výběr" }).click();
-  await page.getByRole("checkbox", { name: /^3\. skupina \(4\)/ }).check();
-  await expect(page.getByText("Vybráno 4 prvky. Série bude mít 4 otázky.")).toBeVisible();
-  await page.getByRole("button", { name: "Začít cvičení (4 otázky)" }).click();
-
-  for (const [period, answer] of [
-    [4, "Sc"],
-    [5, "Yttrium"],
-    [6, "lutecium"],
-    [7, "Lr"],
-  ] as const) {
-    await expect(page.getByText(`Vybraná pozice: Perioda ${period}, skupina 3.`)).toBeVisible();
-    await page.getByLabel("Český název nebo značka").fill(answer);
-    await page.getByRole("button", { name: "Vyhodnotit" }).click();
-    await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-    await page.getByRole("button", { name: "Další prvek" }).click();
-  }
-
-  await expect(page.getByRole("heading", { name: "Cvičení dokončeno" })).toBeVisible();
-  await expect(
-    page.getByText("První průchod: 4 správně, 0 chybně. Opakování: 0 správně, 0 chybně."),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Změnit nastavení" }).click();
-  await expect(page.getByRole("checkbox", { name: /^3\. skupina/ })).toBeChecked();
 });

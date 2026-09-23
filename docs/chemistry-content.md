@@ -83,13 +83,13 @@ Tolerant mode may additionally compare diacritics-stripped forms of the canonica
 
 Aliases are stored per content record and answer direction. Each alias needs a reason when it is not a mere typography variant. An alias that is valid in one school convention but ambiguous elsewhere remains under review until the chosen curriculum policy is documented.
 
-## Element answers by name or symbol
+## Element answers by name or by symbol
 
-Where a question accepts either the Czech name or the chemical symbol of an element (`evaluateElementAnswer` in `packages/chemistry`):
+Where a question asks for the chemical symbol or for the Czech name of an element (`evaluateElementAnswer(input, element, "symbol" | "name")` in `packages/chemistry`):
 
-- A name is compared with the Czech name normalization above, using the tolerant policy (missing diacritics accepted, with a hint).
 - A symbol is accepted only when it equals the canonical symbol exactly after trimming surrounding whitespace. Letter case is never corrected: for sodium `Na` is correct, while `na`, `NA` and `nA` are incorrect. A case-only mismatch is reported as `symbol-case-mismatch` so the learner can be told why.
-- Another element's name or symbol, a compound formula, inner spacing, and typos are incorrect. There is no fuzzy matching and there are no aliases.
+- A name is compared with the Czech name normalization above, using the tolerant policy (missing diacritics accepted, with a hint).
+- The other form is not accepted: the name is incorrect where the symbol is asked, and the symbol is incorrect where the name is asked. The Latin name, another element's name or symbol, a compound formula, inner spacing, and typos are incorrect. There is no fuzzy matching and there are no aliases.
 
 ## Stable IDs and references
 

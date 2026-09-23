@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@keyframes current-cell-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px rgb(2 132 199 / 70%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(2 132 199 / 15%);
+  }
+}
+
 :root {
   color-scheme: light;
   --background: #f4f7f8;

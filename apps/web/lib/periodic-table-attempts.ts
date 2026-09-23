@@ -3,7 +3,10 @@ import { curriculumContentVersion } from "@inorganic/content/runtime";
 import { createBrowserProgressStore } from "./browser-progress-store";
 import type { ExerciseRound } from "./exercise-session";
 
-export type PeriodicTablePracticeDirection = "name-to-position" | "position-to-name-or-symbol";
+export type PeriodicTablePracticeDirection =
+  | "name-to-position"
+  | "name-to-symbol"
+  | "symbol-to-name";
 
 export interface PeriodicTableAttempt {
   readonly questionId: string;
@@ -13,7 +16,8 @@ export interface PeriodicTableAttempt {
 }
 
 export async function appendPeriodicTableAttempt(attempt: PeriodicTableAttempt): Promise<void> {
-  await createBrowserProgressStore().appendAttempt({
+  const store = createBrowserProgressStore();
+  const base = {
     id: crypto.randomUUID(),
     questionId: attempt.questionId,
     contentVersion: curriculumContentVersion,
@@ -21,10 +25,28 @@ export async function appendPeriodicTableAttempt(attempt: PeriodicTableAttempt):
     isCorrect: attempt.isCorrect,
     round: attempt.round,
     mode: "periodic-table",
-    direction: attempt.direction,
-    matchPolicy:
-      attempt.direction === "name-to-position" ? "exact-position" : "name-tolerant-or-symbol-exact",
-  });
+  } as const;
+
+  switch (attempt.direction) {
+    case "name-to-position":
+      return store.appendAttempt({
+        ...base,
+        direction: attempt.direction,
+        matchPolicy: "exact-position",
+      });
+    case "name-to-symbol":
+      return store.appendAttempt({
+        ...base,
+        direction: attempt.direction,
+        matchPolicy: "symbol-exact",
+      });
+    case "symbol-to-name":
+      return store.appendAttempt({
+        ...base,
+        direction: attempt.direction,
+        matchPolicy: "diacritics-tolerant",
+      });
+  }
 }
 
 export function describeAttemptSaveFailure(error: unknown): string {

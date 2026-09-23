@@ -8,6 +8,7 @@ export {
   evaluateElementAnswer,
   type ElementAnswerEvaluation,
   type ElementAnswerKey,
+  type ElementAnswerKind,
   type ElementAnswerMatch,
 } from "./evaluate-element-answer";
 export {
