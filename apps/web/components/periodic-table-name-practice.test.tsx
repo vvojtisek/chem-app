@@ -97,7 +97,7 @@ function start(elements: readonly ElementFlashcardData[]): void {
 }
 
 function answer(text: string): void {
-  fireEvent.change(screen.getByLabelText("Český název"), { target: { value: text } });
+  fireEvent.change(screen.getByLabelText("Český název nebo značka"), { target: { value: text } });
   fireEvent.click(screen.getByRole("button", { name: "Vyhodnotit" }));
 }
 
@@ -116,7 +116,7 @@ describe("PeriodicTableNamePractice", () => {
     start([hydrogen, helium]);
     const table = screen.getByRole("region", { name: "Periodická tabulka" });
 
-    expect(screen.getByLabelText("Český název")).toHaveFocus();
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveFocus();
     expect(cell("Vybraná pozice: Perioda 1, skupina 1")).toHaveTextContent("●");
 
     answer("vodik");
@@ -135,8 +135,8 @@ describe("PeriodicTableNamePractice", () => {
           questionId: hydrogen.id,
           round: "initial",
           mode: "periodic-table",
-          direction: "position-to-name",
-          matchPolicy: "diacritics-tolerant",
+          direction: "position-to-name-or-symbol",
+          matchPolicy: "name-tolerant-or-symbol-exact",
           isCorrect: true,
         }),
       );
@@ -145,8 +145,8 @@ describe("PeriodicTableNamePractice", () => {
     nextElement();
 
     expect(screen.getByRole("region", { name: "Periodická tabulka" })).toBe(table);
-    expect(screen.getByLabelText("Český název")).toHaveValue("");
-    expect(screen.getByLabelText("Český název")).toHaveFocus();
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveValue("");
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveFocus();
     expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveTextContent("H");
     expect(cell("Vybraná pozice: Perioda 1, skupina 18")).toHaveTextContent("●");
   });
@@ -174,8 +174,8 @@ describe("PeriodicTableNamePractice", () => {
     expect(screen.getByText(/^Opakování chyby/)).toBeInTheDocument();
     expect(cell("Vybraná pozice: Perioda 2, skupina 1")).toHaveTextContent("●");
     expect(within(table).queryByText("Li")).toBeNull();
-    expect(screen.getByLabelText("Český název")).toHaveValue("");
-    expect(screen.getByLabelText("Český název")).toHaveFocus();
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveValue("");
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveFocus();
 
     answer("Sodík");
     expect(screen.getByRole("heading", { name: "Chybně" })).toBeInTheDocument();
@@ -185,7 +185,7 @@ describe("PeriodicTableNamePractice", () => {
     expect(
       screen.getByText(/První průchod: 2 správně, 1 chybně\. Opakování: 0 správně, 1 chybně\./),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText("Český název")).toBeNull();
+    expect(screen.queryByLabelText("Český název nebo značka")).toBeNull();
     expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveTextContent("H");
     expect(cell("Perioda 1, skupina 18: He, vyřešeno")).toHaveTextContent("He");
     expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveTextContent("✗");
@@ -201,15 +201,17 @@ describe("PeriodicTableNamePractice", () => {
 
     answer("   ");
 
-    expect(screen.getByText("Napište český název prvku.")).toBeInTheDocument();
+    expect(screen.getByText("Napište český název nebo značku prvku.")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeNull();
-    expect(screen.getByLabelText("Český název")).toHaveFocus();
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveFocus();
     expect(appendAttempt).not.toHaveBeenCalled();
   });
 
   it("evaluates and records a question once when it is submitted twice before re-rendering", async () => {
     start([hydrogen, helium]);
-    fireEvent.change(screen.getByLabelText("Český název"), { target: { value: "Vodík" } });
+    fireEvent.change(screen.getByLabelText("Český název nebo značka"), {
+      target: { value: "Vodík" },
+    });
     const form = screen.getByRole("button", { name: "Vyhodnotit" }).closest("form");
     if (!form) throw new Error("Answer form is missing.");
 
@@ -226,7 +228,7 @@ describe("PeriodicTableNamePractice", () => {
 
   it("ignores a held Enter key without blocking normal typing", () => {
     start([hydrogen, helium]);
-    const input = screen.getByLabelText("Český název");
+    const input = screen.getByLabelText("Český název nebo značka");
 
     expect(fireEvent.keyDown(input, { key: "Enter", repeat: true })).toBe(false);
     expect(fireEvent.keyDown(input, { key: "Backspace", repeat: true })).toBe(true);
@@ -251,8 +253,8 @@ describe("PeriodicTableNamePractice", () => {
     ).toBeInTheDocument();
 
     nextElement();
-    expect(screen.getByLabelText("Český název")).toBeEnabled();
-    expect(screen.getByLabelText("Český název")).toHaveFocus();
+    expect(screen.getByLabelText("Český název nebo značka")).toBeEnabled();
+    expect(screen.getByLabelText("Český název nebo značka")).toHaveFocus();
   });
 
   it("offers every group and bottom row with counts, content names, and the real question count", () => {
@@ -331,5 +333,47 @@ describe("PeriodicTableNamePractice", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Změnit nastavení" }));
     expect(screen.getByRole("heading", { name: "Nastavení série" })).toBeInTheDocument();
+  });
+
+  it("accepts the exact chemical symbol and explains a wrongly capitalized one", () => {
+    start([hydrogen, helium]);
+
+    answer(" H ");
+    expect(screen.getByRole("heading", { name: "Správně" })).toBeInTheDocument();
+    expect(cell("Vybraná pozice: Perioda 1, skupina 1: H, vyřešeno")).toHaveTextContent("H");
+    nextElement();
+
+    answer("HE");
+    expect(screen.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeInTheDocument();
+    expect(screen.getByText(/Značka musí mít přesnou velikost písmen: He\./)).toBeInTheDocument();
+    expect(cell("Vybraná pozice: Perioda 1, skupina 18: chybná odpověď")).toHaveTextContent("✗");
+  });
+
+  it("accepts names and symbols alternately in one series and records the new context", async () => {
+    start([hydrogen, helium, lithium]);
+
+    answer("Vodík");
+    nextElement();
+    answer("He");
+    nextElement();
+    answer("lithium");
+    nextElement();
+
+    expect(
+      screen.getByText(/První průchod: 3 správně, 0 chybně\. Opakování: 0 správně, 0 chybně\./),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(appendAttempt).toHaveBeenCalledTimes(3);
+    });
+    for (const [event] of appendAttempt.mock.calls) {
+      expect(event).toEqual(
+        expect.objectContaining({
+          mode: "periodic-table",
+          direction: "position-to-name-or-symbol",
+          matchPolicy: "name-tolerant-or-symbol-exact",
+          isCorrect: true,
+        }),
+      );
+    }
   });
 });

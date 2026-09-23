@@ -1,6 +1,6 @@
 "use client";
 
-import { evaluateAnswer } from "@inorganic/chemistry";
+import { type ElementAnswerMatch, evaluateElementAnswer } from "@inorganic/chemistry";
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 
@@ -42,7 +42,7 @@ interface PeriodicTableNamePracticeProps {
 
 interface SubmittedAnswer {
   readonly text: string;
-  readonly missingDiacritics: boolean;
+  readonly match: ElementAnswerMatch;
 }
 
 const NO_GROUPS: readonly ElementGroupData[] = [];
@@ -109,15 +109,15 @@ export function PeriodicTableNamePractice({
   function submit() {
     if (session?.status !== "active" || submitGuardRef.current) return;
     if (!answer.trim()) {
-      setInputHint("Napište český název prvku.");
+      setInputHint("Napište český název nebo značku prvku.");
       inputRef.current?.focus();
       return;
     }
 
     submitGuardRef.current = true;
     const question = session.current;
-    const evaluation = evaluateAnswer(answer, question.nameCs, { policy: "tolerant" });
-    setSubmitted({ text: answer, missingDiacritics: evaluation.match === "missing-diacritics" });
+    const evaluation = evaluateElementAnswer(answer, question);
+    setSubmitted({ text: answer, match: evaluation.match });
     setInputHint("");
     setResults((previous) =>
       new Map(previous).set(question.id, evaluation.isCorrect ? "solved" : "incorrect"),
@@ -128,7 +128,7 @@ export function PeriodicTableNamePractice({
       questionId: question.id,
       round: session.round,
       isCorrect: evaluation.isCorrect,
-      direction: "position-to-name",
+      direction: "position-to-name-or-symbol",
     }).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
   }
 
@@ -221,9 +221,7 @@ export function PeriodicTableNamePractice({
         </div>
       )}
       <h2 id="periodic-name-heading" className="mt-3 text-3xl font-semibold text-slate-950">
-        {session.status === "complete"
-          ? "Cvičení dokončeno"
-          : "Jak se jmenuje prvek na vybrané pozici?"}
+        {session.status === "complete" ? "Cvičení dokončeno" : "Který prvek je na vybrané pozici?"}
       </h2>
       {session.status === "complete" ? null : (
         <p className="mt-3 leading-7 text-slate-600">Vybraná pozice: {positionText}.</p>
@@ -239,7 +237,7 @@ export function PeriodicTableNamePractice({
             }}
           >
             <label className="grid gap-2 text-sm font-medium text-slate-800">
-              Český název
+              Český název nebo značka
               <input
                 autoCapitalize="off"
                 autoComplete="off"
@@ -250,13 +248,17 @@ export function PeriodicTableNamePractice({
                   setAnswer(event.target.value);
                   setInputHint("");
                 }}
+                aria-describedby="periodic-name-answer-help"
                 onKeyDown={preventRepeatedEnter}
                 ref={inputRef}
                 spellCheck={false}
                 value={session.status === "feedback" ? (submitted?.text ?? "") : answer}
               />
             </label>
-            <p aria-live="polite" className="mt-2 min-h-5 text-sm text-amber-800">
+            <p className="mt-2 text-sm text-slate-600" id="periodic-name-answer-help">
+              Odpovězte českým názvem prvku, nebo jeho chemickou značkou s přesnou velikostí písmen.
+            </p>
+            <p aria-live="polite" className="mt-1 min-h-5 text-sm text-amber-800">
               {inputHint}
             </p>
             <button
@@ -280,11 +282,7 @@ export function PeriodicTableNamePractice({
                   {positionText} je <strong>{session.current.nameCs}</strong> (
                   {session.current.symbol}).
                 </p>
-                {submitted?.missingDiacritics ? (
-                  <p className="mt-2 text-sm text-amber-800">
-                    Správně — příště prosím doplňte českou diakritiku.
-                  </p>
-                ) : null}
+                <AnswerHint match={submitted?.match} symbol={session.current.symbol} />
               </>
             ) : null}
             {session.status === "complete" ? (
@@ -348,6 +346,31 @@ function progressLabel(session: ActiveSession, seriesLength: number): string {
     return `Opakování chyby ${retryTotal - session.remaining.length} z ${retryTotal}`;
   }
   return `Otázka ${seriesLength - session.remaining.length} z ${seriesLength}`;
+}
+
+function AnswerHint({
+  match,
+  symbol,
+}: {
+  readonly match: ElementAnswerMatch | undefined;
+  readonly symbol: string;
+}) {
+  if (match === "name-missing-diacritics") {
+    return (
+      <p className="mt-2 text-sm text-amber-800">
+        Správně — příště prosím doplňte českou diakritiku.
+      </p>
+    );
+  }
+  if (match === "symbol-case-mismatch") {
+    return (
+      <p className="mt-2 text-sm text-amber-800">
+        Značka musí mít přesnou velikost písmen: {symbol}. První písmeno je velké, případné druhé
+        malé.
+      </p>
+    );
+  }
+  return null;
 }
 
 function feedbackVerdict(isCorrect: boolean, round: ExerciseRound): string {

@@ -133,7 +133,7 @@ test("answers a highlighted periodic-table position with its Czech name", async 
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
 
   await page.getByRole("button", { name: "Začít cvičení (10 otázek)" }).click();
-  await page.getByLabel("Český název").fill("vodik");
+  await page.getByLabel("Český název nebo značka").fill("vodik");
   await page.getByRole("button", { name: "Vyhodnotit" }).click();
 
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
@@ -144,7 +144,7 @@ test("completes a named-position series by keyboard with a persistent table", as
   await keepNamedPositionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
   const url = page.url();
-  const input = page.getByLabel("Český název");
+  const input = page.getByLabel("Český název nebo značka");
   const nextElement = page.getByRole("button", { name: "Další prvek" });
   const table = page.getByRole("region", { name: "Periodická tabulka" });
   const cell = (name: string) => table.getByRole("button", { name, exact: true });
@@ -221,7 +221,7 @@ test("keeps the named-position table and its scroll position on a 360 px screen"
     element.scrollLeft = 40;
   });
 
-  await page.getByLabel("Český název").fill("Vodík");
+  await page.getByLabel("Český název nebo značka").fill("Vodík");
   await page.getByRole("button", { name: "Vyhodnotit" }).click();
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
   expect(await tableScroll()).toBe(40);
@@ -229,9 +229,24 @@ test("keeps the named-position table and its scroll position on a 360 px screen"
   expect(pageScrollBeforeNext).toBeGreaterThan(0);
 
   await page.getByRole("button", { name: "Další prvek" }).click();
-  await expect(
-    table.getByRole("button", { name: "Vybraná pozice: Perioda 1, skupina 18", exact: true }),
-  ).toBeInViewport();
+  const heliumCell = table.getByRole("button", {
+    name: "Vybraná pozice: Perioda 1, skupina 18",
+    exact: true,
+  });
+  await expect
+    .poll(async () => {
+      const [cellBox, tableBox] = await Promise.all([
+        heliumCell.boundingBox(),
+        table.boundingBox(),
+      ]);
+      return (
+        cellBox !== null &&
+        tableBox !== null &&
+        cellBox.x >= tableBox.x &&
+        cellBox.x + cellBox.width <= tableBox.x + tableBox.width
+      );
+    })
+    .toBe(true);
   expect(await tableScroll()).toBeGreaterThan(40);
   expect(await pageScroll()).toBeGreaterThan(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
@@ -256,7 +271,7 @@ test("limits a named-position series to the selected groups", async ({ page }) =
   for (let question = 1; question <= 10; question += 1) {
     await expect(page.getByText(`Otázka ${question} z 10`)).toBeVisible();
     await expect(page.getByText(/^Vybraná pozice: Perioda \d, skupina (1|17)\.$/)).toBeVisible();
-    await page.getByLabel("Český název").fill("chybně");
+    await page.getByLabel("Český název nebo značka").fill("chybně");
     await page.getByRole("button", { name: "Vyhodnotit" }).click();
     await page.getByRole("button", { name: "Další prvek" }).click();
   }
@@ -265,7 +280,9 @@ test("limits a named-position series to the selected groups", async ({ page }) =
   await expect(page.getByText(/^Vybraná pozice: Perioda \d, skupina (1|17)\.$/)).toBeVisible();
 });
 
-test("asks group 3 as Sc, Y, Lu and Lr following the group-3 ADR", async ({ page }) => {
+test("asks group 3 as Sc, Y, Lu and Lr and accepts names and symbols in one series", async ({
+  page,
+}) => {
   await keepNamedPositionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
 
@@ -275,13 +292,13 @@ test("asks group 3 as Sc, Y, Lu and Lr following the group-3 ADR", async ({ page
   await page.getByRole("button", { name: "Začít cvičení (4 otázky)" }).click();
 
   for (const [period, answer] of [
-    [4, "Skandium"],
+    [4, "Sc"],
     [5, "Yttrium"],
-    [6, "Lutecium"],
-    [7, "Lawrencium"],
+    [6, "lutecium"],
+    [7, "Lr"],
   ] as const) {
     await expect(page.getByText(`Vybraná pozice: Perioda ${period}, skupina 3.`)).toBeVisible();
-    await page.getByLabel("Český název").fill(answer);
+    await page.getByLabel("Český název nebo značka").fill(answer);
     await page.getByRole("button", { name: "Vyhodnotit" }).click();
     await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
     await page.getByRole("button", { name: "Další prvek" }).click();
