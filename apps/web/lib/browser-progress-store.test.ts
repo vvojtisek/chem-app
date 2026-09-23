@@ -71,6 +71,30 @@ const nameOrSymbolAttempt: AttemptEvent = {
   matchPolicy: "name-tolerant-or-symbol-exact",
 };
 
+const nameToSymbolAttempt: AttemptEvent = {
+  id: "attempt.006",
+  questionId: "element.011-na",
+  contentVersion: "2026-09-23",
+  occurredAt: "2026-09-23T09:00:00.000Z",
+  isCorrect: false,
+  round: "initial",
+  mode: "periodic-table",
+  direction: "name-to-symbol",
+  matchPolicy: "symbol-exact",
+};
+
+const symbolToNameAttempt: AttemptEvent = {
+  id: "attempt.007",
+  questionId: "element.011-na",
+  contentVersion: "2026-09-23",
+  occurredAt: "2026-09-23T09:01:00.000Z",
+  isCorrect: true,
+  round: "retry",
+  mode: "periodic-table",
+  direction: "symbol-to-name",
+  matchPolicy: "diacritics-tolerant",
+};
+
 beforeEach(async () => {
   await new Promise<void>((resolve, reject) => {
     const request = indexedDB.deleteDatabase(PROGRESS_DATABASE_NAME);
@@ -155,5 +179,29 @@ describe("BrowserProgressStore", () => {
         matchPolicy: "name-tolerant-or-symbol-exact",
       }),
     ).rejects.toThrow();
+  });
+
+  it("stores the typed name-to-symbol and symbol-to-name contexts with their own policies", async () => {
+    const store = createBrowserProgressStore();
+
+    await store.appendAttempt(nameOrSymbolAttempt);
+    await store.appendAttempt(nameToSymbolAttempt);
+    await store.appendAttempt(symbolToNameAttempt);
+
+    await expect(store.listAttempts()).resolves.toEqual([
+      nameOrSymbolAttempt,
+      nameToSymbolAttempt,
+      symbolToNameAttempt,
+    ]);
+    for (const mislabelled of [
+      { ...nameToSymbolAttempt, matchPolicy: "name-tolerant-or-symbol-exact" },
+      { ...nameToSymbolAttempt, matchPolicy: "diacritics-tolerant" },
+      { ...symbolToNameAttempt, matchPolicy: "symbol-exact" },
+      { ...periodicTableAttempt, matchPolicy: "symbol-exact" },
+    ] as const) {
+      await expect(
+        store.appendAttempt({ ...mislabelled, id: `${mislabelled.id}.mislabelled` }),
+      ).rejects.toThrow("Pokus má neplatný kontext procvičování.");
+    }
   });
 });

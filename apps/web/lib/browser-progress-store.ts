@@ -30,15 +30,28 @@ const elementAttemptSchema = baseAttemptSchema.extend({
 const periodicAttemptSchema = baseAttemptSchema
   .extend({
     mode: z.literal("periodic-table"),
-    direction: z.enum(["name-to-position", "position-to-name", "position-to-name-or-symbol"]),
-    matchPolicy: z.enum(["exact-position", "diacritics-tolerant", "name-tolerant-or-symbol-exact"]),
+    direction: z.enum([
+      "name-to-position",
+      "position-to-name",
+      "position-to-name-or-symbol",
+      "name-to-symbol",
+      "symbol-to-name",
+    ]),
+    matchPolicy: z.enum([
+      "exact-position",
+      "diacritics-tolerant",
+      "name-tolerant-or-symbol-exact",
+      "symbol-exact",
+    ]),
   })
   .superRefine((event, context) => {
     if (
       (event.direction === "name-to-position" && event.matchPolicy !== "exact-position") ||
       (event.direction === "position-to-name" && event.matchPolicy !== "diacritics-tolerant") ||
       (event.direction === "position-to-name-or-symbol" &&
-        event.matchPolicy !== "name-tolerant-or-symbol-exact")
+        event.matchPolicy !== "name-tolerant-or-symbol-exact") ||
+      (event.direction === "name-to-symbol" && event.matchPolicy !== "symbol-exact") ||
+      (event.direction === "symbol-to-name" && event.matchPolicy !== "diacritics-tolerant")
     ) {
       context.addIssue({ code: "custom", message: "Invalid periodic-table attempt policy." });
     }

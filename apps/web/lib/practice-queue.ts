@@ -1,11 +1,11 @@
 import type { ExerciseRound } from "./exercise-session";
 import { drawSeries } from "./periodic-table-scope";
 
-export interface BlindTableQuestion {
+export interface PracticeQueueQuestion {
   readonly id: string;
 }
 
-export interface BlindTableState<Question extends BlindTableQuestion> {
+export interface PracticeQueueState<Question extends PracticeQueueQuestion> {
   readonly status: "running" | "finished";
   readonly current: Question | null;
   readonly queue: readonly Question[];
@@ -16,17 +16,17 @@ export interface BlindTableState<Question extends BlindTableQuestion> {
   readonly total: number;
 }
 
-export interface BlindTableAnswer<Question extends BlindTableQuestion> {
-  readonly state: BlindTableState<Question>;
+export interface PracticeQueueAnswer<Question extends PracticeQueueQuestion> {
+  readonly state: PracticeQueueState<Question>;
   readonly question: Question;
   readonly isCorrect: boolean;
   readonly round: ExerciseRound;
 }
 
-export function createBlindTableSession<Question extends BlindTableQuestion>(
+export function createPracticeQueue<Question extends PracticeQueueQuestion>(
   questions: readonly Question[],
   random: () => number,
-): BlindTableState<Question> {
+): PracticeQueueState<Question> {
   const [current = null, ...queue] = drawSeries(questions, questions.length, random);
 
   return {
@@ -41,20 +41,20 @@ export function createBlindTableSession<Question extends BlindTableQuestion>(
   };
 }
 
-export function answerBlindTable<Question extends BlindTableQuestion>(
-  state: BlindTableState<Question>,
-  selectedId: string,
-): BlindTableAnswer<Question> | null {
+export function answerPracticeQueue<Question extends PracticeQueueQuestion>(
+  state: PracticeQueueState<Question>,
+  isCorrect: boolean,
+): PracticeQueueAnswer<Question> | null {
   const question = state.current;
-  if (state.status !== "running" || !question || state.solvedIds.has(selectedId)) return null;
+  if (state.status !== "running" || !question) return null;
 
   const round: ExerciseRound = state.missedIds.has(question.id) ? "retry" : "initial";
 
-  if (selectedId === question.id) {
+  if (isCorrect) {
     const [next = null, ...queue] = state.queue;
     return {
       question,
-      isCorrect: true,
+      isCorrect,
       round,
       state: {
         ...state,
@@ -70,7 +70,7 @@ export function answerBlindTable<Question extends BlindTableQuestion>(
   const [next = question, ...queue] = [...state.queue, question];
   return {
     question,
-    isCorrect: false,
+    isCorrect,
     round,
     state: {
       ...state,
@@ -82,8 +82,16 @@ export function answerBlindTable<Question extends BlindTableQuestion>(
   };
 }
 
-export function finishBlindTable<Question extends BlindTableQuestion>(
-  state: BlindTableState<Question>,
-): BlindTableState<Question> {
+export function answerPracticeQueueBySelection<Question extends PracticeQueueQuestion>(
+  state: PracticeQueueState<Question>,
+  selectedId: string,
+): PracticeQueueAnswer<Question> | null {
+  if (state.solvedIds.has(selectedId)) return null;
+  return answerPracticeQueue(state, selectedId === state.current?.id);
+}
+
+export function finishPracticeQueue<Question extends PracticeQueueQuestion>(
+  state: PracticeQueueState<Question>,
+): PracticeQueueState<Question> {
   return { ...state, status: "finished", current: null };
 }

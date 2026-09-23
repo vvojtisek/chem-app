@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  answerBlindTable,
-  type BlindTableState,
-  createBlindTableSession,
-  finishBlindTable,
-} from "./blind-table-session";
+  answerPracticeQueue,
+  answerPracticeQueueBySelection,
+  createPracticeQueue,
+  finishPracticeQueue,
+  type PracticeQueueState,
+} from "./practice-queue";
 
 interface Question {
   readonly id: string;
@@ -14,16 +15,16 @@ interface Question {
 const questions: readonly Question[] = [{ id: "h" }, { id: "he" }, { id: "li" }];
 const keepOrder = () => 0.999_999;
 
-function answer(state: BlindTableState<Question>, selectedId: string) {
-  const result = answerBlindTable(state, selectedId);
+function answer(state: PracticeQueueState<Question>, selectedId: string) {
+  const result = answerPracticeQueueBySelection(state, selectedId);
   if (!result) throw new Error(`Answer ${selectedId} was ignored.`);
   return result;
 }
 
-describe("blind table session", () => {
+describe("practice queue", () => {
   it("asks every question once in the injected random order", () => {
-    const ordered = createBlindTableSession(questions, keepOrder);
-    const shuffled = createBlindTableSession(questions, () => 0);
+    const ordered = createPracticeQueue(questions, keepOrder);
+    const shuffled = createPracticeQueue(questions, () => 0);
 
     expect([ordered.current, ...ordered.queue].map((question) => question?.id)).toEqual([
       "h",
@@ -39,7 +40,7 @@ describe("blind table session", () => {
   });
 
   it("moves straight to the next question after a correct click", () => {
-    const result = answer(createBlindTableSession(questions, keepOrder), "h");
+    const result = answer(createPracticeQueue(questions, keepOrder), "h");
 
     expect(result).toMatchObject({ isCorrect: true, round: "initial" });
     expect(result.state.current?.id).toBe("he");
@@ -48,7 +49,7 @@ describe("blind table session", () => {
   });
 
   it("moves on after a wrong click and asks the missed question again later as a retry", () => {
-    let state = createBlindTableSession(questions, keepOrder);
+    let state = createPracticeQueue(questions, keepOrder);
 
     const miss = answer(state, "li");
     expect(miss).toMatchObject({ isCorrect: false, round: "initial" });
@@ -70,7 +71,7 @@ describe("blind table session", () => {
   });
 
   it("asks the last missed question again until it is placed", () => {
-    let state = createBlindTableSession([{ id: "h" }], keepOrder);
+    let state = createPracticeQueue([{ id: "h" }], keepOrder);
 
     state = answer(state, "he").state;
     expect(state).toMatchObject({ status: "running", incorrect: 1 });
@@ -79,16 +80,27 @@ describe("blind table session", () => {
   });
 
   it("ignores clicks on already solved cells and after the exercise is finished", () => {
-    const state = answer(createBlindTableSession(questions, keepOrder), "h").state;
+    const state = answer(createPracticeQueue(questions, keepOrder), "h").state;
 
-    expect(answerBlindTable(state, "h")).toBeNull();
-    expect(answerBlindTable(finishBlindTable(state), "he")).toBeNull();
+    expect(answerPracticeQueueBySelection(state, "h")).toBeNull();
+    expect(answerPracticeQueueBySelection(finishPracticeQueue(state), "he")).toBeNull();
+  });
+
+  it("accepts a typed answer's verdict for the current question", () => {
+    const state = createPracticeQueue(questions, keepOrder);
+
+    const miss = answerPracticeQueue(state, false);
+    expect(miss).toMatchObject({ question: { id: "h" }, isCorrect: false, round: "initial" });
+    expect(miss?.state.current?.id).toBe("he");
+
+    const hit = miss ? answerPracticeQueue(miss.state, true) : null;
+    expect(hit).toMatchObject({ question: { id: "he" }, isCorrect: true, round: "initial" });
+    expect(hit?.state.solvedIds.has("he")).toBe(true);
+    expect(answerPracticeQueue(finishPracticeQueue(state), true)).toBeNull();
   });
 
   it("finishes on request and keeps the score", () => {
-    const state = finishBlindTable(
-      answer(createBlindTableSession(questions, keepOrder), "h").state,
-    );
+    const state = finishPracticeQueue(answer(createPracticeQueue(questions, keepOrder), "h").state);
 
     expect(state).toMatchObject({ status: "finished", current: null, correct: 1, incorrect: 0 });
   });

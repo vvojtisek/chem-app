@@ -2,39 +2,34 @@ import type { PeriodicTableElement, PositionedPeriodicTableElement } from "./per
 
 export type PeriodicTableRow = "lanthanides" | "actinides";
 
-export interface PeriodicTableScope {
-  readonly groups: readonly number[];
-  readonly rows: readonly PeriodicTableRow[];
-}
+export type SelectionCoverage = "all" | "some" | "none";
 
-export interface PeriodicTableGroupOption {
+export interface PeriodicTableColumnOption {
   readonly group: number;
-  readonly count: number;
+  readonly elementIds: readonly string[];
 }
 
 export interface PeriodicTableRowOption {
   readonly row: PeriodicTableRow;
-  readonly count: number;
+  readonly elementIds: readonly string[];
   readonly firstSymbol: string;
   readonly lastSymbol: string;
 }
 
-export interface PeriodicTableScopeOptions {
-  readonly groups: readonly PeriodicTableGroupOption[];
+export interface PeriodicTableSelectionOptions {
+  readonly columns: readonly PeriodicTableColumnOption[];
   readonly rows: readonly PeriodicTableRowOption[];
 }
 
 type ScopedElement = PeriodicTableElement & { readonly symbol: string };
 
-export const SERIES_LENGTH = 10;
-
-export function listScopeOptions<Element extends ScopedElement>(
+export function listSelectionOptions<Element extends ScopedElement>(
   layout: readonly PositionedPeriodicTableElement<Element>[],
-): PeriodicTableScopeOptions {
-  const groupCounts = new Map<number, number>();
+): PeriodicTableSelectionOptions {
+  const columns = new Map<number, string[]>();
   for (const { element, position } of layout) {
     if (position.section === "main" && element.group !== null) {
-      groupCounts.set(element.group, (groupCounts.get(element.group) ?? 0) + 1);
+      columns.set(element.group, [...(columns.get(element.group) ?? []), element.id]);
     }
   }
 
@@ -46,39 +41,60 @@ export function listScopeOptions<Element extends ScopedElement>(
     const first = members[0];
     const last = members.at(-1);
     return first && last
-      ? [{ row, count: members.length, firstSymbol: first.symbol, lastSymbol: last.symbol }]
+      ? [
+          {
+            row,
+            elementIds: members.map(({ id }) => id),
+            firstSymbol: first.symbol,
+            lastSymbol: last.symbol,
+          },
+        ]
       : [];
   });
 
   return {
-    groups: [...groupCounts]
-      .map(([group, count]) => ({ group, count }))
+    columns: [...columns]
+      .map(([group, elementIds]) => ({ group, elementIds }))
       .sort((left, right) => left.group - right.group),
     rows,
   };
 }
 
-export function fullScope(options: PeriodicTableScopeOptions): PeriodicTableScope {
-  return {
-    groups: options.groups.map(({ group }) => group),
-    rows: options.rows.map(({ row }) => row),
-  };
+export function defaultSelection<Element extends PeriodicTableElement>(
+  layout: readonly PositionedPeriodicTableElement<Element>[],
+): ReadonlySet<string> {
+  return new Set(
+    layout.filter(({ position }) => position.section === "main").map(({ element }) => element.id),
+  );
 }
 
-export function selectScopeElements<Element extends ScopedElement>(
-  layout: readonly PositionedPeriodicTableElement<Element>[],
-  scope: PeriodicTableScope,
-): readonly Element[] {
-  const groups = new Set(scope.groups);
-  const rows = new Set<string>(scope.rows);
+export function selectionCoverage(
+  selection: ReadonlySet<string>,
+  elementIds: readonly string[],
+): SelectionCoverage {
+  const selected = elementIds.filter((id) => selection.has(id)).length;
+  if (selected === 0) return "none";
+  return selected === elementIds.length ? "all" : "some";
+}
 
-  return layout
-    .filter(({ element, position }) =>
-      position.section === "main"
-        ? element.group !== null && groups.has(element.group)
-        : rows.has(position.section),
-    )
-    .map(({ element }) => element);
+export function toggleSelection(
+  selection: ReadonlySet<string>,
+  elementIds: readonly string[],
+): ReadonlySet<string> {
+  const next = new Set(selection);
+  if (selectionCoverage(selection, elementIds) === "all") {
+    for (const id of elementIds) next.delete(id);
+  } else {
+    for (const id of elementIds) next.add(id);
+  }
+  return next;
+}
+
+export function selectElements<Element extends PeriodicTableElement>(
+  layout: readonly PositionedPeriodicTableElement<Element>[],
+  selection: ReadonlySet<string>,
+): readonly Element[] {
+  return layout.filter(({ element }) => selection.has(element.id)).map(({ element }) => element);
 }
 
 export function drawSeries<Item>(

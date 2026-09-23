@@ -3,17 +3,27 @@ import { describe, expect, it } from "vitest";
 
 import { createPeriodicTableLayout } from "./periodic-table-layout";
 import {
+  defaultSelection,
   drawSeries,
-  fullScope,
-  listScopeOptions,
-  SERIES_LENGTH,
-  selectScopeElements,
+  listSelectionOptions,
+  selectElements,
+  selectionCoverage,
+  toggleSelection,
 } from "./periodic-table-scope";
 
 const layout = createPeriodicTableLayout(curatedElements);
-const options = listScopeOptions(layout);
+const options = listSelectionOptions(layout);
 const symbolsOf = (elements: readonly { readonly symbol: string }[]) =>
   elements.map(({ symbol }) => symbol);
+const idOf = (symbol: string) => {
+  const element = curatedElements.find((candidate) => candidate.symbol === symbol);
+  if (!element) throw new Error(`Unknown symbol ${symbol}.`);
+  return element.id;
+};
+const column = (group: number) =>
+  options.columns.find((option) => option.group === group)?.elementIds ?? [];
+const row = (name: "lanthanides" | "actinides") =>
+  options.rows.find((option) => option.row === name)?.elementIds ?? [];
 
 function seededRandom(seed: number): () => number {
   let state = seed >>> 0;
@@ -26,72 +36,95 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-describe("periodic-table practice scope", () => {
-  it("offers groups 1-18 and both bottom rows derived from the reviewed data", () => {
-    expect(options.groups.map(({ group }) => group)).toEqual(
+describe("periodic-table practice selection", () => {
+  it("offers columns for groups 1-18 and both bottom rows derived from the reviewed data", () => {
+    expect(options.columns.map(({ group }) => group)).toEqual(
       Array.from({ length: 18 }, (_, index) => index + 1),
     );
-    expect(options.rows).toEqual([
-      { row: "lanthanides", count: 14, firstSymbol: "La", lastSymbol: "Yb" },
-      { row: "actinides", count: 14, firstSymbol: "Ac", lastSymbol: "No" },
+    expect(
+      options.rows.map(({ row, elementIds, firstSymbol, lastSymbol }) => [
+        row,
+        elementIds.length,
+        firstSymbol,
+        lastSymbol,
+      ]),
+    ).toEqual([
+      ["lanthanides", 14, "La", "Yb"],
+      ["actinides", 14, "Ac", "No"],
     ]);
   });
 
-  it("selects exactly the union of the chosen groups", () => {
-    expect(symbolsOf(selectScopeElements(layout, { groups: [1, 17], rows: [] }))).toEqual([
-      "H",
-      "Li",
-      "F",
-      "Na",
-      "Cl",
-      "K",
-      "Br",
-      "Rb",
-      "I",
-      "Cs",
-      "At",
-      "Fr",
-      "Ts",
-    ]);
+  it("follows the group-3 ADR: column 3 is Sc, Y, Lu and Lr; La and Ac belong to the bottom rows", () => {
+    expect(column(3)).toEqual(["Sc", "Y", "Lu", "Lr"].map(idOf));
+    expect(row("lanthanides")).toContain(idOf("La"));
+    expect(row("actinides")).toContain(idOf("Ac"));
+    expect([...row("lanthanides"), ...row("actinides")]).not.toContain(idOf("Lu"));
+    expect([...row("lanthanides"), ...row("actinides")]).not.toContain(idOf("Lr"));
   });
 
-  it("follows the group-3 ADR: Sc, Y, Lu and Lr; La and Ac belong to the bottom rows", () => {
-    expect(symbolsOf(selectScopeElements(layout, { groups: [3], rows: [] }))).toEqual([
-      "Sc",
-      "Y",
-      "Lu",
-      "Lr",
-    ]);
-    const bottomRows = symbolsOf(
-      selectScopeElements(layout, { groups: [], rows: ["lanthanides", "actinides"] }),
-    );
-    expect(bottomRows).toContain("La");
-    expect(bottomRows).toContain("Ac");
-    expect(bottomRows).not.toContain("Lu");
-    expect(bottomRows).not.toContain("Lr");
-  });
-
-  it("covers all 118 elements exactly once in the full scope", () => {
-    const all = selectScopeElements(layout, fullScope(options));
+  it("assigns every element to exactly one column or bottom row", () => {
+    const all = [
+      ...options.columns.flatMap(({ elementIds }) => elementIds),
+      ...options.rows.flatMap(({ elementIds }) => elementIds),
+    ];
 
     expect(all).toHaveLength(118);
-    expect(new Set(all.map(({ id }) => id)).size).toBe(118);
+    expect(new Set(all).size).toBe(118);
   });
 
-  it("selects nothing for an empty scope", () => {
-    expect(selectScopeElements(layout, { groups: [], rows: [] })).toEqual([]);
+  it("selects every group by default and leaves both bottom rows out", () => {
+    const selection = defaultSelection(layout);
+
+    expect(selection.size).toBe(90);
+    expect(selectionCoverage(selection, column(3))).toBe("all");
+    expect(selectionCoverage(selection, row("lanthanides"))).toBe("none");
+    expect(selectionCoverage(selection, row("actinides"))).toBe("none");
+  });
+
+  it("toggles a whole column on unless it is already fully selected", () => {
+    const partial = new Set([idOf("H"), idOf("Na")]);
+    expect(selectionCoverage(partial, column(1))).toBe("some");
+
+    const full = toggleSelection(partial, column(1));
+    expect(selectionCoverage(full, column(1))).toBe("all");
+    expect(symbolsOf(selectElements(layout, full))).toEqual([
+      "H",
+      "Li",
+      "Na",
+      "K",
+      "Rb",
+      "Cs",
+      "Fr",
+    ]);
+
+    const cleared = toggleSelection(full, column(1));
+    expect(cleared.size).toBe(0);
+  });
+
+  it("keeps the other selected elements when a column or row is toggled", () => {
+    const selection = toggleSelection(new Set([idOf("Cl")]), row("actinides"));
+
+    expect(selection.size).toBe(15);
+    expect(toggleSelection(selection, row("actinides"))).toEqual(new Set([idOf("Cl")]));
+  });
+
+  it("returns the selected elements in atomic-number order and nothing for an empty selection", () => {
+    const selection = new Set([idOf("La"), idOf("H"), idOf("Fe")]);
+
+    expect(symbolsOf(selectElements(layout, selection))).toEqual(["H", "Fe", "La"]);
+    expect(selectElements(layout, new Set())).toEqual([]);
   });
 });
 
 describe("drawSeries", () => {
-  const all = selectScopeElements(layout, fullScope(options));
+  const all = selectElements(layout, new Set(curatedElements.map(({ id }) => id)));
 
   it("draws min(10, n) distinct items", () => {
-    const series = drawSeries(all, SERIES_LENGTH, seededRandom(1));
+    const series = drawSeries(all, 10, seededRandom(1));
     expect(series).toHaveLength(10);
     expect(new Set(series).size).toBe(10);
-    expect(drawSeries(all.slice(0, 4), SERIES_LENGTH, seededRandom(1))).toHaveLength(4);
-    expect(drawSeries(all.slice(0, 1), SERIES_LENGTH, seededRandom(1))).toHaveLength(1);
+    expect(drawSeries(all.slice(0, 4), 10, seededRandom(1))).toHaveLength(4);
+    expect(drawSeries(all.slice(0, 1), 10, seededRandom(1))).toHaveLength(1);
   });
 
   it("is deterministic for an injected random source", () => {
