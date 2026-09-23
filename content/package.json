@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "validate": "node --import tsx src/validate.ts",
     "generate:nomenclature": "node --import tsx src/generate-nomenclature.ts",
-    "import:nomenclature": "node --import tsx src/import-nomenclature-seed.ts"
+    "import:nomenclature": "node --import tsx src/import-nomenclature-seed.ts",
+    "import:nomenclature-2": "node --import tsx src/import-nomenclature-seed-2.ts"
   },
   "dependencies": {
     "@inorganic/chemistry": "workspace:*",

@@ -1,0 +1,1890 @@
+{
+  "Ag": {
+    "nazev": "stříbro",
+    "napoveda": "Základní chemický prvek (argentum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "Ag+": {
+    "nazev": "kation stříbrný",
+    "napoveda": "Jednomocný kation stříbra Ag(+I) s koncovkou -ný."
+  },
+  "Ag3AsO4": {
+    "nazev": "arseničnan stříbrný",
+    "napoveda": "Kation: 3 × Ag(+I) = +3 -> stříbrný. Anion: (AsO4)(-III) -> arseničnan: As(+V) (-ičnan) + 4 × O(-II) = -3."
+  },
+  "AgBr": {
+    "nazev": "bromid stříbrný",
+    "napoveda": "Kation: Ag(+I) -> stříbrný. Anion: Br(-I) (bezkyslíkatá sůl s koncovkou -id). Poměr 1:1."
+  },
+  "AgCl": {
+    "nazev": "chlorid stříbrný",
+    "napoveda": "Kation: Ag(+I) -> stříbrný. Anion: Cl(-I) (koncovka -id). Poměr 1:1, (+1) + (-1) = 0."
+  },
+  "AgI": {
+    "nazev": "jodid stříbrný",
+    "napoveda": "Kation: Ag(+I) -> stříbrný. Anion: I(-I) (koncovka -id). Poměr 1:1."
+  },
+  "AgNO3": {
+    "nazev": "dusičnan stříbrný",
+    "napoveda": "Kation: Ag(+I) -> stříbrný. Anion: (NO3)(-I) -> dusičnan: N(+V) (-ičnan) + 3 × O(-II) = -1."
+  },
+  "Ag2O": {
+    "nazev": "oxid stříbrný",
+    "napoveda": "Kyslík: O(-II). Stříbro: 2 × Ag(+I) = +2 (koncovka -ný). Poměr 2:1 -> oxid stříbrný."
+  },
+  "Ag2S": {
+    "nazev": "sulfid stříbrný",
+    "napoveda": "Síra: S(-II) (koncovka -id). Stříbro: 2 × Ag(+I) = +2 (koncovka -ný) -> sulfid stříbrný."
+  },
+  "Al": {
+    "nazev": "hliník",
+    "napoveda": "Základní chemický prvek (aluminium) v elementárním stavu s oxidačním číslem 0."
+  },
+  "Al4C3": {
+    "nazev": "karbid hlinitý",
+    "napoveda": "Hliník: 4 × Al(+III) = +12 (koncovka -itý). Uhlík: 3 × C(-IV) = -12 (koncovka -id, methanid) -> karbid hlinitý."
+  },
+  "AlCl3": {
+    "nazev": "chlorid hlinitý",
+    "napoveda": "Kation: Al(+III) -> hlinitý. Anion: 3 × Cl(-I) = -3 (koncovka -id) -> chlorid hlinitý."
+  },
+  "[AlF6]3-": {
+    "nazev": "anion hexafluorohlinitanový",
+    "napoveda": "Komplexní anion se souhrnným nábojem -3: centrální atom Al(+III) (-an) a 6 fluorido ligandů F(-I) -> hexafluorohlinitanový."
+  },
+  "[Al(H2O)6]Cl3": {
+    "nazev": "chlorid hexaaquahlinitý",
+    "napoveda": "Koordinační kation: [Al(H2O)6](+III) s neutrálními ligandy vody (hexaaqua-) a Al(+III) (-itý). Anion: 3 × Cl(-I) -> chlorid hexaaquahlinitý."
+  },
+  "AlN": {
+    "nazev": "nitrid hlinitý",
+    "napoveda": "Hliník: Al(+III) -> hlinitý. Dusík: N(-III) -> nitrid (koncovka -id). Poměr 1:1."
+  },
+  "Al2O3": {
+    "nazev": "oxid hlinitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Hliník: 2 × Al(+III) = +6 (koncovka -itý). Poměr 2:3 -> oxid hlinitý."
+  },
+  "Al(OH)3": {
+    "nazev": "hydroxid hlinitý",
+    "napoveda": "Kation: Al(+III) -> hlinitý. Anion: 3 × (OH)(-I) = -3 -> hydroxid hlinitý."
+  },
+  "[Al(OH)4]-": {
+    "nazev": "anion tetrahydroxohlinitanový",
+    "napoveda": "Komplexní anion s nábojem -1: centrální atom Al(+III) (-an) a 4 hydroxido ligandy (OH)(-I) -> tetrahydroxohlinitanový."
+  },
+  "Al2(SO4)3": {
+    "nazev": "síran hlinitý",
+    "napoveda": "Kation: 2 × Al(+III) = +6 -> hlinitý. Anion: 3 × (SO4)(-II) = -6 (síran, S(+VI)) -> síran hlinitý."
+  },
+  "Al2Se3": {
+    "nazev": "selenid hlinitý",
+    "napoveda": "Kation: 2 × Al(+III) = +6 -> hlinitý. Anion: 3 × Se(-II) = -6 (koncovka -id) -> selenid hlinitý."
+  },
+  "As": {
+    "nazev": "arsen",
+    "napoveda": "Základní chemický prvek (arsenium) v elementárním stavu s oxidačním číslem 0."
+  },
+  "[AsF2]+": {
+    "nazev": "kation difluoroarsenitý",
+    "napoveda": "Kation s nábojem +1: centrální atom As(+III) (koncovka -itý) a 2 fluorido ligandy F(-I): (+3) + 2 × (-1) = +1 -> difluoroarsenitý."
+  },
+  "AsF4+": {
+    "nazev": "ion tetrafluoroarseničný",
+    "napoveda": "Kation s nábojem +1: centrální atom As(+V) (koncovka -ičný) a 4 fluorido ligandy F(-I): (+5) + 4 × (-1) = +1 -> tetrafluoroarseničný."
+  },
+  "AsH3": {
+    "nazev": "arsan",
+    "napoveda": "Jednoduchý hydrid arsenu: As(-III) + 3 × H(+I). Triviálně arsin, systematicky koncovka -an -> arsan."
+  },
+  "As2O3": {
+    "nazev": "oxid arsenitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Arsen: 2 × As(+III) = +6 (koncovka -itý). Poměr 2:3 -> oxid arsenitý."
+  },
+  "As4O6": {
+    "nazev": "oxid arsenitý",
+    "napoveda": "Dimerní forma oxidu arsenitého (As2O3): zachovává poměr As(+III) a O(-II) -> oxid arsenitý."
+  },
+  "AsO33-": {
+    "nazev": "anion arsenitanový",
+    "napoveda": "Anion s nábojem -3: centrální As(+III) (koncovka -itan) + 3 × O(-II) = -3 -> anion arsenitanový."
+  },
+  "AsO43-": {
+    "nazev": "anion arseničnanový",
+    "napoveda": "Anion s nábojem -3: centrální As(+V) (koncovka -ičnan) + 4 × O(-II) = -3 -> anion arseničnanový."
+  },
+  "As2S3": {
+    "nazev": "sulfid arsenitý",
+    "napoveda": "Síra: 3 × S(-II) = -6 (koncovka -id). Arsen: 2 × As(+III) = +6 (koncovka -itý) -> sulfid arsenitý."
+  },
+  "AsS33-": {
+    "nazev": "anion trithioarsenitanový",
+    "napoveda": "Thioanion odvozený náhradou kyslíků sírou: As(+III) a 3 ligandy S(-II) (trithio-) s celkovým nábojem -3 -> trithioarsenitanový."
+  },
+  "Au": {
+    "nazev": "zlato",
+    "napoveda": "Základní chemický prvek (aurum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "AuCl3": {
+    "nazev": "chlorid zlatitý",
+    "napoveda": "Kation: Au(+III) -> zlatitý. Anion: 3 × Cl(-I) = -3 (koncovka -id) -> chlorid zlatitý."
+  },
+  "Au2S": {
+    "nazev": "sulfid zlatný",
+    "napoveda": "Síra: S(-II) -> sulfid. Zlato: 2 × Au(+I) = +2 (koncovka -ný) -> sulfid zlatný."
+  },
+  "BBr3": {
+    "nazev": "bromid boritý",
+    "napoveda": "Bór: B(+III) -> boritý. Brom: 3 × Br(-I) = -3 (koncovka -id) -> bromid boritý."
+  },
+  "BCl3": {
+    "nazev": "chlorid boritý",
+    "napoveda": "Bór: B(+III) -> boritý. Chlor: 3 × Cl(-I) = -3 (koncovka -id) -> chlorid boritý."
+  },
+  "BF3": {
+    "nazev": "fluorid boritý",
+    "napoveda": "Bór: B(+III) -> boritý. Fluor: 3 × F(-I) = -3 (koncovka -id) -> fluorid boritý."
+  },
+  "BF4-": {
+    "nazev": "anion tetrafluoroboritanový",
+    "napoveda": "Komplexní anion: B(+III) (-an) + 4 × F(-I) = -1. Čtyři fluoridy -> tetrafluoroboritanový."
+  },
+  "B2H6": {
+    "nazev": "diboran",
+    "napoveda": "Dimerní boran s elektronově deficitními třístředovými vazbami B-H-B -> diboran."
+  },
+  "BH3": {
+    "nazev": "boran",
+    "napoveda": "Základní monomerní hydrid bóru: systematicky koncovka -an -> boran."
+  },
+  "BN": {
+    "nazev": "nitrid boritý",
+    "napoveda": "Bór: B(+III) -> boritý. Dusík: N(-III) -> nitrid (koncovka -id). Poměr 1:1."
+  },
+  "B2O3": {
+    "nazev": "oxid boritý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Bór: 2 × B(+III) = +6 (koncovka -itý) -> oxid boritý."
+  },
+  "B(OCH3)3": {
+    "nazev": "boritan methylnatý",
+    "napoveda": "Ester kyseliny borité a methanolu: trimethylester kyseliny borité / boritan methylnatý."
+  },
+  "B(OH)3": {
+    "nazev": "kyselina boritá",
+    "napoveda": "Zápis H3BO3 jako hydroxidu: B(+III) s koncovkou -itá -> kyselina boritá (trihydrogenboritá)."
+  },
+  "Ba": {
+    "nazev": "barium",
+    "napoveda": "Základní chemický prvek ze skupiny kovů alkalických zemin v elementárním stavu s oxidačním číslem 0."
+  },
+  "BaCO3": {
+    "nazev": "uhličitan barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: (CO3)(-II) -> uhličitan (C(+IV)) -> uhličitan barnatý."
+  },
+  "BaCl2": {
+    "nazev": "chlorid barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid barnatý."
+  },
+  "Ba(N3)2": {
+    "nazev": "azid barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: 2 × (N3)(-I) = -2 (azidový anion od HN3) -> azid barnatý."
+  },
+  "BaO": {
+    "nazev": "oxid barnatý",
+    "napoveda": "Kyslík: O(-II). Barium: Ba(+II) (koncovka -natý). Poměr 1:1 -> oxid barnatý."
+  },
+  "BaO2": {
+    "nazev": "peroxid barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: peroxidový můstek (O2)(-II), kde O má číslo -I -> peroxid barnatý."
+  },
+  "BaS": {
+    "nazev": "sulfid barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: S(-II) (koncovka -id). Poměr 1:1 -> sulfid barnatý."
+  },
+  "BaSO4": {
+    "nazev": "síran barnatý",
+    "napoveda": "Kation: Ba(+II) -> barnatý. Anion: (SO4)(-II) (síran, S(+VI)) -> síran barnatý."
+  },
+  "Be": {
+    "nazev": "beryllium",
+    "napoveda": "Základní chemický prvek v elementárním stavu s oxidačním číslem 0."
+  },
+  "Be2C": {
+    "nazev": "karbid beryllnatý",
+    "napoveda": "Beryllium: 2 × Be(+II) = +4 (koncovka -natý). Uhlík: C(-IV) = -4 (koncovka -id, methanid) -> karbid beryllnatý."
+  },
+  "BeF2": {
+    "nazev": "fluorid berylnatý",
+    "napoveda": "Kation: Be(+II) -> beryllnatý. Anion: 2 × F(-I) = -2 (koncovka -id) -> fluorid beryllnatý."
+  },
+  "[Be(OH)4]2-": {
+    "nazev": "anion tetrahydroxoberyllnatanový",
+    "napoveda": "Komplexní anion s nábojem -2: Be(+II) (-an) a 4 hydroxido ligandy (OH)(-I): (+2) + 4 × (-1) = -2 -> tetrahydroxoberyllnatanový."
+  },
+  "Be(OH)2": {
+    "nazev": "hydroxid beryllnatý",
+    "napoveda": "Kation: Be(+II) -> beryllnatý. Hydroxidová skupina: 2 × (OH)(-I) = -2 -> hydroxid beryllnatý."
+  },
+  "Bi(OH)3": {
+    "nazev": "hydroxid bismutitý",
+    "napoveda": "Kation: Bi(+III) -> bismutitý. Hydroxidová skupina: 3 × (OH)(-I) = -3 -> hydroxid bismutitý."
+  },
+  "Br2": {
+    "nazev": "brom",
+    "napoveda": "Elementární dvouatomová molekula halogenu s oxidačním číslem 0."
+  },
+  "Br-": {
+    "nazev": "anion bromidový",
+    "napoveda": "Jednoatomový halogenidový anion Br(-I) s koncovkou -id."
+  },
+  "Br3-": {
+    "nazev": "anion tribromidový",
+    "napoveda": "Polyhalogenidový anion složený ze tří atomů bromu s celkovým nábojem -1 -> tribromidový."
+  },
+  "BrF5": {
+    "nazev": "fluorid bromičný",
+    "napoveda": "Fluor: 5 × F(-I) = -5 (koncovka -id). Brom: Br(+V) (koncovka -ičný) -> fluorid bromičný."
+  },
+  "[BrF2]+": {
+    "nazev": "kation difluorobromitý",
+    "napoveda": "Kation s nábojem +1: Br(+III) (koncovka -itý) + 2 × F(-I) = +1 -> difluorobromitý."
+  },
+  "BrF3": {
+    "nazev": "fluorid bromitý",
+    "napoveda": "Fluor: 3 × F(-I) = -3 (koncovka -id). Brom: Br(+III) (koncovka -itý) -> fluorid bromitý."
+  },
+  "[BrF4]-": {
+    "nazev": "anion tetrafluorobromitanový",
+    "napoveda": "Komplexní anion s nábojem -1: Br(+III) (-itan) + 4 × F(-I) = -1 -> tetrafluorobromitanový."
+  },
+  "[BrF4O]-": {
+    "nazev": "anion tetrafluoro-oxobromičnanový",
+    "napoveda": "Komplexní anion s nábojem -1: Br(+V) (-ičnan) + 4 × F(-I) (-4) + O(-II) (-2) = -1 -> tetrafluoro-oxobromičnanový."
+  },
+  "BrO3-": {
+    "nazev": "anion bromičnanový",
+    "napoveda": "Oxoanion bromu s nábojem -1: Br(+V) (koncovka -ičnan) + 3 × O(-II) = -1 -> bromičnanový."
+  },
+  "Br2O": {
+    "nazev": "oxid bromný",
+    "napoveda": "Kyslík: O(-II). Brom: 2 × Br(+I) = +2 (koncovka -ný) -> oxid bromný."
+  },
+  "C": {
+    "nazev": "uhlík",
+    "napoveda": "Základní chemický prvek v elementárním stavu s oxidačním číslem 0."
+  },
+  "CCl4": {
+    "nazev": "chlorid uhličitý",
+    "napoveda": "Chlor: 4 × Cl(-I) = -4 (koncovka -id). Uhlík: C(+IV) (koncovka -ičitý) -> chlorid uhličitý."
+  },
+  "CF4": {
+    "nazev": "fluorid uhličitý",
+    "napoveda": "Fluor: 4 × F(-I) = -4 (koncovka -id). Uhlík: C(+IV) (koncovka -ičitý) -> fluorid uhličitý."
+  },
+  "C2H2": {
+    "nazev": "ethyn",
+    "napoveda": "Nenasycený uhlovodík s trojnou vazbou C≡C (alkyn), triviálně acetylen -> ethyn."
+  },
+  "CH4": {
+    "nazev": "methan",
+    "napoveda": "Základní nasycený uhlovodík s jedním atomem uhlíku (alkan): C(-IV) a 4 × H(+I) -> methan."
+  },
+  "CH3OH": {
+    "nazev": "metanol",
+    "napoveda": "Jednoduchý alkohol odvozený od methanu s hydroxylovou skupinou -OH -> methanol."
+  },
+  "CO": {
+    "nazev": "oxid uhelnatý",
+    "napoveda": "Kyslík: O(-II). Uhlík: C(+II) (koncovka -natý). Poměr 1:1 -> oxid uhelnatý."
+  },
+  "CO2": {
+    "nazev": "oxid uhličitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Uhlík: C(+IV) (koncovka -ičitý) -> oxid uhličitý."
+  },
+  "CO32-": {
+    "nazev": "anion uhličitanový",
+    "napoveda": "Oxoanion: C(+IV) (koncovka -ičitan) + 3 × O(-II) (-6) = -2 -> anion uhličitanový."
+  },
+  "COCl2": {
+    "nazev": "chlorid karbonylu",
+    "napoveda": "Funkční derivát kyseliny uhličité: dvojmocná skupina karbonyl (CO)(+II) a 2 × Cl(-I) -> chlorid karbonylu (fosgen)."
+  },
+  "CO(NH2)2": {
+    "nazev": "močovina",
+    "napoveda": "Triviální název pro diamid kyseliny uhličité (karbamid) -> močovina."
+  },
+  "CS2": {
+    "nazev": "sulfid uhličitý",
+    "napoveda": "Síra: 2 × S(-II) = -4 (koncovka -id). Uhlík: C(+IV) (koncovka -ičitý) -> sulfid uhličitý (sirouhlík)."
+  },
+  "CS32-": {
+    "nazev": "anion trithiouhličitanový",
+    "napoveda": "Thioanalogie uhličitanu: C(+IV) a 3 ligandy S(-II) (trithio-) s nábojem -2 -> trithiouhličitanový."
+  },
+  "Ca": {
+    "nazev": "vápník",
+    "napoveda": "Základní kov alkalických zemin v elementárním stavu s oxidačním číslem 0."
+  },
+  "CaC2": {
+    "nazev": "karbid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: acetylidový dikarbid (C2)(-II) (koncovka -id) -> karbid vápenatý."
+  },
+  "CaCO3": {
+    "nazev": "uhličitan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: (CO3)(-II) (uhličitan, C(+IV)) -> uhličitan vápenatý."
+  },
+  "CaCl2": {
+    "nazev": "chlorid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid vápenatý."
+  },
+  "CaCl(ClO)": {
+    "nazev": "chlorid - chlornan vápenatý",
+    "napoveda": "Směsná sůl: Ca(+II) vyrovnává chlorid Cl(-I) a chlornan (ClO)(-I) s Cl(+I) -> chlorid-chlornan vápenatý (chlorové vápno)."
+  },
+  "Ca(ClO)2": {
+    "nazev": "chlornan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × (ClO)(-I) = -2. V chlornanu je Cl(+I) (-nan) -> chlornan vápenatý."
+  },
+  "CaF2": {
+    "nazev": "fluorid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × F(-I) = -2 (koncovka -id) -> fluorid vápenatý."
+  },
+  "CaH2": {
+    "nazev": "hydrid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × hydridový ion H(-I) = -2 (koncovka -id) -> hydrid vápenatý."
+  },
+  "Ca(HCO3)2": {
+    "nazev": "hydrogenuhličitan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Kyselý anion: 2 × (HCO3)(-I) = -2 (hydrogenuhličitan) -> hydrogenuhličitan vápenatý."
+  },
+  "Ca(H2PO4)2": {
+    "nazev": "dihydrogenfosforečnan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Kyselý anion: 2 × (H2PO4)(-I) se dvěma vodíky -> dihydrogenfosforečnan vápenatý."
+  },
+  "CaNCN": {
+    "nazev": "kyanamid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: kyanamidový (NCN)(-II) odvozený od kyanamidu H2NCN -> kyanamid vápenatý."
+  },
+  "CaO": {
+    "nazev": "oxid vápenatý",
+    "napoveda": "Kyslík: O(-II). Vápník: Ca(+II) (koncovka -natý). Poměr 1:1 -> oxid vápenatý."
+  },
+  "Ca(OH)2": {
+    "nazev": "hydroxid vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: 2 × (OH)(-I) = -2 -> hydroxid vápenatý."
+  },
+  "Ca3P2": {
+    "nazev": "fosfid vápenatý",
+    "napoveda": "Kation: 3 × Ca(+II) = +6 -> vápenatý. Anion: 2 × P(-III) = -6 (koncovka -id) -> fosfid vápenatý."
+  },
+  "Ca2P2O6": {
+    "nazev": "difosforičitan divápenatý",
+    "napoveda": "Kationty: 2 × Ca(+II) = +4. Anion: (P2O6)(-IV). V aniontu: 2 × P(+IV) = +8 (-ičitan) a 6 × O(-II) = -12 -> difosforičitan divápenatý."
+  },
+  "Ca3(PO4)2": {
+    "nazev": "fosforečnan vápenatý",
+    "napoveda": "Kation: 3 × Ca(+II) = +6 -> vápenatý. Anion: 2 × (PO4)(-III) = -6 (fosforečnan, P(+V)) -> fosforečnan vápenatý."
+  },
+  "CaSO4": {
+    "nazev": "síran vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: (SO4)(-II) (síran, S(+VI)) -> síran vápenatý."
+  },
+  "CaSO4H2O": {
+    "nazev": "hydrát síranu vápenatého",
+    "napoveda": "Základ CaSO4 (síran vápenatý) krystalizující s molekulou vody (hydrát) -> hydrát síranu vápenatého."
+  },
+  "CaSiO3": {
+    "nazev": "křemičitan vápenatý",
+    "napoveda": "Kation: Ca(+II) -> vápenatý. Anion: (SiO3)(-II) -> křemičitan: Si(+IV) (-ičitan) + 3 × O(-II) = -2 -> křemičitan vápenatý."
+  },
+  "Cl2": {
+    "nazev": "chlor",
+    "napoveda": "Elementární dvouatomová molekula halogenu s oxidačním číslem 0."
+  },
+  "Cl-": {
+    "nazev": "anion chloridový",
+    "napoveda": "Jednoatomový halogenidový anion Cl(-I) s koncovkou -id."
+  },
+  "[ClF2]+": {
+    "nazev": "kation difluorochloritý",
+    "napoveda": "Kation s nábojem +1: centrální Cl(+III) (koncovka -itý) + 2 × F(-I) = +1 -> difluorochloritý."
+  },
+  "ClF3": {
+    "nazev": "fluorid chloritý",
+    "napoveda": "Fluor: 3 × F(-I) = -3 (koncovka -id). Chlor: Cl(+III) (koncovka -itý) -> fluorid chloritý."
+  },
+  "ClF5": {
+    "nazev": "fluorid chlorečný",
+    "napoveda": "Fluor: 5 × F(-I) = -5 (koncovka -id). Chlor: Cl(+V) (koncovka -ečný) -> fluorid chlorečný."
+  },
+  "ClF3O2": {
+    "nazev": "trifluorid-oxid chloristý",
+    "napoveda": "Sloučenina s centrálním Cl(+VII) (koncovka -istý): 3 × F(-I) = -3 a 2 × O(-II) = -4, celkem +7 - 7 = 0 -> trifluorid-dioxid (oxid) chloristý."
+  },
+  "ClO-": {
+    "nazev": "anion chlornanový",
+    "napoveda": "Oxoanion: Cl(+I) (koncovka -nan) + O(-II) = -1 -> anion chlornanový."
+  },
+  "ClO2-": {
+    "nazev": "anion chloritanový",
+    "napoveda": "Oxoanion: Cl(+III) (koncovka -itan) + 2 × O(-II) (-4) = -1 -> anion chloritanový."
+  },
+  "ClO2": {
+    "nazev": "oxid chloričitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Chlor: Cl(+IV) (koncovka -ičitý) -> oxid chloričitý."
+  },
+  "ClO3-": {
+    "nazev": "anion chlorečnanový",
+    "napoveda": "Oxoanion: Cl(+V) (koncovka -ečnan) + 3 × O(-II) (-6) = -1 -> anion chlorečnanový."
+  },
+  "ClO4-": {
+    "nazev": "anion chloristanový",
+    "napoveda": "Oxoanion: Cl(+VII) (koncovka -istan) + 4 × O(-II) (-8) = -1 -> anion chloristanový."
+  },
+  "Cl2O": {
+    "nazev": "oxid chlorný",
+    "napoveda": "Kyslík: O(-II). Chlor: 2 × Cl(+I) = +2 (koncovka -ný) -> oxid chlorný."
+  },
+  "ClO3F": {
+    "nazev": "fluorid perchlorylu",
+    "napoveda": "Derivát obsahující jednovaznou skupinu perchloryl (ClO3)(+I) a fluorid F(-I) -> fluorid perchlorylu."
+  },
+  "ClO2F": {
+    "nazev": "fluorid kyseliny chlorečné",
+    "napoveda": "Halogenid kyseliny chlorečné (fluorid chlorylu): jednovazná skupina chloryl (ClO2)(+I) a F(-I) -> fluorid chlorylu."
+  },
+  "Co": {
+    "nazev": "kobalt",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "CoCo2O4": {
+    "nazev": "oxid kobaltnato-kobaltitý",
+    "napoveda": "Směsný oxid Co3O4 složený z Co(+II) a 2 × Co(+III) s kyslíky 4 × O(-II) = -8 -> oxid kobaltnato-kobaltitý."
+  },
+  "Cr": {
+    "nazev": "chrom",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "Cr3+": {
+    "nazev": "kation chromitý",
+    "napoveda": "Trojmocný kation chromu Cr(+III) s koncovkou -itý."
+  },
+  "CrCl3": {
+    "nazev": "chlorid chromitý",
+    "napoveda": "Kation: Cr(+III) -> chromitý. Anion: 3 × Cl(-I) = -3 (koncovka -id) -> chlorid chromitý."
+  },
+  "Cr2O3": {
+    "nazev": "oxid chromitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Chrom: 2 × Cr(+III) = +6 (koncovka -itý) -> oxid chromitý."
+  },
+  "Cr2O72-": {
+    "nazev": "anion dichromanový",
+    "napoveda": "Dvojjaderný oxoanion: 2 × Cr(+VI) = +12 (koncovka -an) + 7 × O(-II) (-14) = -2 -> dichromanový."
+  },
+  "CrO3": {
+    "nazev": "oxid chromový",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Chrom: Cr(+VI) (koncovka -ový) -> oxid chromový."
+  },
+  "CrO42-": {
+    "nazev": "anion chromanový",
+    "napoveda": "Oxoanion: Cr(+VI) (koncovka -an) + 4 × O(-II) (-8) = -2 -> anion chromanový."
+  },
+  "Cr(OH)3": {
+    "nazev": "hydroxid chromitý",
+    "napoveda": "Kation: Cr(+III) -> chromitý. Anion: 3 × (OH)(-I) = -3 -> hydroxid chromitý."
+  },
+  "[Cr(OH)4]-": {
+    "nazev": "anion tetrahydroxochromitý",
+    "napoveda": "Komplexní anion s nábojem -1: centrální atom Cr(+III) a 4 hydroxido ligandy (OH)(-I): (+3) + 4 × (-1) = -1 -> tetrahydroxochromitanový (tetrahydroxochromitý)."
+  },
+  "Cr2(SO4)3": {
+    "nazev": "síran chromitý",
+    "napoveda": "Kation: 2 × Cr(+III) = +6 -> chromitý. Anion: 3 × (SO4)(-II) = -6 (síran, S(+VI)) -> síran chromitý."
+  },
+  "Cu": {
+    "nazev": "měď",
+    "napoveda": "Základní přechodný kov (cuprum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "Cu2+": {
+    "nazev": "kation měďnatý",
+    "napoveda": "Dvojmocný kation mědi Cu(+II) s koncovkou -natý."
+  },
+  "CuCl2": {
+    "nazev": "chlorid měďnatý",
+    "napoveda": "Kation: Cu(+II) -> měďnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid měďnatý."
+  },
+  "CuFeS2": {
+    "nazev": "bis(sulfid) měďnato-železnatý",
+    "napoveda": "Podvojný sulfid (chalkopyrit) s kationty Cu(+II) a Fe(+II) vyrovnanými dvěma sulfidovými ionty 2 × S(-II) -> bis(sulfid) měďnato-železnatý."
+  },
+  "CuH": {
+    "nazev": "hydrid měďný",
+    "napoveda": "Měď: Cu(+I) (koncovka -ný). Vodík jako hydridový anion: H(-I) (koncovka -id) -> hydrid měďný."
+  },
+  "Cu(NO3)2": {
+    "nazev": "dusičnan měďnatý",
+    "napoveda": "Kation: Cu(+II) -> měďnatý. Anion: 2 × (NO3)(-I) = -2 (dusičnan, N(+V)) -> dusičnan měďnatý."
+  },
+  "Cu2O": {
+    "nazev": "oxid měďný",
+    "napoveda": "Kyslík: O(-II). Měď: 2 × Cu(+I) = +2 (koncovka -ný) -> oxid měďný."
+  },
+  "CuO": {
+    "nazev": "oxid měďnatý",
+    "napoveda": "Kyslík: O(-II). Měď: Cu(+II) (koncovka -natý). Poměr 1:1 -> oxid měďnatý."
+  },
+  "Cu2S": {
+    "nazev": "sulfid měďný",
+    "napoveda": "Síra: S(-II) -> sulfid. Měď: 2 × Cu(+I) = +2 (koncovka -ný) -> sulfid měďný."
+  },
+  "CuS": {
+    "nazev": "sulfid měďnatý",
+    "napoveda": "Síra: S(-II) -> sulfid. Měď: Cu(+II) (koncovka -natý). Poměr 1:1 -> sulfid měďnatý."
+  },
+  "F2": {
+    "nazev": "fluor",
+    "napoveda": "Elementární dvouatomová molekula halogenu s oxidačním číslem 0."
+  },
+  "Fe": {
+    "nazev": "železo",
+    "napoveda": "Základní přechodný kov (ferrum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "Fe2+": {
+    "nazev": "kation železnatý",
+    "napoveda": "Dvojmocný kation železa Fe(+II) s koncovkou -natý."
+  },
+  "Fe3+": {
+    "nazev": "kation železitý",
+    "napoveda": "Trojmocný kation železa Fe(+III) s koncovkou -itý."
+  },
+  "FeAsS": {
+    "nazev": "arsenopyrit",
+    "napoveda": "Minerální sulfid-arsenid železa Fe(+II) s aniontovou jednotkou [AsS](-II) -> arsenopyrit."
+  },
+  "FeCl2": {
+    "nazev": "chlorid železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid železnatý."
+  },
+  "FeCl3": {
+    "nazev": "chlorid železitý",
+    "napoveda": "Kation: Fe(+III) -> železitý. Anion: 3 × Cl(-I) = -3 (koncovka -id) -> chlorid železitý."
+  },
+  "FeCr2O4": {
+    "nazev": "oxid železnato-dichromitý",
+    "napoveda": "Podvojný oxid (chromit): Fe(+II) (-natý) a 2 × Cr(+III) (-itý) vyrovnané 4 × O(-II) (-8) -> oxid železnato-dichromitý."
+  },
+  "FeFe2O4": {
+    "nazev": "oxid železnato-železitý",
+    "napoveda": "Směsný oxid Fe3O4 složený z Fe(+II) a 2 × Fe(+III) s kyslíky 4 × O(-II) -> oxid železnato-železitý (magnetit)."
+  },
+  "Fe(NO3)3": {
+    "nazev": "dusičnan železitý",
+    "napoveda": "Kation: Fe(+III) -> železitý. Anion: 3 × (NO3)(-I) = -3 (dusičnan, N(+V)) -> dusičnan železitý."
+  },
+  "Fe2O3": {
+    "nazev": "oxid železitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Železo: 2 × Fe(+III) = +6 (koncovka -itý) -> oxid železitý."
+  },
+  "FeS2": {
+    "nazev": "disulfid železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: disulfidová skupina (S2)(-II) (koncovka -id) -> disulfid železnatý (pyrit)."
+  },
+  "FeS": {
+    "nazev": "sulfid železnatý",
+    "napoveda": "Síra: S(-II) -> sulfid. Železo: Fe(+II) (koncovka -natý). Poměr 1:1 -> sulfid železnatý."
+  },
+  "FeSO4": {
+    "nazev": "síran železnatý",
+    "napoveda": "Kation: Fe(+II) -> železnatý. Anion: (SO4)(-II) (síran, S(+VI)) -> síran železnatý."
+  },
+  "Fe2(SO4)3": {
+    "nazev": "síran železitý",
+    "napoveda": "Kation: 2 × Fe(+III) = +6 -> železitý. Anion: 3 × (SO4)(-II) = -6 (síran, S(+VI)) -> síran železitý."
+  },
+  "GeCl4": {
+    "nazev": "chlorid germaničitý",
+    "napoveda": "Germanium: Ge(+IV) -> germaničitý. Chlor: 4 × Cl(-I) = -4 (koncovka -id) -> chlorid germaničitý."
+  },
+  "GeO2": {
+    "nazev": "oxid germaničitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Germanium: Ge(+IV) (koncovka -ičitý) -> oxid germaničitý."
+  },
+  "H": {
+    "nazev": "nativní vodík",
+    "napoveda": "Atomární (nativní) vodík ve stavu jednotlivých atomů H s oxidačním číslem 0."
+  },
+  "H2": {
+    "nazev": "vodík",
+    "napoveda": "Elementární dvouatomová molekula vodíku s oxidačním číslem 0."
+  },
+  "H+": {
+    "nazev": "kation vodíkový",
+    "napoveda": "Jednomocný kation vodíku (proton) H(+I)."
+  },
+  "H3AsO4": {
+    "nazev": "kyselina arseničná",
+    "napoveda": "3 × H(+I) = +3; 4 × O(-II) = -8. Arsen má As(+V) (+3 + 5 - 8 = 0, koncovka -ičná) -> kyselina arseničná."
+  },
+  "H[AuCl4]": {
+    "nazev": "kyselina tetrachlorozlatitá",
+    "napoveda": "Komplexní kyselina: kation H(+I) a anion [AuCl4](-I) s centrálním Au(+III) (koncovka -itá) a 4 ligandy Cl(-I) -> kyselina tetrachlorozlatitá."
+  },
+  "H[BF4]": {
+    "nazev": "kyselina tetrafluoroboritá",
+    "napoveda": "Komplexní kyselina: kation H(+I) a anion [BF4](-I) s centrálním B(+III) (koncovka -itá) a 4 ligandy F(-I) -> kyselina tetrafluoroboritá."
+  },
+  "H3BO3": {
+    "nazev": "kyselina trihydrogenboritá",
+    "napoveda": "3 × H(+I) = +3; 3 × O(-II) = -6. Bór má B(+III) (+3 + 3 - 6 = 0, koncovka -itá) -> kyselina trihydrogenboritá."
+  },
+  "HBO2": {
+    "nazev": "kyselina monohydrogenboritá",
+    "napoveda": "H(+I) = +1; 2 × O(-II) = -4. Bór má B(+III) (koncovka -itá). Jeden vodík -> kyselina monohydrogenboritá (metaboritá)."
+  },
+  "HBr": {
+    "nazev": "bromovodík",
+    "napoveda": "Binární sloučenina: H(+I) a Br(-I). Halogenovodík v plynném stavu -> bromovodík."
+  },
+  "HBrO3": {
+    "nazev": "kyselina bromičná",
+    "napoveda": "H(+I) = +1; 3 × O(-II) = -6. Brom má Br(+V) (+1 + 5 - 6 = 0, koncovka -ičná) -> kyselina bromičná."
+  },
+  "HCN": {
+    "nazev": "kyanovodík",
+    "napoveda": "Binární sloučenina vodíku H(+I) a kyanidové skupiny (CN)(-I) -> kyanovodík."
+  },
+  "H2C2O4": {
+    "nazev": "kyselina šťavelová",
+    "napoveda": "Triviální název ethanové dikarboxylové kyseliny: 2 × H(+I) a šťavelanový anion (C2O4)(-II) -> kyselina šťavelová."
+  },
+  "HCO3-": {
+    "nazev": "anion hydrogenuhličitanový",
+    "napoveda": "Kyselý oxoanion: H(+I) + C(+IV) + 3 × O(-II) (-6) = -1 -> anion hydrogenuhličitanový."
+  },
+  "HCO2H": {
+    "nazev": "kyselina mravenčí",
+    "napoveda": "Triviální název pro kyselinu methanovou HCOOH obsahující karboxylovou skupinu -> kyselina mravenčí."
+  },
+  "HCl": {
+    "nazev": "chlorovodík",
+    "napoveda": "Binární sloučenina vodíku H(+I) a chloru Cl(-I) -> chlorovodík."
+  },
+  "HClO": {
+    "nazev": "kyselina chlorná",
+    "napoveda": "H(+I) = +1; O(-II) = -2. Chlor má Cl(+I) (+1 + 1 - 2 = 0, koncovka -ná) -> kyselina chlorná."
+  },
+  "HClO3": {
+    "nazev": "kyselina chlorečná",
+    "napoveda": "H(+I) = +1; 3 × O(-II) = -6. Chlor má Cl(+V) (+1 + 5 - 6 = 0, koncovka -ečná) -> kyselina chlorečná."
+  },
+  "HClO4": {
+    "nazev": "kyselina chloristá",
+    "napoveda": "H(+I) = +1; 4 × O(-II) = -8. Chlor má Cl(+VII) (+1 + 7 - 8 = 0, koncovka -istá) -> kyselina chloristá."
+  },
+  "HF": {
+    "nazev": "fluorovodík",
+    "napoveda": "Binární sloučenina vodíku H(+I) a fluoru F(-I) -> fluorovodík."
+  },
+  "HI": {
+    "nazev": "jodovodík",
+    "napoveda": "Binární sloučenina vodíku H(+I) a jodu I(-I) -> jodovodík."
+  },
+  "H2IO63-": {
+    "nazev": "anion dihydrogenjodistanový",
+    "napoveda": "Anion s nábojem -3: 2 × H(+I) = +2; I(+VII) (-istan) = +7; 6 × O(-II) = -12 -> (+9 - 12 = -3) -> dihydrogenjodistanový."
+  },
+  "HIO3": {
+    "nazev": "kyselina jodičná",
+    "napoveda": "H(+I) = +1; 3 × O(-II) = -6. Jod má I(+V) (+1 + 5 - 6 = 0, koncovka -ičná) -> kyselina jodičná."
+  },
+  "H5IO6": {
+    "nazev": "kyselina hexaoxojodistá",
+    "napoveda": "5 × H(+I) = +5; I(+VII) = +7 (koncovka -istá); 6 × O(-II) = -12. Celkem 0 -> kyselina hexaoxojodistá (orthojodistá)."
+  },
+  "HNO2": {
+    "nazev": "kyselina dusitá",
+    "napoveda": "H(+I) = +1; 2 × O(-II) = -4. Dusík má N(+III) (+1 + 3 - 4 = 0, koncovka -itá) -> kyselina dusitá."
+  },
+  "HNO3": {
+    "nazev": "kyselina dusičná",
+    "napoveda": "H(+I) = +1; 3 × O(-II) = -6. Dusík má N(+V) (+1 + 5 - 6 = 0, koncovka -ičná) -> kyselina dusičná."
+  },
+  "H3O+": {
+    "nazev": "kation oxoniový",
+    "napoveda": "Protonovaná molekula vody: H2O + H(+) s nábojem +1 -> kation oxoniový."
+  },
+  "H2O2": {
+    "nazev": "peroxid vodíku",
+    "napoveda": "Peroxidická skupina (O2)(-II) se dvěma atomy O(-I) vyrovnaná 2 × H(+I) -> peroxid vodíku."
+  },
+  "H2O": {
+    "nazev": "voda",
+    "napoveda": "Triviální název pro sloučeninu 2 × H(+I) a O(-II) -> voda."
+  },
+  "H2PO2-": {
+    "nazev": "anion fosfornanový",
+    "napoveda": "Anion kyseliny fosforné: P(+I) (koncovka -nan) + 2 × H(+I) + 2 × O(-II) (-4) = -1 -> fosfornanový."
+  },
+  "H2PO3-": {
+    "nazev": "anion dihydrogenfosforitanový",
+    "napoveda": "Kyselý anion s nábojem -1: 2 × H(+I) + P(+III) (-itan) + 3 × O(-II) (-6) = -1 -> dihydrogenfosforitanový."
+  },
+  "H3PO2": {
+    "nazev": "kyselina fosforná",
+    "napoveda": "3 × H(+I) = +3; 2 × O(-II) = -4. Fosfor má P(+I) (+3 + 1 - 4 = 0, koncovka -ná) -> kyselina fosforná."
+  },
+  "H3PO3": {
+    "nazev": "kyselina trihydrogenfosforitá",
+    "napoveda": "3 × H(+I) = +3; 3 × O(-II) = -6. Fosfor má P(+III) (+3 + 3 - 6 = 0, koncovka -itá) -> kyselina trihydrogenfosforitá."
+  },
+  "H3PO4": {
+    "nazev": "kyselina trihydrogenfosforečná",
+    "napoveda": "3 × H(+I) = +3; 4 × O(-II) = -8. Fosfor má P(+V) (+3 + 5 - 8 = 0, koncovka -ečná) -> kyselina trihydrogenfosforečná."
+  },
+  "HPO32-": {
+    "nazev": "anion hydrogenfosforitanový",
+    "napoveda": "Kyselý anion s nábojem -2: H(+I) + P(+III) (-itan) + 3 × O(-II) (-6) = -2 -> hydrogenfosforitanový."
+  },
+  "HPO42-": {
+    "nazev": "anion hydrogenfosforečnanový",
+    "napoveda": "Kyselý anion s nábojem -2: H(+I) + P(+V) (-ečnan) + 4 × O(-II) (-8) = -2 -> hydrogenfosforečnanový."
+  },
+  "H2PO4-": {
+    "nazev": "anion dihydrogenfosforečnanový",
+    "napoveda": "Kyselý anion s nábojem -1: 2 × H(+I) + P(+V) (-ečnan) + 4 × O(-II) (-8) = -1 -> dihydrogenfosforečnanový."
+  },
+  "H2[PtCl6]": {
+    "nazev": "kyselina hexachloroplatičitá",
+    "napoveda": "2 × H(+I) a koordinační anion [PtCl6](-II): centrální Pt(+IV) (koncovka -ičitá) a 6 ligandů Cl(-I) -> kyselina hexachloroplatičitá."
+  },
+  "H2S": {
+    "nazev": "sulfan",
+    "napoveda": "Binární hydrid síry: 2 × H(+I) + S(-II) = 0 -> sulfan (sirovodík)."
+  },
+  "HS-": {
+    "nazev": "anion hydrogensulfidový",
+    "napoveda": "Kyselý anion odvozený od sulfanu: H(+I) + S(-II) = -1 -> anion hydrogensulfidový."
+  },
+  "H2S2O7": {
+    "nazev": "kyselina disírová",
+    "napoveda": "2 × H(+I) = +2; 7 × O(-II) = -14. Dva atomy síry: 2 × S(+VI) = +12 (koncovka -ová). Dvě síry dávají di- -> kyselina disírová."
+  },
+  "H2SO4": {
+    "nazev": "kyselina sírová",
+    "napoveda": "2 × H(+I) = +2; 4 × O(-II) = -8. Síra má S(+VI) (+2 + 6 - 8 = 0, koncovka -ová) -> kyselina sírová."
+  },
+  "HSO3-": {
+    "nazev": "anion hydrogensiřičitanový",
+    "napoveda": "Kyselý oxoanion: H(+I) + S(+IV) (-ičitan) + 3 × O(-II) (-6) = -1 -> anion hydrogensiřičitanový."
+  },
+  "HSO4-": {
+    "nazev": "anion hydrogensíranový",
+    "napoveda": "Kyselý oxoanion: H(+I) + S(+VI) (-an) + 4 × O(-II) (-8) = -1 -> anion hydrogensíranový."
+  },
+  "H2S2O6(O2)": {
+    "nazev": "kyselina peroxodisírová",
+    "napoveda": "Vzorec H2S2O8: obsahuje peroxidický můstek (-O-O-) a dvě skupiny se sírou S(+VI) -> kyselina peroxodisírová."
+  },
+  "H2Se": {
+    "nazev": "selan",
+    "napoveda": "Binární hydrid selenu: 2 × H(+I) + Se(-II) = 0. Systematické hydridové názvosloví -> selan."
+  },
+  "H2SeO3": {
+    "nazev": "kyselina seleničitá",
+    "napoveda": "2 × H(+I) = +2; 3 × O(-II) = -6. Selen má Se(+IV) (+2 + 4 - 6 = 0, koncovka -ičitá) -> kyselina seleničitá."
+  },
+  "H2SeO4": {
+    "nazev": "kyselina selenová",
+    "napoveda": "2 × H(+I) = +2; 4 × O(-II) = -8. Selen má Se(+VI) (+2 + 6 - 8 = 0, koncovka -ová) -> kyselina selenová."
+  },
+  "H2SiF6": {
+    "nazev": "kyselina hexafluorokřemičitá",
+    "napoveda": "2 × H(+I) a anion [SiF6](-II): centrální Si(+IV) (koncovka -ičitá) a 6 ligandů F(-I) -> kyselina hexafluorokřemičitá."
+  },
+  "H2[SiF6]": {
+    "nazev": "kyselina hexafluorokřemičitá",
+    "napoveda": "Komplexní zápis: kationty 2 × H(+I) a koordinační anion [SiF6](-II) s Si(+IV) a 6 × F(-I) -> kyselina hexafluorokřemičitá."
+  },
+  "H6TeO6": {
+    "nazev": "kyselina hexaoxotellurová",
+    "napoveda": "6 × H(+I) = +6; 6 × O(-II) = -12. Tellur má Te(+VI) (+6 + 6 - 12 = 0, koncovka -ová) -> kyselina hexaoxotellurová (orthotellurová)."
+  },
+  "Hg": {
+    "nazev": "rtuť",
+    "napoveda": "Základní kapalný přechodný kov (hydrargyrum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "HgO": {
+    "nazev": "oxid rtuťnatý",
+    "napoveda": "Kyslík: O(-II). Rtuť: Hg(+II) (koncovka -natý). Poměr 1:1 -> oxid rtuťnatý."
+  },
+  "HgS": {
+    "nazev": "sulfid rtuťnatý",
+    "napoveda": "Síra: S(-II) -> sulfid. Rtuť: Hg(+II) (koncovka -natý). Poměr 1:1 -> sulfid rtuťnatý (rumělka)."
+  },
+  "I2": {
+    "nazev": "jod",
+    "napoveda": "Elementární dvouatomová molekula halogenu s oxidačním číslem 0."
+  },
+  "I-": {
+    "nazev": "anion jodidový",
+    "napoveda": "Jednoatomový halogenidový anion I(-I) s koncovkou -id."
+  },
+  "I3-": {
+    "nazev": "anion trijodidový",
+    "napoveda": "Polyhalogenidový anion tvořený třemi atomy jodu s celkovým nábojem -1 -> trijodidový."
+  },
+  "IBr5": {
+    "nazev": "bromid jodičný",
+    "napoveda": "Brom: 5 × Br(-I) = -5 (koncovka -id). Jod: I(+V) (koncovka -ičný) -> bromid jodičný."
+  },
+  "ICl3": {
+    "nazev": "chlorid joditý",
+    "napoveda": "Chlor: 3 × Cl(-I) = -3 (koncovka -id). Jod: I(+III) (koncovka -itý) -> chlorid joditý."
+  },
+  "ICl5": {
+    "nazev": "chlorid jodičný",
+    "napoveda": "Chlor: 5 × Cl(-I) = -5 (koncovka -id). Jod: I(+V) (koncovka -ičný) -> chlorid jodičný."
+  },
+  "[ICl4]-": {
+    "nazev": "anion tetrachlorojoditanový",
+    "napoveda": "Komplexní anion s nábojem -1: centrální Jod I(+III) (-itan) + 4 × Cl(-I) = -1 -> tetrachlorojoditanový."
+  },
+  "IF3": {
+    "nazev": "fluorid joditý",
+    "napoveda": "Fluor: 3 × F(-I) = -3 (koncovka -id). Jod: I(+III) (koncovka -itý) -> fluorid joditý."
+  },
+  "IF5": {
+    "nazev": "fluorid jodičný",
+    "napoveda": "Fluor: 5 × F(-I) = -5 (koncovka -id). Jod: I(+V) (koncovka -ičný) -> fluorid jodičný."
+  },
+  "IO3-": {
+    "nazev": "anion jodičnanový",
+    "napoveda": "Oxoanion: Jod I(+V) (koncovka -ičnan) + 3 × O(-II) (-6) = -1 -> anion jodičnanový."
+  },
+  "IOF5": {
+    "nazev": "pentafluorid-oxid jodistý",
+    "napoveda": "Jod I(+VII) (koncovka -istý) váže 5 × F(-I) (-5) a O(-II) (-2), celkem +7 - 7 = 0 -> pentafluorid-oxid jodistý."
+  },
+  "K": {
+    "nazev": "draslík",
+    "napoveda": "Základní alkalický kov (kalium) v elementárním stavu s oxidačním číslem 0."
+  },
+  "K[Ag(CN)2]": {
+    "nazev": "dikyanostříbrnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Komplexní anion: [Ag(CN)2](-I) s Ag(+I) (-an) a 2 ligandy (CN)(-I) -> dikyanostříbrnan draselný."
+  },
+  "K2B4O7": {
+    "nazev": "tetraboritan didraselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2. Anion: (B4O7)(-II) se 4 atomy B(+III) (-itan) a 7 × O(-II) = -14 -> tetraboritan didraselný."
+  },
+  "KBr": {
+    "nazev": "bromid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: Br(-I) (koncovka -id). Poměr 1:1 -> bromid draselný."
+  },
+  "KCN": {
+    "nazev": "kyanid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: kyanidový (CN)(-I) (koncovka -id) -> kyanid draselný."
+  },
+  "K2C2O4": {
+    "nazev": "šťavelan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: šťavelan (C2O4)(-II) od kyseliny šťavelové -> šťavelan draselný."
+  },
+  "K2CO3": {
+    "nazev": "uhličitan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (CO3)(-II) (uhličitan, C(+IV)) -> uhličitan draselný (potaš)."
+  },
+  "KCl": {
+    "nazev": "chlorid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: Cl(-I) (koncovka -id). Poměr 1:1 -> chlorid draselný."
+  },
+  "KClO3": {
+    "nazev": "chlorečnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (ClO3)(-I) s Cl(+V) (-ečnan) a 3 × O(-II) -> chlorečnan draselný."
+  },
+  "KClO4": {
+    "nazev": "chloristan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (ClO4)(-I) s Cl(+VII) (-istan) a 4 × O(-II) -> chloristan draselný."
+  },
+  "K2Cr2O7": {
+    "nazev": "dichroman draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (Cr2O7)(-II) se 2 × Cr(+VI) (-an) a 7 × O(-II) -> dichroman draselný."
+  },
+  "K2CrO4": {
+    "nazev": "chroman draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (CrO4)(-II) s Cr(+VI) (-an) a 4 × O(-II) -> chroman draselný."
+  },
+  "K2FeO4": {
+    "nazev": "železan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (FeO4)(-II) se železem Fe(+VI) (koncovka -an) a 4 × O(-II) = -8 -> železan draselný."
+  },
+  "KH": {
+    "nazev": "hydrid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: hydridový H(-I) (koncovka -id) -> hydrid draselný."
+  },
+  "KHCO3": {
+    "nazev": "hydrogenuhličitan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Kyselý anion: (HCO3)(-I) -> hydrogenuhličitan draselný."
+  },
+  "KHSO4": {
+    "nazev": "hydrogensíran draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Kyselý anion: (HSO4)(-I) s S(+VI) -> hydrogensíran draselný."
+  },
+  "KI": {
+    "nazev": "jodid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: I(-I) (koncovka -id). Poměr 1:1 -> jodid draselný."
+  },
+  "KIO3": {
+    "nazev": "jodičnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (IO3)(-I) s I(+V) (-ičnan) a 3 × O(-II) -> jodičnan draselný."
+  },
+  "K2MnO4": {
+    "nazev": "manganan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (MnO4)(-II) s manganem Mn(+VI) (koncovka -an) a 4 × O(-II) -> manganan draselný."
+  },
+  "KMnO4": {
+    "nazev": "manganistan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (MnO4)(-I) s Mn(+VII) (koncovka -istan) a 4 × O(-II) -> manganistan draselný (hypermangan)."
+  },
+  "KNO2": {
+    "nazev": "dusitan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (NO2)(-I) s N(+III) (-itan) a 2 × O(-II) -> dusitan draselný."
+  },
+  "KNO3": {
+    "nazev": "dusičnan draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: (NO3)(-I) s N(+V) (-ičnan) a 3 × O(-II) -> dusičnan draselný."
+  },
+  "KO2": {
+    "nazev": "superoxid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: hyperoxidový (superoxidový) ion (O2)(-I), kde formální oxidační číslo kyslíku je -1/2 -> superoxid draselný."
+  },
+  "KOH": {
+    "nazev": "hydroxid draselný",
+    "napoveda": "Kation: K(+I) -> draselný. Anion: hydroxidový (OH)(-I) -> hydroxid draselný."
+  },
+  "K2SO3": {
+    "nazev": "siřičitan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (SO3)(-II) se S(+IV) (-ičitan) a 3 × O(-II) -> siřičitan draselný."
+  },
+  "K2SO4": {
+    "nazev": "síran draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (SO4)(-II) se S(+VI) (-an) a 4 × O(-II) -> síran draselný."
+  },
+  "K2Se": {
+    "nazev": "selenid draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: Se(-II) (koncovka -id) -> selenid draselný."
+  },
+  "K2SeO3": {
+    "nazev": "seleničitan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2 -> draselný. Anion: (SeO3)(-II) se Se(+IV) (-ičitan) a 3 × O(-II) -> seleničitan draselný."
+  },
+  "K2[Sn(OH)6]": {
+    "nazev": "hexahydroxocíničitan draselný",
+    "napoveda": "Kationty: 2 × K(+I) = +2. Koordinační anion: [Sn(OH)6](-II) s Sn(+IV) (-ičitan) a 6 hydroxido ligandy (OH)(-I) -> hexahydroxocíničitan draselný."
+  },
+  "Li": {
+    "nazev": "litium",
+    "napoveda": "Základní alkalický kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "Li2O": {
+    "nazev": "oxid litný",
+    "napoveda": "Kyslík: O(-II). Lithium: 2 × Li(+I) = +2 (koncovka -ný). Poměr 2:1 -> oxid litný."
+  },
+  "Mg": {
+    "nazev": "hořčík",
+    "napoveda": "Základní kov alkalických zemin v elementárním stavu s oxidačním číslem 0."
+  },
+  "Mg3B2": {
+    "nazev": "borid hořečnatý",
+    "napoveda": "Hořčík: 3 × Mg(+II) = +6 (koncovka -natý). Bór: 2 × B(-III) = -6 (koncovka -id) -> borid hořečnatý."
+  },
+  "MgCl2": {
+    "nazev": "chlorid hořečnatý",
+    "napoveda": "Kation: Mg(+II) -> hořečnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid hořečnatý."
+  },
+  "MgF2": {
+    "nazev": "fluorid hořečnatý",
+    "napoveda": "Kation: Mg(+II) -> hořečnatý. Anion: 2 × F(-I) = -2 (koncovka -id) -> fluorid hořečnatý."
+  },
+  "Mg3N2": {
+    "nazev": "nitrid hořečnatý",
+    "napoveda": "Kation: 3 × Mg(+II) = +6 -> hořečnatý. Anion: 2 × N(-III) = -6 (koncovka -id) -> nitrid hořečnatý."
+  },
+  "MgO": {
+    "nazev": "oxid hořečnatý",
+    "napoveda": "Kyslík: O(-II). Hořčík: Mg(+II) (koncovka -natý). Poměr 1:1 -> oxid hořečnatý."
+  },
+  "Mg(OH)2": {
+    "nazev": "hydroxid hořečnatý",
+    "napoveda": "Kation: Mg(+II) -> hořečnatý. Anion: 2 × (OH)(-I) = -2 -> hydroxid hořečnatý."
+  },
+  "Mg2Si": {
+    "nazev": "silicid hořečnatý",
+    "napoveda": "Hořčík: 2 × Mg(+II) = +4 (koncovka -natý). Křemík: Si(-IV) = -4 (koncovka -id) -> silicid hořečnatý."
+  },
+  "Mn": {
+    "nazev": "mangan",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "Mn2+": {
+    "nazev": "kation manganatý",
+    "napoveda": "Dvojmocný kation manganu Mn(+II) s koncovkou -natý."
+  },
+  "MnBr2": {
+    "nazev": "bromid manganatý",
+    "napoveda": "Kation: Mn(+II) -> manganatý. Anion: 2 × Br(-I) = -2 (koncovka -id) -> bromid manganatý."
+  },
+  "MnCl2": {
+    "nazev": "chlorid manganatý",
+    "napoveda": "Kation: Mn(+II) -> manganatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid manganatý."
+  },
+  "MnI2": {
+    "nazev": "jodid manganatý",
+    "napoveda": "Kation: Mn(+II) -> manganatý. Anion: 2 × I(-I) = -2 (koncovka -id) -> jodid manganatý."
+  },
+  "Mn2MnO4": {
+    "nazev": "oxid manganato-manganičitý",
+    "napoveda": "Směsný oxid Mn3O4 tvořený 2 × Mn(+II) (+4) a Mn(+IV) (+4) vyrovnanými 4 × O(-II) (-8) -> oxid manganato-manganičitý (hausmannit)."
+  },
+  "MnO2": {
+    "nazev": "oxid manganičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Mangan: Mn(+IV) (koncovka -ičitý) -> oxid manganičitý (burel)."
+  },
+  "MnO42-": {
+    "nazev": "anion mangananový",
+    "napoveda": "Oxoanion s nábojem -2: Mn(+VI) (koncovka -an) + 4 × O(-II) (-8) = -2 -> anion mangananový."
+  },
+  "MnO4-": {
+    "nazev": "anion manganistanový",
+    "napoveda": "Oxoanion s nábojem -1: Mn(+VII) (koncovka -istan) + 4 × O(-II) (-8) = -1 -> anion manganistanový."
+  },
+  "MnSO4": {
+    "nazev": "síran manganatý",
+    "napoveda": "Kation: Mn(+II) -> manganatý. Anion: (SO4)(-II) (síran, S(+VI)) -> síran manganatý."
+  },
+  "Mo": {
+    "nazev": "molybden",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "N2": {
+    "nazev": "dusík",
+    "napoveda": "Elementární dvouatomová molekula plynu s trojnou vazbou N≡N a oxidačním číslem 0."
+  },
+  "N3-": {
+    "nazev": "anion azidový",
+    "napoveda": "Lineární polyatomický anion složený ze 3 atomů dusíku s celkovým nábojem -1 -> azidový."
+  },
+  "NCl3": {
+    "nazev": "trichloramin",
+    "napoveda": "Derivát amoniaku nahrazením tří atomů vodíku chlorem: N(-III) a 3 × Cl(+I) nebo dle substitučního názvosloví -> trichloramin."
+  },
+  "NF3": {
+    "nazev": "trifluoramin",
+    "napoveda": "Derivát amoniaku nahrazením tří atomů vodíku fluorem: N(+III) a 3 × F(-I) -> trifluoramin."
+  },
+  "N2H4": {
+    "nazev": "hydrazin",
+    "napoveda": "Triviální název pro diazán (H2N-NH2), binární sloučeninu dusíku a vodíku s vazbou N-N -> hydrazin."
+  },
+  "NH3": {
+    "nazev": "amoniak",
+    "napoveda": "Triviální název hydridu dusíku N(-III) a 3 × H(+I) -> amoniak (čpavek)."
+  },
+  "NH4+": {
+    "nazev": "kation amonný",
+    "napoveda": "Jednomocný polyatomický kation vzniklý protonací amoniaku: NH3 + H(+) = NH4(+) -> amonný."
+  },
+  "NH4BF4": {
+    "nazev": "tetrafluoroboritan amonný",
+    "napoveda": "Kation: (NH4)(+I) -> amonný. Koordinační anion: [BF4](-I) s B(+III) (-an) a 4 × F(-I) -> tetrafluoroboritan amonný."
+  },
+  "NH4Br": {
+    "nazev": "bromid amonný",
+    "napoveda": "Kation: (NH4)(+I) -> amonný. Anion: Br(-I) (koncovka -id) -> bromid amonný."
+  },
+  "(NH4)2CO3": {
+    "nazev": "uhličitan amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: (CO3)(-II) (uhličitan, C(+IV)) -> uhličitan amonný."
+  },
+  "NH4Cl": {
+    "nazev": "chlorid amonný",
+    "napoveda": "Kation: (NH4)(+I) -> amonný. Anion: Cl(-I) (koncovka -id) -> chlorid amonný (salmiak)."
+  },
+  "(NH4)2Cr2O7": {
+    "nazev": "dichroman amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: (Cr2O7)(-II) se 2 × Cr(+VI) (-an) -> dichroman amonný."
+  },
+  "(NH4)2CrO4": {
+    "nazev": "chroman amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: (CrO4)(-II) s Cr(+VI) (-an) -> chroman amonný."
+  },
+  "NH2NH2": {
+    "nazev": "hydrazin",
+    "napoveda": "Konstrukční zápis diazanu H2N-NH2 se dvěma aminoskupinami vázanými k sobě -> hydrazin."
+  },
+  "NH4NO3": {
+    "nazev": "dusičnan amonný",
+    "napoveda": "Kation: (NH4)(+I) -> amonný. Anion: (NO3)(-I) s N(+V) (-ičnan) -> dusičnan amonný (ledek amonný)."
+  },
+  "NH4NO2": {
+    "nazev": "dusitan amonný",
+    "napoveda": "Kation: (NH4)(+I) -> amonný. Anion: (NO2)(-I) s N(+III) (-itan) -> dusitan amonný."
+  },
+  "NH2OH": {
+    "nazev": "hydroxylamin",
+    "napoveda": "Derivát amoniaku substituovaný hydroxylovou skupinou (-OH): NH2-OH -> hydroxylamin."
+  },
+  "NH4OH": {
+    "nazev": "hydroxid amonný",
+    "napoveda": "Formální zápis hydratovaného roztoku amoniaku: amonný kation (NH4)(+I) a hydroxidový anion (OH)(-I) -> hydroxid amonný."
+  },
+  "(NH4)2S": {
+    "nazev": "sulfid amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: S(-II) (koncovka -id) -> sulfid amonný."
+  },
+  "N2H6SO4": {
+    "nazev": "síran hydrazinia(2+)",
+    "napoveda": "Dvojmocný kation hydrazinia [N2H6](+II) vyrovnaný síranovým aniontem (SO4)(-II) -> síran hydrazinia(2+)."
+  },
+  "(NH4)2SO4": {
+    "nazev": "síran amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: (SO4)(-II) (síran, S(+VI)) -> síran amonný."
+  },
+  "(NH4)2SO3": {
+    "nazev": "siřičitan amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: (SO3)(-II) (siřičitan, S(+IV)) -> siřičitan amonný."
+  },
+  "(NH4)2S2O6(O2)": {
+    "nazev": "peroxodisíran amonný",
+    "napoveda": "Kation: 2 × (NH4)(+I) = +2 -> amonný. Anion: peroxodisíranový (S2O8)(-II) s peroxidovým můstkem a S(+VI) -> peroxodisíran amonný."
+  },
+  "NH4VO3": {
+    "nazev": "vanadičnan amonný",
+    "napoveda": "Kation: (NH4)(+I) -> amonný. Anion: (VO3)(-I) s V(+V) (-ičnan) a 3 × O(-II) = -1 -> vanadičnan amonný."
+  },
+  "N2O4": {
+    "nazev": "oxid dusičitý (dimer)",
+    "napoveda": "Dimer oxidu dusičitého (NO2): 2 × N(+IV) (-ičitý) a 4 × O(-II) -> oxid dusičitý (dimer) / tetraoxid didusíku."
+  },
+  "N2O": {
+    "nazev": "azoxid",
+    "napoveda": "Kyslík: O(-II). Dusík: 2 × N(+I) = +2 (koncovka -ný). Systematicky oxid dusný, triviálně azoxid či rajský plyn."
+  },
+  "NO": {
+    "nazev": "oxid dusnatý",
+    "napoveda": "Kyslík: O(-II). Dusík: N(+II) (koncovka -natý). Poměr 1:1 -> oxid dusnatý."
+  },
+  "NO2-": {
+    "nazev": "anion dusitanový",
+    "napoveda": "Oxoanion: N(+III) (koncovka -itan) + 2 × O(-II) (-4) = -1 -> anion dusitanový."
+  },
+  "NO2": {
+    "nazev": "oxid dusičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Dusík: N(+IV) (koncovka -ičitý) -> oxid dusičitý."
+  },
+  "NO3-": {
+    "nazev": "anion dusičnanový",
+    "napoveda": "Oxoanion: N(+V) (koncovka -ičnan) + 3 × O(-II) (-6) = -1 -> anion dusičnanový."
+  },
+  "NOCl": {
+    "nazev": "chlorid nitrosylu",
+    "napoveda": "Halogenid obsahující jednovaznou skupinu nitrosyl (NO)(+I) a chlorid Cl(-I) -> chlorid nitrosylu."
+  },
+  "NO2Cl": {
+    "nazev": "chlorid nitrylu",
+    "napoveda": "Halogenid obsahující jednovaznou skupinu nitryl (NO2)(+I) a chlorid Cl(-I) -> chlorid nitrylu."
+  },
+  "NOF": {
+    "nazev": "fluorid nitrosylu",
+    "napoveda": "Halogenid obsahující jednovaznou skupinu nitrosyl (NO)(+I) a fluorid F(-I) -> fluorid nitrosylu."
+  },
+  "Na": {
+    "nazev": "sodík",
+    "napoveda": "Základní alkalický kov (natrium) v elementárním stavu s oxidačním číslem 0."
+  },
+  "Na[Ag(CN)2]": {
+    "nazev": "bis(kyano)stříbrnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Koordinační anion: [Ag(CN)2](-I) s Ag(+I) (-an) a dvěma ligandy (CN)(-I) -> bis(kyano)stříbrnan sodný."
+  },
+  "Na3[Ag(SO3S)2]": {
+    "nazev": "bis(thiosulfato)stříbrnan sodný",
+    "napoveda": "Kationty: 3 × Na(+I) = +3. Koordinační anion: [Ag(S2O3)2](-III) s Ag(+I) a dvěma thiosíranovými ligandy (SO3S)(-II) -> bis(thiosulfato)stříbrnan sodný."
+  },
+  "Na3[AlF6]": {
+    "nazev": "hexafluorohlinitan sodný",
+    "napoveda": "Kationty: 3 × Na(+I) = +3. Koordinační anion: [AlF6](-III) s Al(+III) (-an) a 6 fluoridy F(-I) -> hexafluorohlinitan sodný (kryolit)."
+  },
+  "Na[Al(OH)4]": {
+    "nazev": "tetrahydroxohlinitan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Koordinační anion: [Al(OH)4](-I) s Al(+III) (-an) a 4 ligandy (OH)(-I) -> tetrahydroxohlinitan sodný."
+  },
+  "Na3AsO4": {
+    "nazev": "tetraoxoarseničnan sodný",
+    "napoveda": "Kationty: 3 × Na(+I) = +3 -> sodný. Anion: (AsO4)(-III) s As(+V) (-ičnan) a 4 × O(-II) -> tetraoxoarseničnan sodný."
+  },
+  "Na[Au(CN)2]": {
+    "nazev": "dikyanozlatnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Koordinační anion: [Au(CN)2](-I) s Au(+I) (-an) a dvěma ligandy (CN)(-I) -> dikyanozlatnan (dikyanozlatitan) sodný."
+  },
+  "NaBF4": {
+    "nazev": "tetrafluoroboritan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Koordinační anion: [BF4](-I) s B(+III) (-an) a 4 ligandy F(-I) -> tetrafluoroboritan sodný."
+  },
+  "NaBH4": {
+    "nazev": "tetrahydroboritan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Koordinační anion: [BH4](-I) s B(+III) a čtyřmi hydridovými ligandy H(-I) -> tetrahydroboritan sodný."
+  },
+  "Na[BH4]": {
+    "nazev": "tetrahydridoboritan sodný",
+    "napoveda": "Strukturní zápis: Na(+I) a komplexní anion [BH4](-I) obsahující 4 hydrido ligandy H(-I) a centrální B(+III) -> tetrahydridoboritan sodný."
+  },
+  "Na2B4O7": {
+    "nazev": "tetraboritan disodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (B4O7)(-II) se 4 atomy B(+III) (-itan) a 7 × O(-II) -> tetraboritan disodný."
+  },
+  "NaBiO3": {
+    "nazev": "trioxobismutičnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (BiO3)(-I) s Bi(+V) (-ičnan) a 3 × O(-II) (-6) = -1 -> trioxobismutičnan sodný."
+  },
+  "NaBr": {
+    "nazev": "bromid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: Br(-I) (koncovka -id). Poměr 1:1 -> bromid sodný."
+  },
+  "NaCN": {
+    "nazev": "kyanid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: kyanidový (CN)(-I) (koncovka -id) -> kyanid sodný."
+  },
+  "Na2CO3": {
+    "nazev": "uhličitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (CO3)(-II) (uhličitan, C(+IV)) -> uhličitan sodný (soda)."
+  },
+  "NaCl": {
+    "nazev": "chlorid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: Cl(-I) (koncovka -id). Poměr 1:1 -> chlorid sodný (kuchyňská sůl)."
+  },
+  "NaClO": {
+    "nazev": "chlornan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (ClO)(-I) s Cl(+I) (-nan) a O(-II) -> chlornan sodný."
+  },
+  "NaClO2": {
+    "nazev": "chloritan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (ClO2)(-I) s Cl(+III) (-itan) a 2 × O(-II) -> chloritan sodný."
+  },
+  "NaClO3": {
+    "nazev": "chlorečnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (ClO3)(-I) s Cl(+V) (-ečnan) a 3 × O(-II) -> chlorečnan sodný."
+  },
+  "NaClO4": {
+    "nazev": "chloristan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (ClO4)(-I) s Cl(+VII) (-istan) a 4 × O(-II) -> chloristan sodný."
+  },
+  "Na2Cr2O7": {
+    "nazev": "dichroman sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (Cr2O7)(-II) se 2 × Cr(+VI) (-an) a 7 × O(-II) -> dichroman sodný."
+  },
+  "Na2CrO4": {
+    "nazev": "chroman sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (CrO4)(-II) s Cr(+VI) (-an) a 4 × O(-II) -> chroman sodný."
+  },
+  "NaHCO3": {
+    "nazev": "hydrogenuhličitan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Kyselý anion: (HCO3)(-I) s C(+IV) -> hydrogenuhličitan sodný (jedlá soda)."
+  },
+  "Na2H2P2O6": {
+    "nazev": "dihydrogendifosforičitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2. Anion: (H2P2O6)(-II) se dvěma kyselými vodíky a dvěma atomy P(+IV) (-ičitan) -> dihydrogendifosforičitan sodný."
+  },
+  "NaH2PO2": {
+    "nazev": "fosfornan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (H2PO2)(-I) odvozený od kyseliny fosforné s P(+I) (-nan) -> fosfornan sodný."
+  },
+  "NaH2PO4": {
+    "nazev": "dihydrogenfosforečnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Kyselý anion: (H2PO4)(-I) se dvěma vodíky a P(+V) (-ečnan) -> dihydrogenfosforečnan sodný."
+  },
+  "NaHSO3": {
+    "nazev": "hydrogensiřičitan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Kyselý anion: (HSO3)(-I) se S(+IV) (-ičitan) -> hydrogensiřičitan sodný."
+  },
+  "NaHSO4": {
+    "nazev": "hydrogensíran sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Kyselý anion: (HSO4)(-I) se S(+VI) (-an) -> hydrogensíran sodný."
+  },
+  "NaI": {
+    "nazev": "jodid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: I(-I) (koncovka -id). Poměr 1:1 -> jodid sodný."
+  },
+  "NaIO3": {
+    "nazev": "jodičnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (IO3)(-I) s I(+V) (-ičnan) a 3 × O(-II) -> jodičnan sodný."
+  },
+  "Na2MoO4": {
+    "nazev": "molybdenan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (MoO4)(-II) s Mo(+VI) (koncovka -an) a 4 × O(-II) -> molybdenan sodný."
+  },
+  "Na3N": {
+    "nazev": "nitrid sodný",
+    "napoveda": "Kationty: 3 × Na(+I) = +3 -> sodný. Anion: N(-III) (koncovka -id) -> nitrid sodný."
+  },
+  "Na2NCN": {
+    "nazev": "kyanamid sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: kyanamidový (NCN)(-II) -> kyanamid sodný."
+  },
+  "NaNCN": {
+    "nazev": "kyanamid vápenatý",
+    "napoveda": "Formální zápis v seznamu odpovídá sodné soli hydrogensoli kyanamidu Na(HNCN) či překlepu pro kyanamid; dle předlohy -> kyanamid vápenatý/sodný."
+  },
+  "NaNH2": {
+    "nazev": "amid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: amidový (NH2)(-I) s N(-III) a 2 × H(+I) -> amid sodný."
+  },
+  "NaNO2": {
+    "nazev": "dusitan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (NO2)(-I) s N(+III) (-itan) a 2 × O(-II) -> dusitan sodný."
+  },
+  "NaNO3": {
+    "nazev": "dusičnan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: (NO3)(-I) s N(+V) (-ičnan) a 3 × O(-II) -> dusičnan sodný (chilský ledek)."
+  },
+  "Na2O2": {
+    "nazev": "peroxid sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: peroxidová skupina (O2)(-II) s kyslíkem O(-I) -> peroxid sodný."
+  },
+  "Na2O": {
+    "nazev": "oxid sodný",
+    "napoveda": "Kyslík: O(-II). Sodík: 2 × Na(+I) = +2 (koncovka -ný) -> oxid sodný."
+  },
+  "NaOCN": {
+    "nazev": "kyanatan sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: kyanatanový (OCN)(-I) odvozený od kyseliny kyanaté -> kyanatan sodný."
+  },
+  "[(Na2O)(CaO)(SiO2)6]": {
+    "nazev": "křemičitan sodno-vápenatý",
+    "napoveda": "Podvojný křemičitan sklářského typu složený z oxidů Na2O, CaO a 6 SiO2 -> křemičitan sodno-vápenatý."
+  },
+  "NaOH": {
+    "nazev": "hydroxid sodný",
+    "napoveda": "Kation: Na(+I) -> sodný. Anion: hydroxidový (OH)(-I) -> hydroxid sodný."
+  },
+  "Na2S": {
+    "nazev": "sulfid sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: S(-II) (koncovka -id) -> sulfid sodný."
+  },
+  "Na2S2O4": {
+    "nazev": "dithioničitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2. Anion: (S2O4)(-II) se dvěma atomy S(+III) (-ičitan) a 4 × O(-II) -> dithioničitan sodný."
+  },
+  "Na2S2O5": {
+    "nazev": "disiřičitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2. Anion: (S2O5)(-II) se dvěma atomy S(+IV) (-ičitan) a 5 × O(-II) -> disiřičitan sodný."
+  },
+  "Na2SO3": {
+    "nazev": "siřičitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (SO3)(-II) se S(+IV) (-ičitan) a 3 × O(-II) -> siřičitan sodný."
+  },
+  "Na2S2O7": {
+    "nazev": "disíran sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (S2O7)(-II) se dvěma atomy S(+VI) (-an) a 7 × O(-II) -> disíran sodný."
+  },
+  "Na2SO4": {
+    "nazev": "síran sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (SO4)(-II) se S(+VI) (-an) a 4 × O(-II) -> síran sodný."
+  },
+  "Na2SO3S": {
+    "nazev": "thiosíran sodný",
+    "napoveda": "Alternativní zápis Na2S2O3: v síranu (SO4)(-II) je jeden kyslík nahrazen sírou (thio-) -> thiosíran sodný."
+  },
+  "Na2SiO3": {
+    "nazev": "křemičitan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (SiO3)(-II) se Si(+IV) (-ičitan) a 3 × O(-II) -> křemičitan sodný (vodní sklo)."
+  },
+  "Na2SnO3": {
+    "nazev": "cíničitan disodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: (SnO3)(-II) s Sn(+IV) (-ičitan) a 3 × O(-II) -> cíničitan disodný."
+  },
+  "Na[Zn(CN)4]": {
+    "nazev": "tetrakyanozinečnatan sodný",
+    "napoveda": "Při stechiometrii Na2[Zn(CN)4] kationty 2 × Na(+I) vyrovnávají komplexní anion [Zn(CN)4](-II) se Zn(+II) (-an) a 4 ligandy (CN)(-I) -> tetrakyanozinečnatan sodný."
+  },
+  "Na2[Zn(OH)4]": {
+    "nazev": "tetrahydroxozinečnatan sodný",
+    "napoveda": "Kationty: 2 × Na(+I) = +2 -> sodný. Koordinační anion: [Zn(OH)4](-II) se Zn(+II) (-an) a 4 ligandy (OH)(-I) -> tetrahydroxozinečnatan sodný."
+  },
+  "Ni": {
+    "nazev": "nikl",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "[Ni(CO)4]": {
+    "nazev": "tetrakarbonyl nikl",
+    "napoveda": "Neutrální koordinační sloučenina: centrální nikl v oxidačním stavu Ni(0) se 4 neutrálními ligandy oxidu uhelnatého (karbonyl) -> tetrakarbonylnikl."
+  },
+  "NiO": {
+    "nazev": "oxid nikelnatý",
+    "napoveda": "Kyslík: O(-II). Nikl: Ni(+II) (koncovka -natý). Poměr 1:1 -> oxid nikelnatý."
+  },
+  "O22-": {
+    "nazev": "peroxidový anion",
+    "napoveda": "Dvojatomový anion (O2)(-II) s formálním oxidačním číslem kyslíku O(-I) spojený peroxidickou vazbou -> peroxidový anion."
+  },
+  "O": {
+    "nazev": "nativní kyslík",
+    "napoveda": "Atomární (nativní) kyslík v podobě samostatných atomů O s oxidačním číslem 0."
+  },
+  "O2": {
+    "nazev": "kyslík",
+    "napoveda": "Elementární dvouatomová molekula plynu s oxidačním číslem 0."
+  },
+  "OF2": {
+    "nazev": "difluorid kyslíku",
+    "napoveda": "Fluor je elektronegativnější než kyslík: 2 × F(-I) = -2 (koncovka -id). Kyslík nese kladné číslo O(+II) -> difluorid kyslíku."
+  },
+  "OH-": {
+    "nazev": "anion hydroxidový",
+    "napoveda": "Jednomocný záporný anion: O(-II) + H(+I) = -1 -> anion hydroxidový."
+  },
+  "P": {
+    "nazev": "fosfor",
+    "napoveda": "Základní nekovový prvek v elementárním stavu s oxidačním číslem 0."
+  },
+  "P4": {
+    "nazev": "fosfor",
+    "napoveda": "Tetraatomická tetraedrická molekula bílého fosforu s oxidačním číslem 0."
+  },
+  "PBr3": {
+    "nazev": "bromid fosforitý",
+    "napoveda": "Brom: 3 × Br(-I) = -3 (koncovka -id). Fosfor: P(+III) (koncovka -itý) -> bromid fosforitý."
+  },
+  "PBr5": {
+    "nazev": "bromid fosforečný",
+    "napoveda": "Brom: 5 × Br(-I) = -5 (koncovka -id). Fosfor: P(+V) (koncovka -ečný) -> bromid fosforečný."
+  },
+  "PBr3S": {
+    "nazev": "tribromid - sulfid fosforečný",
+    "napoveda": "Fosfor P(+V) (koncovka -ečný) váže 3 × Br(-I) (-3) a S(-II) (-2), celkem +5 - 5 = 0 -> tribromid-sulfid fosforečný."
+  },
+  "PCl3": {
+    "nazev": "chlorid fosforitý",
+    "napoveda": "Chlor: 3 × Cl(-I) = -3 (koncovka -id). Fosfor: P(+III) (koncovka -itý) -> chlorid fosforitý."
+  },
+  "PCl5": {
+    "nazev": "chlorid fosforečný",
+    "napoveda": "Chlor: 5 × Cl(-I) = -5 (koncovka -id). Fosfor: P(+V) (koncovka -ečný) -> chlorid fosforečný."
+  },
+  "PCl4+": {
+    "nazev": "ion tetrachlorofosforečný",
+    "napoveda": "Kation s nábojem +1: P(+V) (koncovka -ečný) a 4 chloridové ligandy Cl(-I): (+5) + 4 × (-1) = +1 -> tetrachlorofosforečný."
+  },
+  "[PCl4F2]-": {
+    "nazev": "anion tetrachloro-difluorofosforečnanový",
+    "napoveda": "Komplexní anion: P(+V) (-ečnan) + 4 × Cl(-I) (-4) + 2 × F(-I) (-2) = -1 -> tetrachloro-difluorofosforečnanový."
+  },
+  "PF3": {
+    "nazev": "fluorid fosforitý",
+    "napoveda": "Fluor: 3 × F(-I) = -3 (koncovka -id). Fosfor: P(+III) (koncovka -itý) -> fluorid fosforitý."
+  },
+  "[PF6]-": {
+    "nazev": "anion hexafluorofosforečnanový",
+    "napoveda": "Komplexní anion: P(+V) (-ečnan) + 6 × F(-I) (-6) = -1 -> hexafluorofosforečnanový."
+  },
+  "P2H4": {
+    "nazev": "difosfan",
+    "napoveda": "Hydrid fosforu se dvěma atomy fosforu a vazbou P-P: H2P-PH2 -> difosfan."
+  },
+  "PH3": {
+    "nazev": "fosfan",
+    "napoveda": "Jednoduchý hydrid fosforu: P(-III) a 3 × H(+I). Triviálně fosfin, systematicky -> fosfan."
+  },
+  "PH4+": {
+    "nazev": "kation fosfoniový",
+    "napoveda": "Protonovaný fosfan: PH3 + H(+) = PH4(+) s nábojem +1 -> kation fosfoniový."
+  },
+  "PH4I": {
+    "nazev": "jodid fosfonia",
+    "napoveda": "Kation: fosfoniový [PH4](+I). Anion: jodidový I(-I) -> jodid fosfonia (fosfonium-jodid)."
+  },
+  "PI3": {
+    "nazev": "jodid fofsoritý",
+    "napoveda": "Jod: 3 × I(-I) = -3 (koncovka -id). Fosfor: P(+III) (koncovka -itý) -> jodid fosforitý."
+  },
+  "P4O10": {
+    "nazev": "oxid tetrafosforečný",
+    "napoveda": "Dimerní forma P2O5: 4 atomy P(+V) (-ečný) a 10 atomů O(-II) -> oxid tetrafosforečný (oxid fosforečný)."
+  },
+  "PO43-": {
+    "nazev": "anion fosforečnanový",
+    "napoveda": "Oxoanion: P(+V) (koncovka -ečnan) + 4 × O(-II) (-8) = -3 -> anion fosforečnanový."
+  },
+  "POBr3": {
+    "nazev": "bromid fosforylu",
+    "napoveda": "Trojmocná skupina fosforyl (PO)(+III) vázaná se 3 bromidy: 3 × Br(-I) -> bromid fosforylu."
+  },
+  "POCl3": {
+    "nazev": "chlorid fosforylu",
+    "napoveda": "Trojmocná skupina fosforyl (PO)(+III) vázaná se 3 chloridy: 3 × Cl(-I) -> chlorid fosforylu."
+  },
+  "POF3": {
+    "nazev": "fluorid fosforylu",
+    "napoveda": "Trojmocná skupina fosforyl (PO)(+III) vázaná se 3 fluoridy: 3 × F(-I) -> fluorid fosforylu."
+  },
+  "P(OR)3": {
+    "nazev": "trialkylester kyseliny fosforitétrialkyl",
+    "napoveda": "Trojnásobný ester kyseliny fosforité H3PO3 a alifatického alkoholu R-OH -> trialkylester kyseliny fosforité."
+  },
+  "Pb": {
+    "nazev": "olovo",
+    "napoveda": "Základní těžký kov (plumbum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "Pb2+": {
+    "nazev": "kation olovnatý",
+    "napoveda": "Dvojmocný kation olova Pb(+II) s koncovkou -natý."
+  },
+  "PbCl2": {
+    "nazev": "chlorid olovnatý",
+    "napoveda": "Kation: Pb(+II) -> olovnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid olovnatý."
+  },
+  "PbMoO4": {
+    "nazev": "molybdenan olovnatý",
+    "napoveda": "Kation: Pb(+II) -> olovnatý. Anion: (MoO4)(-II) s Mo(+VI) (koncovka -an) -> molybdenan olovnatý (wulfenit)."
+  },
+  "Pb(NO3)2": {
+    "nazev": "dusičnan olovnatý",
+    "napoveda": "Kation: Pb(+II) -> olovnatý. Anion: 2 × (NO3)(-I) = -2 (dusičnan, N(+V)) -> dusičnan olovnatý."
+  },
+  "PbO": {
+    "nazev": "oxid olovnatý",
+    "napoveda": "Kyslík: O(-II). Olovo: Pb(+II) (koncovka -natý). Poměr 1:1 -> oxid olovnatý (klejt)."
+  },
+  "PbO2": {
+    "nazev": "oxid olovičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Olovo: Pb(+IV) (koncovka -ičitý) -> oxid olovičitý."
+  },
+  "Pb(OH)2": {
+    "nazev": "hydroxid olovnatý",
+    "napoveda": "Kation: Pb(+II) -> olovnatý. Anion: 2 × (OH)(-I) = -2 -> hydroxid olovnatý."
+  },
+  "[Pb(OH)4]2-": {
+    "nazev": "anion tetrahydroxoolovnatanový",
+    "napoveda": "Komplexní anion s nábojem -2: Pb(+II) (-an) + 4 ligandy (OH)(-I) = -2 -> tetrahydroxoolovnatanový."
+  },
+  "Pb2PbO4": {
+    "nazev": "oxid diolovnato-olovičitý",
+    "napoveda": "Směsný oxid Pb3O4: 2 atomy Pb(+II) (-natý) a 1 atom Pb(+IV) (-ičitý) vyrovnané 4 × O(-II) -> oxid diolovnato-olovičitý (suřík)."
+  },
+  "PbS": {
+    "nazev": "sulfid olovnatý",
+    "napoveda": "Síra: S(-II) -> sulfid. Olovo: Pb(+II) (koncovka -natý). Poměr 1:1 -> sulfid olovnatý (galenit)."
+  },
+  "Pt": {
+    "nazev": "platina",
+    "napoveda": "Základní ušlechtilý přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "Rh": {
+    "nazev": "rhodium",
+    "napoveda": "Základní platinový kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "S": {
+    "nazev": "síra",
+    "napoveda": "Základní nekovový prvek v elementárním stavu s oxidačním číslem 0."
+  },
+  "S2-": {
+    "nazev": "anion sulfidový",
+    "napoveda": "Jednoatomový anion síry S(-II) s bezkyslíkatou koncovkou -id."
+  },
+  "SCl2": {
+    "nazev": "dichlorsulfan",
+    "napoveda": "Chlorovaný derivát sulfanu (H2S nahrazen chloridy) se dvěma atomy chloru Cl: Cl-S-Cl -> dichlorsulfan (chlorid sirnatý)."
+  },
+  "SCl4": {
+    "nazev": "chlorid siřičitý",
+    "napoveda": "Chlor: 4 × Cl(-I) = -4 (koncovka -id). Síra: S(+IV) (koncovka -ičitý) -> chlorid siřičitý."
+  },
+  "SF4": {
+    "nazev": "fluorid siřičitý",
+    "napoveda": "Fluor: 4 × F(-I) = -4 (koncovka -id). Síra: S(+IV) (koncovka -ičitý) -> fluorid siřičitý."
+  },
+  "SF2": {
+    "nazev": "difluorsulfan",
+    "napoveda": "Fluorovaný derivát sulfanu: F-S-F -> difluorsulfan (fluorid sirnatý)."
+  },
+  "SF6": {
+    "nazev": "fluorid sírový",
+    "napoveda": "Fluor: 6 × F(-I) = -6 (koncovka -id). Síra: S(+VI) (koncovka -ový) -> fluorid sírový."
+  },
+  "SF4O": {
+    "nazev": "tetrafluorid-oxid sírový",
+    "napoveda": "Síra S(+VI) (koncovka -ový) váže 4 × F(-I) (-4) a O(-II) (-2), celkem +6 - 6 = 0 -> tetrafluorid-oxid sírový."
+  },
+  "SO2": {
+    "nazev": "oxid siřičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Síra: S(+IV) (koncovka -ičitý) -> oxid siřičitý."
+  },
+  "SO32-": {
+    "nazev": "anion siřičitanový",
+    "napoveda": "Oxoanion: S(+IV) (koncovka -ičitan) + 3 × O(-II) (-6) = -2 -> anion siřičitanový."
+  },
+  "SO3": {
+    "nazev": "oxid sírový",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Síra: S(+VI) (koncovka -ový) -> oxid sírový."
+  },
+  "SO42-": {
+    "nazev": "anion síranový",
+    "napoveda": "Oxoanion: S(+VI) (koncovka -an) + 4 × O(-II) (-8) = -2 -> anion síranový."
+  },
+  "SOCl2": {
+    "nazev": "chlorid thionylu",
+    "napoveda": "Dvojmocná skupina thionyl (SO)(+II) vázaná se 2 chloridy Cl(-I) -> chlorid thionylu."
+  },
+  "SO2Cl2": {
+    "nazev": "chlorid sulfurylu",
+    "napoveda": "Dvojmocná skupina sulfuryl (SO2)(+II) vázaná se 2 chloridy Cl(-I) -> chlorid sulfurylu."
+  },
+  "SO2F2": {
+    "nazev": "fluorid sulfurylu",
+    "napoveda": "Dvojmocná skupina sulfuryl (SO2)(+II) vázaná se 2 fluoridy F(-I) -> fluorid sulfurylu."
+  },
+  "S2O6(O2)2-": {
+    "nazev": "anion peroxodisíranový",
+    "napoveda": "Oxoanion peroxodisíranu (S2O8)(-II) obsahující peroxidický můstek a dvě skupiny se sírou S(+VI) (-an) -> peroxodisíranový."
+  },
+  "S2O6(S2)2-": {
+    "nazev": "anion tetrathionanový",
+    "napoveda": "Polythionanový anion (S4O6)(-II) se čtyřmi atomy síry propojenými v řetězci -> tetrathionanový."
+  },
+  "S2O6S22-": {
+    "nazev": "anion tetrathionanový",
+    "napoveda": "Alternativní strukturní zápis tetrathionanu (S4O6)(-II) s nábojem -2 -> tetrathionanový."
+  },
+  "SO3S2-": {
+    "nazev": "anion thiosíranový",
+    "napoveda": "Síranový anion (SO4)(-II), kde jeden kyslík nahrazuje atom síry (thio-): (S2O3)(-II) -> thiosíranový."
+  },
+  "Sb": {
+    "nazev": "antimon",
+    "napoveda": "Základní polokov (stibium) v elementárním stavu s oxidačním číslem 0."
+  },
+  "SbF5": {
+    "nazev": "fluorid antimoničný",
+    "napoveda": "Fluor: 5 × F(-I) = -5 (koncovka -id). Antimon: Sb(+V) (koncovka -ičný) -> fluorid antimoničný."
+  },
+  "[SbF6]-": {
+    "nazev": "anion hexafluoroantimoničnanový",
+    "napoveda": "Komplexní anion: Sb(+V) (-ičnan) + 6 × F(-I) = -1 -> hexafluoroantimoničnanový."
+  },
+  "Sb2O3": {
+    "nazev": "oxid antimonitý",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Antimon: 2 × Sb(+III) = +6 (koncovka -itý) -> oxid antimonitý."
+  },
+  "Sb2S3": {
+    "nazev": "sulfid antimonitý",
+    "napoveda": "Síra: 3 × S(-II) = -6 (koncovka -id). Antimon: 2 × Sb(+III) = +6 (koncovka -itý) -> sulfid antimonitý (antimonit)."
+  },
+  "SbS33-": {
+    "nazev": "anion trithioantimonitanový",
+    "napoveda": "Thioanion s nábojem -3: Sb(+III) (-itan) a 3 ligandy síry S(-II) (trithio-) -> trithioantimonitanový."
+  },
+  "Sb2S5": {
+    "nazev": "sulfid antimoničný",
+    "napoveda": "Síra: 5 × S(-II) = -10 (koncovka -id). Antimon: 2 × Sb(+V) = +10 (koncovka -ičný) -> sulfid antimoničný."
+  },
+  "SbS43-": {
+    "nazev": "anion tetrathioantimoničnanový",
+    "napoveda": "Thioanion s nábojem -3: Sb(+V) (-ičnan) a 4 ligandy síry S(-II) (tetrathio-) -> tetrathioantimoničnanový."
+  },
+  "Se": {
+    "nazev": "selen",
+    "napoveda": "Základní nekovový prvek v elementárním stavu s oxidačním číslem 0."
+  },
+  "SeCl4": {
+    "nazev": "chlorid seleničitý",
+    "napoveda": "Chlor: 4 × Cl(-I) = -4 (koncovka -id). Selen: Se(+IV) (koncovka -ičitý) -> chlorid seleničitý."
+  },
+  "SeF4": {
+    "nazev": "fluorid seleničitý",
+    "napoveda": "Fluor: 4 × F(-I) = -4 (koncovka -id). Selen: Se(+IV) (koncovka -ičitý) -> fluorid seleničitý."
+  },
+  "SeO2": {
+    "nazev": "oxid seleničitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Selen: Se(+IV) (koncovka -ičitý) -> oxid seleničitý."
+  },
+  "SeO32-": {
+    "nazev": "anion seleničitanový",
+    "napoveda": "Oxoanion: Se(+IV) (koncovka -ičitan) + 3 × O(-II) (-6) = -2 -> anion seleničitanový."
+  },
+  "SeO42-": {
+    "nazev": "anion selenanový",
+    "napoveda": "Oxoanion: Se(+VI) (koncovka -an) + 4 × O(-II) (-8) = -2 -> anion selenanový."
+  },
+  "SeO3": {
+    "nazev": "oxid selenový",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Selen: Se(+VI) (koncovka -ový) -> oxid selenový."
+  },
+  "[SeOCl]+": {
+    "nazev": "kation oxo-chloroseleničitý",
+    "napoveda": "Kation s nábojem +1: Se(+IV) (koncovka -ičitý) + O(-II) + Cl(-I) = +1 -> oxo-chloroseleničitý."
+  },
+  "Si": {
+    "nazev": "křemík",
+    "napoveda": "Základní polokovový prvek (silicium) v elementárním stavu s oxidačním číslem 0."
+  },
+  "SiC": {
+    "nazev": "karbid křemičitý",
+    "napoveda": "Křemík: Si(+IV) -> křemičitý. Uhlík: C(-IV) = -4 (koncovka -id) -> karbid křemičitý (karborundum)."
+  },
+  "SiCl4": {
+    "nazev": "chlorid křemičitý",
+    "napoveda": "Chlor: 4 × Cl(-I) = -4 (koncovka -id). Křemík: Si(+IV) (koncovka -ičitý) -> chlorid křemičitý."
+  },
+  "SiF4": {
+    "nazev": "fluorid křemičitý",
+    "napoveda": "Fluor: 4 × F(-I) = -4 (koncovka -id). Křemík: Si(+IV) (koncovka -ičitý) -> fluorid křemičitý."
+  },
+  "SiF62-": {
+    "nazev": "anion hexafluorokřemičitanový",
+    "napoveda": "Komplexní anion s nábojem -2: Si(+IV) (-an) + 6 × F(-I) (-6) = -2 -> hexafluorokřemičitanový."
+  },
+  "[SiF6]2-": {
+    "nazev": "anion hexafluorokřemičitanový",
+    "napoveda": "Komplexní zápis aniontu s nábojem -2: Si(+IV) (-an) a 6 ligandů F(-I) -> hexafluorokřemičitanový."
+  },
+  "SiH4": {
+    "nazev": "silan",
+    "napoveda": "Jednoduchý hydrid křemíku: Si(-IV) a 4 × H(+I). Systematická koncovka pro křemíkové analogy alkanů -> silan."
+  },
+  "SiH3+": {
+    "nazev": "silylium",
+    "napoveda": "Kation odvozený odtržením hydridového iontu ze silanu: [SiH3](+) -> silylium."
+  },
+  "SiO2": {
+    "nazev": "oxid křemičitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Křemík: Si(+IV) (koncovka -ičitý) -> oxid křemičitý (křemen)."
+  },
+  "SiO44-": {
+    "nazev": "anion tetraoxokřemičitanový",
+    "napoveda": "Orthokřemičitanový anion s nábojem -4: Si(+IV) (koncovka -ičitan) + 4 × O(-II) (-8) = -4 -> tetraoxokřemičitanový."
+  },
+  "SiS2": {
+    "nazev": "sulfid křemičitý",
+    "napoveda": "Síra: 2 × S(-II) = -4 (koncovka -id). Křemík: Si(+IV) (koncovka -ičitý) -> sulfid křemičitý."
+  },
+  "Sn": {
+    "nazev": "cín",
+    "napoveda": "Základní kov (stannum) v elementárním stavu s oxidačním číslem 0."
+  },
+  "SnCl2": {
+    "nazev": "chlorid cínatý",
+    "napoveda": "Kation: Sn(+II) -> cínatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid cínatý."
+  },
+  "SnCl4": {
+    "nazev": "chlorid cíničitý",
+    "napoveda": "Kation: Sn(+IV) -> cíničitý. Anion: 4 × Cl(-I) = -4 (koncovka -id) -> chlorid cíničitý."
+  },
+  "SnO2": {
+    "nazev": "oxid cíničitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Cín: Sn(+IV) (koncovka -ičitý) -> oxid cíničitý (kasiterit)."
+  },
+  "SnO2H2O": {
+    "nazev": "hydrát oxidu cíničitého",
+    "napoveda": "Základ SnO2 (oxid cíničitý) krystalizující s molekulou vody (hydrát) -> hydrát oxidu cíničitého."
+  },
+  "SnS": {
+    "nazev": "sulfid cínatý",
+    "napoveda": "Síra: S(-II) -> sulfid. Cín: Sn(+II) (koncovka -natý). Poměr 1:1 -> sulfid cínatý."
+  },
+  "SnS2": {
+    "nazev": "sulfid cíničitý",
+    "napoveda": "Síra: 2 × S(-II) = -4 (koncovka -id). Cín: Sn(+IV) (koncovka -ičitý) -> sulfid cíničitý."
+  },
+  "SnSO4": {
+    "nazev": "síran cínatý",
+    "napoveda": "Kation: Sn(+II) -> cínatý. Anion: (SO4)(-II) (síran, S(+VI)) -> síran cínatý."
+  },
+  "TeCl4": {
+    "nazev": "chlorid telluričitý",
+    "napoveda": "Chlor: 4 × Cl(-I) = -4 (koncovka -id). Tellur: Te(+IV) (koncovka -ičitý) -> chlorid telluričitý."
+  },
+  "Ti": {
+    "nazev": "titan",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "TiCl4": {
+    "nazev": "chlorid titaničitý",
+    "napoveda": "Chlor: 4 × Cl(-I) = -4 (koncovka -id). Titan: Ti(+IV) (koncovka -ičitý) -> chlorid titaničitý."
+  },
+  "TiI4": {
+    "nazev": "jodid titaničitý",
+    "napoveda": "Jod: 4 × I(-I) = -4 (koncovka -id). Titan: Ti(+IV) (koncovka -ičitý) -> jodid titaničitý."
+  },
+  "TiO2": {
+    "nazev": "oxid titaničitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Titan: Ti(+IV) (koncovka -ičitý) -> oxid titaničitý (titanová běloba)."
+  },
+  "V": {
+    "nazev": "vanad",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "V2O5": {
+    "nazev": "oxid vanadičný",
+    "napoveda": "Kyslík: 5 × O(-II) = -10. Vanad: 2 × V(+V) = +10 (koncovka -ičný). Poměr 2:5 -> oxid vanadičný."
+  },
+  "XeF2": {
+    "nazev": "fluorid xenonatý",
+    "napoveda": "Fluor: 2 × F(-I) = -2 (koncovka -id). Xenon: Xe(+II) (koncovka -natý) -> fluorid xenonatý."
+  },
+  "XeF4": {
+    "nazev": "fluorid xenoničitý",
+    "napoveda": "Fluor: 4 × F(-I) = -4 (koncovka -id). Xenon: Xe(+IV) (koncovka -ičitý) -> fluorid xenoničitý."
+  },
+  "XeO3": {
+    "nazev": "oxid xenonový",
+    "napoveda": "Kyslík: 3 × O(-II) = -6. Xenon: Xe(+VI) (koncovka -ový) -> oxid xenonový."
+  },
+  "XeO2": {
+    "nazev": "oxid xenoničitý",
+    "napoveda": "Kyslík: 2 × O(-II) = -4. Xenon: Xe(+IV) (koncovka -ičitý) -> oxid xenoničitý."
+  },
+  "XeO2F2": {
+    "nazev": "oxid - difluorid xenonový",
+    "napoveda": "Xenon Xe(+VI) (koncovka -ový) váže 2 × O(-II) (-4) a 2 × F(-I) (-2), celkem +6 - 6 = 0 -> dioxid-difluorid (oxid-difluorid) xenonový."
+  },
+  "[XeOF3]+": {
+    "nazev": "kation trifluoroxenonový",
+    "napoveda": "Kation s nábojem +1: Xe(+VI) (koncovka -ový) + O(-II) + 3 × F(-I) (-3) = +1 -> oxo-trifluoroxenonový."
+  },
+  "XeOF4": {
+    "nazev": "oxid - tetrafluorid xenonový",
+    "napoveda": "Xenon Xe(+VI) (koncovka -ový) váže O(-II) a 4 × F(-I) (-4), celkem +6 - 6 = 0 -> oxid-tetrafluorid xenonový."
+  },
+  "Zn": {
+    "nazev": "zinek",
+    "napoveda": "Základní přechodný kov v elementárním stavu s oxidačním číslem 0."
+  },
+  "Zn2+": {
+    "nazev": "kation zinečnatý",
+    "napoveda": "Dvojmocný kation zinku Zn(+II) s koncovkou -natý."
+  },
+  "ZnCO3": {
+    "nazev": "uhličitan zinečnatý",
+    "napoveda": "Kation: Zn(+II) -> zinečnatý. Anion: (CO3)(-II) (uhličitan, C(+IV)) -> uhličitan zinečnatý."
+  },
+  "ZnCl2": {
+    "nazev": "chlorid zinečnatý",
+    "napoveda": "Kation: Zn(+II) -> zinečnatý. Anion: 2 × Cl(-I) = -2 (koncovka -id) -> chlorid zinečnatý."
+  },
+  "Zn(NO3)2": {
+    "nazev": "dusičnan zinečnatý",
+    "napoveda": "Kation: Zn(+II) -> zinečnatý. Anion: 2 × (NO3)(-I) = -2 (dusičnan, N(+V)) -> dusičnan zinečnatý."
+  },
+  "ZnO": {
+    "nazev": "oxid zinečnatý",
+    "napoveda": "Kyslík: O(-II). Zinek: Zn(+II) (koncovka -natý). Poměr 1:1 -> oxid zinečnatý."
+  },
+  "[Zn(OH)4]2-": {
+    "nazev": "anion tetrahydroxozinečnatanový",
+    "napoveda": "Komplexní anion s nábojem -2: Zn(+II) (-an) + 4 ligandy (OH)(-I) = -2 -> tetrahydroxozinečnatanový."
+  },
+  "ZnSO3": {
+    "nazev": "siřičitan zinečnatý",
+    "napoveda": "Kation: Zn(+II) -> zinečnatý. Anion: (SO3)(-II) (siřičitan, S(+IV)) -> siřičitan zinečnatý."
+  },
+  "ZnSO4": {
+    "nazev": "síran zinečnatý",
+    "napoveda": "Kation: Zn(+II) -> zinečnatý. Anion: (SO4)(-II) (síran, S(+VI)) -> síran zinečnatý."
+  }
+}
