@@ -12,6 +12,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 - Scopes: first 36 or all 118 elements; chemical groups; transition metals; metals, nonmetals, and metalloids.
 - Prompt to position: show a Czech name or symbol and ask the learner to select the correct table cell.
+- Prompt-to-position practice (blind table) is one continuous exercise over the whole table in random order. Only the sought element and the table are shown. Each click is judged at once: a correct cell turns green with the element symbol; a wrong cell shows a red ✗ for 10 seconds and cannot be clicked meanwhile, unless it belongs to the sought element. The missed element returns at the end of the queue. A panel shows live correct and wrong counts, a stopwatch, Reset (restart) and Ukončit (stop and show a summary). The exercise also ends when every element is placed.
 - Position to answer: highlight a cell and request a symbol/name or a four-option choice.
 - In position-to-answer practice the table stays on screen through each question, its feedback, and the summary; correctly answered cells keep the element symbol until the series restarts, and incorrect cells are marked without revealing the answer.
 - Position-to-answer practice lets the learner choose any of groups 1–18 and the two bottom rows (La–Yb and Ac–No in this layout). Each series draws up to 10 questions at random from the selection. One input accepts either the Czech name or the exact chemical symbol; symbol letter case is never corrected.

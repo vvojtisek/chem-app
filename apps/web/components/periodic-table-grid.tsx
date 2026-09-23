@@ -58,16 +58,13 @@ export function PeriodicTableGrid({ layout, onSelect, cellState }: PeriodicTable
 
   return (
     <div className="mt-6">
-      <p className="mb-3 text-sm text-slate-600" id="periodic-grid-help">
-        Pro zobrazení celé mřížky na úzké obrazovce posuňte tabulku vodorovně.
-      </p>
       <section
         aria-label="Periodická tabulka"
         className="overflow-x-auto pb-3"
         ref={scrollContainerRef}
       >
         <div className="min-w-180">
-          <fieldset aria-describedby="periodic-grid-help" className="grid grid-cols-18 gap-1">
+          <fieldset className="grid grid-cols-18 gap-1">
             <legend className="sr-only">Slepá periodická tabulka</legend>
             {renderCells(mainElements)}
           </fieldset>
