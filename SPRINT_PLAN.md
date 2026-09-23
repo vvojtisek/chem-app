@@ -105,7 +105,7 @@ Content volume is a release variable. Chemical correctness is not: unreviewed it
 
 #### Sprint 2 follow-up — Plynulé procvičování pozic (2026-09-22)
 
-**Stav (2026-09-23):** PT-UX-1 až PT-UX-4 jsou implementovány v `apps/web/components/periodic-table-name-practice.tsx` se sdílenou mřížkou `periodic-table-grid.tsx`, výběrem rozsahu `apps/web/lib/periodic-table-scope.ts` a vyhodnocením `evaluateElementAnswer` v `packages/chemistry`; směr název → pozice se nezměnil. Obnovení rozpracované série po reloadu (oddíl „Offline, kompatibilita“) zatím chybí. Prioritní doplnění Sprintu 2 na základě uživatelské zpětné vazby k `/procvicovani/periodicka-tabulka/nazvy`; musí být dokončeno před označením tohoto režimu za hotový.
+**Stav (2026-09-23):** PT-UX-1 až PT-UX-4 jsou implementovány v `apps/web/components/periodic-table-name-practice.tsx` se sdílenou mřížkou `periodic-table-grid.tsx`, výběrem rozsahu `apps/web/lib/periodic-table-scope.ts` a vyhodnocením `evaluateElementAnswer` v `packages/chemistry`. Směr název → pozice (slepá tabulka) byl 2026-09-23 na žádost vlastníka přepracován na plynulé cvičení celé tabulky v náhodném pořadí se živým skóre a stopkami; popis je v `docs/product-spec.md`. Obnovení rozpracované série po reloadu (oddíl „Offline, kompatibilita“) zatím chybí. Prioritní doplnění Sprintu 2 na základě uživatelské zpětné vazby k `/procvicovani/periodicka-tabulka/nazvy`; musí být dokončeno před označením tohoto režimu za hotový.
 
 **Cíl:** umožnit rychlé procvičování na jedné stabilní obrazovce, se zachováním již určených prvků, volbou skupin a odpovědí českým názvem nebo chemickou značkou.
 
