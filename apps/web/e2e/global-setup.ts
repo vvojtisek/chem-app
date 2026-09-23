@@ -31,7 +31,7 @@ export default async function globalSetup(): Promise<void> {
     "from inorganic_api.models.auth import LoginThrottle",
     "settings = get_settings()",
     "database_name = make_url(settings.database_url).database or ''",
-    "if not database_name.startswith('test_'): raise SystemExit('E2E database name must start with test_')",
+    "if not (database_name.startswith('test_') or database_name.endswith('_test')): raise SystemExit('E2E database must use a test_ prefix or _test suffix')",
     "with get_engine().begin() as connection:",
     "    connection.execute(delete(LoginThrottle))",
   ].join("\n");
