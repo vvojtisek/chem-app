@@ -10,7 +10,7 @@ Offline-capable Czech learning application for periodic-table practice, chemical
 - `packages/contracts` — generated OpenAPI TypeScript types
 - `packages/ui` — accessible React primitives
 - `content` — reviewed curriculum authoring data and validators
-- `docs` — product, architecture, contracts, security, testing, and ADRs
+- `docs` — product, architecture, contracts, security, testing, deployment, and ADRs
 
 Read `AGENTS.md` and the nested instruction file for the area being changed before editing.
 
@@ -87,6 +87,12 @@ pnpm test:e2e
 ```
 
 Chemistry-content changes additionally require SME review; passing validation alone is not approval.
+
+## Production deployment
+
+The public single-origin Docker Compose deployment, DNS/TLS prerequisites,
+first account provisioning, upgrades, and backup recovery are documented in
+[`docs/deployment.md`](docs/deployment.md).
 
 ## Nomenclature authoring and practice
 
