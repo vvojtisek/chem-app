@@ -6,13 +6,29 @@ import {
   transactionCompleted,
 } from "./browser-learning-database";
 import { attemptEventSchema, type NomenclatureAttemptEvent } from "./browser-progress-store";
-import { nomenclatureCheckpointSchema, type NomenclatureCheckpoint } from "./nomenclature-session";
+import {
+  isLegacyNomenclatureCheckpoint,
+  nomenclatureCheckpointSchema,
+  type NomenclatureCheckpoint,
+} from "./nomenclature-session";
+
+/** The stored practice is from the older series-based version and cannot be resumed. */
+export class LegacyNomenclatureCheckpointError extends Error {
+  constructor() {
+    super("Uložená série pochází ze starší verze cvičení.");
+    this.name = "LegacyNomenclatureCheckpointError";
+  }
+}
 
 export interface BrowserNomenclatureStore {
   load(): Promise<NomenclatureCheckpoint | null>;
   clear(): Promise<void>;
+  /**
+   * Stores the checkpoint, or removes it when null (a finished or abandoned practice),
+   * together with its attempts in one transaction.
+   */
   write(
-    checkpoint: NomenclatureCheckpoint,
+    checkpoint: NomenclatureCheckpoint | null,
     expectedRevision: number,
     attempts?: readonly NomenclatureAttemptEvent[],
   ): Promise<void>;
@@ -29,7 +45,9 @@ export function createBrowserNomenclatureStore(
         const request = transaction.objectStore(NOMENCLATURE_SESSION_STORE).get("active");
         const value: unknown = await requestCompleted(request);
         await transactionCompleted(transaction);
-        return value === undefined ? null : nomenclatureCheckpointSchema.parse(value);
+        if (value === undefined) return null;
+        if (isLegacyNomenclatureCheckpoint(value)) throw new LegacyNomenclatureCheckpointError();
+        return nomenclatureCheckpointSchema.parse(value);
       } finally {
         database.close();
       }
@@ -47,8 +65,8 @@ export function createBrowserNomenclatureStore(
     },
 
     async write(checkpoint, expectedRevision, attempts = []) {
-      const valid = nomenclatureCheckpointSchema.parse(checkpoint);
-      if (valid.revision !== expectedRevision + 1) {
+      const valid = checkpoint === null ? null : nomenclatureCheckpointSchema.parse(checkpoint);
+      if (valid && valid.revision !== expectedRevision + 1) {
         throw new Error("Nesouhlasí revize uložené série.");
       }
       const validAttempts = attempts.map((attempt) => attemptEventSchema.parse(attempt));
@@ -62,6 +80,10 @@ export function createBrowserNomenclatureStore(
         const completion = transactionCompleted(transaction);
         const sessionStore = transaction.objectStore(NOMENCLATURE_SESSION_STORE);
         let conflict: Error | undefined;
+        function save(): void {
+          if (valid) sessionStore.put(valid);
+          else sessionStore.delete("active");
+        }
         function abort(reason: string): void {
           conflict = new Error(reason);
           transaction.abort();
@@ -71,13 +93,15 @@ export function createBrowserNomenclatureStore(
           try {
             const previous: unknown = currentRequest.result;
             const revision =
-              previous === undefined ? 0 : nomenclatureCheckpointSchema.parse(previous).revision;
+              previous === undefined || isLegacyNomenclatureCheckpoint(previous)
+                ? 0
+                : nomenclatureCheckpointSchema.parse(previous).revision;
             if (revision !== expectedRevision) {
               abort("Série byla změněna v jiném okně. Načtěte ji znovu.");
               return;
             }
             if (validAttempts.length === 0) {
-              sessionStore.put(valid);
+              save();
               return;
             }
             const attemptStore = transaction.objectStore(ATTEMPT_EVENT_STORE);
@@ -95,7 +119,7 @@ export function createBrowserNomenclatureStore(
                 }
                 if (existing === undefined) attemptStore.add(validAttempt);
                 checked += 1;
-                if (checked === validAttempts.length && !conflict) sessionStore.put(valid);
+                if (checked === validAttempts.length && !conflict) save();
               };
             }
           } catch (error: unknown) {

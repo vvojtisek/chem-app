@@ -1,5 +1,7 @@
-import type { ExerciseRound } from "./exercise-session";
 import { drawSeries } from "./periodic-table-scope";
+
+/** Whether a question is asked for the first time or again after a wrong answer. */
+export type ExerciseRound = "initial" | "retry";
 
 export interface PracticeQueueQuestion {
   readonly id: string;

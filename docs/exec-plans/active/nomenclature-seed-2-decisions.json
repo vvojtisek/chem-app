@@ -1,0 +1,3000 @@
+{
+  "schemaVersion": 1,
+  "decisions": {
+    "Ag": {
+      "decision": "import",
+      "formula": "Ag",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ag+": {
+      "decision": "import",
+      "formula": "Ag",
+      "charge": 1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Ag3AsO4": {
+      "decision": "import",
+      "formula": "Ag3AsO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "AgBr": {
+      "decision": "import",
+      "formula": "AgBr",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "AgCl": {
+      "decision": "existing-record"
+    },
+    "AgI": {
+      "decision": "import",
+      "formula": "AgI",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "AgNO3": {
+      "decision": "existing-record"
+    },
+    "Ag2O": {
+      "decision": "import",
+      "formula": "Ag2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ag2S": {
+      "decision": "import",
+      "formula": "Ag2S",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Al": {
+      "decision": "import",
+      "formula": "Al",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Al4C3": {
+      "decision": "import",
+      "formula": "Al4C3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "AlCl3": {
+      "decision": "import",
+      "formula": "AlCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[AlF6]3-": {
+      "decision": "import",
+      "formula": "[AlF6]",
+      "charge": -3,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "[Al(H2O)6]Cl3": {
+      "decision": "import",
+      "formula": "[Al(H2O)6]Cl3",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "AlN": {
+      "decision": "import",
+      "formula": "AlN",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Al2O3": {
+      "decision": "existing-record"
+    },
+    "Al(OH)3": {
+      "decision": "existing-record"
+    },
+    "[Al(OH)4]-": {
+      "decision": "import",
+      "formula": "[Al(OH)4]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Al2(SO4)3": {
+      "decision": "existing-record"
+    },
+    "Al2Se3": {
+      "decision": "import",
+      "formula": "Al2Se3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "As": {
+      "decision": "import",
+      "formula": "As",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[AsF2]+": {
+      "decision": "import",
+      "formula": "[AsF2]",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "AsF4+": {
+      "decision": "import",
+      "formula": "AsF4",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "AsH3": {
+      "decision": "import",
+      "formula": "AsH3",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["arsin"]
+    },
+    "As2O3": {
+      "decision": "import",
+      "formula": "As2O3",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "As4O6": {
+      "decision": "import",
+      "formula": "As4O6",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name"]
+    },
+    "AsO33-": {
+      "decision": "import",
+      "formula": "AsO3",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "AsO43-": {
+      "decision": "import",
+      "formula": "AsO4",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "As2S3": {
+      "decision": "import",
+      "formula": "As2S3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "AsS33-": {
+      "decision": "import",
+      "formula": "AsS3",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Au": {
+      "decision": "import",
+      "formula": "Au",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "AuCl3": {
+      "decision": "import",
+      "formula": "AuCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Au2S": {
+      "decision": "import",
+      "formula": "Au2S",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BBr3": {
+      "decision": "import",
+      "formula": "BBr3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BCl3": {
+      "decision": "import",
+      "formula": "BCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BF3": {
+      "decision": "import",
+      "formula": "BF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BF4-": {
+      "decision": "import",
+      "formula": "BF4",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "B2H6": {
+      "decision": "import",
+      "formula": "B2H6",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BH3": {
+      "decision": "import",
+      "formula": "BH3",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BN": {
+      "decision": "import",
+      "formula": "BN",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "B2O3": {
+      "decision": "existing-record"
+    },
+    "B(OCH3)3": {
+      "decision": "import",
+      "formula": "B(OCH3)3",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"],
+      "nameAliases": ["trimethylester kyseliny borité"]
+    },
+    "B(OH)3": {
+      "decision": "import",
+      "formula": "B(OH)3",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name"],
+      "nameAliases": ["kyselina trihydrogenboritá"]
+    },
+    "Ba": {
+      "decision": "import",
+      "formula": "Ba",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameCs": "baryum",
+      "nameAliases": ["barium"]
+    },
+    "BaCO3": {
+      "decision": "import",
+      "formula": "BaCO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BaCl2": {
+      "decision": "existing-record"
+    },
+    "Ba(N3)2": {
+      "decision": "import",
+      "formula": "Ba(N3)2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BaO": {
+      "decision": "import",
+      "formula": "BaO",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BaO2": {
+      "decision": "import",
+      "formula": "BaO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BaS": {
+      "decision": "import",
+      "formula": "BaS",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BaSO4": {
+      "decision": "import",
+      "formula": "BaSO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Be": {
+      "decision": "import",
+      "formula": "Be",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Be2C": {
+      "decision": "import",
+      "formula": "Be2C",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "BeF2": {
+      "decision": "import",
+      "formula": "BeF2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameCs": "fluorid beryllnatý"
+    },
+    "[Be(OH)4]2-": {
+      "decision": "import",
+      "formula": "[Be(OH)4]",
+      "charge": -2,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Be(OH)2": {
+      "decision": "import",
+      "formula": "Be(OH)2",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Bi(OH)3": {
+      "decision": "import",
+      "formula": "Bi(OH)3",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Br2": {
+      "decision": "import",
+      "formula": "Br2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Br-": {
+      "decision": "import",
+      "formula": "Br",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Br3-": {
+      "decision": "import",
+      "formula": "Br3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "BrF5": {
+      "decision": "import",
+      "formula": "BrF5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[BrF2]+": {
+      "decision": "import",
+      "formula": "[BrF2]",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "BrF3": {
+      "decision": "import",
+      "formula": "BrF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[BrF4]-": {
+      "decision": "import",
+      "formula": "[BrF4]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "[BrF4O]-": {
+      "decision": "import",
+      "formula": "[BrF4O]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "BrO3-": {
+      "decision": "import",
+      "formula": "BrO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Br2O": {
+      "decision": "import",
+      "formula": "Br2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "C": {
+      "decision": "import",
+      "formula": "C",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CCl4": {
+      "decision": "import",
+      "formula": "CCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CF4": {
+      "decision": "import",
+      "formula": "CF4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "C2H2": {
+      "decision": "import",
+      "formula": "C2H2",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"],
+      "nameAliases": ["acetylen"]
+    },
+    "CH4": {
+      "decision": "existing-record"
+    },
+    "CH3OH": {
+      "decision": "import",
+      "formula": "CH3OH",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"],
+      "nameAliases": ["methanol"]
+    },
+    "CO": {
+      "decision": "import",
+      "formula": "CO",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CO2": {
+      "decision": "existing-record"
+    },
+    "CO32-": {
+      "decision": "import",
+      "formula": "CO3",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "COCl2": {
+      "decision": "import",
+      "formula": "COCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CO(NH2)2": {
+      "decision": "import",
+      "formula": "CO(NH2)2",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"],
+      "nameAliases": ["karbamid"]
+    },
+    "CS2": {
+      "decision": "import",
+      "formula": "CS2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CS32-": {
+      "decision": "import",
+      "formula": "CS3",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Ca": {
+      "decision": "import",
+      "formula": "Ca",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CaC2": {
+      "decision": "import",
+      "formula": "CaC2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CaCO3": {
+      "decision": "existing-record"
+    },
+    "CaCl2": {
+      "decision": "existing-record"
+    },
+    "CaCl(ClO)": {
+      "decision": "import",
+      "formula": "CaCl(ClO)",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name"],
+      "nameCs": "chlorid-chlornan vápenatý"
+    },
+    "Ca(ClO)2": {
+      "decision": "import",
+      "formula": "Ca(ClO)2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CaF2": {
+      "decision": "existing-record"
+    },
+    "CaH2": {
+      "decision": "import",
+      "formula": "CaH2",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ca(HCO3)2": {
+      "decision": "import",
+      "formula": "Ca(HCO3)2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ca(H2PO4)2": {
+      "decision": "existing-record"
+    },
+    "CaNCN": {
+      "decision": "import",
+      "formula": "CaNCN",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CaO": {
+      "decision": "existing-record"
+    },
+    "Ca(OH)2": {
+      "decision": "import",
+      "formula": "Ca(OH)2",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ca3P2": {
+      "decision": "existing-record"
+    },
+    "Ca2P2O6": {
+      "decision": "import",
+      "formula": "Ca2P2O6",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ca3(PO4)2": {
+      "decision": "existing-record"
+    },
+    "CaSO4": {
+      "decision": "import",
+      "formula": "CaSO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CaSO4H2O": {
+      "decision": "import",
+      "formula": "CaSO4·H2O",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "formulaCorrection": true,
+      "tags": ["hydrate"]
+    },
+    "CaSiO3": {
+      "decision": "import",
+      "formula": "CaSiO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Cl2": {
+      "decision": "import",
+      "formula": "Cl2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Cl-": {
+      "decision": "import",
+      "formula": "Cl",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "[ClF2]+": {
+      "decision": "import",
+      "formula": "[ClF2]",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "ClF3": {
+      "decision": "import",
+      "formula": "ClF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ClF5": {
+      "decision": "import",
+      "formula": "ClF5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ClF3O2": {
+      "decision": "import",
+      "formula": "ClF3O2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name"],
+      "nameCs": "trifluorid-dioxid chloristý"
+    },
+    "ClO-": {
+      "decision": "import",
+      "formula": "ClO",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "ClO2-": {
+      "decision": "import",
+      "formula": "ClO2",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "ClO2": {
+      "decision": "import",
+      "formula": "ClO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ClO3-": {
+      "decision": "import",
+      "formula": "ClO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "ClO4-": {
+      "decision": "import",
+      "formula": "ClO4",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Cl2O": {
+      "decision": "import",
+      "formula": "Cl2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ClO3F": {
+      "decision": "import",
+      "formula": "ClO3F",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ClO2F": {
+      "decision": "import",
+      "formula": "ClO2F",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["fluorid chlorylu"]
+    },
+    "Co": {
+      "decision": "import",
+      "formula": "Co",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CoCo2O4": {
+      "decision": "import",
+      "formula": "CoCo2O4",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name"]
+    },
+    "Cr": {
+      "decision": "import",
+      "formula": "Cr",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Cr3+": {
+      "decision": "import",
+      "formula": "Cr",
+      "charge": 3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "CrCl3": {
+      "decision": "import",
+      "formula": "CrCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Cr2O3": {
+      "decision": "existing-record"
+    },
+    "Cr2O72-": {
+      "decision": "import",
+      "formula": "Cr2O7",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "CrO3": {
+      "decision": "import",
+      "formula": "CrO3",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CrO42-": {
+      "decision": "import",
+      "formula": "CrO4",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Cr(OH)3": {
+      "decision": "import",
+      "formula": "Cr(OH)3",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[Cr(OH)4]-": {
+      "decision": "import",
+      "formula": "[Cr(OH)4]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"],
+      "nameCs": "anion tetrahydroxochromitanový"
+    },
+    "Cr2(SO4)3": {
+      "decision": "existing-record"
+    },
+    "Cu": {
+      "decision": "import",
+      "formula": "Cu",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Cu2+": {
+      "decision": "import",
+      "formula": "Cu",
+      "charge": 2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "CuCl2": {
+      "decision": "existing-record"
+    },
+    "CuFeS2": {
+      "decision": "import",
+      "formula": "CuFeS2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "reviewIssue": "R17"
+    },
+    "CuH": {
+      "decision": "import",
+      "formula": "CuH",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Cu(NO3)2": {
+      "decision": "existing-record"
+    },
+    "Cu2O": {
+      "decision": "existing-record"
+    },
+    "CuO": {
+      "decision": "existing-record"
+    },
+    "Cu2S": {
+      "decision": "import",
+      "formula": "Cu2S",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "CuS": {
+      "decision": "import",
+      "formula": "CuS",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "F2": {
+      "decision": "import",
+      "formula": "F2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Fe": {
+      "decision": "import",
+      "formula": "Fe",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Fe2+": {
+      "decision": "import",
+      "formula": "Fe",
+      "charge": 2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Fe3+": {
+      "decision": "import",
+      "formula": "Fe",
+      "charge": 3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "FeAsS": {
+      "decision": "import",
+      "formula": "FeAsS",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"]
+    },
+    "FeCl2": {
+      "decision": "import",
+      "formula": "FeCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "FeCl3": {
+      "decision": "import",
+      "formula": "FeCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "FeCr2O4": {
+      "decision": "existing-record"
+    },
+    "FeFe2O4": {
+      "decision": "import",
+      "formula": "FeFe2O4",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name"]
+    },
+    "Fe(NO3)3": {
+      "decision": "import",
+      "formula": "Fe(NO3)3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Fe2O3": {
+      "decision": "import",
+      "formula": "Fe2O3",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "FeS2": {
+      "decision": "existing-record"
+    },
+    "FeS": {
+      "decision": "existing-record"
+    },
+    "FeSO4": {
+      "decision": "existing-record"
+    },
+    "Fe2(SO4)3": {
+      "decision": "import",
+      "formula": "Fe2(SO4)3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "GeCl4": {
+      "decision": "import",
+      "formula": "GeCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "GeO2": {
+      "decision": "import",
+      "formula": "GeO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H": {
+      "decision": "import",
+      "formula": "H",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["atomární vodík"]
+    },
+    "H2": {
+      "decision": "import",
+      "formula": "H2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H+": {
+      "decision": "import",
+      "formula": "H",
+      "charge": 1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H3AsO4": {
+      "decision": "import",
+      "formula": "H3AsO4",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H[AuCl4]": {
+      "decision": "existing-record"
+    },
+    "H[BF4]": {
+      "decision": "import",
+      "formula": "H[BF4]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "H3BO3": {
+      "decision": "existing-record"
+    },
+    "HBO2": {
+      "decision": "import",
+      "formula": "HBO2",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["kyselina metaboritá"]
+    },
+    "HBr": {
+      "decision": "existing-record"
+    },
+    "HBrO3": {
+      "decision": "import",
+      "formula": "HBrO3",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HCN": {
+      "decision": "import",
+      "formula": "HCN",
+      "charge": 0,
+      "category": "binary-acid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2C2O4": {
+      "decision": "existing-record"
+    },
+    "HCO3-": {
+      "decision": "import",
+      "formula": "HCO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "HCO2H": {
+      "decision": "import",
+      "formula": "HCO2H",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"]
+    },
+    "HCl": {
+      "decision": "existing-record"
+    },
+    "HClO": {
+      "decision": "import",
+      "formula": "HClO",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HClO3": {
+      "decision": "import",
+      "formula": "HClO3",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HClO4": {
+      "decision": "import",
+      "formula": "HClO4",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HF": {
+      "decision": "existing-record"
+    },
+    "HI": {
+      "decision": "import",
+      "formula": "HI",
+      "charge": 0,
+      "category": "binary-acid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2IO63-": {
+      "decision": "import",
+      "formula": "H2IO6",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "HIO3": {
+      "decision": "import",
+      "formula": "HIO3",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H5IO6": {
+      "decision": "import",
+      "formula": "H5IO6",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["kyselina orthojodistá"]
+    },
+    "HNO2": {
+      "decision": "import",
+      "formula": "HNO2",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HNO3": {
+      "decision": "existing-record"
+    },
+    "H3O+": {
+      "decision": "import",
+      "formula": "H3O",
+      "charge": 1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H2O2": {
+      "decision": "existing-record"
+    },
+    "H2O": {
+      "decision": "existing-record"
+    },
+    "H2PO2-": {
+      "decision": "import",
+      "formula": "H2PO2",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H2PO3-": {
+      "decision": "import",
+      "formula": "H2PO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H3PO2": {
+      "decision": "import",
+      "formula": "H3PO2",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H3PO3": {
+      "decision": "import",
+      "formula": "H3PO3",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["name-to-formula"]
+    },
+    "H3PO4": {
+      "decision": "existing-record"
+    },
+    "HPO32-": {
+      "decision": "import",
+      "formula": "HPO3",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "HPO42-": {
+      "decision": "import",
+      "formula": "HPO4",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H2PO4-": {
+      "decision": "import",
+      "formula": "H2PO4",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H2[PtCl6]": {
+      "decision": "import",
+      "formula": "H2[PtCl6]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "H2S": {
+      "decision": "existing-record"
+    },
+    "HS-": {
+      "decision": "import",
+      "formula": "HS",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H2S2O7": {
+      "decision": "import",
+      "formula": "H2S2O7",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2SO4": {
+      "decision": "existing-record"
+    },
+    "HSO3-": {
+      "decision": "import",
+      "formula": "HSO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "HSO4-": {
+      "decision": "import",
+      "formula": "HSO4",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "H2S2O6(O2)": {
+      "decision": "import",
+      "formula": "H2S2O6(O2)",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name"]
+    },
+    "H2Se": {
+      "decision": "import",
+      "formula": "H2Se",
+      "charge": 0,
+      "category": "binary-acid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2SeO3": {
+      "decision": "import",
+      "formula": "H2SeO3",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2SeO4": {
+      "decision": "import",
+      "formula": "H2SeO4",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2SiF6": {
+      "decision": "import",
+      "formula": "H2SiF6",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "H2[SiF6]": {
+      "decision": "import",
+      "formula": "H2[SiF6]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "H6TeO6": {
+      "decision": "import",
+      "formula": "H6TeO6",
+      "charge": 0,
+      "category": "oxoacid",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["kyselina orthotellurová"]
+    },
+    "Hg": {
+      "decision": "import",
+      "formula": "Hg",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HgO": {
+      "decision": "import",
+      "formula": "HgO",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "HgS": {
+      "decision": "import",
+      "formula": "HgS",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "I2": {
+      "decision": "import",
+      "formula": "I2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "I-": {
+      "decision": "import",
+      "formula": "I",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "I3-": {
+      "decision": "import",
+      "formula": "I3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "IBr5": {
+      "decision": "import",
+      "formula": "IBr5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ICl3": {
+      "decision": "import",
+      "formula": "ICl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ICl5": {
+      "decision": "import",
+      "formula": "ICl5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[ICl4]-": {
+      "decision": "import",
+      "formula": "[ICl4]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "IF3": {
+      "decision": "import",
+      "formula": "IF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "IF5": {
+      "decision": "import",
+      "formula": "IF5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "IO3-": {
+      "decision": "import",
+      "formula": "IO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "IOF5": {
+      "decision": "import",
+      "formula": "IOF5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name"]
+    },
+    "K": {
+      "decision": "import",
+      "formula": "K",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "K[Ag(CN)2]": {
+      "decision": "import",
+      "formula": "K[Ag(CN)2]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "K2B4O7": {
+      "decision": "import",
+      "formula": "K2B4O7",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KBr": {
+      "decision": "import",
+      "formula": "KBr",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KCN": {
+      "decision": "existing-record"
+    },
+    "K2C2O4": {
+      "decision": "existing-record"
+    },
+    "K2CO3": {
+      "decision": "import",
+      "formula": "K2CO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KCl": {
+      "decision": "existing-record"
+    },
+    "KClO3": {
+      "decision": "existing-record"
+    },
+    "KClO4": {
+      "decision": "import",
+      "formula": "KClO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "K2Cr2O7": {
+      "decision": "existing-record"
+    },
+    "K2CrO4": {
+      "decision": "existing-record"
+    },
+    "K2FeO4": {
+      "decision": "import",
+      "formula": "K2FeO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KH": {
+      "decision": "import",
+      "formula": "KH",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KHCO3": {
+      "decision": "import",
+      "formula": "KHCO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KHSO4": {
+      "decision": "import",
+      "formula": "KHSO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KI": {
+      "decision": "existing-record"
+    },
+    "KIO3": {
+      "decision": "existing-record"
+    },
+    "K2MnO4": {
+      "decision": "import",
+      "formula": "K2MnO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "KMnO4": {
+      "decision": "existing-record"
+    },
+    "KNO2": {
+      "decision": "existing-record"
+    },
+    "KNO3": {
+      "decision": "existing-record"
+    },
+    "KO2": {
+      "decision": "import",
+      "formula": "KO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["hyperoxid draselný"]
+    },
+    "KOH": {
+      "decision": "existing-record"
+    },
+    "K2SO3": {
+      "decision": "existing-record"
+    },
+    "K2SO4": {
+      "decision": "existing-record"
+    },
+    "K2Se": {
+      "decision": "import",
+      "formula": "K2Se",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "K2SeO3": {
+      "decision": "import",
+      "formula": "K2SeO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "K2[Sn(OH)6]": {
+      "decision": "import",
+      "formula": "K2[Sn(OH)6]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Li": {
+      "decision": "import",
+      "formula": "Li",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameCs": "lithium",
+      "nameAliases": ["litium"]
+    },
+    "Li2O": {
+      "decision": "import",
+      "formula": "Li2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameCs": "oxid lithný",
+      "nameAliases": ["oxid litný"]
+    },
+    "Mg": {
+      "decision": "import",
+      "formula": "Mg",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mg3B2": {
+      "decision": "import",
+      "formula": "Mg3B2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "MgCl2": {
+      "decision": "existing-record"
+    },
+    "MgF2": {
+      "decision": "import",
+      "formula": "MgF2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mg3N2": {
+      "decision": "existing-record"
+    },
+    "MgO": {
+      "decision": "existing-record"
+    },
+    "Mg(OH)2": {
+      "decision": "import",
+      "formula": "Mg(OH)2",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mg2Si": {
+      "decision": "import",
+      "formula": "Mg2Si",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mn": {
+      "decision": "import",
+      "formula": "Mn",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mn2+": {
+      "decision": "import",
+      "formula": "Mn",
+      "charge": 2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "MnBr2": {
+      "decision": "import",
+      "formula": "MnBr2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "MnCl2": {
+      "decision": "import",
+      "formula": "MnCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "MnI2": {
+      "decision": "import",
+      "formula": "MnI2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mn2MnO4": {
+      "decision": "import",
+      "formula": "Mn2MnO4",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name"]
+    },
+    "MnO2": {
+      "decision": "existing-record"
+    },
+    "MnO42-": {
+      "decision": "import",
+      "formula": "MnO4",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "MnO4-": {
+      "decision": "import",
+      "formula": "MnO4",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "MnSO4": {
+      "decision": "import",
+      "formula": "MnSO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Mo": {
+      "decision": "import",
+      "formula": "Mo",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "N2": {
+      "decision": "import",
+      "formula": "N2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "N3-": {
+      "decision": "import",
+      "formula": "N3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "NCl3": {
+      "decision": "import",
+      "formula": "NCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NF3": {
+      "decision": "import",
+      "formula": "NF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "N2H4": {
+      "decision": "import",
+      "formula": "N2H4",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NH3": {
+      "decision": "existing-record"
+    },
+    "NH4+": {
+      "decision": "import",
+      "formula": "NH4",
+      "charge": 1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "NH4BF4": {
+      "decision": "import",
+      "formula": "NH4BF4",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NH4Br": {
+      "decision": "import",
+      "formula": "NH4Br",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "(NH4)2CO3": {
+      "decision": "import",
+      "formula": "(NH4)2CO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NH4Cl": {
+      "decision": "existing-record"
+    },
+    "(NH4)2Cr2O7": {
+      "decision": "import",
+      "formula": "(NH4)2Cr2O7",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "(NH4)2CrO4": {
+      "decision": "import",
+      "formula": "(NH4)2CrO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NH2NH2": {
+      "decision": "import",
+      "formula": "NH2NH2",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name"]
+    },
+    "NH4NO3": {
+      "decision": "existing-record"
+    },
+    "NH4NO2": {
+      "decision": "existing-record"
+    },
+    "NH2OH": {
+      "decision": "import",
+      "formula": "NH2OH",
+      "charge": 0,
+      "category": "other",
+      "directions": ["formula-to-name"]
+    },
+    "NH4OH": {
+      "decision": "import",
+      "formula": "NH4OH",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "(NH4)2S": {
+      "decision": "import",
+      "formula": "(NH4)2S",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "N2H6SO4": {
+      "decision": "import",
+      "formula": "N2H6SO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name"]
+    },
+    "(NH4)2SO4": {
+      "decision": "existing-record"
+    },
+    "(NH4)2SO3": {
+      "decision": "import",
+      "formula": "(NH4)2SO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "(NH4)2S2O6(O2)": {
+      "decision": "import",
+      "formula": "(NH4)2S2O6(O2)",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name"]
+    },
+    "NH4VO3": {
+      "decision": "import",
+      "formula": "NH4VO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "N2O4": {
+      "decision": "import",
+      "formula": "N2O4",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["tetraoxid didusíku"]
+    },
+    "N2O": {
+      "decision": "import",
+      "formula": "N2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameCs": "oxid dusný"
+    },
+    "NO": {
+      "decision": "existing-record"
+    },
+    "NO2-": {
+      "decision": "import",
+      "formula": "NO2",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "NO2": {
+      "decision": "existing-record"
+    },
+    "NO3-": {
+      "decision": "import",
+      "formula": "NO3",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "NOCl": {
+      "decision": "import",
+      "formula": "NOCl",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NO2Cl": {
+      "decision": "import",
+      "formula": "NO2Cl",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NOF": {
+      "decision": "import",
+      "formula": "NOF",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na": {
+      "decision": "import",
+      "formula": "Na",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na[Ag(CN)2]": {
+      "decision": "import",
+      "formula": "Na[Ag(CN)2]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Na3[Ag(SO3S)2]": {
+      "decision": "import",
+      "formula": "Na3[Ag(SO3S)2]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Na3[AlF6]": {
+      "decision": "import",
+      "formula": "Na3[AlF6]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Na[Al(OH)4]": {
+      "decision": "import",
+      "formula": "Na[Al(OH)4]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Na3AsO4": {
+      "decision": "import",
+      "formula": "Na3AsO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na[Au(CN)2]": {
+      "decision": "import",
+      "formula": "Na[Au(CN)2]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "NaBF4": {
+      "decision": "import",
+      "formula": "NaBF4",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaBH4": {
+      "decision": "import",
+      "formula": "NaBH4",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["tetrahydridoboritan sodný"]
+    },
+    "Na[BH4]": {
+      "decision": "import",
+      "formula": "Na[BH4]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"],
+      "nameAliases": ["tetrahydroboritan sodný"]
+    },
+    "Na2B4O7": {
+      "decision": "existing-record"
+    },
+    "NaBiO3": {
+      "decision": "import",
+      "formula": "NaBiO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaBr": {
+      "decision": "import",
+      "formula": "NaBr",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaCN": {
+      "decision": "import",
+      "formula": "NaCN",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2CO3": {
+      "decision": "existing-record"
+    },
+    "NaCl": {
+      "decision": "existing-record"
+    },
+    "NaClO": {
+      "decision": "import",
+      "formula": "NaClO",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaClO2": {
+      "decision": "import",
+      "formula": "NaClO2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaClO3": {
+      "decision": "import",
+      "formula": "NaClO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaClO4": {
+      "decision": "import",
+      "formula": "NaClO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2Cr2O7": {
+      "decision": "import",
+      "formula": "Na2Cr2O7",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2CrO4": {
+      "decision": "existing-record"
+    },
+    "NaHCO3": {
+      "decision": "import",
+      "formula": "NaHCO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2H2P2O6": {
+      "decision": "import",
+      "formula": "Na2H2P2O6",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaH2PO2": {
+      "decision": "import",
+      "formula": "NaH2PO2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaH2PO4": {
+      "decision": "existing-record"
+    },
+    "NaHSO3": {
+      "decision": "import",
+      "formula": "NaHSO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaHSO4": {
+      "decision": "import",
+      "formula": "NaHSO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaI": {
+      "decision": "import",
+      "formula": "NaI",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaIO3": {
+      "decision": "import",
+      "formula": "NaIO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2MoO4": {
+      "decision": "import",
+      "formula": "Na2MoO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na3N": {
+      "decision": "existing-record"
+    },
+    "Na2NCN": {
+      "decision": "import",
+      "formula": "Na2NCN",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaNCN": {
+      "decision": "omit",
+      "reason": "Formula and name contradict (sodium formula, calcium name; Na+ cannot balance NCN2-)."
+    },
+    "NaNH2": {
+      "decision": "existing-record"
+    },
+    "NaNO2": {
+      "decision": "import",
+      "formula": "NaNO2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaNO3": {
+      "decision": "existing-record"
+    },
+    "Na2O2": {
+      "decision": "import",
+      "formula": "Na2O2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2O": {
+      "decision": "import",
+      "formula": "Na2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "NaOCN": {
+      "decision": "import",
+      "formula": "NaOCN",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[(Na2O)(CaO)(SiO2)6]": {
+      "decision": "import",
+      "formula": "[(Na2O)(CaO)(SiO2)6]",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name"]
+    },
+    "NaOH": {
+      "decision": "existing-record"
+    },
+    "Na2S": {
+      "decision": "import",
+      "formula": "Na2S",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2S2O4": {
+      "decision": "import",
+      "formula": "Na2S2O4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2S2O5": {
+      "decision": "import",
+      "formula": "Na2S2O5",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2SO3": {
+      "decision": "existing-record"
+    },
+    "Na2S2O7": {
+      "decision": "import",
+      "formula": "Na2S2O7",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2SO4": {
+      "decision": "existing-record"
+    },
+    "Na2SO3S": {
+      "decision": "import",
+      "formula": "Na2SO3S",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name"]
+    },
+    "Na2SiO3": {
+      "decision": "import",
+      "formula": "Na2SiO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na2SnO3": {
+      "decision": "import",
+      "formula": "Na2SnO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Na[Zn(CN)4]": {
+      "decision": "import",
+      "formula": "Na2[Zn(CN)4]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"],
+      "formulaCorrection": true
+    },
+    "Na2[Zn(OH)4]": {
+      "decision": "import",
+      "formula": "Na2[Zn(OH)4]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Ni": {
+      "decision": "import",
+      "formula": "Ni",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[Ni(CO)4]": {
+      "decision": "import",
+      "formula": "[Ni(CO)4]",
+      "charge": 0,
+      "category": "coordination",
+      "directions": ["formula-to-name"],
+      "nameCs": "tetrakarbonylnikl"
+    },
+    "NiO": {
+      "decision": "import",
+      "formula": "NiO",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "O22-": {
+      "decision": "import",
+      "formula": "O2",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "O": {
+      "decision": "import",
+      "formula": "O",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["atomární kyslík"]
+    },
+    "O2": {
+      "decision": "import",
+      "formula": "O2",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "OF2": {
+      "decision": "import",
+      "formula": "OF2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "OH-": {
+      "decision": "import",
+      "formula": "OH",
+      "charge": -1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "P": {
+      "decision": "import",
+      "formula": "P",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "P4": {
+      "decision": "import",
+      "formula": "P4",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "PBr3": {
+      "decision": "existing-record"
+    },
+    "PBr5": {
+      "decision": "import",
+      "formula": "PBr5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PBr3S": {
+      "decision": "import",
+      "formula": "PBr3S",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name"],
+      "nameCs": "tribromid-sulfid fosforečný"
+    },
+    "PCl3": {
+      "decision": "import",
+      "formula": "PCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PCl5": {
+      "decision": "import",
+      "formula": "PCl5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PCl4+": {
+      "decision": "import",
+      "formula": "PCl4",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "[PCl4F2]-": {
+      "decision": "import",
+      "formula": "[PCl4F2]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "PF3": {
+      "decision": "import",
+      "formula": "PF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[PF6]-": {
+      "decision": "import",
+      "formula": "[PF6]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "P2H4": {
+      "decision": "import",
+      "formula": "P2H4",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PH3": {
+      "decision": "existing-record"
+    },
+    "PH4+": {
+      "decision": "import",
+      "formula": "PH4",
+      "charge": 1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "PH4I": {
+      "decision": "import",
+      "formula": "PH4I",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PI3": {
+      "decision": "import",
+      "formula": "PI3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameCs": "jodid fosforitý"
+    },
+    "P4O10": {
+      "decision": "existing-record"
+    },
+    "PO43-": {
+      "decision": "import",
+      "formula": "PO4",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "POBr3": {
+      "decision": "import",
+      "formula": "POBr3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "POCl3": {
+      "decision": "import",
+      "formula": "POCl3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "POF3": {
+      "decision": "import",
+      "formula": "POF3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "P(OR)3": {
+      "decision": "omit",
+      "reason": "Not a compound: R is a placeholder, and the supplied name is garbled."
+    },
+    "Pb": {
+      "decision": "import",
+      "formula": "Pb",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Pb2+": {
+      "decision": "import",
+      "formula": "Pb",
+      "charge": 2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "PbCl2": {
+      "decision": "import",
+      "formula": "PbCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PbMoO4": {
+      "decision": "import",
+      "formula": "PbMoO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Pb(NO3)2": {
+      "decision": "import",
+      "formula": "Pb(NO3)2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PbO": {
+      "decision": "import",
+      "formula": "PbO",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "PbO2": {
+      "decision": "existing-record"
+    },
+    "Pb(OH)2": {
+      "decision": "import",
+      "formula": "Pb(OH)2",
+      "charge": 0,
+      "category": "hydroxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[Pb(OH)4]2-": {
+      "decision": "import",
+      "formula": "[Pb(OH)4]",
+      "charge": -2,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Pb2PbO4": {
+      "decision": "import",
+      "formula": "Pb2PbO4",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name"]
+    },
+    "PbS": {
+      "decision": "import",
+      "formula": "PbS",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Pt": {
+      "decision": "import",
+      "formula": "Pt",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Rh": {
+      "decision": "import",
+      "formula": "Rh",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "S": {
+      "decision": "import",
+      "formula": "S",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "S2-": {
+      "decision": "import",
+      "formula": "S",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SCl2": {
+      "decision": "import",
+      "formula": "SCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["chlorid sirnatý"]
+    },
+    "SCl4": {
+      "decision": "import",
+      "formula": "SCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SF4": {
+      "decision": "import",
+      "formula": "SF4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SF2": {
+      "decision": "import",
+      "formula": "SF2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "nameAliases": ["fluorid sirnatý"]
+    },
+    "SF6": {
+      "decision": "existing-record"
+    },
+    "SF4O": {
+      "decision": "import",
+      "formula": "SF4O",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name"]
+    },
+    "SO2": {
+      "decision": "existing-record"
+    },
+    "SO32-": {
+      "decision": "import",
+      "formula": "SO3",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SO3": {
+      "decision": "existing-record"
+    },
+    "SO42-": {
+      "decision": "import",
+      "formula": "SO4",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SOCl2": {
+      "decision": "import",
+      "formula": "SOCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SO2Cl2": {
+      "decision": "import",
+      "formula": "SO2Cl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SO2F2": {
+      "decision": "import",
+      "formula": "SO2F2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "S2O6(O2)2-": {
+      "decision": "import",
+      "formula": "S2O6(O2)",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "S2O6(S2)2-": {
+      "decision": "import",
+      "formula": "S2O6(S2)",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "S2O6S22-": {
+      "decision": "import",
+      "formula": "S2O6S2",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SO3S2-": {
+      "decision": "import",
+      "formula": "SO3S",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Sb": {
+      "decision": "import",
+      "formula": "Sb",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SbF5": {
+      "decision": "import",
+      "formula": "SbF5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[SbF6]-": {
+      "decision": "import",
+      "formula": "[SbF6]",
+      "charge": -1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Sb2O3": {
+      "decision": "import",
+      "formula": "Sb2O3",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Sb2S3": {
+      "decision": "import",
+      "formula": "Sb2S3",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SbS33-": {
+      "decision": "import",
+      "formula": "SbS3",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Sb2S5": {
+      "decision": "import",
+      "formula": "Sb2S5",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SbS43-": {
+      "decision": "import",
+      "formula": "SbS4",
+      "charge": -3,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "Se": {
+      "decision": "import",
+      "formula": "Se",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SeCl4": {
+      "decision": "import",
+      "formula": "SeCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SeF4": {
+      "decision": "import",
+      "formula": "SeF4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SeO2": {
+      "decision": "import",
+      "formula": "SeO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SeO32-": {
+      "decision": "import",
+      "formula": "SeO3",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SeO42-": {
+      "decision": "import",
+      "formula": "SeO4",
+      "charge": -2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SeO3": {
+      "decision": "import",
+      "formula": "SeO3",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "[SeOCl]+": {
+      "decision": "import",
+      "formula": "[SeOCl]",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "Si": {
+      "decision": "import",
+      "formula": "Si",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SiC": {
+      "decision": "import",
+      "formula": "SiC",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SiCl4": {
+      "decision": "existing-record"
+    },
+    "SiF4": {
+      "decision": "existing-record"
+    },
+    "SiF62-": {
+      "decision": "import",
+      "formula": "SiF6",
+      "charge": -2,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "[SiF6]2-": {
+      "decision": "import",
+      "formula": "[SiF6]",
+      "charge": -2,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "SiH4": {
+      "decision": "import",
+      "formula": "SiH4",
+      "charge": 0,
+      "category": "hydride",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SiH3+": {
+      "decision": "import",
+      "formula": "SiH3",
+      "charge": 1,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SiO2": {
+      "decision": "existing-record"
+    },
+    "SiO44-": {
+      "decision": "import",
+      "formula": "SiO4",
+      "charge": -4,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "SiS2": {
+      "decision": "import",
+      "formula": "SiS2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Sn": {
+      "decision": "import",
+      "formula": "Sn",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SnCl2": {
+      "decision": "import",
+      "formula": "SnCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SnCl4": {
+      "decision": "import",
+      "formula": "SnCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SnO2": {
+      "decision": "import",
+      "formula": "SnO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SnO2H2O": {
+      "decision": "import",
+      "formula": "SnO2·H2O",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"],
+      "formulaCorrection": true,
+      "tags": ["hydrate"]
+    },
+    "SnS": {
+      "decision": "import",
+      "formula": "SnS",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SnS2": {
+      "decision": "import",
+      "formula": "SnS2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "SnSO4": {
+      "decision": "import",
+      "formula": "SnSO4",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "TeCl4": {
+      "decision": "import",
+      "formula": "TeCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Ti": {
+      "decision": "import",
+      "formula": "Ti",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "TiCl4": {
+      "decision": "import",
+      "formula": "TiCl4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "TiI4": {
+      "decision": "import",
+      "formula": "TiI4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "TiO2": {
+      "decision": "import",
+      "formula": "TiO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "V": {
+      "decision": "import",
+      "formula": "V",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "V2O5": {
+      "decision": "import",
+      "formula": "V2O5",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "XeF2": {
+      "decision": "import",
+      "formula": "XeF2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "XeF4": {
+      "decision": "import",
+      "formula": "XeF4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "XeO3": {
+      "decision": "import",
+      "formula": "XeO3",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "XeO2": {
+      "decision": "import",
+      "formula": "XeO2",
+      "charge": 0,
+      "category": "oxide",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "XeO2F2": {
+      "decision": "import",
+      "formula": "XeO2F2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name"],
+      "nameCs": "dioxid-difluorid xenonový"
+    },
+    "[XeOF3]+": {
+      "decision": "import",
+      "formula": "[XeOF3]",
+      "charge": 1,
+      "category": "coordination",
+      "directions": ["formula-to-name"],
+      "nameCs": "kation oxo-trifluoroxenonový"
+    },
+    "XeOF4": {
+      "decision": "import",
+      "formula": "XeOF4",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name"],
+      "nameCs": "oxid-tetrafluorid xenonový"
+    },
+    "Zn": {
+      "decision": "import",
+      "formula": "Zn",
+      "charge": 0,
+      "category": "element-ion",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Zn2+": {
+      "decision": "import",
+      "formula": "Zn",
+      "charge": 2,
+      "category": "element-ion",
+      "directions": ["formula-to-name"]
+    },
+    "ZnCO3": {
+      "decision": "import",
+      "formula": "ZnCO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ZnCl2": {
+      "decision": "import",
+      "formula": "ZnCl2",
+      "charge": 0,
+      "category": "binary-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "Zn(NO3)2": {
+      "decision": "import",
+      "formula": "Zn(NO3)2",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ZnO": {
+      "decision": "existing-record"
+    },
+    "[Zn(OH)4]2-": {
+      "decision": "import",
+      "formula": "[Zn(OH)4]",
+      "charge": -2,
+      "category": "coordination",
+      "directions": ["formula-to-name"]
+    },
+    "ZnSO3": {
+      "decision": "import",
+      "formula": "ZnSO3",
+      "charge": 0,
+      "category": "oxoacid-salt",
+      "directions": ["formula-to-name", "name-to-formula"]
+    },
+    "ZnSO4": {
+      "decision": "existing-record"
+    }
+  }
+}

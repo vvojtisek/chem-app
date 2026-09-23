@@ -13,6 +13,6 @@ const symbols = new Set(
 );
 const problems = validateNomenclatureRecords(records, symbols);
 if (problems.length) throw new Error(JSON.stringify(problems, null, 2));
-const snapshot = createNomenclatureSnapshot(records);
+const snapshot = createNomenclatureSnapshot(records, symbols);
 await writeFile(outputUrl, `${JSON.stringify(snapshot, null, 2)}\n`);
 console.log(`Generated ${snapshot.compounds.length} published nomenclature records.`);

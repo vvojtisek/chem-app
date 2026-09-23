@@ -64,13 +64,13 @@ const nomenclatureFields = {
   sequence: z.number().int().nonnegative(),
   compoundId: z.string().min(1),
   outcome: z.enum(["correct", "incorrect", "revealed"]),
-  match: z.enum(["canonical", "alias", "missing-diacritics", "none"]),
+  match: z.enum(["canonical", "alias", "missing-diacritics", "normalized", "none"]),
 };
 
 const nomenclatureNameAttemptSchema = baseAttemptSchema.extend({
   ...nomenclatureFields,
   direction: z.literal("formula-to-name"),
-  matchPolicy: z.enum(["name-strict", "name-diacritics-tolerant"]),
+  matchPolicy: z.enum(["name-strict", "name-diacritics-tolerant", "name-lenient"]),
 });
 
 const nomenclatureFormulaAttemptSchema = baseAttemptSchema.extend({

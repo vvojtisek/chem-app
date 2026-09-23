@@ -1,14 +1,17 @@
 import { z } from "zod";
 
+/** Practice categories offered by the pre-exercise filter. */
 export const nomenclatureCategorySchema = z.enum([
+  "element-ion",
   "oxide",
-  "hydroxide",
+  "hydride",
   "binary-acid",
-  "binary-salt",
   "oxoacid",
+  "hydroxide",
+  "binary-salt",
   "oxoacid-salt",
-  "hydrogensalt",
-  "extension",
+  "coordination",
+  "other",
 ]);
 
 export const nomenclatureTagSchema = z.enum([
@@ -38,6 +41,8 @@ export const nomenclatureRecordSchema = z
     id: z.string().regex(/^nomenclature\.[a-z0-9]+(?:-[a-z0-9]+)*$/u),
     sourceKey: z.string().min(1),
     formula: z.string().min(1),
+    /** Net charge of an ion; the formula itself never contains a charge. */
+    charge: z.number().int().min(-4).max(4),
     nameCs: z.string().min(1),
     explanationCs: z.string().min(1),
     baseCategory: nomenclatureCategorySchema.nullable(),
@@ -82,10 +87,13 @@ export const nomenclatureRecordSchema = z
     if (record.reviewIssues.length || record.disposition !== "core-candidate") {
       context.addIssue({ code: "custom", message: "Resolve review issues before release." });
     }
-    if (!record.baseCategory || record.baseCategory === "extension" || !record.difficulty) {
+    if (!record.baseCategory) {
+      context.addIssue({ code: "custom", message: "Published records require a category." });
+    }
+    if (record.charge !== 0 && record.directions.includes("name-to-formula")) {
       context.addIssue({
         code: "custom",
-        message: "Published records require a core category and difficulty.",
+        message: "Ions are asked only from formula to name.",
       });
     }
     if (record.directions.length === 0) {
@@ -97,7 +105,7 @@ export const nomenclatureRecordSchema = z
   });
 
 export const nomenclatureCollectionSchema = z.object({
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   records: z.array(nomenclatureRecordSchema),
 });
 
@@ -105,11 +113,15 @@ export const nomenclatureRuntimeRecordSchema = z.object({
   id: z.string(),
   reviewLevel: z.enum(["owner-approved", "sme-reviewed"]),
   formula: z.string(),
+  charge: z.number().int(),
   nameCs: z.string(),
   explanationCs: z.string(),
-  baseCategory: nomenclatureCategorySchema,
+  category: nomenclatureCategorySchema,
+  /** Number of distinct elements in the formula, derived when the snapshot is generated. */
+  elementCount: z.number().int().positive(),
+  /** Anion word of a salt name without a hydrogen prefix (chlorid, síran), for quick filters. */
+  anionFamily: z.string().nullable(),
   tags: z.array(nomenclatureTagSchema),
-  difficulty: z.enum(["basic", "intermediate", "advanced"]),
   contextCs: z.string().nullable(),
   directions: z.array(nomenclatureDirectionSchema),
   nameAliases: z.array(z.string()),
@@ -117,7 +129,7 @@ export const nomenclatureRuntimeRecordSchema = z.object({
 });
 
 export const nomenclatureSnapshotSchema = z.object({
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   contentVersion: z.string().min(1),
   compounds: z.array(nomenclatureRuntimeRecordSchema),
 });

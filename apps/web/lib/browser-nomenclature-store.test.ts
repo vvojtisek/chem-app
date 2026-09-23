@@ -1,52 +1,36 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createExerciseSession } from "./exercise-session";
-import { resetLearningDatabase } from "./browser-learning-database";
-import { createBrowserNomenclatureStore } from "./browser-nomenclature-store";
+import {
+  NOMENCLATURE_SESSION_STORE,
+  openLearningDatabase,
+  resetLearningDatabase,
+  transactionCompleted,
+} from "./browser-learning-database";
+import {
+  createBrowserNomenclatureStore,
+  LegacyNomenclatureCheckpointError,
+} from "./browser-nomenclature-store";
 import {
   createBrowserProgressStore,
   type NomenclatureAttemptEvent,
 } from "./browser-progress-store";
-import type { NomenclatureCheckpoint, NomenclatureQuestion } from "./nomenclature-session";
-
-const question: NomenclatureQuestion = {
-  id: "nomenclature.fixture-agcl",
-  reviewLevel: "sme-reviewed",
-  questionId: "nomenclature.fixture-agcl.formula-to-name",
-  formula: "AgCl",
-  nameCs: "chlorid stříbrný",
-  explanationCs: "Fixture explanation.",
-  baseCategory: "binary-salt",
-  tags: [],
-  difficulty: "basic",
-  contextCs: null,
-  directions: ["formula-to-name"],
-  direction: "formula-to-name",
-  nameAliases: [],
-  formulaAliases: [],
-};
-const created = createExerciseSession([question]);
-if (!created.ok) throw new Error("Fixture session failed.");
+import { DEFAULT_NOMENCLATURE_FILTERS, type NomenclatureCheckpoint } from "./nomenclature-session";
 
 const checkpoint: NomenclatureCheckpoint = {
   id: "active",
+  checkpointVersion: 2,
   revision: 1,
   sessionId: "session.fixture",
   contentVersion: "fixture-v1",
-  seed: 1,
-  initialCount: 1,
+  filters: DEFAULT_NOMENCLATURE_FILTERS,
+  currentId: "nomenclature.fixture-agcl",
+  queueIds: ["nomenclature.fixture-nacl"],
+  solvedIds: [],
+  missedIds: [],
+  correct: 0,
+  incorrect: 0,
+  total: 2,
   sequence: 1,
-  revealedInitial: 0,
-  revealedRetry: 0,
-  settings: {
-    categories: ["binary-salt"],
-    difficulties: ["basic"],
-    direction: "formula-to-name",
-    namePolicy: "strict",
-    length: 10,
-  },
-  state: created.state,
-  input: "",
-  feedback: null,
+  elapsedMs: 4_000,
 };
 
 const attempt: NomenclatureAttemptEvent = {
@@ -54,8 +38,8 @@ const attempt: NomenclatureAttemptEvent = {
   eventSchemaVersion: 1,
   sessionId: "session.fixture",
   sequence: 0,
-  questionId: question.questionId,
-  compoundId: question.id,
+  questionId: "nomenclature.fixture-agcl.formula-to-name",
+  compoundId: "nomenclature.fixture-agcl",
   contentVersion: "fixture-v1",
   occurredAt: "2026-09-22T12:00:00.000Z",
   isCorrect: true,
@@ -64,7 +48,7 @@ const attempt: NomenclatureAttemptEvent = {
   outcome: "correct",
   match: "canonical",
   direction: "formula-to-name",
-  matchPolicy: "name-strict",
+  matchPolicy: "name-lenient",
 };
 
 beforeEach(async () => {
@@ -101,5 +85,31 @@ describe("nomenclature checkpoint and attempts", () => {
     await store.clear();
     expect(await store.load()).toBeNull();
     expect(await createBrowserProgressStore().listAttempts()).toEqual([attempt]);
+  });
+
+  it("removes the checkpoint together with the final attempt of a finished practice", async () => {
+    const store = createBrowserNomenclatureStore();
+    await store.write(checkpoint, 0);
+    await store.write(null, 1, [attempt]);
+    expect(await store.load()).toBeNull();
+    expect(await createBrowserProgressStore().listAttempts()).toEqual([attempt]);
+  });
+
+  it("reports a series stored by the earlier version so it can be discarded", async () => {
+    const database = await openLearningDatabase(indexedDB);
+    const transaction = database.transaction(NOMENCLATURE_SESSION_STORE, "readwrite");
+    transaction.objectStore(NOMENCLATURE_SESSION_STORE).put({
+      id: "active",
+      revision: 7,
+      settings: { direction: "formula-to-name" },
+      state: { status: "active" },
+    });
+    await transactionCompleted(transaction);
+    database.close();
+
+    const store = createBrowserNomenclatureStore();
+    await expect(store.load()).rejects.toBeInstanceOf(LegacyNomenclatureCheckpointError);
+    await store.write(null, 0);
+    expect(await store.load()).toBeNull();
   });
 });

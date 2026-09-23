@@ -1,7 +1,7 @@
 import { curriculumContentVersion } from "@inorganic/content/runtime";
 
 import { createBrowserProgressStore } from "./browser-progress-store";
-import type { ExerciseRound } from "./exercise-session";
+import type { ExerciseRound } from "./practice-queue";
 
 export type PeriodicTablePracticeDirection =
   | "name-to-position"

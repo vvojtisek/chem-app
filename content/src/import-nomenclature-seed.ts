@@ -1,11 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { z } from "zod";
-import {
-  nomenclatureCategorySchema,
-  nomenclatureCollectionSchema,
-  type NomenclatureRecord,
-} from "./nomenclature-schema";
+import { nomenclatureCollectionSchema, type NomenclatureRecord } from "./nomenclature-schema";
 
 const seedUrl = new URL("../../docs/exec-plans/active/nomenclature-seed.json", import.meta.url);
 const ledgerUrl = new URL(
@@ -13,6 +9,28 @@ const ledgerUrl = new URL(
   import.meta.url,
 );
 const targetUrl = new URL("../data/nomenclature.json", import.meta.url);
+
+// The 2026-09-22 ledger predates the schema-v3 categories; drafts it adds get the closest one.
+const legacyCategories = {
+  oxide: "oxide",
+  hydroxide: "hydroxide",
+  "binary-acid": "binary-acid",
+  "binary-salt": "binary-salt",
+  oxoacid: "oxoacid",
+  "oxoacid-salt": "oxoacid-salt",
+  hydrogensalt: "oxoacid-salt",
+  extension: "other",
+} as const satisfies Record<string, NonNullable<NomenclatureRecord["baseCategory"]>>;
+const legacyCategorySchema = z.enum([
+  "oxide",
+  "hydroxide",
+  "binary-acid",
+  "binary-salt",
+  "oxoacid",
+  "oxoacid-salt",
+  "hydrogensalt",
+  "extension",
+]);
 
 const seedEntrySchema = z.strictObject({
   nazev: z.string().min(1),
@@ -77,7 +95,7 @@ async function importSeed(): Promise<void> {
     if (!key || !rawCategory || !rawDisposition || !rawIssues) {
       throw new Error("Invalid ledger row.");
     }
-    const category = nomenclatureCategorySchema.parse(rawCategory);
+    const category = legacyCategories[legacyCategorySchema.parse(rawCategory)];
     const disposition = z
       .enum(["core-candidate", "decision-required", "defer-grammar", "defer-scope"])
       .parse(rawDisposition);
@@ -108,6 +126,7 @@ async function importSeed(): Promise<void> {
       id: `nomenclature.seed-${createHash("sha256").update(sourceKey).digest("hex").slice(0, 12)}`,
       sourceKey,
       formula: sourceKey.replaceAll(".", "·"),
+      charge: 0,
       nameCs: value.nazev,
       explanationCs: value.napoveda,
       baseCategory: entry.category,
@@ -136,7 +155,7 @@ async function importSeed(): Promise<void> {
   const records = [...existing, ...additions].sort((a, b) =>
     a.sourceKey.localeCompare(b.sourceKey),
   );
-  const collection = nomenclatureCollectionSchema.parse({ schemaVersion: 2, records });
+  const collection = nomenclatureCollectionSchema.parse({ schemaVersion: 3, records });
   await writeFile(targetUrl, `${JSON.stringify(collection, null, 2)}\n`);
   console.log(`Nomenclature drafts: ${records.length}; added: ${additions.length}`);
 }
