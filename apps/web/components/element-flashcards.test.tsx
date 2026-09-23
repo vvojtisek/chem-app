@@ -1,7 +1,6 @@
+import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import type { StoredElementCard } from "@/lib/browser-element-card-store";
 
 const storedCards = vi.hoisted(() => new Map<string, StoredElementCard>());

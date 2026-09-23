@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
-
+import { useAccount } from "@/components/auth-gate";
 import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
@@ -63,6 +63,7 @@ export function PeriodicTableNamePractice({
   elements,
   random = Math.random,
 }: PeriodicTableNamePracticeProps) {
+  const account = useAccount();
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
   const [selection, changeSelection] = useSharedElementSelection(layout);
   const [mode, setMode] = useState<ElementPromptMode>(DEFAULT_ELEMENT_PROMPT_MODE);
@@ -199,12 +200,15 @@ export function PeriodicTableNamePractice({
     );
     inputRef.current?.focus();
 
-    appendPeriodicTableAttempt({
-      questionId: question.id,
-      round: result.round,
-      isCorrect: evaluation.isCorrect,
-      direction: mode,
-    }).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
+    appendPeriodicTableAttempt(
+      {
+        questionId: question.id,
+        round: result.round,
+        isCorrect: evaluation.isCorrect,
+        direction: mode,
+      },
+      account?.id,
+    ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
   }
 
   if (!session) {

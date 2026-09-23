@@ -6,9 +6,9 @@ import {
   transactionCompleted,
 } from "./browser-learning-database";
 import {
+  type AttemptEvent,
   createBrowserProgressStore,
   PROGRESS_DATABASE_NAME,
-  type AttemptEvent,
 } from "./browser-progress-store";
 
 const earlierAttempt: AttemptEvent = {

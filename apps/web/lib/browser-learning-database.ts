@@ -1,15 +1,32 @@
 export const LEARNING_DATABASE_NAME = "inorganic-learning";
-export const LEARNING_DATABASE_VERSION = 4;
+export const LEARNING_DATABASE_VERSION = 5;
 export const ATTEMPT_EVENT_STORE = "attempt-events";
 export const ELEMENT_CARD_STORE = "element-cards";
 export const NOMENCLATURE_SESSION_STORE = "nomenclature-sessions";
+export const SYNC_OUTBOX_STORE = "sync-outbox";
+export const ACCOUNT_META_STORE = "account-meta";
 
-export async function openLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase> {
-  return openCurrentLearningDatabase(indexedDb);
+export function accountDatabaseName(userId: string): string {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(userId)) {
+    throw new Error("Neplatný identifikátor účtu.");
+  }
+  return `${LEARNING_DATABASE_NAME}.${userId}`;
 }
 
-export function resetLearningDatabase(indexedDb: IDBFactory): Promise<void> {
-  const request = indexedDb.deleteDatabase(LEARNING_DATABASE_NAME);
+export async function openLearningDatabase(
+  indexedDb: IDBFactory,
+  userId?: string,
+): Promise<IDBDatabase> {
+  return openCurrentLearningDatabase(
+    indexedDb,
+    userId ? accountDatabaseName(userId) : LEARNING_DATABASE_NAME,
+  );
+}
+
+export function resetLearningDatabase(indexedDb: IDBFactory, userId?: string): Promise<void> {
+  const request = indexedDb.deleteDatabase(
+    userId ? accountDatabaseName(userId) : LEARNING_DATABASE_NAME,
+  );
 
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve();
@@ -23,8 +40,8 @@ export function resetLearningDatabase(indexedDb: IDBFactory): Promise<void> {
   });
 }
 
-function openCurrentLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase> {
-  const request = indexedDb.open(LEARNING_DATABASE_NAME, LEARNING_DATABASE_VERSION);
+function openCurrentLearningDatabase(indexedDb: IDBFactory, name: string): Promise<IDBDatabase> {
+  const request = indexedDb.open(name, LEARNING_DATABASE_VERSION);
 
   request.onupgradeneeded = (event) => {
     const database = request.result;
@@ -36,6 +53,12 @@ function openCurrentLearningDatabase(indexedDb: IDBFactory): Promise<IDBDatabase
     }
     if (!database.objectStoreNames.contains(NOMENCLATURE_SESSION_STORE)) {
       database.createObjectStore(NOMENCLATURE_SESSION_STORE, { keyPath: "id" });
+    }
+    if (!database.objectStoreNames.contains(SYNC_OUTBOX_STORE)) {
+      database.createObjectStore(SYNC_OUTBOX_STORE, { keyPath: "id" });
+    }
+    if (!database.objectStoreNames.contains(ACCOUNT_META_STORE)) {
+      database.createObjectStore(ACCOUNT_META_STORE, { keyPath: "key" });
     }
     if (event.oldVersion < 3 && database.objectStoreNames.contains(ATTEMPT_EVENT_STORE)) {
       migrateAttemptEvents(request.transaction?.objectStore(ATTEMPT_EVENT_STORE));

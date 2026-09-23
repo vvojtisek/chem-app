@@ -3,13 +3,14 @@ import {
   NOMENCLATURE_SESSION_STORE,
   openLearningDatabase,
   requestCompleted,
+  SYNC_OUTBOX_STORE,
   transactionCompleted,
 } from "./browser-learning-database";
 import { attemptEventSchema, type NomenclatureAttemptEvent } from "./browser-progress-store";
 import {
   isLegacyNomenclatureCheckpoint,
-  nomenclatureCheckpointSchema,
   type NomenclatureCheckpoint,
+  nomenclatureCheckpointSchema,
 } from "./nomenclature-session";
 
 /** The stored practice is from the older series-based version and cannot be resumed. */
@@ -36,10 +37,11 @@ export interface BrowserNomenclatureStore {
 
 export function createBrowserNomenclatureStore(
   indexedDb: IDBFactory = globalThis.indexedDB,
+  userId?: string,
 ): BrowserNomenclatureStore {
   return {
     async load() {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(NOMENCLATURE_SESSION_STORE, "readonly");
         const request = transaction.objectStore(NOMENCLATURE_SESSION_STORE).get("active");
@@ -54,7 +56,7 @@ export function createBrowserNomenclatureStore(
     },
 
     async clear() {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(NOMENCLATURE_SESSION_STORE, "readwrite");
         transaction.objectStore(NOMENCLATURE_SESSION_STORE).delete("active");
@@ -70,11 +72,11 @@ export function createBrowserNomenclatureStore(
         throw new Error("Nesouhlasí revize uložené série.");
       }
       const validAttempts = attempts.map((attempt) => attemptEventSchema.parse(attempt));
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const stores =
           validAttempts.length > 0
-            ? [NOMENCLATURE_SESSION_STORE, ATTEMPT_EVENT_STORE]
+            ? [NOMENCLATURE_SESSION_STORE, ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE]
             : [NOMENCLATURE_SESSION_STORE];
         const transaction = database.transaction(stores, "readwrite");
         const completion = transactionCompleted(transaction);
@@ -117,7 +119,10 @@ export function createBrowserNomenclatureStore(
                   abort("Pokus se stejným ID obsahuje jiná data.");
                   return;
                 }
-                if (existing === undefined) attemptStore.add(validAttempt);
+                if (existing === undefined) {
+                  attemptStore.add(validAttempt);
+                  transaction.objectStore(SYNC_OUTBOX_STORE).add({ id: validAttempt.id });
+                }
                 checked += 1;
                 if (checked === validAttempts.length && !conflict) save();
               };
@@ -129,6 +134,8 @@ export function createBrowserNomenclatureStore(
         };
         try {
           await completion;
+          if (validAttempts.length > 0 && typeof window !== "undefined")
+            window.dispatchEvent(new Event("inorganic:attempt-saved"));
         } catch (error: unknown) {
           throw conflict ?? error;
         }

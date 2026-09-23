@@ -1,5 +1,5 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { NomenclatureRuntimeRecord } from "@inorganic/content/nomenclature-schema";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   NOMENCLATURE_SESSION_STORE,

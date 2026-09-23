@@ -185,7 +185,11 @@ test("resumes an unfinished nomenclature practice offline", async ({ context, pa
   await expect
     .poll(async () =>
       page.evaluate(async () => {
-        const request = indexedDB.open("inorganic-learning");
+        const marker = JSON.parse(localStorage.getItem("inorganic.verified-account") ?? "null") as {
+          userId?: string;
+        } | null;
+        if (!marker?.userId) return null;
+        const request = indexedDB.open(`inorganic-learning.${marker.userId}`);
         const database = await new Promise<IDBDatabase>((resolve, reject) => {
           request.onsuccess = () => resolve(request.result);
           request.onerror = () => reject(request.error);

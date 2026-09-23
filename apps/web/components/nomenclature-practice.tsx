@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
-
+import { useAccount } from "@/components/auth-gate";
 import { NomenclatureFilterStep } from "@/components/nomenclature-filters";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import {
@@ -94,6 +94,7 @@ export function NomenclaturePractice({
 
   // Persistence of the resumable practice (IndexedDB) and of attempts written with it.
   const storeRef = useRef<BrowserNomenclatureStore | null>(null);
+  const account = useAccount();
   const checkpointRef = useRef<NomenclatureCheckpoint | null>(null);
   const persistedRevisionRef = useRef(0);
   const queuedWritesRef = useRef<Promise<void>>(Promise.resolve());
@@ -103,7 +104,7 @@ export function NomenclaturePractice({
   const sequenceRef = useRef(0);
 
   function store(): BrowserNomenclatureStore {
-    storeRef.current ??= createBrowserNomenclatureStore();
+    storeRef.current ??= createBrowserNomenclatureStore(globalThis.indexedDB, account?.id);
     return storeRef.current;
   }
 
@@ -162,7 +163,7 @@ export function NomenclaturePractice({
     if (storedDirection) setDirection(storedDirection);
 
     let mounted = true;
-    const browserStore = storeRef.current ?? createBrowserNomenclatureStore();
+    const browserStore = createBrowserNomenclatureStore(globalThis.indexedDB, account?.id);
     storeRef.current = browserStore;
     browserStore
       .load()
@@ -178,7 +179,7 @@ export function NomenclaturePractice({
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [account?.id]);
 
   useEffect(() => {
     if (runId > 0) inputRef.current?.focus();

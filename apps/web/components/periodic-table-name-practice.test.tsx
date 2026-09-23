@@ -1,7 +1,6 @@
+import { curatedElements, type ElementFlashcardData } from "@inorganic/content/runtime";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-import { curatedElements, type ElementFlashcardData } from "@inorganic/content/runtime";
 
 const appendAttempt = vi.hoisted(() => vi.fn());
 

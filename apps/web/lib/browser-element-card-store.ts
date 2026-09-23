@@ -31,10 +31,11 @@ export interface BrowserElementCardStore {
 
 export function createBrowserElementCardStore(
   indexedDb: IDBFactory = globalThis.indexedDB,
+  userId?: string,
 ): BrowserElementCardStore {
   return {
     async list() {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(ELEMENT_CARD_STORE, "readonly");
         const values = await requestCompleted<unknown[]>(
@@ -55,7 +56,7 @@ export function createBrowserElementCardStore(
       }
     },
     async remove(id) {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(ELEMENT_CARD_STORE, "readwrite");
         transaction.objectStore(ELEMENT_CARD_STORE).delete(id);
@@ -66,7 +67,7 @@ export function createBrowserElementCardStore(
     },
     async upsert(card) {
       const parsed = elementCardSchema.parse(card);
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(ELEMENT_CARD_STORE, "readwrite");
         transaction.objectStore(ELEMENT_CARD_STORE).put(parsed);

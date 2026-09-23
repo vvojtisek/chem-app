@@ -1,11 +1,37 @@
 const CACHE_PREFIX = "inorganic-shell-";
-const CACHE_NAME = "inorganic-shell-v3";
-const APP_SHELL = ["/", "/procvicovani/nazvoslovi", "/manifest.webmanifest"];
+const CACHE_NAME = "inorganic-shell-v4";
+const APP_SHELL = [
+  "/",
+  "/procvicovani",
+  "/procvicovani/nazvoslovi",
+  "/procvicovani/periodicka-tabulka",
+  "/procvicovani/periodicka-tabulka/nazvy",
+  "/procvicovani/prvky",
+  "/flashcards/prvky",
+  "/manifest.webmanifest",
+];
+const CACHEABLE_PAGES = new Set(APP_SHELL.filter((path) => path !== "/manifest.webmanifest"));
+
+function isPublicCacheableResponse(response, pathname) {
+  const policy = response.headers.get("cache-control") ?? "";
+  return (
+    response.ok &&
+    response.type === "basic" &&
+    !response.redirected &&
+    new URL(response.url).pathname === pathname &&
+    !response.headers.has("set-cookie") &&
+    !/(?:private|no-store)/iu.test(policy)
+  );
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      await cache.addAll(APP_SHELL);
+      for (const path of APP_SHELL) {
+        const response = await fetch(path, { credentials: "same-origin", redirect: "manual" });
+        if (!isPublicCacheableResponse(response, path)) throw new Error(`Cannot cache ${path}`);
+        await cache.put(path, response);
+      }
       const page = await cache.match("/procvicovani/nazvoslovi");
       if (!page) throw new Error("The nomenclature offline route was not cached.");
       const html = await page.text();
@@ -40,7 +66,12 @@ self.addEventListener("fetch", (event) => {
   if (
     request.method !== "GET" ||
     url.origin !== self.location.origin ||
-    url.pathname.startsWith("/api/")
+    url.pathname.startsWith("/api/") ||
+    url.pathname === "/login" ||
+    (!url.pathname.startsWith("/_next/static/") &&
+      !CACHEABLE_PAGES.has(url.pathname) &&
+      url.pathname !== "/manifest.webmanifest" &&
+      url.pathname !== "/icon.svg")
   ) {
     return;
   }
@@ -48,7 +79,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response.ok && response.type === "basic") {
+        if (isPublicCacheableResponse(response, url.pathname)) {
           const copy = response.clone();
           void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }
@@ -59,7 +90,7 @@ self.addEventListener("fetch", (event) => {
         if (cached) {
           return cached;
         }
-        if (request.mode === "navigate") {
+        if (request.mode === "navigate" && CACHEABLE_PAGES.has(url.pathname)) {
           const shell = await caches.match("/");
           if (shell) {
             return shell;

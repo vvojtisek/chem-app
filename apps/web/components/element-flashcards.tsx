@@ -2,6 +2,7 @@
 
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useState } from "react";
+import { useAccount } from "@/components/auth-gate";
 
 import {
   createBrowserElementCardStore,
@@ -16,6 +17,7 @@ interface ElementFlashcardsProps {
 }
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
+  const account = useAccount();
   const [storedCards, setStoredCards] = useState<readonly StoredElementCard[]>([]);
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [selectedId, setSelectedId] = useState(curatedElements[0]?.id ?? "");
@@ -24,8 +26,10 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    void createBrowserElementCardStore().list().then(setStoredCards);
-  }, []);
+    void createBrowserElementCardStore(globalThis.indexedDB, account?.id)
+      .list()
+      .then(setStoredCards);
+  }, [account?.id]);
 
   const cards = useMemo(
     () => mergeCards(curatedElements, storedCards),
@@ -57,8 +61,8 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
         kind: isCustom ? "custom" : "override",
         updatedAt: new Date().toISOString(),
       };
-      await createBrowserElementCardStore().upsert(stored);
-      setStoredCards(await createBrowserElementCardStore().list());
+      await createBrowserElementCardStore(globalThis.indexedDB, account?.id).upsert(stored);
+      setStoredCards(await createBrowserElementCardStore(globalThis.indexedDB, account?.id).list());
       setSelectedId(card.id);
       setEditor(null);
       setMessage(
@@ -79,8 +83,8 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
     if (!selectedCard || !curatedElements.some((card) => card.id === selectedCard.id)) {
       return;
     }
-    await createBrowserElementCardStore().remove(selectedCard.id);
-    setStoredCards(await createBrowserElementCardStore().list());
+    await createBrowserElementCardStore(globalThis.indexedDB, account?.id).remove(selectedCard.id);
+    setStoredCards(await createBrowserElementCardStore(globalThis.indexedDB, account?.id).list());
     setMessage("Výchozí schválená karta byla obnovena.");
   }
 
