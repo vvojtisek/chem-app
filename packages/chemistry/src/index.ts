@@ -3,7 +3,13 @@ export {
   type FormulaNormalizationResult,
   type FormulaNormalizationError,
 } from "./normalize-formula";
-export { normalizeAnswer, normalizeAnswerWithoutDiacritics } from "./normalize-answer";
+export {
+  compactLenientAnswer,
+  normalizeAnswer,
+  normalizeAnswerWithoutDiacritics,
+  normalizeLenientAnswer,
+} from "./normalize-answer";
+export { listFormulaElements } from "./formula-elements";
 export {
   evaluateElementAnswer,
   type ElementAnswerEvaluation,

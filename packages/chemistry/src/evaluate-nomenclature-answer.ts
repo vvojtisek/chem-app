@@ -12,7 +12,10 @@ export interface NomenclatureAnswerKey {
 }
 
 export type NomenclatureEvaluation =
-  | { readonly isCorrect: true; readonly match: "canonical" | "alias" | "missing-diacritics" }
+  | {
+      readonly isCorrect: true;
+      readonly match: "canonical" | "alias" | "missing-diacritics" | "normalized";
+    }
   | {
       readonly isCorrect: false;
       readonly match: "none";
