@@ -1,6 +1,16 @@
+import { readFileSync } from "node:fs";
+
 import { expect, type Page, test } from "@playwright/test";
 
-async function keepNamedPositionOrder(page: Page): Promise<void> {
+const elementIdByName = new Map(
+  (
+    JSON.parse(
+      readFileSync(new URL("../../../content/data/elements.json", import.meta.url), "utf8"),
+    ) as readonly { readonly id: string; readonly nameCs: string }[]
+  ).map(({ id, nameCs }) => [nameCs, id]),
+);
+
+async function keepQuestionOrder(page: Page): Promise<void> {
   await page.addInitScript(() => {
     Math.random = () => 0.999_999;
   });
@@ -91,45 +101,92 @@ test("retries an incorrect Czech element name once", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
 });
 
-test("practices a blind periodic-table position with immediate feedback", async ({ page }) => {
+test("places a blind periodic-table element inline and moves straight on", async ({ page }) => {
+  await keepQuestionOrder(page);
+  await page.setViewportSize({ width: 360, height: 780 });
   await page.goto("/procvicovani/periodicka-tabulka");
+  const url = page.url();
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
 
-  await page.getByRole("button", { name: "Začít cvičení (10 prvků)" }).click();
-  await page.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();
+  await expect(page.getByText(/Vyberte|Kam patří|posuňte tabulku/)).toHaveCount(0);
 
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
-  await expect(page.getByText(/Vodík patří na pozici Perioda 1, skupina 1/)).toBeVisible();
+  await table.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
+
+  await expect(table.getByRole("button", { name: "Perioda 1, skupina 1: H, vyřešeno" })).toHaveText(
+    "H",
+  );
+  await expect(page.getByText("Správně: 1")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Helium" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Pokračovat" })).toHaveCount(0);
+  expect(page.url()).toBe(url);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
 
-test("retries an incorrect blind periodic-table position once", async ({ page }) => {
+test("completes the whole blind table and asks a missed element again at the end", async ({
+  page,
+}) => {
+  test.slow();
+  await keepQuestionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka");
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  const sought = page.getByRole("heading", { name: /^Hledaný prvek:/ });
 
-  await page.getByRole("button", { name: "Začít cvičení (10 prvků)" }).click();
-  await page.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Zkusíme to ještě jednou" })).toBeVisible();
+  await expect(sought).toHaveAccessibleName("Hledaný prvek: Vodík");
+  await table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
+  await expect(page.getByText("Špatně: 1")).toBeVisible();
 
-  await page.getByRole("button", { name: "Pokračovat" }).click();
-  for (const position of [
-    "Perioda 1, skupina 18",
-    "Perioda 2, skupina 1",
-    "Perioda 2, skupina 2",
-    "Perioda 2, skupina 13",
-    "Perioda 2, skupina 14",
-    "Perioda 2, skupina 15",
-    "Perioda 2, skupina 16",
-    "Perioda 2, skupina 17",
-    "Perioda 2, skupina 18",
-  ]) {
-    await page.getByRole("button", { name: position, exact: true }).click();
-    await page.getByRole("button", { name: "Pokračovat" }).click();
+  for (let placed = 1; placed <= 118; placed += 1) {
+    const name = (await sought.textContent())?.replace(/^Hledaný prvek:\s*/u, "").trim() ?? "";
+    const elementId = elementIdByName.get(name);
+    if (!elementId) throw new Error(`No element named "${name}".`);
+    if (placed === 118) expect(name).toBe("Vodík");
+
+    await table.locator(`[data-element-id="${elementId}"]`).click();
+    await expect(page.getByText(`Správně: ${placed}`, { exact: true })).toBeVisible();
   }
-  await expect(page.getByText("Opakování chyby")).toBeVisible();
-  await page.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Správně" })).toBeVisible();
+
+  const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
+  await expect(summary).toBeVisible();
+  await expect(summary.getByText("118 z 118")).toBeVisible();
+  await expect(page.getByText("Špatně: 1")).toBeVisible();
+});
+
+test("keeps a wrong blind-table mark for 10 seconds and times the exercise", async ({ page }) => {
+  await keepQuestionOrder(page);
+  await page.clock.install();
+  await page.goto("/procvicovani/periodicka-tabulka");
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();
+  await table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
+
+  await expect(page.getByText("Špatně: 1")).toBeVisible();
+  await expect(
+    table.getByRole("button", { name: "Perioda 2, skupina 1: chybná odpověď" }),
+  ).toHaveText("✗");
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Helium" })).toBeVisible();
+
+  await page.clock.runFor(10_000);
+  await expect(table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true })).toHaveText(
+    "?",
+  );
+  await expect(page.getByRole("timer")).toHaveText("00:10");
+
+  await page.getByRole("button", { name: "Ukončit" }).click();
+  const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
+  await expect(summary.getByText("0 z 118")).toBeVisible();
+  await page.clock.runFor(5_000);
+  await expect(page.getByRole("timer")).toHaveText("00:10");
+
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(page.getByText("Špatně: 0")).toBeVisible();
+  await expect(page.getByRole("timer")).toHaveText("00:00");
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();
 });
 
 test("answers a highlighted periodic-table position with its Czech name", async ({ page }) => {
-  await keepNamedPositionOrder(page);
+  await keepQuestionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
 
   await page.getByRole("button", { name: "Začít cvičení (10 otázek)" }).click();
@@ -141,7 +198,7 @@ test("answers a highlighted periodic-table position with its Czech name", async 
 });
 
 test("completes a named-position series by keyboard with a persistent table", async ({ page }) => {
-  await keepNamedPositionOrder(page);
+  await keepQuestionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
   const url = page.url();
   const input = page.getByLabel("Český název nebo značka");
@@ -208,7 +265,7 @@ test("completes a named-position series by keyboard with a persistent table", as
 test("keeps the named-position table and its scroll position on a 360 px screen", async ({
   page,
 }) => {
-  await keepNamedPositionOrder(page);
+  await keepQuestionOrder(page);
   await page.setViewportSize({ width: 360, height: 780 });
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
   await page.getByRole("button", { name: "Začít cvičení (10 otázek)" }).click();
@@ -253,7 +310,7 @@ test("keeps the named-position table and its scroll position on a 360 px screen"
 });
 
 test("limits a named-position series to the selected groups", async ({ page }) => {
-  await keepNamedPositionOrder(page);
+  await keepQuestionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
   const start = page.getByRole("button", { name: /^Začít cvičení/ });
 
@@ -283,7 +340,7 @@ test("limits a named-position series to the selected groups", async ({ page }) =
 test("asks group 3 as Sc, Y, Lu and Lr and accepts names and symbols in one series", async ({
   page,
 }) => {
-  await keepNamedPositionOrder(page);
+  await keepQuestionOrder(page);
   await page.goto("/procvicovani/periodicka-tabulka/nazvy");
 
   await page.getByRole("button", { name: "Zrušit výběr" }).click();

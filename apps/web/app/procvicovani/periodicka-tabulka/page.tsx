@@ -11,11 +11,7 @@ export default function PeriodicTablePracticePage() {
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
         Slepá periodická tabulka
       </h1>
-      <p className="mt-3 max-w-3xl leading-7 text-slate-600">
-        Vyberte pozici prvku podle českého názvu. Chybné odpovědi dostanou jeden opakovací pokus na
-        konci cvičení.
-      </p>
-      <div className="mt-8">
+      <div className="mt-6">
         <PeriodicTablePractice elements={curatedElements} />
       </div>
     </main>
