@@ -14,6 +14,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - Prompt to position: show a Czech name or symbol and ask the learner to select the correct table cell.
 - Position to answer: highlight a cell and request a symbol/name or a four-option choice.
 - In position-to-answer practice the table stays on screen through each question, its feedback, and the summary; correctly answered cells keep the element symbol until the series restarts, and incorrect cells are marked without revealing the answer.
+- Position-to-answer practice lets the learner choose any of groups 1–18 and the two bottom rows (La–Yb and Ac–No in this layout). Each series draws up to 10 questions at random from the selection. One input accepts either the Czech name or the exact chemical symbol; symbol letter case is never corrected.
 - Give immediate correct/incorrect feedback and repeat missed elements at the end of the session.
 
 ### Chemical equations

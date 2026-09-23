@@ -59,6 +59,18 @@ const reversePeriodicTableAttempt: AttemptEvent = {
   matchPolicy: "diacritics-tolerant",
 };
 
+const nameOrSymbolAttempt: AttemptEvent = {
+  id: "attempt.005",
+  questionId: "element.011-na",
+  contentVersion: "2026-09-23",
+  occurredAt: "2026-09-23T08:00:00.000Z",
+  isCorrect: true,
+  round: "initial",
+  mode: "periodic-table",
+  direction: "position-to-name-or-symbol",
+  matchPolicy: "name-tolerant-or-symbol-exact",
+};
+
 beforeEach(async () => {
   await new Promise<void>((resolve, reject) => {
     const request = indexedDB.deleteDatabase(PROGRESS_DATABASE_NAME);
@@ -117,5 +129,31 @@ describe("BrowserProgressStore", () => {
       store.appendAttempt({ ...periodicTableAttempt, matchPolicy: "diacritics-tolerant" }),
     ).rejects.toThrow("Pokus má neplatný kontext procvičování.");
     await expect(store.listAttempts()).resolves.toEqual([]);
+  });
+
+  it("keeps name-or-symbol attempts distinct from earlier name-only attempts", async () => {
+    const store = createBrowserProgressStore();
+
+    await store.appendAttempt(reversePeriodicTableAttempt);
+    await store.appendAttempt(nameOrSymbolAttempt);
+
+    await expect(store.listAttempts()).resolves.toEqual([
+      reversePeriodicTableAttempt,
+      nameOrSymbolAttempt,
+    ]);
+    await expect(
+      store.appendAttempt({
+        ...nameOrSymbolAttempt,
+        id: "attempt.mislabelled",
+        matchPolicy: "diacritics-tolerant",
+      }),
+    ).rejects.toThrow();
+    await expect(
+      store.appendAttempt({
+        ...reversePeriodicTableAttempt,
+        id: "attempt.mislabelled-old",
+        matchPolicy: "name-tolerant-or-symbol-exact",
+      }),
+    ).rejects.toThrow();
   });
 });

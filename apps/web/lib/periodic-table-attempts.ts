@@ -3,7 +3,7 @@ import { curriculumContentVersion } from "@inorganic/content/runtime";
 import { createBrowserProgressStore } from "./browser-progress-store";
 import type { ExerciseRound } from "./exercise-session";
 
-export type PeriodicTablePracticeDirection = "name-to-position" | "position-to-name";
+export type PeriodicTablePracticeDirection = "name-to-position" | "position-to-name-or-symbol";
 
 export interface PeriodicTableAttempt {
   readonly questionId: string;
@@ -23,7 +23,7 @@ export async function appendPeriodicTableAttempt(attempt: PeriodicTableAttempt):
     mode: "periodic-table",
     direction: attempt.direction,
     matchPolicy:
-      attempt.direction === "name-to-position" ? "exact-position" : "diacritics-tolerant",
+      attempt.direction === "name-to-position" ? "exact-position" : "name-tolerant-or-symbol-exact",
   });
 }
 

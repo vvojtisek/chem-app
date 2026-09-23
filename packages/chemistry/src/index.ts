@@ -5,6 +5,12 @@ export {
 } from "./normalize-formula";
 export { normalizeAnswer, normalizeAnswerWithoutDiacritics } from "./normalize-answer";
 export {
+  evaluateElementAnswer,
+  type ElementAnswerEvaluation,
+  type ElementAnswerKey,
+  type ElementAnswerMatch,
+} from "./evaluate-element-answer";
+export {
   evaluateAnswer,
   type AnswerEvaluation,
   type AnswerMatch,

@@ -61,7 +61,7 @@ The API may distribute the same snapshot and record progress, but it is not the 
 
 ### Progress and synchronization
 
-1. A completed answer creates an immutable local attempt event with a stable client event ID, content version, round, learning mode, answer direction, and match policy. The browser store validates every event against one Zod schema that lists the allowed mode, direction, and match-policy combinations: an invalid event is rejected when written and skipped when read.
+1. A completed answer creates an immutable local attempt event with a stable client event ID, content version, round, learning mode, answer direction, and match policy. The browser store validates every event against one Zod schema that lists the allowed mode, direction, and match-policy combinations: an invalid event is rejected when written and skipped when read. Periodic-table answers that accept a Czech name or a symbol are recorded as `position-to-name-or-symbol` / `name-tolerant-or-symbol-exact`, distinct from earlier name-only `position-to-name` / `diacritics-tolerant` events, which stay readable unchanged. A new combination needs no IndexedDB version change. An older client that does not know it skips those events when reading but never deletes them, and they become readable again after upgrading, so no reset is needed.
 2. The UI updates local session state and derived mastery immediately, even while offline.
 3. When authenticated and online, a sync worker sends pending events through the generated client.
 4. The API enforces identity, ownership, schema, idempotency, and ordering, then persists accepted events in PostgreSQL.
