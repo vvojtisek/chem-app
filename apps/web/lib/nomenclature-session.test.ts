@@ -113,6 +113,12 @@ describe("nomenclature filters", () => {
     expect(directionFor(sulfate, "name-to-formula")).toBe("formula-to-name");
     expect(directionFor(silver, "name-to-formula")).toBe("name-to-formula");
   });
+
+  it("asks a record offered only by name from name to formula", () => {
+    const acid = record("h3po3", { directions: ["name-to-formula"] });
+    expect(directionFor(acid, "formula-to-name")).toBe("name-to-formula");
+    expect(directionFor(acid, "name-to-formula")).toBe("name-to-formula");
+  });
 });
 
 describe("nomenclature checkpoint", () => {

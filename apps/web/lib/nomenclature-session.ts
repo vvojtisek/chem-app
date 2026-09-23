@@ -86,12 +86,17 @@ export function listQuickFamilies(
     .sort((left, right) => right.count - left.count || left.family.localeCompare(right.family));
 }
 
-/** Records that cannot be typed as a formula (ions, coordination notation) are asked by formula. */
+/**
+ * The preferred direction when the record offers it, otherwise its only one: formulas that
+ * cannot be typed (ions, coordination notation) are asked by formula, and names whose accepted
+ * variants are still undecided are asked by name.
+ */
 export function directionFor(
   record: NomenclatureRuntimeRecord,
   preferred: NomenclatureDirection,
 ): NomenclatureDirection {
-  return record.directions.includes(preferred) ? preferred : "formula-to-name";
+  if (record.directions.includes(preferred)) return preferred;
+  return record.directions[0] ?? preferred;
 }
 
 const counterSchema = z.number().int().nonnegative();
