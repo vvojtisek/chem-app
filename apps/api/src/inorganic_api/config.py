@@ -1,8 +1,14 @@
 from functools import lru_cache
+from ipaddress import ip_address
 from typing import Literal
 
-from pydantic import AnyHttpUrl, Field
+from pydantic import AliasChoices, AnyHttpUrl, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+DEFAULT_DATABASE_URL = (
+    "postgresql+psycopg://app:local-development-only@localhost:5432/inorganic_chemistry"
+)
+DEFAULT_SECRET_KEY = "local-development-only-secret-key-change-before-deployment"
 
 
 class Settings(BaseSettings):
@@ -13,13 +19,56 @@ class Settings(BaseSettings):
     )
 
     app_env: Literal["development", "test", "production"] = "development"
-    database_url: str = Field(
-        default="postgresql+psycopg://app:local-development-only@localhost:5432/inorganic_chemistry"
-    )
+    database_url: str = DEFAULT_DATABASE_URL
     web_origins: list[AnyHttpUrl] = Field(
-        default_factory=lambda: [AnyHttpUrl("http://localhost:3000")]
+        default_factory=lambda: [AnyHttpUrl("http://localhost:3000")],
+        validation_alias=AliasChoices("CORS_ORIGINS", "WEB_ORIGINS"),
     )
-    session_cookie_name: str = "inorganic_session"
+    secret_key: str = DEFAULT_SECRET_KEY
+    public_origin: AnyHttpUrl = AnyHttpUrl("http://localhost:3000")
+    session_cookie_name: str = "__Host-inorganic_session"
+    csrf_cookie_name: str = "__Host-inorganic_csrf"
+    session_cookie_secure: bool = True
+    session_idle_ttl: int = Field(default=7 * 24 * 60 * 60, gt=0)
+    session_absolute_ttl: int = Field(default=30 * 24 * 60 * 60, gt=0)
+    forwarded_allow_ips: str = "127.0.0.1"
+
+    @model_validator(mode="after")
+    def validate_production(self) -> "Settings":
+        if self.public_origin.path not in (None, "/") or self.public_origin.query:
+            raise ValueError("PUBLIC_ORIGIN must contain only scheme and host")
+        if self.session_idle_ttl > self.session_absolute_ttl:
+            raise ValueError("session_idle_ttl must not exceed session_absolute_ttl")
+        if self.app_env == "production":
+            if len(self.secret_key) < 32 or self.secret_key == DEFAULT_SECRET_KEY:
+                raise ValueError("production SECRET_KEY must be at least 32 characters and unique")
+            if self.database_url == DEFAULT_DATABASE_URL:
+                raise ValueError("production DATABASE_URL must be configured")
+            if self.public_origin.scheme != "https":
+                raise ValueError("production PUBLIC_ORIGIN must use https")
+            if not self.session_cookie_secure:
+                raise ValueError("production requires secure session cookies")
+            if not self.session_cookie_name.startswith(
+                "__Host-"
+            ) or not self.csrf_cookie_name.startswith("__Host-"):
+                raise ValueError("production cookies must use the __Host- prefix")
+            if self.forwarded_allow_ips == "127.0.0.1":
+                raise ValueError("production FORWARDED_ALLOW_IPS must name the Caddy IP")
+            try:
+                proxy_ips = [
+                    ip_address(value.strip()) for value in self.forwarded_allow_ips.split(",")
+                ]
+            except ValueError as exc:
+                raise ValueError(
+                    "production FORWARDED_ALLOW_IPS must list trusted proxy IPs"
+                ) from exc
+            if any(ip.is_unspecified for ip in proxy_ips):
+                raise ValueError("production FORWARDED_ALLOW_IPS must list trusted proxy IPs")
+            if {str(origin).rstrip("/") for origin in self.web_origins} != {
+                str(self.public_origin).rstrip("/")
+            }:
+                raise ValueError("production CORS_ORIGINS must equal PUBLIC_ORIGIN")
+        return self
 
 
 @lru_cache
