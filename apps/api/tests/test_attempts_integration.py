@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from inorganic_api.database import session_dependency
 from inorganic_api.main import app
 from inorganic_api.models import AttemptEvent, User
+from inorganic_api.services import attempts
 from inorganic_api.services.passwords import hash_password
 
 API_DIR = Path(__file__).resolve().parents[1]
@@ -147,6 +148,25 @@ async def test_batch_idempotence_conflict_and_atomicity(
 
 
 @pytest.mark.anyio
+async def test_daily_quota_keeps_duplicates_free_and_rejects_only_new_events(
+    db: Session, accounts: dict[str, User], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    assert attempts.MAX_DAILY_ATTEMPTS_PER_USER >= 5_000
+    monkeypatch.setattr(attempts, "MAX_DAILY_ATTEMPTS_PER_USER", 2)
+    async with client() as http:
+        await login(http, accounts["user"])
+        first = await upload(http, [event("quota-1"), event("quota-2"), event("quota-3")])
+        assert first.status_code == 200, first.text
+        assert first.json()["accepted"] == ["quota-1", "quota-2"]
+        assert first.json()["rejected"][0]["code"] == "quota_exceeded"
+        assert first.json()["rejected"][0]["eventId"] == "quota-3"
+        duplicate = await upload(http, [event("quota-1"), event("quota-3")])
+        assert duplicate.json()["duplicates"] == ["quota-1"]
+        assert duplicate.json()["rejected"][0]["code"] == "quota_exceeded"
+        assert db.query(AttemptEvent).filter_by(user_id=accounts["user"].id).count() == 2
+
+
+@pytest.mark.anyio
 async def test_validation_limits_and_csrf(db: Session, accounts: dict[str, User]) -> None:
     async with client() as http:
         await login(http, accounts["user"])
@@ -171,6 +191,18 @@ async def test_validation_limits_and_csrf(db: Session, accounts: dict[str, User]
                     compoundId="compound-1",
                     outcome="correct",
                     match="canonical",
+                )
+            ],
+            [
+                event(
+                    "bad-equation",
+                    mode="equation",
+                    direction="complete-equation",
+                    matchPolicy="approved-balanced",
+                    eventSchemaVersion=1,
+                    sessionId="equation-session-1",
+                    sequence=0,
+                    level="beginner",
                 )
             ],
         ):
@@ -214,15 +246,27 @@ async def test_all_attempt_modes_are_accepted(db: Session, accounts: dict[str, U
                     outcome="correct",
                     match="canonical",
                 ),
+                event(
+                    "equation",
+                    mode="equation",
+                    direction="coefficients",
+                    matchPolicy="approved-balanced",
+                    eventSchemaVersion=1,
+                    sessionId="equation-session-1",
+                    sequence=0,
+                    level="beginner",
+                    questionId="preparation-production.route.vodik-id-20-1-preparation",
+                ),
             ],
         )
         assert result.status_code == 200, result.text
         stats = (await http.get("/api/v1/me/stats")).json()
-        assert stats["totalAttempts"] == stats["correctAttempts"] == 3
+        assert stats["totalAttempts"] == stats["correctAttempts"] == 4
         assert {item["mode"] for item in stats["byMode"]} == {
             "element-name",
             "periodic-table",
             "nomenclature",
+            "equation",
         }
 
 
@@ -299,7 +343,8 @@ async def test_bad_cursors_and_bounds(db: Session, accounts: dict[str, User]) ->
 
 
 def test_openapi_attempt_contracts() -> None:
-    paths = app.openapi()["paths"]
+    schema = app.openapi()
+    paths = schema["paths"]
     for path, method in (
         ("/api/v1/me/attempt-events/batch", "post"),
         ("/api/v1/me/attempt-events", "get"),
@@ -318,3 +363,14 @@ def test_openapi_attempt_contracts() -> None:
             operation["responses"]["422"]["content"]["application/json"]["schema"]["$ref"]
             == "#/components/schemas/ErrorEnvelope"
         )
+    item = schema["components"]["schemas"]["BatchRequest"]["properties"]["events"]["items"]
+    assert item["discriminator"]["propertyName"] == "mode"
+    assert {reference["$ref"] for reference in item["oneOf"]} == {
+        f"#/components/schemas/{name}"
+        for name in (
+            "ElementNameAttempt",
+            "PeriodicTableAttempt",
+            "NomenclatureAttempt",
+            "EquationAttempt",
+        )
+    }

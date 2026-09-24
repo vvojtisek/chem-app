@@ -8,7 +8,10 @@ import {
   pullCursor,
   type QuarantineInput,
   quarantineRejectedAttempts,
+  restoreLegacyQuotaAttempts,
   savePulledAttempts,
+  setUploadRetryAt,
+  uploadRetryAt,
 } from "./sync-store";
 
 type BatchResponse = components["schemas"]["BatchResponse"];
@@ -40,7 +43,12 @@ export async function runAttemptSync(
   userId: string,
   transport: SyncTransport = apiTransport,
 ): Promise<void> {
-  for (;;) {
+  await restoreLegacyQuotaAttempts(indexedDb, userId);
+  const retryAt = await uploadRetryAt(indexedDb, userId);
+  if (retryAt !== null && Date.now() >= retryAt) {
+    await setUploadRetryAt(indexedDb, userId, null);
+  }
+  for (; retryAt === null || Date.now() >= retryAt; ) {
     const pending = await pendingAttempts(indexedDb, userId, 100);
     if (pending.length === 0) break;
     const response = await transport.upload(pending.map(mapAttempt));
@@ -53,11 +61,16 @@ export async function runAttemptSync(
     }
     const quarantine = [];
     const accepted: string[] = [];
+    let quotaExceeded = false;
     for (const [index, attempt] of pending.entries()) {
       const rejected = rejectedByIndex.get(index);
       if (rejected) {
         if (rejected.eventId !== null && rejected.eventId !== attempt.id) {
           throw new Error("Server vrátil odmítnutí pro jiný pokus.");
+        }
+        if (rejected.code === "quota_exceeded") {
+          quotaExceeded = true;
+          continue;
         }
         quarantine.push({
           id: attempt.id,
@@ -78,6 +91,15 @@ export async function runAttemptSync(
     }
     if (quarantine.length > 0) await quarantineRejectedAttempts(indexedDb, userId, quarantine);
     if (accepted.length > 0) await acknowledgeAttempts(indexedDb, userId, accepted);
+    if (quotaExceeded) {
+      const now = new Date();
+      await setUploadRetryAt(
+        indexedDb,
+        userId,
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1),
+      );
+      break;
+    }
   }
 
   let cursor = await pullCursor(indexedDb, userId);
@@ -118,8 +140,6 @@ function rejectionReason(code: string): string {
       return "Server odmítl pokus: jeho formát už není podporovaný.";
     case "idempotency_conflict":
       return "Server odmítl pokus: jeho ID už bylo použito s jiným obsahem.";
-    case "quota_exceeded":
-      return "Server odmítl pokus po překročení denního limitu uploadů.";
     default:
       return "Server odmítl pokus z neznámého důvodu.";
   }

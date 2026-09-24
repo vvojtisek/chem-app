@@ -22,7 +22,7 @@ from inorganic_api.models import (
     PasswordResetToken,
     User,
 )
-from inorganic_api.services import auth
+from inorganic_api.services import accounts, auth, maintenance
 from inorganic_api.services.email import decrypt_token
 from inorganic_api.services.passwords import hash_password
 
@@ -121,6 +121,51 @@ def test_abuse_request_quota(db: Session) -> None:
     assert auth.consume_rate_limit(db, settings, "test-quota", key, limit=2)
     assert auth.consume_rate_limit(db, settings, "test-quota", key, limit=2)
     assert not auth.consume_rate_limit(db, settings, "test-quota", key, limit=2)
+
+
+def test_purge_preserves_inactive_accounts_with_real_passwords_and_attempts(db: Session) -> None:
+    old = datetime.now(UTC) - timedelta(days=8)
+    seeded = account(db)
+    cleared_email = account(db)
+    disabled_email = account(db)
+    disabled_email.email = f"disabled-{uuid4().hex}@example.test"
+    pending = User(
+        id=uuid4(),
+        username=f"user_{uuid4().hex}",
+        email=f"pending-{uuid4().hex}@example.test",
+        password_hash="!pending-email-verification",
+        role="user",
+        is_active=False,
+        created_at=old,
+    )
+    db.add(pending)
+    for user in (seeded, cleared_email, disabled_email):
+        user.is_active = False
+        user.created_at = old
+        db.add(
+            AttemptEvent(
+                user_id=user.id,
+                event_id=f"retained-{user.id}",
+                mode="element-name",
+                question_id="H",
+                content_version="v1",
+                occurred_at=old,
+                is_correct=True,
+                payload={},
+                payload_hash=uuid4().hex,
+            )
+        )
+    db.flush()
+
+    counts = maintenance.purge_expired_state(db, get_settings())
+    assert counts["unverified_accounts"] == 1
+    assert db.get(User, pending.id) is None
+    for user in (seeded, cleared_email, disabled_email):
+        assert db.get(User, user.id) is not None
+        assert db.query(AttemptEvent).filter_by(user_id=user.id).count() == 1
+    accounts.register(db, get_settings(), disabled_email.email, "192.0.2.31")
+    assert db.get(User, disabled_email.id) is not None
+    assert db.query(AttemptEvent).filter_by(user_id=disabled_email.id).count() == 1
 
 
 @pytest.mark.anyio
