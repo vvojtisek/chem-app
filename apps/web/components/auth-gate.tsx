@@ -57,12 +57,15 @@ export function useAccount(): ActiveAccount | null {
 
 export function useCapabilities() {
   const account = useAccount();
-  const canSave = account?.role !== "guest";
+  const isGuest = account?.role === "guest";
+  const canSave = !isGuest;
   return {
     canSave,
     canEdit: canSave,
-    canManageProfile: account?.role !== "guest",
-    canViewProgress: Boolean(account && account.role !== "guest" && account.role !== "tester"),
+    canManageProfile: !isGuest,
+    canSync: !isGuest,
+    canViewProgress: Boolean(account && !isGuest && account.role !== "tester"),
+    isGuest,
   } as const;
 }
 

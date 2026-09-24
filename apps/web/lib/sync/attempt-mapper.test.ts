@@ -23,4 +23,23 @@ describe("attempt mapper", () => {
     };
     expect(mapAttempt(event)).toEqual(event);
   });
+
+  it("maps an equation attempt to the generated event union", () => {
+    const event: AttemptEvent = {
+      id: "equation-one",
+      questionId: "preparation-production.route.vodik-id-20-1-preparation",
+      contentVersion: "preparation-production-2026-09-24",
+      occurredAt: "2026-09-24T10:00:00.000Z",
+      isCorrect: true,
+      round: "initial",
+      mode: "equation",
+      eventSchemaVersion: 1,
+      sessionId: "equation-session",
+      sequence: 0,
+      level: "beginner",
+      direction: "coefficients",
+      matchPolicy: "approved-balanced",
+    };
+    expect(mapAttempt(event)).toEqual(event);
+  });
 });

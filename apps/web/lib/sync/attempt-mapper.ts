@@ -12,5 +12,7 @@ export function mapAttempt(event: AttemptEvent): ApiAttempt {
       return event satisfies ApiAttempt;
     case "nomenclature":
       return event satisfies ApiAttempt;
+    case "equation":
+      return event satisfies ApiAttempt;
   }
 }

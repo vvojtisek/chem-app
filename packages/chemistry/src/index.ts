@@ -1,48 +1,56 @@
 export {
-  normalizeFormulaInput,
-  type FormulaNormalizationResult,
-  type FormulaNormalizationError,
-} from "./normalize-formula";
-export {
-  compactLenientAnswer,
-  normalizeAnswer,
-  normalizeAnswerWithoutDiacritics,
-  normalizeLenientAnswer,
-} from "./normalize-answer";
-export { listFormulaElements } from "./formula-elements";
-export {
-  evaluateElementAnswer,
-  type ElementAnswerEvaluation,
-  type ElementAnswerKey,
-  type ElementAnswerKind,
-  type ElementAnswerMatch,
-} from "./evaluate-element-answer";
-export {
-  evaluateAnswer,
   type AnswerEvaluation,
   type AnswerMatch,
   type AnswerPolicy,
   type EvaluateAnswerOptions,
+  evaluateAnswer,
 } from "./evaluate-answer";
 export {
-  parseFormula,
-  type FormulaParseError,
-  type FormulaParseErrorCode,
-  type FormulaParseResult,
-} from "./parse-formula";
+  type ElementAnswerEvaluation,
+  type ElementAnswerKey,
+  type ElementAnswerKind,
+  type ElementAnswerMatch,
+  evaluateElementAnswer,
+} from "./evaluate-element-answer";
 export {
-  hasReducedEquationCoefficients,
-  isBalancedEquation,
-  matchesEquation,
-  parseEquationAnswer,
-  parseEquationFormula,
-  type EquationFormula,
-  type EquationTerm,
-  type ParsedEquation,
-} from "./parse-equation";
+  countEquationAtoms,
+  type EquationAtomBalance,
+  gradeApprovedEquations,
+  gradeEquationCoefficients,
+  gradeEquationProducts,
+} from "./evaluate-equation-answer";
 export {
   evaluateNomenclatureAnswer,
   type NomenclatureAnswerKey,
   type NomenclatureDirection,
   type NomenclatureEvaluation,
 } from "./evaluate-nomenclature-answer";
+export { listFormulaElements } from "./formula-elements";
+export {
+  compactLenientAnswer,
+  normalizeAnswer,
+  normalizeAnswerWithoutDiacritics,
+  normalizeLenientAnswer,
+} from "./normalize-answer";
+export {
+  type FormulaNormalizationError,
+  type FormulaNormalizationResult,
+  normalizeFormulaInput,
+} from "./normalize-formula";
+export {
+  type EquationFormula,
+  type EquationTerm,
+  hasReducedEquationCoefficients,
+  isBalancedEquation,
+  matchesEquation,
+  type ParsedEquation,
+  parseEquationAnswer,
+  parseEquationFormula,
+  parseEquationTerms,
+} from "./parse-equation";
+export {
+  type FormulaParseError,
+  type FormulaParseErrorCode,
+  type FormulaParseResult,
+  parseFormula,
+} from "./parse-formula";

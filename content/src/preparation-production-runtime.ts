@@ -1,21 +1,30 @@
-import rawData from "../data/preparation-production.json";
 import {
   hasReducedEquationCoefficients,
   isBalancedEquation,
   parseEquationFormula,
 } from "@inorganic/chemistry";
-import { curatedElements } from "./runtime";
+import rawData from "../data/preparation-production.json";
 import { preparationProductionCollectionSchema } from "./preparation-production-schema";
+import { curatedElements } from "./runtime";
 
 const collection = preparationProductionCollectionSchema.parse(rawData);
 const allowedSymbols = new Set(curatedElements.map((element) => element.symbol));
+export const preparationProductionContentVersion = collection.contentVersion;
 
 export interface PreparationProductionRuntimeRoute {
   readonly id: string;
   readonly sourceId: string;
   readonly kind: "preparation" | "manufacture";
-  readonly reactants: readonly { readonly coefficient: number; readonly formula: string }[];
-  readonly products: readonly { readonly coefficient: number; readonly formula: string }[];
+  readonly reactants: readonly {
+    readonly coefficient: number;
+    readonly formula: string;
+    readonly acceptedAliases?: readonly string[] | undefined;
+  }[];
+  readonly products: readonly {
+    readonly coefficient: number;
+    readonly formula: string;
+    readonly acceptedAliases?: readonly string[] | undefined;
+  }[];
   readonly conditionsCs: string | null;
 }
 

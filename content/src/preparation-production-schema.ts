@@ -8,6 +8,7 @@ const sourceSchema = z.object({
 const equationTermSchema = z.object({
   coefficient: z.number().int().min(1).max(999),
   formula: z.string().min(1).max(256),
+  acceptedAliases: z.array(z.string().min(1).max(256)).optional(),
 });
 
 export const preparationProductionRouteSchema = z.object({
@@ -41,6 +42,7 @@ export const preparationProductionProductSchema = z.object({
 
 export const preparationProductionCollectionSchema = z.object({
   schemaVersion: z.literal(1),
+  contentVersion: z.string().min(1).max(128),
   products: z.array(preparationProductionProductSchema).min(1),
 });
 

@@ -191,6 +191,7 @@
             "discriminator": {
               "mapping": {
                 "element-name": "#/components/schemas/ElementNameAttempt",
+                "equation": "#/components/schemas/EquationAttempt",
                 "nomenclature": "#/components/schemas/NomenclatureAttempt",
                 "periodic-table": "#/components/schemas/PeriodicTableAttempt"
               },
@@ -205,6 +206,9 @@
               },
               {
                 "$ref": "#/components/schemas/NomenclatureAttempt"
+              },
+              {
+                "$ref": "#/components/schemas/EquationAttempt"
               }
             ],
             "title": "Event"
@@ -287,7 +291,31 @@
         "additionalProperties": false,
         "properties": {
           "events": {
-            "items": {},
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "element-name": "#/components/schemas/ElementNameAttempt",
+                  "equation": "#/components/schemas/EquationAttempt",
+                  "nomenclature": "#/components/schemas/NomenclatureAttempt",
+                  "periodic-table": "#/components/schemas/PeriodicTableAttempt"
+                },
+                "propertyName": "mode"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ElementNameAttempt"
+                },
+                {
+                  "$ref": "#/components/schemas/PeriodicTableAttempt"
+                },
+                {
+                  "$ref": "#/components/schemas/NomenclatureAttempt"
+                },
+                {
+                  "$ref": "#/components/schemas/EquationAttempt"
+                }
+              ]
+            },
             "maxItems": 200,
             "minItems": 1,
             "title": "Events",
@@ -486,6 +514,108 @@
         "title": "EmailRequest",
         "type": "object"
       },
+      "EquationAttempt": {
+        "additionalProperties": false,
+        "properties": {
+          "contentVersion": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Contentversion",
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "coefficients",
+              "products-and-coefficients",
+              "complete-equation"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "eventSchemaVersion": {
+            "const": 1,
+            "title": "Eventschemaversion",
+            "type": "integer"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "isCorrect": {
+            "title": "Iscorrect",
+            "type": "boolean"
+          },
+          "level": {
+            "enum": [
+              "beginner",
+              "advanced",
+              "pro"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "matchPolicy": {
+            "const": "approved-balanced",
+            "title": "Matchpolicy",
+            "type": "string"
+          },
+          "mode": {
+            "const": "equation",
+            "title": "Mode",
+            "type": "string"
+          },
+          "occurredAt": {
+            "format": "date-time",
+            "title": "Occurredat",
+            "type": "string"
+          },
+          "questionId": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Questionid",
+            "type": "string"
+          },
+          "round": {
+            "enum": [
+              "initial",
+              "retry"
+            ],
+            "title": "Round",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "sessionId": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Sessionid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "questionId",
+          "contentVersion",
+          "occurredAt",
+          "isCorrect",
+          "round",
+          "mode",
+          "eventSchemaVersion",
+          "sessionId",
+          "sequence",
+          "level",
+          "direction",
+          "matchPolicy"
+        ],
+        "title": "EquationAttempt",
+        "type": "object"
+      },
       "ErrorBody": {
         "properties": {
           "code": {
@@ -672,7 +802,8 @@
             "enum": [
               "element-name",
               "periodic-table",
-              "nomenclature"
+              "nomenclature",
+              "equation"
             ],
             "title": "Mode",
             "type": "string"

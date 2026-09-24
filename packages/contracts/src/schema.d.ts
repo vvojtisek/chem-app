@@ -438,7 +438,7 @@ export interface components {
         /** AttemptItem */
         AttemptItem: {
             /** Event */
-            event: components["schemas"]["ElementNameAttempt"] | components["schemas"]["PeriodicTableAttempt"] | components["schemas"]["NomenclatureAttempt"];
+            event: components["schemas"]["ElementNameAttempt"] | components["schemas"]["PeriodicTableAttempt"] | components["schemas"]["NomenclatureAttempt"] | components["schemas"]["EquationAttempt"];
             /**
              * Receivedat
              * Format: date-time
@@ -466,7 +466,7 @@ export interface components {
         /** BatchRequest */
         BatchRequest: {
             /** Events */
-            events: unknown[];
+            events: (components["schemas"]["ElementNameAttempt"] | components["schemas"]["PeriodicTableAttempt"] | components["schemas"]["NomenclatureAttempt"] | components["schemas"]["EquationAttempt"])[];
         };
         /** BatchResponse */
         BatchResponse: {
@@ -540,6 +540,56 @@ export interface components {
         EmailRequest: {
             /** Email */
             email: string;
+        };
+        /** EquationAttempt */
+        EquationAttempt: {
+            /** Contentversion */
+            contentVersion: string;
+            /**
+             * Direction
+             * @enum {string}
+             */
+            direction: "coefficients" | "products-and-coefficients" | "complete-equation";
+            /**
+             * Eventschemaversion
+             * @constant
+             */
+            eventSchemaVersion: 1;
+            /** Id */
+            id: string;
+            /** Iscorrect */
+            isCorrect: boolean;
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "beginner" | "advanced" | "pro";
+            /**
+             * Matchpolicy
+             * @constant
+             */
+            matchPolicy: "approved-balanced";
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "equation";
+            /**
+             * Occurredat
+             * Format: date-time
+             */
+            occurredAt: string;
+            /** Questionid */
+            questionId: string;
+            /**
+             * Round
+             * @enum {string}
+             */
+            round: "initial" | "retry";
+            /** Sequence */
+            sequence: number;
+            /** Sessionid */
+            sessionId: string;
         };
         /** ErrorBody */
         ErrorBody: {
@@ -617,7 +667,7 @@ export interface components {
              * Mode
              * @enum {string}
              */
-            mode: "element-name" | "periodic-table" | "nomenclature";
+            mode: "element-name" | "periodic-table" | "nomenclature" | "equation";
             /** Totalattempts */
             totalAttempts: number;
         };
