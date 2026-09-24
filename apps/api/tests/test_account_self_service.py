@@ -15,8 +15,15 @@ from inorganic_api.config import get_settings
 from inorganic_api.database import session_dependency
 from inorganic_api.errors import AppError
 from inorganic_api.main import app
-from inorganic_api.models import AttemptEvent, PasswordResetToken, User
+from inorganic_api.models import (
+    AttemptEvent,
+    EmailVerificationToken,
+    MailOutbox,
+    PasswordResetToken,
+    User,
+)
 from inorganic_api.services import auth
+from inorganic_api.services.email import decrypt_token
 from inorganic_api.services.passwords import hash_password
 
 API_DIR = Path(__file__).resolve().parents[1]
@@ -95,6 +102,19 @@ def csrf(http: AsyncClient) -> dict[str, str]:
     return {"Origin": ORIGIN, "X-CSRF-Token": http.cookies["__Host-inorganic_csrf"]}
 
 
+def queued_token(db: Session, recipient: str, purpose: str) -> str:
+    rows = (
+        db.query(MailOutbox)
+        .filter_by(recipient=recipient)
+        .order_by(MailOutbox.created_at, MailOutbox.id)
+        .all()
+    )
+    row = next(
+        item for item in rows if (item.verification_token_id is not None) == (purpose == "verify")
+    )
+    return decrypt_token(get_settings(), row.encrypted_token)
+
+
 def test_abuse_request_quota(db: Session) -> None:
     key = uuid4().hex
     settings = get_settings()
@@ -108,24 +128,17 @@ async def test_registration_verification_password_change_and_reset(
     db: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     db.autoflush = False
-    links: list[tuple[str, str, str]] = []
-    monkeypatch.setattr(
-        "inorganic_api.services.accounts.email.send_account_link",
-        lambda _settings, address, token, purpose: links.append((address, token, purpose)),
-    )
     address = f"learner-{uuid4().hex[:10]}@example.test"
     async with client() as http:
-        denied = await http.post(
-            "/api/v1/auth/register", json={"email": address, "password": PASSWORD}
-        )
+        denied = await http.post("/api/v1/auth/register", json={"email": address})
         assert denied.status_code == 403
         response = await http.post(
             "/api/v1/auth/register",
             headers={"Origin": ORIGIN},
-            json={"email": address.upper(), "password": PASSWORD},
+            json={"email": address.upper()},
         )
         assert response.status_code == 202, response.text
-        assert len(links) == 1 and links[0][2] == "verify"
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
         unverified = await http.post(
             "/api/v1/auth/login",
             headers={"Origin": ORIGIN},
@@ -137,29 +150,45 @@ async def test_registration_verification_password_change_and_reset(
             headers={"Origin": ORIGIN},
             json={"email": address},
         )
-        assert resent.status_code == 202 and len(links) == 2
+        assert resent.status_code == 202
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 2
         duplicate = await http.post(
             "/api/v1/auth/register",
             headers={"Origin": ORIGIN},
-            json={"email": address, "password": PASSWORD},
+            json={"email": address},
         )
-        assert duplicate.status_code == 202 and len(links) == 2
+        assert duplicate.status_code == 202
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 2
         replaced = await http.post(
             "/api/v1/auth/verify-email",
             headers={"Origin": ORIGIN},
-            json={"token": links[0][1]},
+            json={"token": queued_token(db, address, "verify"), "newPassword": PASSWORD},
         )
         assert replaced.status_code == 400
+        verification = (
+            db.query(EmailVerificationToken)
+            .filter_by(user_id=db.query(User).filter_by(email=address).one().id)
+            .order_by(EmailVerificationToken.expires_at.desc())
+            .first()
+        )
+        assert verification is not None
+        current_verify_token = decrypt_token(
+            get_settings(),
+            db.query(MailOutbox)
+            .filter_by(verification_token_id=verification.id)
+            .one()
+            .encrypted_token,
+        )
         verified = await http.post(
             "/api/v1/auth/verify-email",
             headers={"Origin": ORIGIN},
-            json={"token": links[1][1]},
+            json={"token": current_verify_token, "newPassword": PASSWORD},
         )
         assert verified.status_code == 204, verified.text
         replay = await http.post(
             "/api/v1/auth/verify-email",
             headers={"Origin": ORIGIN},
-            json={"token": links[1][1]},
+            json={"token": current_verify_token, "newPassword": PASSWORD},
         )
         assert replay.status_code == 400
         signed_in = await http.post(
@@ -200,17 +229,23 @@ async def test_registration_verification_password_change_and_reset(
             json={"email": address},
         )
         assert unknown.status_code == known.status_code == 202
-        assert len(links) == 3 and links[2][2] == "reset"
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 3
+        reset_message = (
+            db.query(MailOutbox)
+            .filter(MailOutbox.reset_token_id.is_not(None), MailOutbox.recipient == address)
+            .one()
+        )
+        reset_token = decrypt_token(get_settings(), reset_message.encrypted_token)
         reset = await http.post(
             "/api/v1/auth/password-reset/confirm",
             headers={"Origin": ORIGIN},
-            json={"token": links[2][1], "newPassword": "yet-another-long-password"},
+            json={"token": reset_token, "newPassword": "yet-another-long-password"},
         )
         assert reset.status_code == 204, reset.text
         replay = await http.post(
             "/api/v1/auth/password-reset/confirm",
             headers={"Origin": ORIGIN},
-            json={"token": links[2][1], "newPassword": "yet-another-long-password"},
+            json={"token": reset_token, "newPassword": "yet-another-long-password"},
         )
         assert replay.status_code == 400
         old_password = await http.post(
@@ -228,21 +263,36 @@ async def test_registration_verification_password_change_and_reset(
 
 
 @pytest.mark.anyio
-async def test_email_delivery_failure_and_expired_reset_are_safe(
+async def test_email_configuration_failure_and_expired_reset_are_safe(
     db: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     def unavailable(*_args):
         raise AppError(503, "email_unavailable", "Email delivery is temporarily unavailable.")
 
-    monkeypatch.setattr("inorganic_api.services.accounts.email.send_account_link", unavailable)
     address = f"outage-{uuid4().hex[:8]}@example.test"
     async with client() as http:
-        registration = await http.post(
-            "/api/v1/auth/register",
-            headers={"Origin": ORIGIN},
-            json={"email": address, "password": PASSWORD},
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                "inorganic_api.services.accounts.email.require_delivery_config", unavailable
+            )
+            registration = await http.post(
+                "/api/v1/auth/register",
+                headers={"Origin": ORIGIN},
+                json={"email": address},
+            )
+            recovery = await http.post(
+                "/api/v1/auth/password-reset/request",
+                headers={"Origin": ORIGIN},
+                json={"email": address},
+            )
+            unknown_recovery = await http.post(
+                "/api/v1/auth/password-reset/request",
+                headers={"Origin": ORIGIN},
+                json={"email": f"other-{uuid4().hex[:8]}@example.test"},
+            )
+        assert (
+            registration.status_code == recovery.status_code == unknown_recovery.status_code == 503
         )
-        assert registration.status_code == 202
         assert db.query(User).filter_by(email=address).count() == 0
         learner = account(db)
         learner.email = address
@@ -259,27 +309,16 @@ async def test_email_delivery_failure_and_expired_reset_are_safe(
             json={"email": f"other-{uuid4().hex[:8]}@example.test"},
         )
         assert known.status_code == unknown.status_code == 202
-        assert db.query(PasswordResetToken).filter_by(user_id=learner.id).count() == 0
-
-        tokens: list[str] = []
-        monkeypatch.setattr(
-            "inorganic_api.services.accounts.email.send_account_link",
-            lambda _settings, _address, token, _purpose: tokens.append(token),
-        )
-        requested = await http.post(
-            "/api/v1/auth/password-reset/request",
-            headers={"Origin": ORIGIN},
-            json={"email": address},
-        )
-        assert requested.status_code == 202 and len(tokens) == 1
         token_row = db.query(PasswordResetToken).filter_by(user_id=learner.id).one()
-        assert token_row.token_hash != tokens[0]
+        reset_message = db.query(MailOutbox).filter_by(reset_token_id=token_row.id).one()
+        token = decrypt_token(get_settings(), reset_message.encrypted_token)
+        assert token_row.token_hash != token
         token_row.expires_at = datetime.now(UTC) - timedelta(seconds=1)
         db.flush()
         expired = await http.post(
             "/api/v1/auth/password-reset/confirm",
             headers={"Origin": ORIGIN},
-            json={"token": tokens[0], "newPassword": "another-new-long-password"},
+            json={"token": token, "newPassword": "another-new-long-password"},
         )
         assert expired.status_code == 400
 
