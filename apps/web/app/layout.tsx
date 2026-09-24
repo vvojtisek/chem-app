@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 import { AppProviders } from "@/components/app-providers";
+import { AuthGate } from "@/components/auth-gate";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 
 import "./globals.css";
@@ -21,8 +22,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="cs">
       <body>
-        <AppProviders>{children}</AppProviders>
-        <ServiceWorkerRegistration />
+        <AppProviders>
+          <AuthGate>
+            <ServiceWorkerRegistration />
+            {children}
+          </AuthGate>
+        </AppProviders>
       </body>
     </html>
   );

@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
-
+import { useAccount } from "@/components/auth-gate";
 import { NomenclatureFilterStep } from "@/components/nomenclature-filters";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import {
@@ -94,6 +94,7 @@ export function NomenclaturePractice({
 
   // Persistence of the resumable practice (IndexedDB) and of attempts written with it.
   const storeRef = useRef<BrowserNomenclatureStore | null>(null);
+  const account = useAccount();
   const checkpointRef = useRef<NomenclatureCheckpoint | null>(null);
   const persistedRevisionRef = useRef(0);
   const queuedWritesRef = useRef<Promise<void>>(Promise.resolve());
@@ -103,7 +104,7 @@ export function NomenclaturePractice({
   const sequenceRef = useRef(0);
 
   function store(): BrowserNomenclatureStore {
-    storeRef.current ??= createBrowserNomenclatureStore();
+    storeRef.current ??= createBrowserNomenclatureStore(globalThis.indexedDB, account?.id);
     return storeRef.current;
   }
 
@@ -156,13 +157,17 @@ export function NomenclaturePractice({
   });
 
   useEffect(() => {
+    if (account?.role === "guest") {
+      setLoading(false);
+      return;
+    }
     const storedFilters = loadNomenclatureFilters();
     if (storedFilters) setFilters(storedFilters);
     const storedDirection = loadNomenclatureDirection();
     if (storedDirection) setDirection(storedDirection);
 
     let mounted = true;
-    const browserStore = storeRef.current ?? createBrowserNomenclatureStore();
+    const browserStore = createBrowserNomenclatureStore(globalThis.indexedDB, account?.id);
     storeRef.current = browserStore;
     browserStore
       .load()
@@ -178,7 +183,7 @@ export function NomenclaturePractice({
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [account?.id, account?.role]);
 
   useEffect(() => {
     if (runId > 0) inputRef.current?.focus();
@@ -186,7 +191,7 @@ export function NomenclaturePractice({
 
   /** Writes the current checkpoint (or removes it when there is none) with pending attempts. */
   function queueWrite(): void {
-    if (localOnlyRef.current) return;
+    if (localOnlyRef.current || account?.role === "guest") return;
     queuedWritesRef.current = queuedWritesRef.current
       .then(async () => {
         const current = checkpointRef.current;
@@ -217,6 +222,7 @@ export function NomenclaturePractice({
   }
 
   function saveProgress(next: Session, sessionId: string, event?: NomenclatureAttemptEvent) {
+    if (account?.role === "guest") return;
     if (event) pendingEventsRef.current.push(event);
     checkpointRef.current =
       next.status === "running" && next.current
@@ -243,12 +249,12 @@ export function NomenclaturePractice({
 
   function changeFilters(next: NomenclatureFilters) {
     setFilters(next);
-    saveNomenclatureFilters(next);
+    if (account?.role !== "guest") saveNomenclatureFilters(next);
   }
 
   function changeDirection(next: NomenclatureDirection) {
     setDirection(next);
-    saveNomenclatureDirection(next);
+    if (account?.role !== "guest") saveNomenclatureDirection(next);
     updateAnswer("");
     setInputHint("");
   }

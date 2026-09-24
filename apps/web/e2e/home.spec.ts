@@ -21,6 +21,35 @@ test("shows the four learning modes on desktop and mobile", async ({ page }) => 
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
   await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+  await expect(page.getByText("Offline výuka")).toHaveCount(0);
+  await expect(page.getByText("Vyberte, co chcete trénovat")).toHaveCount(0);
+  await expect(page.getByText("Příprava MVP")).toHaveCount(0);
+});
+
+test("fits the learning modes in an iPad-sized viewport", async ({ page }, testInfo) => {
+  await page.goto("/");
+
+  for (const viewport of [
+    { name: "landscape", width: 1024, height: 768 },
+    { name: "portrait", width: 768, height: 1024 },
+  ]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+
+    await expect(page.getByRole("heading", { level: 1, name: "Anorganická chemie" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+    await expect(page.getByRole("heading", { level: 3 }).last()).toBeInViewport();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      viewport.width,
+    );
+    expect(
+      await page.locator("main").evaluate((main) => main.getBoundingClientRect().height),
+    ).toBeLessThanOrEqual(viewport.height);
+
+    await page.screenshot({
+      path: testInfo.outputPath(`ipad-home-${viewport.name}.png`),
+      fullPage: true,
+    });
+  }
 });
 
 test("reopens the shell while offline", async ({ context, page }) => {

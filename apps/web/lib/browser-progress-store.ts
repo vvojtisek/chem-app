@@ -6,6 +6,7 @@ import {
   LEARNING_DATABASE_VERSION,
   openLearningDatabase,
   requestCompleted,
+  SYNC_OUTBOX_STORE,
   transactionCompleted,
 } from "./browser-learning-database";
 
@@ -97,6 +98,7 @@ export interface BrowserProgressStore {
 
 export function createBrowserProgressStore(
   indexedDb: IDBFactory = globalThis.indexedDB,
+  userId?: string,
 ): BrowserProgressStore {
   return {
     async appendAttempt(event) {
@@ -104,21 +106,31 @@ export function createBrowserProgressStore(
         throw new Error("Pokus má neplatný kontext procvičování.");
       }
 
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
-        const transaction = database.transaction(ATTEMPT_EVENT_STORE, "readwrite");
+        const transaction = database.transaction(
+          [ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE],
+          "readwrite",
+        );
         transaction.objectStore(ATTEMPT_EVENT_STORE).add(attemptEventSchema.parse(event));
+        transaction.objectStore(SYNC_OUTBOX_STORE).add({ id: event.id });
         await transactionCompleted(transaction);
+        if (typeof window !== "undefined")
+          window.dispatchEvent(new Event("inorganic:attempt-saved"));
       } finally {
         database.close();
       }
     },
 
     async clearAttempts() {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
-        const transaction = database.transaction(ATTEMPT_EVENT_STORE, "readwrite");
+        const transaction = database.transaction(
+          [ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE],
+          "readwrite",
+        );
         transaction.objectStore(ATTEMPT_EVENT_STORE).clear();
+        transaction.objectStore(SYNC_OUTBOX_STORE).clear();
         await transactionCompleted(transaction);
       } finally {
         database.close();
@@ -126,7 +138,7 @@ export function createBrowserProgressStore(
     },
 
     async listAttempts() {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(ATTEMPT_EVENT_STORE, "readonly");
         const request = transaction.objectStore(ATTEMPT_EVENT_STORE).getAll();

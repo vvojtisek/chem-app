@@ -3,9 +3,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   ATTEMPT_EVENT_STORE,
   ELEMENT_CARD_STORE,
-  NOMENCLATURE_SESSION_STORE,
   LEARNING_DATABASE_NAME,
   LEARNING_DATABASE_VERSION,
+  NOMENCLATURE_SESSION_STORE,
   openLearningDatabase,
   resetLearningDatabase,
 } from "./browser-learning-database";
@@ -88,7 +88,7 @@ describe("Learning database", () => {
     old.close();
 
     const upgraded = await openLearningDatabase(indexedDB);
-    expect(upgraded.version).toBe(4);
+    expect(upgraded.version).toBe(LEARNING_DATABASE_VERSION);
     expect(upgraded.objectStoreNames.contains(NOMENCLATURE_SESSION_STORE)).toBe(true);
     const read = upgraded.transaction([ATTEMPT_EVENT_STORE, ELEMENT_CARD_STORE], "readonly");
     expect(

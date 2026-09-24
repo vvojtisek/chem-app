@@ -1,7 +1,7 @@
 import {
+  type NomenclatureRuntimeRecord,
   nomenclatureCategorySchema,
   type nomenclatureDirectionSchema,
-  type NomenclatureRuntimeRecord,
 } from "@inorganic/content/nomenclature-schema";
 import { z } from "zod";
 

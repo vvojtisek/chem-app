@@ -50,7 +50,8 @@ fi
 
 pnpm install --frozen-lockfile
 uv --directory apps/api sync --frozen --extra test
-docker compose up -d database
+docker compose up -d --wait database mailpit
+uv --directory apps/api run alembic upgrade head
 
 printf 'Building the current checkout.\n'
 pnpm build

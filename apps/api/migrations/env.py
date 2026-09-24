@@ -3,6 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+import inorganic_api.models  # noqa: F401 - register all mapped tables
 from inorganic_api.config import get_settings
 from inorganic_api.database import Base
 

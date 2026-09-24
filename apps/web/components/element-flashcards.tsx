@@ -2,6 +2,7 @@
 
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useState } from "react";
+import { useAccount } from "@/components/auth-gate";
 
 import {
   createBrowserElementCardStore,
@@ -16,6 +17,8 @@ interface ElementFlashcardsProps {
 }
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
+  const account = useAccount();
+  const canEdit = account?.role !== "guest";
   const [storedCards, setStoredCards] = useState<readonly StoredElementCard[]>([]);
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [selectedId, setSelectedId] = useState(curatedElements[0]?.id ?? "");
@@ -24,8 +27,10 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    void createBrowserElementCardStore().list().then(setStoredCards);
-  }, []);
+    void createBrowserElementCardStore(globalThis.indexedDB, account?.id)
+      .list()
+      .then(setStoredCards);
+  }, [account?.id]);
 
   const cards = useMemo(
     () => mergeCards(curatedElements, storedCards),
@@ -51,14 +56,15 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
   }
 
   async function saveCard(card: EditableCard, isCustom: boolean) {
+    if (!canEdit) return;
     try {
       const stored: StoredElementCard = {
         ...card,
         kind: isCustom ? "custom" : "override",
         updatedAt: new Date().toISOString(),
       };
-      await createBrowserElementCardStore().upsert(stored);
-      setStoredCards(await createBrowserElementCardStore().list());
+      await createBrowserElementCardStore(globalThis.indexedDB, account?.id).upsert(stored);
+      setStoredCards(await createBrowserElementCardStore(globalThis.indexedDB, account?.id).list());
       setSelectedId(card.id);
       setEditor(null);
       setMessage(
@@ -76,11 +82,11 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
   }
 
   async function resetCard() {
-    if (!selectedCard || !curatedElements.some((card) => card.id === selectedCard.id)) {
+    if (!canEdit || !selectedCard || !curatedElements.some((card) => card.id === selectedCard.id)) {
       return;
     }
-    await createBrowserElementCardStore().remove(selectedCard.id);
-    setStoredCards(await createBrowserElementCardStore().list());
+    await createBrowserElementCardStore(globalThis.indexedDB, account?.id).remove(selectedCard.id);
+    setStoredCards(await createBrowserElementCardStore(globalThis.indexedDB, account?.id).list());
     setMessage("Výchozí schválená karta byla obnovena.");
   }
 
@@ -192,14 +198,16 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
           >
             {isFlipped ? "Zobrazit značku" : "Otočit kartu"}
           </button>
-          <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
-            onClick={() => setEditor(toEditableCard(selectedCard))}
-            type="button"
-          >
-            Upravit kartu
-          </button>
-          {curatedElements.some((card) => card.id === selectedCard.id) ? (
+          {canEdit ? (
+            <button
+              className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+              onClick={() => setEditor(toEditableCard(selectedCard))}
+              type="button"
+            >
+              Upravit kartu
+            </button>
+          ) : null}
+          {canEdit && curatedElements.some((card) => card.id === selectedCard.id) ? (
             <button
               className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
               onClick={() => void resetCard()}
@@ -208,13 +216,15 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
               Obnovit výchozí
             </button>
           ) : null}
-          <button
-            className="min-h-11 rounded-xl border border-emerald-700 px-4 font-semibold text-emerald-900"
-            onClick={() => setEditor(createCustomCard(cards))}
-            type="button"
-          >
-            Přidat vlastní prvek
-          </button>
+          {canEdit ? (
+            <button
+              className="min-h-11 rounded-xl border border-emerald-700 px-4 font-semibold text-emerald-900"
+              onClick={() => setEditor(createCustomCard(cards))}
+              type="button"
+            >
+              Přidat vlastní prvek
+            </button>
+          ) : null}
         </div>
         {message ? (
           <p className="mt-5 text-center text-sm text-slate-700" role="status">

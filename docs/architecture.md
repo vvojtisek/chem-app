@@ -61,17 +61,26 @@ The API may distribute the same snapshot and record progress, but it is not the 
 
 ### Authentication and accounts
 
-All web routes require a pre-provisioned local account. FastAPI stores Argon2id
-password hashes and opaque server-side sessions in PostgreSQL. The browser
-receives only a secure HttpOnly session cookie and a separate CSRF cookie;
-mutations validate CSRF and same-origin requests. Roles are `admin`, `user`,
-and `tester`; ownership and role checks happen in API services. See ADR 0005.
+FastAPI owns email/password registration, verified email ownership, self-service
+password recovery, opaque server-side sessions, and authorization. Passwords
+use Argon2id. Reset and verification tokens are single-use, expire, and are
+stored only as hashes. The browser receives only a secure HttpOnly session
+cookie and a separate CSRF cookie; mutations validate CSRF and same-origin
+requests. Roles are `guest`, `user`, `admin`, and the existing `tester`
+compatibility role. Guests can read the learning app, while the API rejects
+their writes. Registered users own their profile and data; admins manage
+accounts. See ADRs 0005 and 0006.
 
 The Next.js proxy checks only for the presence of the session cookie and is a
 navigation convenience. API authentication remains authoritative. A small
 account marker in localStorage permits opening the cached shell after prior
 verification while offline; it grants no API access and is not a security
 boundary for device-local data.
+
+Personal profile statistics and progression tiers derive from server-accepted
+attempt events. Client-supplied roles, scores, and mastery values are never
+trusted. Guest and tester activity is excluded from personal progression and
+aggregate learning statistics.
 
 ### Progress and synchronization
 

@@ -76,7 +76,7 @@ These are planning targets, not permission to ship unreviewed material. If revie
 
 ## Out of scope for the first release
 
-- public registration, self-service password recovery, and account linking;
+- account linking;
 - teacher/classroom administration;
 - user-authored public curriculum;
 - semantic or generative answer grading;

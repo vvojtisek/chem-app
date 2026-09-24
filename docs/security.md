@@ -44,11 +44,19 @@ Apply least privilege, explicit validation, deny-by-default authorization, short
 
 ## Authentication
 
-ADR 0005 selects local username/password accounts with no public registration.
-Use Argon2id with current library defaults, reject passwords above 1024 bytes,
-and require at least 12 characters during provisioning. Login must verify a
-dummy hash for unknown users, return the same error for an unknown username and
-wrong password, and apply database-backed per-user and per-IP throttles.
+ADRs 0005 and 0006 select local email/password accounts, verified public
+registration, self-service recovery, and a restricted guest role. Use Argon2id
+with current library defaults, reject passwords above 1024 bytes, and require
+at least 12 characters. Login must verify a dummy hash for unknown users,
+return the same error for unknown accounts and wrong passwords, and apply
+database-backed per-account and per-IP throttles. Registration, verification,
+and recovery must also be rate limited.
+
+Email verification and password recovery tokens are cryptographically random,
+single use, short lived, and stored only as SHA-256 hashes. Password-reset
+responses must not reveal whether an account exists. Never log token values or
+complete action links. Production email delivery requires configured TLS SMTP
+settings; secrets belong in deployment environment or secret management.
 
 Session identifiers are random opaque values; store only SHA-256 token hashes
 in PostgreSQL. Enforce idle and absolute expiry and revoke sessions when an
@@ -59,8 +67,11 @@ same-origin `Origin`. Keep cookie and CSRF values out of logs and browser
 storage. The offline account marker is a UX gate only and grants no server
 authorization.
 
-The API must enforce ownership in service operations. Admin diagnostics require
-the `admin` role, and tester activity must not affect aggregate statistics.
+The API must enforce ownership in service operations. Guests cannot mutate
+profiles, passwords, attempt history, or other account data. User writes are
+owner scoped. Admin account management requires CSRF and explicit admin checks;
+it cannot disable or demote the last active administrator. Tester activity
+must not affect aggregate or personal progression statistics.
 
 Authorization and session tests must include missing, expired, malformed, wrong-user, and insufficient-role cases. Administrative and content-review actions require separate explicit capabilities.
 

@@ -15,8 +15,11 @@ export interface PeriodicTableAttempt {
   readonly direction: PeriodicTablePracticeDirection;
 }
 
-export async function appendPeriodicTableAttempt(attempt: PeriodicTableAttempt): Promise<void> {
-  const store = createBrowserProgressStore();
+export async function appendPeriodicTableAttempt(
+  attempt: PeriodicTableAttempt,
+  userId?: string,
+): Promise<void> {
+  const store = createBrowserProgressStore(globalThis.indexedDB, userId);
   const base = {
     id: crypto.randomUUID(),
     questionId: attempt.questionId,

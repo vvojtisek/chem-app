@@ -10,7 +10,7 @@ Offline-capable Czech learning application for periodic-table practice, chemical
 - `packages/contracts` — generated OpenAPI TypeScript types
 - `packages/ui` — accessible React primitives
 - `content` — reviewed curriculum authoring data and validators
-- `docs` — product, architecture, contracts, security, testing, and ADRs
+- `docs` — product, architecture, contracts, security, testing, deployment, and ADRs
 
 Read `AGENTS.md` and the nested instruction file for the area being changed before editing.
 
@@ -20,7 +20,7 @@ Read `AGENTS.md` and the nested instruction file for the area being changed befo
 - pnpm 11.7.0
 - Python 3.12 or newer
 - `uv` 0.12 or newer
-- Docker with Compose for local PostgreSQL
+- Docker with Compose for local PostgreSQL and Mailpit
 
 ## Install
 
@@ -35,7 +35,7 @@ The copied `.env` is local-only and must not be committed.
 
 ## Local development
 
-Start PostgreSQL:
+Start PostgreSQL and the local email catcher:
 
 ```bash
 pnpm db:up
@@ -53,9 +53,11 @@ Run the web application in another:
 pnpm dev:web
 ```
 
-The web application is served at `http://localhost:3000`; API documentation is available at `http://localhost:8000/docs` during local development.
+The web application is served at `http://localhost:3000`; API documentation is available at `http://localhost:8000/docs` during local development. Registration and password recovery emails are captured by Mailpit at `http://localhost:8025`.
 
-To refresh and restart the local stack in one command, run `pnpm local:update` from the repository. It updates the currently checked-out branch from its tracking branch using fast-forward only, syncs locked dependencies, starts the local database, builds the current checkout, and runs the API and frontend on ports 8000 and 3000. Press Ctrl+C to stop the API and frontend; the database keeps running. It refuses to merge incoming commits over uncommitted changes and never switches branches. In Codex, select **Update local app** from the `/` menu or invoke `$update`; this workflow is only installed in this repository.
+To refresh and restart the local stack in one command, run `pnpm local:update` from the repository. It updates the currently checked-out branch from its tracking branch using fast-forward only, syncs locked dependencies, starts PostgreSQL and Mailpit, builds the current checkout, and runs the API and frontend on ports 8000 and 3000. Mailpit's SMTP listener is on port 1025 and its inbox is at `http://localhost:8025`. Press Ctrl+C to stop the API and frontend; the database and Mailpit keep running. It refuses to merge incoming commits over uncommitted changes and never switches branches. In Codex, select **Update local app** from the `/` menu or invoke `$update`; this workflow is only installed in this repository.
+
+To test on another device on the same trusted Wi-Fi/LAN, run `pnpm local:lan`. It applies database migrations, builds the local HTTP cookie configuration, starts the API on loopback and the frontend on port 3001 on the LAN interface, and shows the address to open on the iPad. Mailpit's inbox is also exposed on the current LAN IP at port 8025 so you can open registration and recovery links there. If the OS firewall blocks access, allow TCP 3001 and 8025 only from your private network. This development mode uses HTTP and non-secure cookies; do not expose it to the public Internet. Press Ctrl+C to stop the app servers.
 
 ## Generated API contracts
 
@@ -87,6 +89,12 @@ pnpm test:e2e
 ```
 
 Chemistry-content changes additionally require SME review; passing validation alone is not approval.
+
+## Production deployment
+
+The public single-origin Docker Compose deployment, DNS/TLS prerequisites,
+first account provisioning, upgrades, and backup recovery are documented in
+[`docs/deployment.md`](docs/deployment.md).
 
 ## Nomenclature authoring and practice
 

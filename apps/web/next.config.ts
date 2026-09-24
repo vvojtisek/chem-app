@@ -1,8 +1,9 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
-const apiOrigin = new URL(process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1")
-  .origin;
+const appDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 const securityHeaders = [
   {
@@ -10,7 +11,7 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       "base-uri 'self'",
-      `connect-src 'self' ${apiOrigin}${isDevelopment ? " ws://localhost:3000" : ""}`,
+      `connect-src 'self'${isDevelopment ? " http://localhost:8000 ws://localhost:3000" : ""}`,
       "font-src 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
@@ -32,6 +33,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: path.join(appDirectory, "../.."),
   experimental: {
     // Next.js defaults to a child-process TypeScript CLI. The compiler API keeps
     // configuration loading deterministic in restricted CI/container runtimes.
@@ -52,6 +55,12 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
     ];
+  },
+  async rewrites() {
+    const apiProxyTarget = process.env.API_PROXY_TARGET;
+    return apiProxyTarget
+      ? [{ source: "/api/:path*", destination: `${apiProxyTarget}/api/:path*` }]
+      : [];
   },
 };
 
