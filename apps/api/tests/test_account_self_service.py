@@ -230,7 +230,12 @@ async def test_registration_verification_password_change_and_reset(
             json={"email": address},
         )
         assert unknown.status_code == known.status_code == 202
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
+        assert (
+            db.query(MailOutbox)
+            .filter(MailOutbox.recipient == address, MailOutbox.reset_token_id.is_not(None))
+            .count()
+            == 1
+        )
         reset_message = (
             db.query(MailOutbox)
             .filter(MailOutbox.reset_token_id.is_not(None), MailOutbox.recipient == address)
