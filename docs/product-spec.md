@@ -48,6 +48,13 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 ## Shared behavior
 
+- Every application route requires a pre-provisioned account. There is no
+  public registration. A previously verified account can open the cached
+  learning shell offline; synchronization requires a valid server session.
+- Attempt history synchronizes across devices after the learner signs in and
+  chooses whether to import legacy local attempts. Checkpoints, flashcard edits,
+  and other learning state remain local to the account's device.
+
 - Curriculum data is validated structured data, never duplicated inside UI components.
 - Formula entry uses editable plain text such as `H2SO4` with an immediate typographic preview such as `H₂SO₄`.
 - The desktop periodic table uses the standard 18-group layout plus lanthanide/actinide rows. At 360 px width it remains readable through a discoverable overflow interaction.
@@ -69,7 +76,7 @@ These are planning targets, not permission to ship unreviewed material. If revie
 
 ## Out of scope for the first release
 
-- mandatory accounts or online connectivity for core practice;
+- public registration, self-service password recovery, and account linking;
 - teacher/classroom administration;
 - user-authored public curriculum;
 - semantic or generative answer grading;

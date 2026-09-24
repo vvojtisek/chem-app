@@ -101,6 +101,13 @@ This command fails until every shipped curriculum record has a current chemistry
 
 Running a focused command never replaces the full gate before a PR is declared ready.
 
+Authentication integration tests use an isolated PostgreSQL database with
+Alembic migrations applied. They cover invalid and expired sessions, generic
+login failures, login throttling, CSRF and Origin rejection, session rotation,
+inactive accounts, ownership, and role denial. Browser tests verify the
+unauthenticated redirect, login/logout, role-protected routes, previously
+verified offline access, and attempt synchronization across two contexts.
+
 ## Test design rules
 
 - Tests must be deterministic, isolated, and independent of execution order.

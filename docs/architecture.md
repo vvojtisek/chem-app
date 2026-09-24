@@ -59,15 +59,34 @@ Circular dependencies and imports between `apps/web` and `apps/api` are forbidde
 
 The API may distribute the same snapshot and record progress, but it is not the sole source of curriculum. The server does not maintain a separate chemistry implementation.
 
+### Authentication and accounts
+
+All web routes require a pre-provisioned local account. FastAPI stores Argon2id
+password hashes and opaque server-side sessions in PostgreSQL. The browser
+receives only a secure HttpOnly session cookie and a separate CSRF cookie;
+mutations validate CSRF and same-origin requests. Roles are `admin`, `user`,
+and `tester`; ownership and role checks happen in API services. See ADR 0005.
+
+The Next.js proxy checks only for the presence of the session cookie and is a
+navigation convenience. API authentication remains authoritative. A small
+account marker in localStorage permits opening the cached shell after prior
+verification while offline; it grants no API access and is not a security
+boundary for device-local data.
+
 ### Progress and synchronization
 
 1. A completed answer creates an immutable local attempt event with a stable client event ID, content version, round, learning mode, answer direction, and match policy. The browser store validates every event against one Zod schema that lists the allowed mode, direction, and match-policy combinations: an invalid event is rejected when written and skipped when read. Typed periodic-table answers are recorded as `name-to-symbol` / `symbol-exact` (Czech name shown, symbol typed) or `symbol-to-name` / `diacritics-tolerant` (symbol shown, Czech name typed). Earlier `position-to-name-or-symbol` / `name-tolerant-or-symbol-exact` and name-only `position-to-name` / `diacritics-tolerant` periodic-table events, and `element-name` events from the former `/procvicovani/prvky` series, are no longer written but stay readable unchanged. A new combination needs no IndexedDB version change. An older client that does not know it skips those events when reading but never deletes them, and they become readable again after upgrading, so no reset is needed.
 2. The UI updates local session state and derived mastery immediately, even while offline.
-3. When authenticated and online, a sync worker sends pending events through the generated client.
+3. After authentication and while online, a sync worker sends pending events through the generated client.
 4. The API enforces identity, ownership, schema, idempotency, and ordering, then persists accepted events in PostgreSQL.
 5. A successful acknowledgement removes the event from the pending queue. Retryable failure keeps it queued; permanent rejection is visible and recoverable.
 
-The application does not use last-write-wins for immutable attempt events. User preferences that can conflict need an explicit version or updated timestamp and a documented resolution rule.
+The application does not use last-write-wins for immutable attempt events.
+Legacy v4 attempts are imported only after an explicit user choice and are
+removed from the legacy database only after a successful copy. Checkpoints,
+flashcard edits, and other learning state remain local. User preferences that
+can conflict need an explicit version or updated timestamp and a documented
+resolution rule.
 
 ## Rendering and state ownership
 
@@ -97,6 +116,9 @@ Application and curriculum versions are independent. A new application may read 
 - Database schema changes use Alembic and support rolling application deployment where possible.
 - Static/runtime curriculum artifacts are content-addressed or versioned so service-worker updates cannot combine incompatible files silently.
 - Configuration comes from validated environment variables; secrets are injected by the deployment platform.
+- The public deployment uses one HTTPS origin with Caddy routing `/api/*` to
+  FastAPI and other paths to Next.js. PostgreSQL is private, and migrations
+  complete before the API accepts traffic. See `docs/deployment.md`.
 
 ## Future change rules
 
