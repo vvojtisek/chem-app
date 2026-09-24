@@ -58,9 +58,11 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 ## Shared behavior
 
-- Every application route requires a pre-provisioned account. There is no
-  public registration. A previously verified account can open the cached
-  learning shell offline; synchronization requires a valid server session.
+- Learning routes require an authenticated account or a read-only guest
+  session. Public registration uses email verification, and the learner sets
+  their password from the verification link. A previously verified account
+  can open the cached learning shell offline; synchronization requires a valid
+  server session.
 - Attempt history synchronizes across devices after the learner signs in and
   chooses whether to import legacy local attempts. Checkpoints, flashcard edits,
   and other learning state remain local to the account's device.
@@ -71,6 +73,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - All core interactions work with keyboard, pointer, and touch.
 - Correctness, errors, selection, and mastery never rely on color alone.
 - Attempts, retry state, mastery events, settings, and spaced-repetition state survive reloads and are migrated or recoverably reset across schema versions.
+- Attempts are client-reported, self-study data; ranks are not verified assessments or competitive scores.
 - After a successful initial load, core learning modes remain usable without a network connection.
 - A mastery heatmap distinguishes no data from low mastery and uses a minimum evidence threshold so one correct answer is not presented as full mastery.
 

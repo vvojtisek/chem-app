@@ -2,7 +2,7 @@
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { useMemo, useRef, useState } from "react";
-import { useAccount } from "@/components/auth-gate";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
@@ -39,6 +39,7 @@ export function PeriodicTablePractice({
   random = Math.random,
 }: PeriodicTablePracticeProps) {
   const account = useAccount();
+  const { canSave } = useCapabilities();
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
   const elementsByPosition = useMemo(
     () =>
@@ -47,7 +48,7 @@ export function PeriodicTablePractice({
       ),
     [layout],
   );
-  const [selection, changeSelection] = useSharedElementSelection(layout, account?.role === "guest");
+  const [selection, changeSelection] = useSharedElementSelection(layout, !canSave);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
   const wrongMarks = useWrongMarks();
@@ -101,7 +102,7 @@ export function PeriodicTablePractice({
       }`,
     );
 
-    if (account?.role !== "guest") {
+    if (canSave) {
       appendPeriodicTableAttempt(
         {
           questionId: result.question.id,

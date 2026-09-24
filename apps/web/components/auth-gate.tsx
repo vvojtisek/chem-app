@@ -22,9 +22,19 @@ const publicAuthPaths = new Set(["/login", "/register", "/reset-password", "/ver
 function AuthenticatedShell({
   account,
   children,
-}: Readonly<{ account: ActiveAccount; children: ReactNode }>) {
+  offline = false,
+}: Readonly<{ account: ActiveAccount; children: ReactNode; offline?: boolean }>) {
   return (
     <AccountContext.Provider value={account}>
+      {offline ? (
+        <p
+          className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-950"
+          role="status"
+        >
+          Síťové ověření není dostupné. Pokračujete s naposledy ověřeným účtem; synchronizace se
+          obnoví po připojení.
+        </p>
+      ) : null}
       {account.role === "guest" ? (
         <>
           <AccountNavigation />
@@ -43,6 +53,17 @@ function AuthenticatedShell({
 
 export function useAccount(): ActiveAccount | null {
   return useContext(AccountContext);
+}
+
+export function useCapabilities() {
+  const account = useAccount();
+  const canSave = account?.role !== "guest";
+  return {
+    canSave,
+    canEdit: canSave,
+    canManageProfile: account?.role !== "guest",
+    canViewProgress: Boolean(account && account.role !== "guest" && account.role !== "tester"),
+  } as const;
 }
 
 export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
@@ -93,10 +114,12 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
       </p>
     );
   if (me.data) return <AuthenticatedShell account={me.data}>{children}</AuthenticatedShell>;
-  if (!online && marker) {
+  const networkUnavailable = !online || isNetworkUnavailable(me.error);
+  if (networkUnavailable && marker) {
     return (
       <AuthenticatedShell
         account={{ id: marker.userId, username: marker.username, role: marker.role }}
+        offline
       >
         {children}
       </AuthenticatedShell>
@@ -129,5 +152,13 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
     <p role="status" className="p-5">
       Ověřuji účet…
     </p>
+  );
+}
+
+function isNetworkUnavailable(error: unknown): boolean {
+  return (
+    error instanceof TypeError ||
+    error instanceof SyntaxError ||
+    (error instanceof ApiError && error.status >= 500)
   );
 }

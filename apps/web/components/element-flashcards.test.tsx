@@ -50,9 +50,7 @@ describe("ElementFlashcards", () => {
     fireEvent.click(screen.getByRole("button", { name: "Otočit kartu" }));
 
     expect(screen.getByRole("heading", { level: 2, name: "Vodík" })).toBeInTheDocument();
-    expect(
-      screen.getByText("Mnemotechnika: Testovací mnemotechnika skupiny 1"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Testovací mnemotechnika skupiny 1")).toBeInTheDocument();
   });
 
   it("saves a local edit and restores the curated card", async () => {

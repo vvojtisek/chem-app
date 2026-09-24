@@ -57,17 +57,6 @@ class EmailRequest(BaseModel):
         return accounts.normalize_email(value)
 
 
-class RegisterRequest(EmailRequest):
-    password: str = Field(min_length=12, max_length=1024)
-
-    @field_validator("password")
-    @classmethod
-    def limit_password_bytes(cls, value: str) -> str:
-        if len(value.encode("utf-8")) > MAX_PASSWORD_BYTES:
-            raise ValueError("password exceeds 1024 bytes")
-        return value
-
-
 class TokenRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -83,6 +72,10 @@ class ConfirmResetRequest(TokenRequest):
         if len(value.encode("utf-8")) > MAX_PASSWORD_BYTES:
             raise ValueError("password exceeds 1024 bytes")
         return value
+
+
+class VerifyEmailRequest(ConfirmResetRequest):
+    pass
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -130,6 +123,7 @@ def _set_session_cookies(response: Response, result: auth.NewSession) -> None:
         403: {"model": ErrorEnvelope},
         422: {"model": ErrorEnvelope},
         429: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
     },
 )
 def login(
@@ -161,11 +155,12 @@ def login(
         403: {"model": ErrorEnvelope},
         422: {"model": ErrorEnvelope},
         429: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
     },
 )
 def register(
     request: Request,
-    body: RegisterRequest,
+    body: EmailRequest,
     db: Annotated[Session, Depends(session_dependency)],
 ) -> None:
     settings = get_settings()
@@ -174,7 +169,6 @@ def register(
         db,
         settings,
         body.email,
-        body.password,
         request.client.host if request.client else "unknown",
     )
 
@@ -189,17 +183,22 @@ def register(
         403: {"model": ErrorEnvelope},
         422: {"model": ErrorEnvelope},
         429: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
     },
 )
 def verify_email(
     request: Request,
-    body: TokenRequest,
+    body: VerifyEmailRequest,
     db: Annotated[Session, Depends(session_dependency)],
 ) -> None:
     settings = get_settings()
     auth.require_origin(settings, request.headers.get("origin"))
     accounts.verify_email(
-        db, settings, body.token, request.client.host if request.client else "unknown"
+        db,
+        settings,
+        body.token,
+        body.newPassword,
+        request.client.host if request.client else "unknown",
     )
 
 
@@ -212,6 +211,7 @@ def verify_email(
         403: {"model": ErrorEnvelope},
         422: {"model": ErrorEnvelope},
         429: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
     },
 )
 def request_email_verification(
@@ -235,6 +235,7 @@ def request_email_verification(
         403: {"model": ErrorEnvelope},
         422: {"model": ErrorEnvelope},
         429: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
     },
 )
 def request_password_reset(
@@ -259,6 +260,7 @@ def request_password_reset(
         403: {"model": ErrorEnvelope},
         422: {"model": ErrorEnvelope},
         429: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
     },
 )
 def confirm_password_reset(

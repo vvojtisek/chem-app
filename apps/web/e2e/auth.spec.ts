@@ -26,7 +26,7 @@ test("logs in, reaches the requested route, and logs out", async ({ page }) => {
   await expect(page).toHaveURL(/\/procvicovani$/);
   await page
     .getByRole("navigation", { name: "Navigace účtu" })
-    .getByRole("link", { name: username })
+    .getByRole("link", { name: "Profil" })
     .click();
   await page.getByRole("button", { name: "Odhlásit", exact: true }).click();
   await expect(page).toHaveURL(/\/login$/);

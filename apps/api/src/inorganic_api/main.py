@@ -4,10 +4,11 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from inorganic_api.api.attempts import router as attempts_router
 from inorganic_api.api.auth import router as auth_router
@@ -83,7 +84,7 @@ async def request_id_middleware(request: Request, call_next):
     try:
         response = await call_next(request)
     except Exception:
-        logger.error("Unhandled API error, requestId=%s", request.state.request_id)
+        logger.exception("Unhandled API error, requestId=%s", request.state.request_id)
         response = error_response(request, 500, "internal_error", "An unexpected error occurred.")
     response.headers["X-Request-ID"] = request.state.request_id
     return response
@@ -101,8 +102,8 @@ async def app_error_handler(request: Request, exception: AppError) -> JSONRespon
     )
 
 
-@app.exception_handler(HTTPException)
-async def http_error_handler(request: Request, exception: HTTPException) -> JSONResponse:
+@app.exception_handler(StarletteHTTPException)
+async def http_error_handler(request: Request, exception: StarletteHTTPException) -> JSONResponse:
     message = exception.detail if isinstance(exception.detail, str) else "Request failed."
     return error_response(
         request, exception.status_code, "http_error", message, headers=exception.headers

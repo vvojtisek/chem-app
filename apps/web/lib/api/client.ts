@@ -76,14 +76,14 @@ async function unwrapEmptyResponse(result: { response: Response; error?: unknown
   if (!result.response.ok) throw parseApiError(result.response.status, result.error);
 }
 
-export async function registerAccount(email: string, password: string): Promise<void> {
-  await unwrapEmptyResponse(
-    await apiClient.POST("/api/v1/auth/register", { body: { email, password } }),
-  );
+export async function registerAccount(email: string): Promise<void> {
+  await unwrapEmptyResponse(await apiClient.POST("/api/v1/auth/register", { body: { email } }));
 }
 
-export async function verifyEmail(token: string): Promise<void> {
-  await unwrapEmptyResponse(await apiClient.POST("/api/v1/auth/verify-email", { body: { token } }));
+export async function verifyEmail(token: string, newPassword: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/auth/verify-email", { body: { token, newPassword } }),
+  );
 }
 
 export async function requestEmailVerification(email: string): Promise<void> {

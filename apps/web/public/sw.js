@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "inorganic-shell-";
-const CACHE_NAME = "inorganic-shell-v4";
+const CACHE_NAME = "inorganic-shell-v5";
 const APP_SHELL = [
   "/",
   "/procvicovani",
@@ -7,6 +7,10 @@ const APP_SHELL = [
   "/procvicovani/periodicka-tabulka",
   "/procvicovani/periodicka-tabulka/nazvy",
   "/procvicovani/prvky",
+  "/procvicovani/rovnice",
+  "/uceni/prvky",
+  "/uceni/priprava-vyroba",
+  "/pokrok",
   "/flashcards/prvky",
   "/manifest.webmanifest",
 ];
@@ -27,18 +31,20 @@ function isPublicCacheableResponse(response, pathname) {
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
+      const allPageAssets = new Set();
       for (const path of APP_SHELL) {
         const response = await fetch(path, { credentials: "same-origin", redirect: "manual" });
         if (!isPublicCacheableResponse(response, path)) throw new Error(`Cannot cache ${path}`);
+        if (path !== "/manifest.webmanifest") {
+          const html = await response.clone().text();
+          for (const reference of html.matchAll(/(?:src|href)="[^"]+"/g)) {
+            const asset = reference[0].slice(reference[0].indexOf('="') + 2, -1);
+            if (asset.startsWith("/_next/static/")) allPageAssets.add(asset);
+          }
+        }
         await cache.put(path, response);
       }
-      const page = await cache.match("/procvicovani/nazvoslovi");
-      if (!page) throw new Error("The nomenclature offline route was not cached.");
-      const html = await page.text();
-      const assets = new Set(
-        Array.from(html.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g), (match) => match[1]),
-      );
-      await cache.addAll([...assets]);
+      await cache.addAll([...allPageAssets]);
     }),
   );
   self.skipWaiting();

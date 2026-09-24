@@ -122,23 +122,39 @@ async def test_batch_idempotence_conflict_and_atomicity(
         await login(http, accounts["user"])
         first = await upload(http, [event("one"), event("two")])
         assert first.status_code == 200, first.text
-        assert first.json() == {"accepted": ["one", "two"], "duplicates": []}
+        assert first.json() == {"accepted": ["one", "two"], "duplicates": [], "rejected": []}
         repeat = await upload(http, [event("one")])
-        assert repeat.json() == {"accepted": [], "duplicates": ["one"]}
+        assert repeat.json() == {"accepted": [], "duplicates": ["one"], "rejected": []}
         conflicting = await upload(http, [event("three"), event("one", isCorrect=False)])
-        assert conflicting.status_code == 409
-        assert conflicting.json()["error"]["code"] == "idempotency_conflict"
-        assert conflicting.json()["error"]["details"] == {"eventIds": ["one"]}
-        assert {row.event_id for row in db.scalars(select(AttemptEvent))} == {"one", "two"}
+        assert conflicting.status_code == 200
+        assert conflicting.json() == {
+            "accepted": ["three"],
+            "duplicates": [],
+            "rejected": [
+                {
+                    "index": 1,
+                    "eventId": "one",
+                    "code": "idempotency_conflict",
+                    "message": "This event ID was already used with different content.",
+                }
+            ],
+        }
+        assert {row.event_id for row in db.scalars(select(AttemptEvent))} == {
+            "one",
+            "two",
+            "three",
+        }
 
 
 @pytest.mark.anyio
 async def test_validation_limits_and_csrf(db: Session, accounts: dict[str, User]) -> None:
     async with client() as http:
         await login(http, accounts["user"])
+        for invalid in ([], [event(str(index)) for index in range(201)]):
+            response = await upload(http, invalid)
+            assert response.status_code == 422
+            assert response.json()["error"]["code"] == "validation_error"
         for invalid in (
-            [],
-            [event(str(index)) for index in range(201)],
             [event("bad", role="admin")],
             [event("bad", matchPolicy="exact-position")],
             [event("bad", occurredAt="2026-09-23T10:00:00")],
@@ -159,8 +175,10 @@ async def test_validation_limits_and_csrf(db: Session, accounts: dict[str, User]
             ],
         ):
             response = await upload(http, invalid)
-            assert response.status_code == 422
-            assert response.json()["error"]["code"] == "validation_error"
+            assert response.status_code == 200
+            assert response.json()["accepted"] == []
+            assert response.json()["rejected"][0]["index"] == 0
+            assert response.json()["rejected"][0]["code"] == "validation_error"
         without_csrf = await http.post(
             "/api/v1/me/attempt-events/batch",
             headers={"Origin": ORIGIN},

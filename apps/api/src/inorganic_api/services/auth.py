@@ -67,7 +67,8 @@ def _lock_throttle_rows(
         row = db.scalar(
             select(LoginThrottle).where(LoginThrottle.key_hash == key).with_for_update()
         )
-        assert row is not None
+        if row is None:
+            raise RuntimeError("Login throttle row was not available after insert.")
         if now - row.window_start >= THROTTLE_WINDOW:
             row.window_start = now
             row.failures = 0
@@ -117,7 +118,8 @@ def login(
         db.commit()
         raise AppError(401, "invalid_credentials", "Invalid username or password.")
 
-    assert user is not None
+    if user is None:
+        raise AppError(401, "invalid_credentials", "Invalid username or password.")
     result = create_session(db, settings, user, previous_token, now)
     user.last_login_at = now
     if needs_rehash(user.password_hash):
@@ -169,7 +171,8 @@ def guest_login(
             .on_conflict_do_nothing(index_elements=[User.username])
         )
         user = users.get_by_username(db, GUEST_USERNAME)
-    assert user is not None and user.role == "guest"
+    if user is None or user.role != "guest":
+        raise RuntimeError("Guest account was not available after insert.")
     result = create_session(db, settings, user, previous_token)
     db.commit()
     return result
@@ -187,7 +190,8 @@ def consume_rate_limit(
         .on_conflict_do_nothing(index_elements=[LoginThrottle.key_hash])
     )
     row = db.scalar(select(LoginThrottle).where(LoginThrottle.key_hash == key).with_for_update())
-    assert row is not None
+    if row is None:
+        raise RuntimeError("Rate limit row was not available after insert.")
     if now - row.window_start >= THROTTLE_WINDOW:
         row.window_start = now
         row.failures = 0

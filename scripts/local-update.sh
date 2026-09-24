@@ -113,11 +113,13 @@ stop_process_group() {
 
 api_pid=''
 web_pid=''
+mail_pid=''
 cleanup() {
   local exit_code=$?
   trap - EXIT INT TERM
   [[ -z "$web_pid" ]] || stop_process_group "$web_pid"
   [[ -z "$api_pid" ]] || stop_process_group "$api_pid"
+  [[ -z "$mail_pid" ]] || stop_process_group "$mail_pid"
   exit "$exit_code"
 }
 trap cleanup EXIT
@@ -131,6 +133,8 @@ printf 'Starting API and frontend from %s (%s).\n' "$(git rev-parse --short HEAD
 setsid env WEB_ORIGINS='["http://localhost:3000","http://127.0.0.1:3000"]' \
   uv --directory apps/api run uvicorn inorganic_api.main:app --host 127.0.0.1 --port 8000 &
 api_pid=$!
+setsid uv --directory apps/api run python -m inorganic_api.mail_worker &
+mail_pid=$!
 setsid pnpm --filter @inorganic/web start --hostname 127.0.0.1 &
 web_pid=$!
 
@@ -158,7 +162,7 @@ wait_for_http 'http://127.0.0.1:3000/procvicovani/nazvoslovi' "$web_pid" 'Nomenc
 
 printf '\nLocal app is ready at http://127.0.0.1:3000\n'
 printf 'API health: http://127.0.0.1:8000/api/v1/health\n'
-printf 'Press Ctrl+C to stop the frontend and API. The local database stays running.\n'
+printf 'Press Ctrl+C to stop the frontend, API and mail worker. The local database stays running.\n'
 
 while true; do
   if ! kill -0 "$api_pid" 2>/dev/null; then
@@ -168,6 +172,10 @@ while true; do
   if ! kill -0 "$web_pid" 2>/dev/null; then
     wait "$web_pid" || fail 'Frontend stopped unexpectedly.'
     fail 'Frontend stopped unexpectedly.'
+  fi
+  if ! kill -0 "$mail_pid" 2>/dev/null; then
+    wait "$mail_pid" || fail 'Mail worker stopped unexpectedly.'
+    fail 'Mail worker stopped unexpectedly.'
   fi
   sleep 1
 done

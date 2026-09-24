@@ -2,39 +2,49 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type FormEvent, Suspense, useEffect, useRef, useState } from "react";
+import { type FormEvent, Suspense, useState } from "react";
 import { ApiError, requestEmailVerification, verifyEmail } from "@/lib/api/client";
 
 function VerifyEmailForm() {
   const params = useSearchParams();
   const router = useRouter();
   const token = params.get("token");
-  const openedFromToken = useRef(Boolean(token));
-  const requested = useRef(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmation, setConfirmation] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (!token || requested.current) return;
-    requested.current = true;
+  async function confirmEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setMessage("");
+    if (!token) return;
+    if (password !== confirmation) {
+      setError("Zadaná hesla se neshodují.");
+      return;
+    }
     setBusy(true);
-    void verifyEmail(token)
-      .then(() => {
-        setMessage("E-mail je potvrzen. Nyní se můžete přihlásit.");
-        router.replace("/verify-email");
-      })
-      .catch((cause: unknown) => {
-        setError(
-          cause instanceof ApiError && cause.code === "invalid_token"
+    try {
+      await verifyEmail(token, password);
+      setMessage("E-mail je potvrzen a heslo nastaveno. Nyní se můžete přihlásit.");
+      router.replace("/verify-email");
+    } catch (cause) {
+      setError(
+        cause instanceof ApiError && cause.status === 503
+          ? "Ověřovací služba teď není dostupná. Zkuste to později."
+          : cause instanceof ApiError && cause.code === "invalid_token"
             ? "Odkaz je neplatný nebo už vypršel. Požádejte o nový."
             : "E-mail se nepodařilo potvrdit. Zkuste to znovu.",
-        );
+      );
+      if (cause instanceof ApiError && cause.code === "invalid_token") {
         router.replace("/verify-email");
-      })
-      .finally(() => setBusy(false));
-  }, [router, token]);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function resend(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,9 +56,11 @@ function VerifyEmailForm() {
       setMessage("Pokud čeká nepotvrzený účet, pošleme na jeho adresu nový odkaz.");
     } catch (cause) {
       setError(
-        cause instanceof ApiError && cause.code === "too_many_attempts"
-          ? "Příliš mnoho pokusů. Zkuste to později."
-          : "Odkaz se nepodařilo poslat. Zkuste to znovu.",
+        cause instanceof ApiError && cause.status === 503
+          ? "E-mailové služby teď nejsou dostupné. Zkuste to později."
+          : cause instanceof ApiError && cause.code === "too_many_attempts"
+            ? "Příliš mnoho pokusů. Zkuste to později."
+            : "Odkaz se nepodařilo poslat. Zkuste to znovu.",
       );
     } finally {
       setBusy(false);
@@ -58,10 +70,53 @@ function VerifyEmailForm() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
       <h1 className="text-3xl font-semibold text-slate-950">Potvrzení e-mailu</h1>
-      {token || openedFromToken.current ? (
-        <p aria-live="polite" className="mt-4 text-slate-700" role={error ? "alert" : "status"}>
-          {busy ? "Ověřuji odkaz…" : error || message}
-        </p>
+      {token ? (
+        <form className="mt-8 grid gap-4" onSubmit={(event) => void confirmEmail(event)}>
+          <p className="text-slate-600">Zvolte heslo pro svůj účet (alespoň 12 znaků).</p>
+          <label className="grid gap-1 font-medium">
+            Heslo
+            <input
+              autoComplete="new-password"
+              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              maxLength={1024}
+              minLength={12}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              type="password"
+              value={password}
+            />
+          </label>
+          <label className="grid gap-1 font-medium">
+            Potvrdit heslo
+            <input
+              autoComplete="new-password"
+              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              maxLength={1024}
+              minLength={12}
+              onChange={(event) => setConfirmation(event.target.value)}
+              required
+              type="password"
+              value={confirmation}
+            />
+          </label>
+          {error ? (
+            <p className="text-sm text-rose-800" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {message ? (
+            <p className="text-sm text-emerald-900" role="status">
+              {message}
+            </p>
+          ) : null}
+          <button
+            className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50"
+            disabled={busy}
+            type="submit"
+          >
+            {busy ? "Potvrzuji e-mail…" : "Potvrdit e-mail a nastavit heslo"}
+          </button>
+        </form>
       ) : (
         <>
           <p className="mt-2 text-slate-600">Pošleme nový odkaz k potvrzení nepotvrzeného účtu.</p>

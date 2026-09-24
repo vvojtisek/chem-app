@@ -466,7 +466,7 @@ export interface components {
         /** BatchRequest */
         BatchRequest: {
             /** Events */
-            events: (components["schemas"]["ElementNameAttempt"] | components["schemas"]["PeriodicTableAttempt"] | components["schemas"]["NomenclatureAttempt"])[];
+            events: unknown[];
         };
         /** BatchResponse */
         BatchResponse: {
@@ -474,6 +474,8 @@ export interface components {
             accepted: string[];
             /** Duplicates */
             duplicates: string[];
+            /** Rejected */
+            rejected: components["schemas"]["RejectedAttempt"][];
         };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
@@ -768,17 +770,19 @@ export interface components {
             /** Title */
             title: string;
         };
-        /** RegisterRequest */
-        RegisterRequest: {
-            /** Email */
-            email: string;
-            /** Password */
-            password: string;
-        };
-        /** TokenRequest */
-        TokenRequest: {
-            /** Token */
-            token: string;
+        /** RejectedAttempt */
+        RejectedAttempt: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "validation_error" | "idempotency_conflict" | "quota_exceeded";
+            /** Eventid */
+            eventId?: string | null;
+            /** Index */
+            index: number;
+            /** Message */
+            message: string;
         };
         /** UpdateProfileRequest */
         UpdateProfileRequest: {
@@ -797,6 +801,13 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VerifyEmailRequest */
+        VerifyEmailRequest: {
+            /** Newpassword */
+            newPassword: string;
+            /** Token */
+            token: string;
         };
     };
     responses: never;
@@ -1264,6 +1275,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
         };
     };
     guestLogin: {
@@ -1373,6 +1393,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1541,6 +1570,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
         };
     };
     requestPasswordReset: {
@@ -1599,6 +1637,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
         };
     };
     registerAccount: {
@@ -1610,7 +1657,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RegisterRequest"];
+                "application/json": components["schemas"]["EmailRequest"];
             };
         };
         responses: {
@@ -1650,6 +1697,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1715,6 +1771,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
         };
     };
     verifyEmail: {
@@ -1726,7 +1791,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TokenRequest"];
+                "application/json": components["schemas"]["VerifyEmailRequest"];
             };
         };
         responses: {
@@ -1775,6 +1840,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2050,6 +2124,15 @@ export interface operations {
             };
             /** @description Internal Server Error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

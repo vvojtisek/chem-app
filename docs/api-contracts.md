@@ -70,9 +70,9 @@ Never use `200` for a failed operation.
 ## Authentication and authorization
 
 ADRs 0005 and 0006 define local email/password accounts and opaque server
-sessions. `POST /api/v1/auth/register` accepts an email and password and returns
-a generic `202`; the account becomes active only after the single-use link from
-`POST /api/v1/auth/verify-email` is confirmed. `POST
+sessions. `POST /api/v1/auth/register` accepts an email and returns a generic
+`202`; the account becomes active only when `POST /api/v1/auth/verify-email`
+receives the single-use token and a new password. `POST
 /api/v1/auth/verification/request` resends that link without revealing account
 state. `POST /api/v1/auth/login` accepts email or a legacy username with a
 password and sets the session and CSRF cookies; its JSON response contains the
@@ -82,8 +82,11 @@ session. `GET /api/v1/auth/me` returns the authenticated account or `401`.
 and returns `204`. Invalid credentials use one generic `401` response;
 throttled login returns `429` with `Retry-After`.
 
-`POST /api/v1/auth/password-reset/request` sends a short-lived recovery link
-with a generic `202` response. `POST /api/v1/auth/password-reset/confirm`
+`POST /api/v1/auth/password-reset/request` queues a short-lived recovery link
+with a generic `202` response. Registration and verification requests also
+queue links. The separate mail worker retries SMTP delivery; `202` confirms
+queueing, while missing mail configuration returns `503` regardless of account
+state. `POST /api/v1/auth/password-reset/confirm`
 consumes that link and revokes the account's sessions. Authenticated users
 change their password through `POST /api/v1/me/password` and edit their own
 profile through `/api/v1/me/profile`. Admin account operations are under
@@ -103,6 +106,10 @@ role requirements in OpenAPI and enforce them server-side.
 Retryable client mutations include a stable client-generated operation/event ID in a documented field or idempotency header. Repeating the same authenticated operation with the same ID and equivalent payload returns the same logical result without duplicating effects. Reusing an ID for a different payload returns `409`.
 
 Attempt-event sync is append-only. Each event carries its content version and client occurrence time; the server records its receipt time separately and never treats the client clock as authoritative for authorization or ordering across devices.
+
+`POST /api/v1/me/attempt-events/batch` accepts up to 200 raw JSON values and validates each item independently, including rejecting non-object values as individual errors. `BatchResponse` lists accepted IDs, duplicate IDs, and rejected entries containing the batch index, optional event ID, stable rejection code, and safe message. A malformed or conflicting event must not discard other valid events in the same batch. Each account may add at most 500 new events per UTC day; duplicates do not consume quota. Clients move rejected or locally unreadable events to an account-local quarantine and continue synchronizing later events.
+
+Progression ranks are personal display labels based on the `isCorrect` values submitted by that account's client. They are self-reported learning indicators, not verified assessments or competitive scores; clients can forge them and they must not grant privileges or rewards.
 
 The attempt pull endpoint returns an opaque `nextCursor` after every nonempty
 page. Clients persist that cursor and continue requesting pages until the API

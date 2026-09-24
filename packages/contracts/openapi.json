@@ -287,27 +287,7 @@
         "additionalProperties": false,
         "properties": {
           "events": {
-            "items": {
-              "discriminator": {
-                "mapping": {
-                  "element-name": "#/components/schemas/ElementNameAttempt",
-                  "nomenclature": "#/components/schemas/NomenclatureAttempt",
-                  "periodic-table": "#/components/schemas/PeriodicTableAttempt"
-                },
-                "propertyName": "mode"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/ElementNameAttempt"
-                },
-                {
-                  "$ref": "#/components/schemas/PeriodicTableAttempt"
-                },
-                {
-                  "$ref": "#/components/schemas/NomenclatureAttempt"
-                }
-              ]
-            },
+            "items": {},
             "maxItems": 200,
             "minItems": 1,
             "title": "Events",
@@ -336,11 +316,19 @@
             },
             "title": "Duplicates",
             "type": "array"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedAttempt"
+            },
+            "title": "Rejected",
+            "type": "array"
           }
         },
         "required": [
           "accepted",
-          "duplicates"
+          "duplicates",
+          "rejected"
         ],
         "title": "BatchResponse",
         "type": "object"
@@ -1068,42 +1056,46 @@
         "title": "Rank",
         "type": "object"
       },
-      "RegisterRequest": {
+      "RejectedAttempt": {
         "additionalProperties": false,
         "properties": {
-          "email": {
-            "maxLength": 254,
-            "title": "Email",
+          "code": {
+            "enum": [
+              "validation_error",
+              "idempotency_conflict",
+              "quota_exceeded"
+            ],
+            "title": "Code",
             "type": "string"
           },
-          "password": {
-            "maxLength": 1024,
-            "minLength": 12,
-            "title": "Password",
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eventid"
+          },
+          "index": {
+            "maximum": 199.0,
+            "minimum": 0.0,
+            "title": "Index",
+            "type": "integer"
+          },
+          "message": {
+            "title": "Message",
             "type": "string"
           }
         },
         "required": [
-          "email",
-          "password"
+          "index",
+          "code",
+          "message"
         ],
-        "title": "RegisterRequest",
-        "type": "object"
-      },
-      "TokenRequest": {
-        "additionalProperties": false,
-        "properties": {
-          "token": {
-            "maxLength": 128,
-            "minLength": 30,
-            "title": "Token",
-            "type": "string"
-          }
-        },
-        "required": [
-          "token"
-        ],
-        "title": "TokenRequest",
+        "title": "RejectedAttempt",
         "type": "object"
       },
       "UpdateProfileRequest": {
@@ -1164,6 +1156,29 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VerifyEmailRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "newPassword": {
+            "maxLength": 1024,
+            "minLength": 12,
+            "title": "Newpassword",
+            "type": "string"
+          },
+          "token": {
+            "maxLength": 128,
+            "minLength": 30,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ],
+        "title": "VerifyEmailRequest",
         "type": "object"
       }
     },
@@ -1827,6 +1842,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "security": [
@@ -1964,6 +1989,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "summary": "Login",
@@ -2161,6 +2196,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "summary": "Confirm Password Reset",
@@ -2225,6 +2270,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "summary": "Request Password Reset",
@@ -2240,7 +2295,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
+                "$ref": "#/components/schemas/EmailRequest"
               }
             }
           },
@@ -2289,6 +2344,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "summary": "Register",
@@ -2353,6 +2418,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "summary": "Request Email Verification",
@@ -2368,7 +2443,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TokenRequest"
+                "$ref": "#/components/schemas/VerifyEmailRequest"
               }
             }
           },
@@ -2427,6 +2502,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "summary": "Verify Email",
@@ -2802,6 +2887,16 @@
               }
             },
             "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
           }
         },
         "security": [

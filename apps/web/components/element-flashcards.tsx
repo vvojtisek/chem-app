@@ -2,7 +2,7 @@
 
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useState } from "react";
-import { useAccount } from "@/components/auth-gate";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { GroupMnemonics } from "@/components/group-mnemonics";
 
 import {
@@ -19,7 +19,7 @@ interface ElementFlashcardsProps {
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
   const account = useAccount();
-  const canEdit = account?.role !== "guest";
+  const { canEdit } = useCapabilities();
   const [storedCards, setStoredCards] = useState<readonly StoredElementCard[]>([]);
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [selectedId, setSelectedId] = useState(curatedElements[0]?.id ?? "");

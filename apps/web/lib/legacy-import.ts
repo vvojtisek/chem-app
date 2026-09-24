@@ -16,10 +16,7 @@ const stores = [ATTEMPT_EVENT_STORE, ELEMENT_CARD_STORE, NOMENCLATURE_SESSION_ST
 async function openLegacyDatabase(indexedDb: IDBFactory): Promise<IDBDatabase | null> {
   const known = await indexedDb.databases();
   if (!known.some(({ name }) => name === LEARNING_DATABASE_NAME)) return null;
-  const request = indexedDb.open(LEARNING_DATABASE_NAME);
-  const database = await requestCompleted(request);
-  database.onversionchange = () => database.close();
-  return database;
+  return openLearningDatabase(indexedDb);
 }
 
 export async function legacyAttemptCount(
