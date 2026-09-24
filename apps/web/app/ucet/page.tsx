@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
 import { useSync } from "@/components/sync-provider";
+import { ApiError, changePassword, getMyProfile, logout, updateMyProfile } from "@/lib/api/client";
 import {
   ApiError,
   changePassword,
@@ -17,6 +18,7 @@ import { clearAccountMarker } from "@/lib/auth/account-marker";
 import { queryKeys } from "@/lib/query-keys";
 import { resetLearningDatabase } from "@/lib/browser-learning-database";
 import { pendingCount } from "@/lib/sync/sync-store";
+import { PageNavigation } from "@/components/page-navigation";
 
 export default function AccountPage() {
   const account = useAccount();
@@ -119,6 +121,7 @@ export default function AccountPage() {
   if (isGuest) {
     return (
       <main className="mx-auto w-full max-w-2xl px-5 py-10">
+        <PageNavigation />
         <h1 className="text-3xl font-semibold">Hostovský přístup</h1>
         <p className="mt-3 text-slate-700">
           Prohlížíte aplikaci pouze pro čtení. Úpravy karet, pokusy ani nastavení se neukládají.
@@ -142,6 +145,7 @@ export default function AccountPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8">
+      <PageNavigation />
       <h1 className="text-3xl font-semibold">Profil</h1>
       {profile.data ? (
         <section aria-label="Údaje profilu" className="mt-5 rounded-2xl border bg-white p-5">

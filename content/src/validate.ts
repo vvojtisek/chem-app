@@ -4,6 +4,8 @@ import { findContentProblems, loadAuthoringContent } from "./authoring-content";
 import { createNomenclatureSnapshot, validateNomenclatureRecords } from "./nomenclature-runtime";
 import { nomenclatureCollectionSchema } from "./nomenclature-schema";
 import { summarizeSmeReviewCoverage } from "./review";
+import { preparationProductionCollectionSchema } from "./preparation-production-schema";
+import { findPreparationProductionProblems } from "./preparation-production-validation";
 
 const content = await loadAuthoringContent();
 const problems = findContentProblems(content);
@@ -21,6 +23,21 @@ const nomenclatureProblems = validateNomenclatureRecords(nomenclature.records, e
 if (nomenclatureProblems.length > 0) {
   throw new Error(
     `Nomenclature validation failed:\n${JSON.stringify(nomenclatureProblems, null, 2)}`,
+  );
+}
+
+const preparationProduction = preparationProductionCollectionSchema.parse(
+  JSON.parse(
+    await readFile(new URL("../data/preparation-production.json", import.meta.url), "utf8"),
+  ) as unknown,
+);
+const preparationProductionProblems = findPreparationProductionProblems(
+  preparationProduction.products,
+  elementSymbols,
+);
+if (preparationProductionProblems.length > 0) {
+  throw new Error(
+    `Preparation and production validation failed:\n${JSON.stringify(preparationProductionProblems, null, 2)}`,
   );
 }
 
@@ -44,8 +61,23 @@ console.log(
   `Content validation passed: ${content.elements.length} elements (${reviewedCount} reviewed), ${content.groups.length} named groups.`,
 );
 console.log(
+  `Alternative group mnemonics: ${content.alternateGroupMnemonics.length} user-provided records validated.`,
+);
+console.log(
   `Chemistry-SME review: ${elementCoverage.smeReviewed.length}/${shippedCount(elementCoverage)} shipped elements, ${groupCoverage.smeReviewed.length}/${shippedCount(groupCoverage)} shipped groups. Release gate: pnpm content:release-check.`,
 );
 console.log(
   `Nomenclature: ${nomenclature.records.length} authored, ${expectedSnapshot.compounds.filter((record) => record.reviewLevel === "owner-approved").length} owner-approved, ${expectedSnapshot.compounds.filter((record) => record.reviewLevel === "sme-reviewed").length} SME-reviewed.`,
+);
+const equationCount = preparationProduction.products.reduce(
+  (total, product) =>
+    total + product.routes.filter((route) => route.status === "owner-approved").length,
+  0,
+);
+const unreviewedEquationCount = preparationProduction.products.reduce(
+  (total, product) => total + product.routes.filter((route) => route.status === "in-review").length,
+  0,
+);
+console.log(
+  `Preparation and production: ${preparationProduction.products.length} products, ${equationCount} validated owner-approved equations, ${unreviewedEquationCount} equation(s) held for review.`,
 );

@@ -1,6 +1,7 @@
 export interface PracticeLink {
   readonly href: string;
   readonly label: string;
+  readonly target?: "_blank";
 }
 
 export interface PracticeCategory {
@@ -14,6 +15,7 @@ export const practiceCategories: readonly PracticeCategory[] = [
     title: "Periodická tabulka",
     description: "Procvičování značek, názvů a pozic prvků.",
     links: [
+      { href: "/uceni/prvky", label: "Procházet učivo", target: "_blank" },
       { href: "/flashcards/prvky", label: "Otevřít karty prvků" },
       { href: "/procvicovani/prvky", label: "Procvičit názvy a značky" },
       { href: "/procvicovani/periodicka-tabulka", label: "Procvičit pozice" },
@@ -22,7 +24,7 @@ export const practiceCategories: readonly PracticeCategory[] = [
   {
     title: "Chemické rovnice",
     description: "Vyčíslování a doplňování reaktantů a produktů.",
-    links: [],
+    links: [{ href: "/procvicovani/rovnice", label: "Procvičit rovnice" }],
   },
   {
     title: "Názvosloví",

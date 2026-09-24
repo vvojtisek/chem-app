@@ -1,6 +1,7 @@
 import rawElements from "../data/elements.json";
 import rawGroups from "../data/groups.json";
 import rawNomenclature from "../generated/nomenclature-runtime.json";
+import { curatedAlternateGroupMnemonics } from "./alternate-group-mnemonic-runtime";
 import { nomenclatureSnapshotSchema } from "./nomenclature-schema";
 
 import {
@@ -26,6 +27,7 @@ export interface ElementGroupData {
   readonly groupNumber: number;
   readonly nameCs: string;
   readonly mnemonicCs: string;
+  readonly alternativeMnemonic?: (typeof curatedAlternateGroupMnemonics)[number];
 }
 
 export const curatedElements: readonly ElementFlashcardData[] = toRuntimeElements(
@@ -72,7 +74,7 @@ export function toRuntimeElements(
 export function toRuntimeGroups(records: readonly GroupRecord[]): readonly ElementGroupData[] {
   return records
     .filter(isReviewed)
-    .map(toElementGroupData)
+    .map((record) => toElementGroupData(record, curatedAlternateGroupMnemonics))
     .sort((left, right) => left.groupNumber - right.groupNumber);
 }
 
@@ -94,10 +96,17 @@ function toElementFlashcardData(record: ElementRecord): ElementFlashcardData {
   };
 }
 
-function toElementGroupData(record: GroupRecord): ElementGroupData {
+function toElementGroupData(
+  record: GroupRecord,
+  alternatives: typeof curatedAlternateGroupMnemonics,
+): ElementGroupData {
+  const alternativeMnemonic = alternatives.find(
+    (alternative) => alternative.groupNumber === record.groupNumber,
+  );
   return {
     groupNumber: record.groupNumber,
     nameCs: record.nameCs,
     mnemonicCs: record.mnemonicCs,
+    ...(alternativeMnemonic ? { alternativeMnemonic } : {}),
   };
 }

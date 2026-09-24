@@ -26,6 +26,8 @@ export function PracticeCategoryList() {
                   }`}
                   href={link.href}
                   key={link.href}
+                  rel={link.target === "_blank" ? "noreferrer" : undefined}
+                  target={link.target}
                 >
                   {link.label}
                 </Link>

@@ -8,7 +8,15 @@ This document defines canonical chemistry input, normalization, validation, alia
 
 `content/data/groups.json` holds only named groups with explicitly approved Czech names and mnemonics. Validation rejects an unknown symbol, a duplicate symbol within a named group, or an element whose declared periodic group conflicts with that group.
 
+`content/data/alternate-group-mnemonics.json` holds owner-provided alternate memory aids for the traditional I–VIII A groups. Each record lists its full element-symbol sequence, which validation compares against the reviewed element group assignments. The original group mnemonic remains available; the alternate text and its explanation are shown as an optional disclosure and are labeled as owner-provided rather than chemistry-SME reviewed.
+
 User-created or locally edited cards are browser-local learning notes. They are not reviewed curriculum and must not be exported or treated as canonical content without a separate authoring and review workflow.
+
+## Preparation and production by product
+
+`content/data/preparation-production.json` stores the product-indexed material from the VŠCHT e-learning page identified in each record's `sources`. Equations keep reactants, products, integer coefficients, preparation/manufacture classification, source equation ID, and arrow conditions as structured fields. Prose notes remain separate from equations.
+
+Owner-approved equations must parse with known element symbols, conserve every element, and use the lowest positive-integer coefficients. An equation that does not pass these checks remains `in-review` with a reason and is excluded from the runtime learning and quiz set. The current VŠCHT page's equation `id-20-91` for azoxide is unbalanced and is held out until its source is corrected or the intended formula is confirmed. Owner approval records source attribution and release permission; it is not a chemistry-SME review.
 
 Every non-null `(period, group)` pair identifies exactly one element. Records with `group: null` are f-block entries and do not occupy a main 18-group grid cell.
 

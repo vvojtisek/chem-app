@@ -31,6 +31,16 @@ export {
   type FormulaParseResult,
 } from "./parse-formula";
 export {
+  hasReducedEquationCoefficients,
+  isBalancedEquation,
+  matchesEquation,
+  parseEquationAnswer,
+  parseEquationFormula,
+  type EquationFormula,
+  type EquationTerm,
+  type ParsedEquation,
+} from "./parse-equation";
+export {
   evaluateNomenclatureAnswer,
   type NomenclatureAnswerKey,
   type NomenclatureDirection,
