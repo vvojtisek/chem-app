@@ -25,11 +25,14 @@ function AuthenticatedShell({
 }: Readonly<{ account: ActiveAccount; children: ReactNode }>) {
   return (
     <AccountContext.Provider value={account}>
-      <AccountNavigation />
       {account.role === "guest" ? (
-        children
+        <>
+          <AccountNavigation />
+          {children}
+        </>
       ) : (
         <SyncProvider userId={account.id}>
+          <AccountNavigation />
           <LegacyImportDialog />
           {children}
         </SyncProvider>

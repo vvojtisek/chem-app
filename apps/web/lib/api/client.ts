@@ -3,7 +3,7 @@ import createClient from "openapi-fetch";
 import { z } from "zod";
 
 const errorSchema = z.object({ error: z.object({ code: z.string(), message: z.string() }) });
-const csrfCookieName = "__Host-inorganic_csrf";
+const csrfCookieName = process.env.NEXT_PUBLIC_CSRF_COOKIE_NAME ?? "__Host-inorganic_csrf";
 
 export type CurrentUser = components["schemas"]["MeResponse"];
 export type UserProfile = components["schemas"]["ProfileResponse"];

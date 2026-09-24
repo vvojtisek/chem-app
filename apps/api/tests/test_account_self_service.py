@@ -107,6 +107,7 @@ def test_abuse_request_quota(db: Session) -> None:
 async def test_registration_verification_password_change_and_reset(
     db: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    db.autoflush = False
     links: list[tuple[str, str, str]] = []
     monkeypatch.setattr(
         "inorganic_api.services.accounts.email.send_account_link",

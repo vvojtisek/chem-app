@@ -116,6 +116,9 @@ def verify_email(db: Session, settings: Settings, token: str, ip: str) -> None:
     row.used_at = now
     user.email_verified_at = now
     user.is_active = True
+    # The API session factory disables autoflush. Persist token consumption before
+    # deleting the other outstanding verification tokens for this account.
+    db.flush()
     account_tokens.revoke_verifications(db, user.id, now)
     db.commit()
 

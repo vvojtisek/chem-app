@@ -11,6 +11,7 @@ const publicPaths = new Set([
   "/icon.svg",
   "/favicon.ico",
 ]);
+const sessionCookieName = process.env.NEXT_PUBLIC_SESSION_COOKIE_NAME ?? "__Host-inorganic_session";
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -21,7 +22,7 @@ export function proxy(request: NextRequest) {
     pathname === "/api"
   )
     return NextResponse.next();
-  if (request.cookies.has("__Host-inorganic_session")) return NextResponse.next();
+  if (request.cookies.has(sessionCookieName)) return NextResponse.next();
   const login = new URL("/login", request.url);
   login.searchParams.set("next", `${pathname}${search}`);
   return NextResponse.redirect(login);
