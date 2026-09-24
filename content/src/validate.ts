@@ -61,6 +61,9 @@ console.log(
   `Content validation passed: ${content.elements.length} elements (${reviewedCount} reviewed), ${content.groups.length} named groups.`,
 );
 console.log(
+  `Alternative group mnemonics: ${content.alternateGroupMnemonics.length} user-provided records validated.`,
+);
+console.log(
   `Chemistry-SME review: ${elementCoverage.smeReviewed.length}/${shippedCount(elementCoverage)} shipped elements, ${groupCoverage.smeReviewed.length}/${shippedCount(groupCoverage)} shipped groups. Release gate: pnpm content:release-check.`,
 );
 console.log(

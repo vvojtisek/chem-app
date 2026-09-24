@@ -5,6 +5,7 @@ import {
 } from "@inorganic/content/preparation-production";
 import { parseEquationFormula } from "@inorganic/chemistry";
 import Link from "next/link";
+import { GroupMnemonics } from "@/components/group-mnemonics";
 import { PracticeNavigation } from "@/components/practice-navigation";
 
 const numberFormatter = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 6 });
@@ -68,11 +69,7 @@ export default function ElementLearningPage() {
                   ({groupNumber}. skupina)
                 </span>
               </h3>
-              {groupInfo ? (
-                <p className="mt-2 leading-6 text-slate-700">
-                  Mnemotechnická pomůcka: <strong>{groupInfo.mnemonicCs}</strong>
-                </p>
-              ) : null}
+              {groupInfo ? <GroupMnemonics group={groupInfo} /> : null}
               <ul className="mt-3 flex flex-wrap gap-2">
                 {elements.map((element) => (
                   <li className="rounded-lg bg-slate-100 px-2.5 py-1 text-sm" key={element.id}>

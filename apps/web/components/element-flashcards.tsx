@@ -3,6 +3,7 @@
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
+import { GroupMnemonics } from "@/components/group-mnemonics";
 
 import {
   createBrowserElementCardStore,
@@ -184,9 +185,7 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
         {selectedGroupInfo ? (
           <aside className="mt-10 rounded-2xl border border-emerald-900/15 bg-emerald-50 p-5 text-left">
             <h3 className="font-semibold text-slate-950">{selectedGroupInfo.nameCs}</h3>
-            <p className="mt-2 leading-7 text-slate-700">
-              Mnemotechnika: {selectedGroupInfo.mnemonicCs}
-            </p>
+            <GroupMnemonics group={selectedGroupInfo} />
           </aside>
         ) : null}
 

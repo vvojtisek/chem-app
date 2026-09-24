@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./runtime": "./src/runtime.ts",
+    "./alternate-group-mnemonics": "./src/alternate-group-mnemonic-runtime.ts",
     "./preparation-production": "./src/preparation-production-runtime.ts",
     "./preparation-production-schema": "./src/preparation-production-schema.ts",
     "./nomenclature-schema": "./src/nomenclature-schema.ts"

@@ -8,6 +8,8 @@ This document defines canonical chemistry input, normalization, validation, alia
 
 `content/data/groups.json` holds only named groups with explicitly approved Czech names and mnemonics. Validation rejects an unknown symbol, a duplicate symbol within a named group, or an element whose declared periodic group conflicts with that group.
 
+`content/data/alternate-group-mnemonics.json` holds owner-provided alternate memory aids for the traditional I–VIII A groups. Each record lists its full element-symbol sequence, which validation compares against the reviewed element group assignments. The original group mnemonic remains available; the alternate text and its explanation are shown as an optional disclosure and are labeled as owner-provided rather than chemistry-SME reviewed.
+
 User-created or locally edited cards are browser-local learning notes. They are not reviewed curriculum and must not be exported or treated as canonical content without a separate authoring and review workflow.
 
 ## Preparation and production by product

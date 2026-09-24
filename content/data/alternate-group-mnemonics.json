@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "group-mnemonic-alternative.1",
+      "groupNumber": 1,
+      "traditionalLabelCs": "I. A skupina",
+      "elementSymbols": ["H", "Li", "Na", "K", "Rb", "Cs", "Fr"],
+      "mnemonicCs": "Hulk Liže Natálii Krk, Robin Cuts Free.",
+      "explanationCs": "Natálie jako Black Widow, Robin se osvobozuje ze zajetí.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.2",
+      "groupNumber": 2,
+      "traditionalLabelCs": "II. A skupina",
+      "elementSymbols": ["Be", "Mg", "Ca", "Sr", "Ba", "Ra"],
+      "mnemonicCs": "Bez Magnetických Capových Strel Bafne Racket.",
+      "explanationCs": "Rocket Raccoon vyskočí, protože ho neohrožují žádné Magnetovy střely namířené na Captaina Americu.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.13",
+      "groupNumber": 13,
+      "traditionalLabelCs": "III. A skupina",
+      "elementSymbols": ["B", "Al", "Ga", "In", "Tl", "Nh"],
+      "mnemonicCs": "Borci Altán Gamory Intenzivně Tluče Nohou.",
+      "explanationCs": "Představte si hromotluky, jak demolují základnu Strážců galaxie.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.14",
+      "groupNumber": 14,
+      "traditionalLabelCs": "IV. A skupina",
+      "elementSymbols": ["C", "Si", "Ge", "Sn", "Pb", "Fl"],
+      "mnemonicCs": "Captain Silmě Generuje S****nap, Pak Bouchne Flash.",
+      "explanationCs": "Narážka na Captaina a osudné lusknutí rukavicí nekonečna.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.15",
+      "groupNumber": 15,
+      "traditionalLabelCs": "V. A skupina",
+      "elementSymbols": ["N", "P", "As", "Sb", "Bi", "Mc"],
+      "mnemonicCs": "Nick Pury Asgardu Sebral Big Mac.",
+      "explanationCs": "Nick Fury si skočil pro svačinu k asgardským bohům.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.16",
+      "groupNumber": 16,
+      "traditionalLabelCs": "VI. A skupina",
+      "elementSymbols": ["O", "S", "Se", "Te", "Po", "Lv"],
+      "mnemonicCs": "Odin Srazil Sekyrou Terrana Po Lvovi.",
+      "explanationCs": "Vaše oblíbená verze s Thorem/Odinem a pozemšťanem.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.17",
+      "groupNumber": 17,
+      "traditionalLabelCs": "VII. A skupina",
+      "elementSymbols": ["F", "Cl", "Br", "I", "At", "Ts"],
+      "mnemonicCs": "Fury Clevar B****ránil Illuminaty Atakem Thanasa.",
+      "explanationCs": "Nick Fury chytře bránil tajný tým Iluminátů před útokem Thanose.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "group-mnemonic-alternative.18",
+      "groupNumber": 18,
+      "traditionalLabelCs": "VIII. A skupina",
+      "elementSymbols": ["He", "Ne", "Ar", "Kr", "Xe", "Rn", "Og"],
+      "mnemonicCs": "Hela Nechce Argumenty, Krutě Xenofobně Raní Ogona.",
+      "explanationCs": "Hela, bohyně smrti, ničí vše živé včetně vesmírných ras.",
+      "status": "owner-approved",
+      "author": "Content owner-provided",
+      "sources": [
+        {
+          "title": "Uživatelem dodané alternativní mnemotechnické pomůcky",
+          "locator": "conversation:2026-09-24:user-provided-alternative-element-mnemonics"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (user-provided mnemonic set; not an SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    }
+  ]
+}

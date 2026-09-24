@@ -37,25 +37,25 @@ export const curatedPreparationProduction: readonly PreparationProductionRuntime
   collection.products
     .filter((product) => parseEquationFormula(product.formula, allowedSymbols) !== null)
     .map((product) => ({
-    id: product.id,
-    nameCs: product.nameCs,
-    formula: product.formula,
-    notes: product.notes,
-    routes: product.routes
-      .filter(
-        (route) =>
-          route.status === "owner-approved" &&
-          isBalancedEquation(route.reactants, route.products, allowedSymbols) &&
-          hasReducedEquationCoefficients(route.reactants, route.products),
-      )
-      .map(({ id, sourceId, kind, reactants, products, conditionsCs }) => ({
-        id,
-        sourceId,
-        kind,
-        reactants,
-        products,
-        conditionsCs,
-      })),
-    reviewLevel: "owner-approved",
-    sources: product.sources,
+      id: product.id,
+      nameCs: product.nameCs,
+      formula: product.formula,
+      notes: product.notes,
+      routes: product.routes
+        .filter(
+          (route) =>
+            route.status === "owner-approved" &&
+            isBalancedEquation(route.reactants, route.products, allowedSymbols) &&
+            hasReducedEquationCoefficients(route.reactants, route.products),
+        )
+        .map(({ id, sourceId, kind, reactants, products, conditionsCs }) => ({
+          id,
+          sourceId,
+          kind,
+          reactants,
+          products,
+          conditionsCs,
+        })),
+      reviewLevel: "owner-approved",
+      sources: product.sources,
     }));

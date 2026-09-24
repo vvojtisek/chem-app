@@ -51,6 +51,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 ### Preparation and production equation practice
 
 - `/uceni/priprava-vyroba` is a read-only study set organized by product. It shows source notes, approved preparation/manufacture equations, and stated arrow conditions without asking questions or recording attempts. Element study cards link the applicable preparation/production material for pure elements.
+- `/uceni/prvky` shows the element groups and their current approved mnemonics; where supplied, a disclosure also presents the owner-provided alternative mnemonic and explanation for traditional I–VIII A groups.
 - `/procvicovani/rovnice` offers three levels from the same structured VŠCHT source: Beginner sees every formula and fills stoichiometric coefficients on both sides; Advanced sees reactants, enters product formulas, then fills coefficients; Profík is prompted with a target product and enters one or more complete manufacturing equations accepted for that product.
 - Typed product sides accept exact formula terms in either order. Profi equations accept complete, balanced source-approved alternatives with `->` or `→`; they do not use fuzzy chemical matching.
 - Source equations must pass formula, atom-balance, and lowest-coefficient validation before they enter the study set or practice pool.

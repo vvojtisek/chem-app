@@ -13,7 +13,8 @@ export interface ValidationProblem {
     | "duplicate_reviewer_id"
     | "unknown_reviewer"
     | "missing_review_fingerprint"
-    | "stale_review_fingerprint";
+    | "stale_review_fingerprint"
+    | "invalid_alternate_group_mnemonic";
   readonly recordId: string;
 }
 
