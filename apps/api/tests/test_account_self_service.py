@@ -139,6 +139,7 @@ async def test_registration_verification_password_change_and_reset(
         )
         assert response.status_code == 202, response.text
         assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
+        first_verify_token = queued_token(db, address, "verify")
         unverified = await http.post(
             "/api/v1/auth/login",
             headers={"Origin": ORIGIN},
@@ -151,18 +152,18 @@ async def test_registration_verification_password_change_and_reset(
             json={"email": address},
         )
         assert resent.status_code == 202
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 2
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
         duplicate = await http.post(
             "/api/v1/auth/register",
             headers={"Origin": ORIGIN},
             json={"email": address},
         )
         assert duplicate.status_code == 202
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 2
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
         replaced = await http.post(
             "/api/v1/auth/verify-email",
             headers={"Origin": ORIGIN},
-            json={"token": queued_token(db, address, "verify"), "newPassword": PASSWORD},
+            json={"token": first_verify_token, "newPassword": PASSWORD},
         )
         assert replaced.status_code == 400
         verification = (
@@ -229,7 +230,7 @@ async def test_registration_verification_password_change_and_reset(
             json={"email": address},
         )
         assert unknown.status_code == known.status_code == 202
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 3
+        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
         reset_message = (
             db.query(MailOutbox)
             .filter(MailOutbox.reset_token_id.is_not(None), MailOutbox.recipient == address)

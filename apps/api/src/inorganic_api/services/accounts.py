@@ -83,6 +83,7 @@ def register(db: Session, settings: Settings, address: str, ip: str) -> None:
         id=uuid4(), user_id=inserted, token_hash=digest, expires_at=now + VERIFY_TTL
     )
     db.add(verification)
+    db.flush([verification])
     mail_outbox.enqueue_verification(
         db, address, email.encrypt_token(settings, token), verification
     )
@@ -112,6 +113,7 @@ def request_verification(db: Session, settings: Settings, address: str, ip: str)
         id=uuid4(), user_id=user.id, token_hash=digest, expires_at=now + VERIFY_TTL
     )
     db.add(verification)
+    db.flush([verification])
     mail_outbox.enqueue_verification(
         db, address, email.encrypt_token(settings, token), verification
     )
@@ -163,6 +165,7 @@ def request_reset(db: Session, settings: Settings, address: str, ip: str) -> Non
         expires_at=datetime.now(UTC) + RESET_TTL,
     )
     db.add(reset)
+    db.flush([reset])
     mail_outbox.enqueue_reset(db, address, email.encrypt_token(settings, token), reset)
     db.commit()
 
