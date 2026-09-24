@@ -1,0 +1,4740 @@
+{
+  "schemaVersion": 1,
+  "products": [
+    {
+      "id": "preparation-production.product.vodik",
+      "nameCs": "Vodík",
+      "formula": "H2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Vodík se vyrábí elektrolýzou vody."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.vodik-id-20-1-preparation",
+          "sourceId": "id-20-1",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Zn"
+            },
+            {
+              "coefficient": 2,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "ZnCl2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.vodik-id-20-2-preparation",
+          "sourceId": "id-20-2",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "Na"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NaOH"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.vodik-id-20-3-preparation",
+          "sourceId": "id-20-3",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Zn"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NaOH"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Na2[Zn(OH)4]"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.vodik-id-20-1a-preparation",
+          "sourceId": "id-20-1a",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaH2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Ca(OH)2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.vodik-id-20-6-manufacture",
+          "sourceId": "id-20-6",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "C"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.vodik-id-20-7-manufacture",
+          "sourceId": "id-20-7",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyslik",
+      "nameCs": "Kyslík",
+      "formula": "O2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Kyslík se převážně vyrábí frakční destilací vzduchu nebo elektrolýzou vody."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyslik-id-20-9-preparation",
+          "sourceId": "id-20-9",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "Ag2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "Ag"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyslik-id-20-10-preparation",
+          "sourceId": "id-20-10",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "H2O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyslik-id-20-14-preparation",
+          "sourceId": "id-20-14",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 5,
+              "formula": "H2O2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "KMnO4"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "K2SO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "MnSO4"
+            },
+            {
+              "coefficient": 8,
+              "formula": "H2O"
+            },
+            {
+              "coefficient": 5,
+              "formula": "O2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyslik-id-20-8-preparation",
+          "sourceId": "id-20-8",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "HgO"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Hg"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.peroxid-vodiku",
+      "nameCs": "Peroxid vodíku",
+      "formula": "H2O2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Na 2-alkylantrachinon se působí vodíkem v přítomnosti katalyzátoru za vzniku 2-alkylantrachinolu. Zaváděním vzduchu se uvolňuje peroxid vodíku a zpět vzniká výchozí látka."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.peroxid-vodiku-id-20-24-preparation",
+          "sourceId": "id-20-24",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "BaO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "BaSO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.peroxid-vodiku-id-20-25-preparation",
+          "sourceId": "id-20-25",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "H2S2O6(O2)"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "H2SO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-siricity",
+      "nameCs": "Oxid siřičitý",
+      "formula": "SO2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Oxid siřičitý vzniká jako vedlejší produkt při spalování uhlí a topných olejů."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-siricity-id-20-30-preparation",
+          "sourceId": "id-20-30",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Na2SO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2SO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "SO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.oxid-siricity-id-20-30a-preparation",
+          "sourceId": "id-20-30a",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Na2S2O5"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2SO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "SO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-sirovy",
+      "nameCs": "Oxid sírový",
+      "formula": "SO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-sirovy-id-20-38-manufacture",
+          "sourceId": "id-20-38",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Fe2(SO4)3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Fe2O3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "SO3"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyselina-sirova",
+      "nameCs": "Kyselina sírová",
+      "formula": "H2SO4",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Nejprve se SO2 katalyticky oxiduje na SO3, který se následně pohlcuje v H2SO4 a vzniká oleum; reakcí s vodou dává kyselinu sírovou. Je to tak proto, že přímá reakce SO3 s vodou je silně exotermní a v průmyslu se nepoužívá."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyselina-sirova-id-20-32-manufacture",
+          "sourceId": "id-20-32",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "SO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "SO3"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-sirova-id-20-34-manufacture",
+          "sourceId": "id-20-34",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H2S2O7"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-sirova-id-20-34a-manufacture",
+          "sourceId": "id-20-34a",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "H2S2O7"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "H2SO4"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.disiricitan-sodny",
+      "nameCs": "Disiřičitan sodný",
+      "formula": "Na2S2O5",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.disiricitan-sodny-id-20-33-preparation",
+          "sourceId": "id-20-33",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "NaHSO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2S2O5"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.disiran-sodny",
+      "nameCs": "Disíran sodný",
+      "formula": "Na2S2O7",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.disiran-sodny-id-20-36-preparation",
+          "sourceId": "id-20-36",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "NaHSO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2S2O7"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.thiosiran-sodny",
+      "nameCs": "Thiosíran sodný",
+      "formula": "Na2SO3S",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.thiosiran-sodny-id-20-37-preparation",
+          "sourceId": "id-20-37",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Na2SO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "S"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2SO3S"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.sulfan",
+      "nameCs": "Sulfan",
+      "formula": "H2S",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.sulfan-id-20-41-preparation",
+          "sourceId": "id-20-41",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "FeS"
+            },
+            {
+              "coefficient": 2,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "FeCl2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2S"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.fluor",
+      "nameCs": "Fluor",
+      "formula": "F2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Fluor se vyrábí elektrolýzou taveniny směsi KF a HF."
+        }
+      ],
+      "routes": [],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlor",
+      "nameCs": "Chlor",
+      "formula": "Cl2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlor-id-20-49-preparation",
+          "sourceId": "id-20-49",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "MnO2"
+            },
+            {
+              "coefficient": 4,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "MnCl2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.chlor-id-20-50-preparation",
+          "sourceId": "id-20-50",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "KMnO4"
+            },
+            {
+              "coefficient": 16,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "KCl"
+            },
+            {
+              "coefficient": 2,
+              "formula": "MnCl2"
+            },
+            {
+              "coefficient": 5,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 8,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.chlor-id-20-52-manufacture",
+          "sourceId": "id-20-52",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "HCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.brom",
+      "nameCs": "Brom",
+      "formula": "Br2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Brom se vyrábí chlorací mořské vody, která obsahuje zdroj bromu - bromidy."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.brom-id-20-53-preparation",
+          "sourceId": "id-20-53",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "KBr"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2SO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "MnO2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "MnBr2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Br2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "K2SO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.brom-id-20-54-preparation",
+          "sourceId": "id-20-54",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "KBr"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Br2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "KCl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.jod",
+      "nameCs": "Jod",
+      "formula": "I2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.jod-id-20-56-preparation",
+          "sourceId": "id-20-56",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "KI"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "I2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "KCl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.jod-id-20-56a-preparation",
+          "sourceId": "id-20-56a",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "KI"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2SO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "MnO2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "MnI2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "I2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "K2SO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.jod-id-20-55-manufacture",
+          "sourceId": "id-20-55",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "KIO3"
+            },
+            {
+              "coefficient": 5,
+              "formula": "K2SO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "I2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "K2SO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.fluorovodik",
+      "nameCs": "Fluorovodík",
+      "formula": "HF",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.fluorovodik-id-20-57-preparation",
+          "sourceId": "id-20-57",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaF2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaSO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "HF"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.fluorovodik-id-20-57-manufacture",
+          "sourceId": "id-20-57",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaF2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaSO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "HF"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorovodik",
+      "nameCs": "Chlorovodík",
+      "formula": "HCl",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorovodik-id-20-61-preparation",
+          "sourceId": "id-20-61",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "HCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaHSO4"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.chlorovodik-id-20-60-manufacture",
+          "sourceId": "id-20-60",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "HCl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.bromovodik",
+      "nameCs": "Bromovodík",
+      "formula": "HBr",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.bromovodik-id-20-63-preparation",
+          "sourceId": "id-20-63",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "PBr3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H3PO3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "HBr"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.jodovodik",
+      "nameCs": "Jodovodík",
+      "formula": "HI",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.jodovodik-id-20-64-preparation",
+          "sourceId": "id-20-64",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "PI3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "H3PO3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "HI"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorid-hlinity",
+      "nameCs": "Chlorid hlinitý",
+      "formula": "AlCl3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorid-hlinity-id-20-69-preparation",
+          "sourceId": "id-20-69",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Al2O3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 3,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "AlCl3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-chloricity",
+      "nameCs": "Oxid chloričitý",
+      "formula": "ClO2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-chloricity-id-20-71-preparation",
+          "sourceId": "id-20-71",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "KClO3"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2SO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2C2O4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "ClO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "KHSO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlornan-sodny",
+      "nameCs": "Chlornan sodný",
+      "formula": "NaClO",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlornan-sodny-id-20-77-preparation",
+          "sourceId": "id-20-77",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaClO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "↓t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.chlornan-sodny-id-20-77-manufacture",
+          "sourceId": "id-20-77",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaClO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "↓t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorecnan-sodny",
+      "nameCs": "Chlorečnan sodný",
+      "formula": "NaClO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorecnan-sodny-id-20-78-preparation",
+          "sourceId": "id-20-78",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 3,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 5,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaClO3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.chlorecnan-sodny-id-20-78-manufacture",
+          "sourceId": "id-20-78",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 3,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 5,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaClO3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyselina-chlorecna",
+      "nameCs": "Kyselina chlorečná",
+      "formula": "HClO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyselina-chlorecna-id-20-72-preparation",
+          "sourceId": "id-20-72",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "KClO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "KHSO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "HClO3"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chloristan-draselny",
+      "nameCs": "Chloristan draselný",
+      "formula": "KClO4",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chloristan-draselny-id-20-81-preparation",
+          "sourceId": "id-20-81",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "KClO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "KCl"
+            },
+            {
+              "coefficient": 3,
+              "formula": "KClO4"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyselina-jodicna",
+      "nameCs": "Kyselina jodičná",
+      "formula": "HIO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyselina-jodicna-id-20-83-preparation",
+          "sourceId": "id-20-83",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "I2"
+            },
+            {
+              "coefficient": 10,
+              "formula": "HNO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "HIO3"
+            },
+            {
+              "coefficient": 10,
+              "formula": "NO2"
+            },
+            {
+              "coefficient": 4,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-jodicna-id-20-84-preparation",
+          "sourceId": "id-20-84",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "I2"
+            },
+            {
+              "coefficient": 5,
+              "formula": "Cl2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "HIO3"
+            },
+            {
+              "coefficient": 10,
+              "formula": "HCl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.dusik",
+      "nameCs": "Dusík",
+      "formula": "N2",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Dusík se vyrábí frakční destilací vzduchu."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.dusik-id-20-85-preparation",
+          "sourceId": "id-20-85",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NH4NO2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "N2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.amoniak",
+      "nameCs": "Amoniak",
+      "formula": "NH3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.amoniak-id-20-87-preparation",
+          "sourceId": "id-20-87",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NH4Cl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NH3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.amoniak-id-20-86-manufacture",
+          "sourceId": "id-20-86",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "N2"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "NH3"
+            }
+          ],
+          "conditionsCs": "t, p, katal.",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.azoxid",
+      "nameCs": "Azoxid",
+      "formula": "N2O",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.azoxid-id-20-88-preparation",
+          "sourceId": "id-20-88",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NH4NO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "N2O"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.azoxid-id-20-91-preparation",
+          "sourceId": "id-20-91",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "HNO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NH2OH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "N2O"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "in-review",
+          "reviewNote": "Source equation is not atom-balanced; excluded from runtime lessons and quizzes."
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-dusnaty",
+      "nameCs": "Oxid dusnatý",
+      "formula": "NO",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-dusnaty-id-20-95-preparation",
+          "sourceId": "id-20-95",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 3,
+              "formula": "Cu"
+            },
+            {
+              "coefficient": 8,
+              "formula": "HNO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 3,
+              "formula": "Cu(NO3)2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NO"
+            },
+            {
+              "coefficient": 4,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.oxid-dusnaty-id-20-89-manufacture",
+          "sourceId": "id-20-89",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "NH3"
+            },
+            {
+              "coefficient": 5,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "NO"
+            },
+            {
+              "coefficient": 6,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t, katal.",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-dusicity",
+      "nameCs": "Oxid dusičitý",
+      "formula": "NO2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-dusicity-id-20-96-preparation",
+          "sourceId": "id-20-96",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Cu"
+            },
+            {
+              "coefficient": 4,
+              "formula": "HNO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Cu(NO3)2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "konc. HNO3",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyselina-dusicna",
+      "nameCs": "Kyselina dusičná",
+      "formula": "HNO3",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Kyselina dusičná se vyrábí ve více krocích. Nejprve se katalyticky oxiduje vyrobený NH3 na NO, následně se NO oxiduje na NO2 (resp. N2O4), který pak reaguje s vodou. Plyny jsou vedeny do recyklu."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyselina-dusicna-id-20-89-manufacture",
+          "sourceId": "id-20-89",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "NH3"
+            },
+            {
+              "coefficient": 5,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "NO"
+            },
+            {
+              "coefficient": 6,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t, katal.",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-dusicna-id-20-90-manufacture",
+          "sourceId": "id-20-90",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "NO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "NO2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-dusicna-id-20-94-manufacture",
+          "sourceId": "id-20-94",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "N2O4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "HNO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "HNO2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-dusicna-id-20-94b-manufacture",
+          "sourceId": "id-20-94b",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 3,
+              "formula": "HNO2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "HNO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NO"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.dusitan-sodny",
+      "nameCs": "Dusitan sodný",
+      "formula": "NaNO2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.dusitan-sodny-id-20-100-preparation",
+          "sourceId": "id-20-100",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NaNO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Pb"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NaNO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "PbO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.dusitan-sodny-id-20-101-preparation",
+          "sourceId": "id-20-101",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NaNO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NaNO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.dusitan-sodny-id-20-102-manufacture",
+          "sourceId": "id-20-102",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "NaNO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.fosfor",
+      "nameCs": "Fosfor",
+      "formula": "P4",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.fosfor-id-20-103-manufacture",
+          "sourceId": "id-20-103",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "Ca3(PO4)2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "SiO2"
+            },
+            {
+              "coefficient": 10,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "P4"
+            },
+            {
+              "coefficient": 6,
+              "formula": "CaSiO3"
+            },
+            {
+              "coefficient": 10,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.fosfan",
+      "nameCs": "Fosfan",
+      "formula": "PH3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.fosfan-id-20-105-preparation",
+          "sourceId": "id-20-105",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Ca3P2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "PH3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "Ca(OH)2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.fosfan-id-20-104-preparation",
+          "sourceId": "id-20-104",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "P4"
+            },
+            {
+              "coefficient": 3,
+              "formula": "NaOH"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 3,
+              "formula": "NaH2PO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "PH3"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorid-fosfority",
+      "nameCs": "Chlorid fosforitý",
+      "formula": "PCl3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorid-fosfority-id-20-106-manufacture",
+          "sourceId": "id-20-106",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "P4"
+            },
+            {
+              "coefficient": 6,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "PCl3"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorid-fosforecny",
+      "nameCs": "Chlorid fosforečný",
+      "formula": "PCl5",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorid-fosforecny-id-20-108-manufacture",
+          "sourceId": "id-20-108",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "PCl3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "PCl5"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyselina-trihydrogenfosforecna",
+      "nameCs": "Kyselina trihydrogenfosforečná",
+      "formula": "H3PO4",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Velmi čistá kyselina trihydrogenfosforečná (například pro potravinářské účely) se vyrábí z bílého fosforu. Nejprve se vyrobí bílý fosfor P4, který se následně zoxiduje na oxid fosforečný P4O10, ten se nakonec rozpouští ve vodě."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyselina-trihydrogenfosforecna-id-20-112-manufacture",
+          "sourceId": "id-20-112",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Ca3(PO4)2"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2SO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "H3PO4"
+            },
+            {
+              "coefficient": 3,
+              "formula": "CaSO4"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-trihydrogenfosforecna-id-20-103-manufacture",
+          "sourceId": "id-20-103",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "Ca3(PO4)2"
+            },
+            {
+              "coefficient": 6,
+              "formula": "SiO2"
+            },
+            {
+              "coefficient": 10,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "P4"
+            },
+            {
+              "coefficient": 6,
+              "formula": "CaSiO3"
+            },
+            {
+              "coefficient": 10,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-trihydrogenfosforecna-id-20-110-manufacture",
+          "sourceId": "id-20-110",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "P4"
+            },
+            {
+              "coefficient": 5,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "P4O10"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyselina-trihydrogenfosforecna-id-20-111-manufacture",
+          "sourceId": "id-20-111",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "P4O10"
+            },
+            {
+              "coefficient": 6,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "H3PO4"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyanovodik",
+      "nameCs": "Kyanovodík",
+      "formula": "HCN",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyanovodik-id-20-115-preparation",
+          "sourceId": "id-20-115",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "KCN"
+            },
+            {
+              "coefficient": 1,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "HCN"
+            },
+            {
+              "coefficient": 1,
+              "formula": "KCl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyanovodik-id-20-116-manufacture",
+          "sourceId": "id-20-116",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CH4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NH3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "HCN"
+            },
+            {
+              "coefficient": 3,
+              "formula": "H2"
+            }
+          ],
+          "conditionsCs": "t, p, katal.",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kyanovodik-id-20-116a-manufacture",
+          "sourceId": "id-20-116a",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "CH4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NH3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "HCN"
+            },
+            {
+              "coefficient": 6,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t, katal.",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyanamid-vapenaty",
+      "nameCs": "Kyanamid vápenatý",
+      "formula": "CaNCN",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyanamid-vapenaty-id-20-135-manufacture",
+          "sourceId": "id-20-135",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaC2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "N2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaNCN"
+            },
+            {
+              "coefficient": 1,
+              "formula": "C"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.karbid-vapenaty",
+      "nameCs": "Karbid vápenatý",
+      "formula": "CaC2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.karbid-vapenaty-id-20-121-manufacture",
+          "sourceId": "id-20-121",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaO"
+            },
+            {
+              "coefficient": 3,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaC2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-uhelnaty",
+      "nameCs": "Oxid uhelnatý",
+      "formula": "CO",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-uhelnaty-id-20-127-preparation",
+          "sourceId": "id-20-127",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "HCO2H"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.oxid-uhelnaty-id-20-138-manufacture",
+          "sourceId": "id-20-138",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "C"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-uhlicity",
+      "nameCs": "Oxid uhličitý",
+      "formula": "CO2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-uhlicity-id-20-128-preparation",
+          "sourceId": "id-20-128",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaCO3"
+            },
+            {
+              "coefficient": 2,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaCl2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.oxid-uhlicity-id-20-129-manufacture",
+          "sourceId": "id-20-129",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaCO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.hydrogenuhlicitan-sodny",
+      "nameCs": "Hydrogenuhličitan sodný",
+      "formula": "NaHCO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.hydrogenuhlicitan-sodny-id-20-131-manufacture",
+          "sourceId": "id-20-131",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NaCl"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NH3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NaHCO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NH4Cl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.uhlicitan-sodny",
+      "nameCs": "Uhličitan sodný",
+      "formula": "Na2CO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.uhlicitan-sodny-id-20-132-manufacture",
+          "sourceId": "id-20-132",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "NaHCO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2CO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kremik",
+      "nameCs": "Křemík",
+      "formula": "Si",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kremik-id-20-140-manufacture",
+          "sourceId": "id-20-140",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SiO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Si"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kremik-id-20-141-manufacture",
+          "sourceId": "id-20-141",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SiO2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CaC2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Si"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Ca"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.kremik-id-20-142-manufacture",
+          "sourceId": "id-20-142",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SiCl4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "Zn"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Si"
+            },
+            {
+              "coefficient": 2,
+              "formula": "ZnCl2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.silan",
+      "nameCs": "Silan",
+      "formula": "SiH4",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.silan-id-20-143-preparation",
+          "sourceId": "id-20-143",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Mg2Si"
+            },
+            {
+              "coefficient": 4,
+              "formula": "HCl"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "SiH4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "MgCl2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.karbid-kremicity",
+      "nameCs": "Karbid křemičitý",
+      "formula": "SiC",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.karbid-kremicity-id-20-146-manufacture",
+          "sourceId": "id-20-146",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SiO2"
+            },
+            {
+              "coefficient": 3,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "SiC"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorid-kremicity",
+      "nameCs": "Chlorid křemičitý",
+      "formula": "SiCl4",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorid-kremicity-id-20-147-preparation",
+          "sourceId": "id-20-147",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SiO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "C"
+            },
+            {
+              "coefficient": 2,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "SiCl4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kyselina-trihydrogenborita",
+      "nameCs": "Kyselina trihydrogenboritá",
+      "formula": "H3BO3",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kyselina-trihydrogenborita-id-20-157-preparation",
+          "sourceId": "id-20-157",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Na2B4O7"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2SO4"
+            },
+            {
+              "coefficient": 5,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "H3BO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Na2SO4"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.diboran",
+      "nameCs": "Diboran",
+      "formula": "B2H6",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.diboran-id-20-160-preparation",
+          "sourceId": "id-20-160",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "NaBH4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H3PO4"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "B2H6"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NaH2PO4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.sodik",
+      "nameCs": "Sodík",
+      "formula": "Na",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Sodík se vyrábí elektrolýzou taveniny NaCl (nikoli roztoku, srovnej s výrobou NaOH)."
+        }
+      ],
+      "routes": [],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.sulfid-sodny",
+      "nameCs": "Sulfid sodný",
+      "formula": "Na2S",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Obecně se sulfidy vyrábějí neutralizační reakcí sulfanu s příslušným hydroxidem. Musí být ve dvou krocích:"
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.sulfid-sodny-id-20-191-preparation",
+          "sourceId": "id-20-191",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Na2SO4"
+            },
+            {
+              "coefficient": 4,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2S"
+            },
+            {
+              "coefficient": 4,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.sulfid-sodny-id-20-260-manufacture",
+          "sourceId": "id-20-260",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "H2S"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "NaHS"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.sulfid-sodny-id-20-261-manufacture",
+          "sourceId": "id-20-261",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NaHS"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaOH"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Na2S"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.hydroxid-sodny",
+      "nameCs": "Hydroxid sodný",
+      "formula": "NaOH",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Hydroxid sodný se vyrábí elektrolýzou solanky (nasycený roztok NaCl)."
+        }
+      ],
+      "routes": [],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.hydroxid-draselny",
+      "nameCs": "Hydroxid draselný",
+      "formula": "KOH",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Hydroxid draselný se vyrábí elektrolýzou roztoku KCl."
+        }
+      ],
+      "routes": [],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-vapenaty",
+      "nameCs": "Oxid vápenatý",
+      "formula": "CaO",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-vapenaty-id-20-129-manufacture",
+          "sourceId": "id-20-129",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaCO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "CaO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.hydroxid-vapenaty",
+      "nameCs": "Hydroxid vápenatý",
+      "formula": "Ca(OH)2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.hydroxid-vapenaty-id-20-17-manufacture",
+          "sourceId": "id-20-17",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "CaO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Ca(OH)2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.antimon",
+      "nameCs": "Antimon",
+      "formula": "Sb",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.antimon-id-20-172-manufacture",
+          "sourceId": "id-20-172",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Sb2O3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Sb"
+            },
+            {
+              "coefficient": 3,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.cin",
+      "nameCs": "Cín",
+      "formula": "Sn",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.cin-id-20-209-manufacture",
+          "sourceId": "id-20-209",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "SnO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Sn"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-olovicity",
+      "nameCs": "Oxid olovičitý",
+      "formula": "PbO2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-olovicity-id-20-211-preparation",
+          "sourceId": "id-20-211",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Pb(NO3)2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaClO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "PbO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "HNO3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "NaCl"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.oxid-olovicity-id-20-212-manufacture",
+          "sourceId": "id-20-212",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "PbPb2O4"
+            },
+            {
+              "coefficient": 4,
+              "formula": "HNO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Pb(NO3)2"
+            },
+            {
+              "coefficient": 1,
+              "formula": "PbO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.olovo",
+      "nameCs": "Olovo",
+      "formula": "Pb",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.olovo-id-20-180-manufacture",
+          "sourceId": "id-20-180",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "PbO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "PbS"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 3,
+              "formula": "Pb"
+            },
+            {
+              "coefficient": 1,
+              "formula": "SO2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-diolovnato-olovicity",
+      "nameCs": "Oxid diolovnato-olovičitý",
+      "formula": "Pb2PbO4",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-diolovnato-olovicity-id-20-214-manufacture",
+          "sourceId": "id-20-214",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 6,
+              "formula": "PbO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Pb2PbO4"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.hlinik",
+      "nameCs": "Hliník",
+      "formula": "Al",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Hliník se vyrábí elektroredukcí oxidu hlinitého rozpuštěného v roztaveném kryolitu (Na3[AlF6]), který je hlavní složkou bauxitu. Bauxit je přírodní směs hydratovaných oxidů hlinitých, oxid-hydroxidů, která navíc obsahuje oxid železitý a oxid křemičitý."
+        }
+      ],
+      "routes": [],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chlorid-titanicity",
+      "nameCs": "Chlorid titaničitý",
+      "formula": "TiCl4",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chlorid-titanicity-id-20-216-preparation",
+          "sourceId": "id-20-216",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "TiO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "C"
+            },
+            {
+              "coefficient": 2,
+              "formula": "Cl2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "TiCl4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.titan",
+      "nameCs": "Titan",
+      "formula": "Ti",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.titan-id-20-218-manufacture",
+          "sourceId": "id-20-218",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "TiCl4"
+            },
+            {
+              "coefficient": 2,
+              "formula": "Mg"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Ti"
+            },
+            {
+              "coefficient": 2,
+              "formula": "MgCl2"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-vanadicny",
+      "nameCs": "Oxid vanadičný",
+      "formula": "V2O5",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-vanadicny-id-20-220-preparation",
+          "sourceId": "id-20-220",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "NH4VO3"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "V2O5"
+            },
+            {
+              "coefficient": 2,
+              "formula": "NH3"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.chrom",
+      "nameCs": "Chrom",
+      "formula": "Cr",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.chrom-id-20-227-manufacture",
+          "sourceId": "id-20-227",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Cr2O3"
+            },
+            {
+              "coefficient": 2,
+              "formula": "Al"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Cr"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Al2O3"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-chromity",
+      "nameCs": "Oxid chromitý",
+      "formula": "Cr2O3",
+      "notes": [
+        {
+          "kind": "preparation",
+          "text": "Nejsnáze srážením z roztoku Cr3+ solí."
+        }
+      ],
+      "routes": [],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.mangan",
+      "nameCs": "Mangan",
+      "formula": "Mn",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.mangan-id-20-237-manufacture",
+          "sourceId": "id-20-237",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 3,
+              "formula": "Mn2MnO4"
+            },
+            {
+              "coefficient": 8,
+              "formula": "Al"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 9,
+              "formula": "Mn"
+            },
+            {
+              "coefficient": 4,
+              "formula": "Al2O3"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.oxid-manganicity",
+      "nameCs": "Oxid manganičitý",
+      "formula": "MnO2",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.oxid-manganicity-id-20-239-preparation",
+          "sourceId": "id-20-239",
+          "kind": "preparation",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "KMnO4"
+            },
+            {
+              "coefficient": 1,
+              "formula": "H2O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "MnO2"
+            },
+            {
+              "coefficient": 2,
+              "formula": "KOH"
+            },
+            {
+              "coefficient": 2,
+              "formula": "O2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.zelezo",
+      "nameCs": "Železo",
+      "formula": "Fe",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.zelezo-id-20-173a-manufacture",
+          "sourceId": "id-20-173a",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Fe2O3"
+            },
+            {
+              "coefficient": 3,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Fe"
+            },
+            {
+              "coefficient": 3,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.kobalt",
+      "nameCs": "Kobalt",
+      "formula": "Co",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.kobalt-id-20-246-manufacture",
+          "sourceId": "id-20-246",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 3,
+              "formula": "CoCo2O4"
+            },
+            {
+              "coefficient": 8,
+              "formula": "Al"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 9,
+              "formula": "Co"
+            },
+            {
+              "coefficient": 4,
+              "formula": "Al2O3"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.nikl",
+      "nameCs": "Nikl",
+      "formula": "Ni",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Mondova metoda"
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.nikl-id-20-247-manufacture",
+          "sourceId": "id-20-247",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "NiO"
+            },
+            {
+              "coefficient": 5,
+              "formula": "CO"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "[Ni(CO)4]"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.nikl-id-20-248-manufacture",
+          "sourceId": "id-20-248",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "[Ni(CO)4]"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Ni"
+            },
+            {
+              "coefficient": 4,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.med",
+      "nameCs": "Měď",
+      "formula": "Cu",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.med-id-20-249-manufacture",
+          "sourceId": "id-20-249",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "Cu2O"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Cu2S"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 6,
+              "formula": "Cu"
+            },
+            {
+              "coefficient": 1,
+              "formula": "SO2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.zinek",
+      "nameCs": "Zinek",
+      "formula": "Zn",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.zinek-id-20-250-manufacture",
+          "sourceId": "id-20-250",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "ZnO"
+            },
+            {
+              "coefficient": 1,
+              "formula": "C"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Zn"
+            },
+            {
+              "coefficient": 1,
+              "formula": "CO"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.stribro",
+      "nameCs": "Stříbro",
+      "formula": "Ag",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "takto lze přečistit nebo zakoncentrovat i Ag ryzí (jako u Au)"
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.stribro-id-20-242-manufacture",
+          "sourceId": "id-20-242",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "Ag2S"
+            },
+            {
+              "coefficient": 4,
+              "formula": "NaCN"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Na[Ag(CN)2]"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Na2S"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.stribro-id-20-243-manufacture",
+          "sourceId": "id-20-243",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "Na[Ag(CN)2]"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Zn"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Ag"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Na2[Zn(CN)4]"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.zlato",
+      "nameCs": "Zlato",
+      "formula": "Au",
+      "notes": [
+        {
+          "kind": "manufacture",
+          "text": "Zlato se v přírodě vyskytuje ryzí. Tímto procesem se ze získané matrice separuje, resp. přečišťuje."
+        }
+      ],
+      "routes": [
+        {
+          "id": "preparation-production.route.zlato-id-20-245-manufacture",
+          "sourceId": "id-20-245",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 4,
+              "formula": "Au"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            },
+            {
+              "coefficient": 8,
+              "formula": "KCN"
+            },
+            {
+              "coefficient": 2,
+              "formula": "H2O"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 4,
+              "formula": "K[Au(CN)2]"
+            },
+            {
+              "coefficient": 4,
+              "formula": "KOH"
+            }
+          ],
+          "conditionsCs": "t",
+          "status": "owner-approved"
+        },
+        {
+          "id": "preparation-production.route.zlato-id-20-245a-manufacture",
+          "sourceId": "id-20-245a",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 2,
+              "formula": "K[Au(CN)2]"
+            },
+            {
+              "coefficient": 1,
+              "formula": "Zn"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 2,
+              "formula": "Au"
+            },
+            {
+              "coefficient": 1,
+              "formula": "K2[Zn(CN)4]"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    },
+    {
+      "id": "preparation-production.product.rtut",
+      "nameCs": "Rtuť",
+      "formula": "Hg",
+      "notes": [],
+      "routes": [
+        {
+          "id": "preparation-production.route.rtut-id-20-251-manufacture",
+          "sourceId": "id-20-251",
+          "kind": "manufacture",
+          "reactants": [
+            {
+              "coefficient": 1,
+              "formula": "HgS"
+            },
+            {
+              "coefficient": 1,
+              "formula": "O2"
+            }
+          ],
+          "products": [
+            {
+              "coefficient": 1,
+              "formula": "Hg"
+            },
+            {
+              "coefficient": 1,
+              "formula": "SO2"
+            }
+          ],
+          "conditionsCs": null,
+          "status": "owner-approved"
+        }
+      ],
+      "status": "owner-approved",
+      "author": "Project curriculum import",
+      "sources": [
+        {
+          "title": "Rovnice podle produktu — e-learning VŠCHT",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/PripravyVyroby/indexes/equationsIndexByProduct.html"
+        }
+      ],
+      "ownerApprovedBy": "Content owner (explicitly requested VŠCHT source; not a chemistry-SME review)",
+      "ownerApprovedAt": "2026-09-24"
+    }
+  ]
+}

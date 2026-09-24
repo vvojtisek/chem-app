@@ -22,6 +22,8 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 - `/procvicovani` lists the practice categories and their exercises, from the same catalog as the home page.
 - Every exercise page (blind table, names and symbols, nomenclature, element flashcards) starts with a navigation bar that stays at the top while scrolling: „Zpět“ returns to `/procvicovani` and „Domů“ to `/`. The `/procvicovani` page itself offers only „Domů“.
+- The authenticated application navigation offers quick links to home, the separate progression dashboard (`/pokrok`), and profile settings (`/ucet`). The dashboard contains personal statistics and ranking; profile settings contain account identity and password controls.
+- The home page links to `/uceni/prvky` in a new tab. This read-only learning set browses reviewed element and group records without questions or attempt tracking, including element facts and available group mnemonics.
 
 ### Chemical equations
 
@@ -45,6 +47,13 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - Cover mineral-to-element matching and the principles, conditions, and equations of important production processes.
 - Provide two-sided element cards with occurrence, important ores, preparation, production, and equations where applicable.
 - “Knew it / Didn’t know it” grading drives a deterministic spaced-repetition schedule.
+
+### Preparation and production equation practice
+
+- `/uceni/priprava-vyroba` is a read-only study set organized by product. It shows source notes, approved preparation/manufacture equations, and stated arrow conditions without asking questions or recording attempts. Element study cards link the applicable preparation/production material for pure elements.
+- `/procvicovani/rovnice` offers three levels from the same structured VŠCHT source: Beginner sees every formula and fills stoichiometric coefficients on both sides; Advanced sees reactants, enters product formulas, then fills coefficients; Profík is prompted with a target product and enters one or more complete manufacturing equations accepted for that product.
+- Typed product sides accept exact formula terms in either order. Profi equations accept complete, balanced source-approved alternatives with `->` or `→`; they do not use fuzzy chemical matching.
+- Source equations must pass formula, atom-balance, and lowest-coefficient validation before they enter the study set or practice pool.
 
 ## Shared behavior
 
