@@ -50,7 +50,7 @@ fi
 
 pnpm install --frozen-lockfile
 uv --directory apps/api sync --frozen --extra test
-docker compose up -d database
+docker compose up -d database mailpit
 
 printf 'Building the current checkout.\n'
 pnpm build

@@ -17,6 +17,26 @@ import { SyncProvider } from "./sync-provider";
 
 export type ActiveAccount = Pick<CurrentUser, "id" | "username" | "role">;
 const AccountContext = createContext<ActiveAccount | null>(null);
+const publicAuthPaths = new Set(["/login", "/register", "/reset-password", "/verify-email"]);
+
+function AuthenticatedShell({
+  account,
+  children,
+}: Readonly<{ account: ActiveAccount; children: ReactNode }>) {
+  return (
+    <AccountContext.Provider value={account}>
+      <AccountNavigation />
+      {account.role === "guest" ? (
+        children
+      ) : (
+        <SyncProvider userId={account.id}>
+          <LegacyImportDialog />
+          {children}
+        </SyncProvider>
+      )}
+    </AccountContext.Provider>
+  );
+}
 
 export function useAccount(): ActiveAccount | null {
   return useContext(AccountContext);
@@ -42,11 +62,11 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
     };
   }, []);
 
-  const onLogin = pathname === "/login";
+  const isPublicAuthPath = publicAuthPaths.has(pathname);
   const me = useQuery({
     queryKey: queryKeys.auth.me,
     queryFn: getCurrentUser,
-    enabled: mounted && online && !onLogin,
+    enabled: mounted && online && !isPublicAuthPath,
     staleTime: 0,
     retry: (count, error) => !(error instanceof ApiError && error.status === 401) && count < 1,
   });
@@ -62,34 +82,21 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
     }
   }, [me.data, me.error, pathname, router]);
 
-  if (onLogin) return <>{children}</>;
+  if (isPublicAuthPath) return <>{children}</>;
   if (!mounted)
     return (
       <p role="status" className="p-5">
         Ověřuji účet…
       </p>
     );
-  if (me.data)
-    return (
-      <AccountContext.Provider value={me.data}>
-        <SyncProvider userId={me.data.id}>
-          <AccountNavigation />
-          <LegacyImportDialog />
-          {children}
-        </SyncProvider>
-      </AccountContext.Provider>
-    );
+  if (me.data) return <AuthenticatedShell account={me.data}>{children}</AuthenticatedShell>;
   if (!online && marker) {
     return (
-      <AccountContext.Provider
-        value={{ id: marker.userId, username: marker.username, role: marker.role }}
+      <AuthenticatedShell
+        account={{ id: marker.userId, username: marker.username, role: marker.role }}
       >
-        <SyncProvider userId={marker.userId}>
-          <AccountNavigation />
-          <LegacyImportDialog />
-          {children}
-        </SyncProvider>
-      </AccountContext.Provider>
+        {children}
+      </AuthenticatedShell>
     );
   }
   if (me.error instanceof ApiError && me.error.status === 401) return null;

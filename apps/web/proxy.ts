@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 
 const publicPaths = new Set([
   "/login",
+  "/register",
+  "/reset-password",
+  "/verify-email",
   "/sw.js",
   "/manifest.webmanifest",
   "/icon.svg",

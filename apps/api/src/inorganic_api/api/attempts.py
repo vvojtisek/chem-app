@@ -10,6 +10,7 @@ from inorganic_api.api.attempt_schemas import (
     AttemptStats,
     BatchRequest,
     BatchResponse,
+    Progression,
 )
 from inorganic_api.api.dependencies import get_current_user, require_csrf, require_role
 from inorganic_api.database import session_dependency
@@ -74,6 +75,19 @@ def my_stats(
     db: Annotated[Session, Depends(session_dependency)],
 ) -> AttemptStats:
     return attempts.stats(db, current.user, current.user.id)
+
+
+@router.get(
+    "/me/progression",
+    operation_id="getMyProgression",
+    response_model=Progression,
+    responses={**READ_ERRORS, 403: {"model": ErrorEnvelope}},
+)
+def my_progression(
+    current: Annotated[AuthenticatedSession, Depends(get_current_user)],
+    db: Annotated[Session, Depends(session_dependency)],
+) -> Progression:
+    return attempts.progression(db, current.user)
 
 
 @router.get(

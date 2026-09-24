@@ -12,19 +12,23 @@ export function AccountNavigation() {
       aria-label="Navigace účtu"
       className="flex flex-wrap items-center justify-end gap-3 border-b border-slate-200 bg-white px-5 py-2 text-sm sm:px-8"
     >
-      {account.role === "tester" ? (
+      {account.role === "guest" ? (
+        <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700">
+          Host · jen pro čtení
+        </span>
+      ) : account.role === "tester" ? (
         <span className="rounded-full bg-amber-100 px-3 py-1 font-medium text-amber-900">
           Testovací účet
         </span>
       ) : null}
-      <SyncStatusIndicator />
+      {account.role === "guest" ? null : <SyncStatusIndicator />}
       {account.role === "admin" ? (
         <Link className="underline" href="/admin">
           Správa
         </Link>
       ) : null}
       <Link className="underline" href="/ucet">
-        {account.username}
+        {account.role === "guest" ? "Host" : account.username}
       </Link>
     </nav>
   );

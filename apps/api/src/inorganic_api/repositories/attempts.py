@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -61,10 +62,28 @@ def mode_counts(db: Session, user_id: UUID | None = None) -> list[tuple[str, int
     ]
 
 
+def daily_counts(db: Session, user_id: UUID, since: datetime) -> list[tuple[object, int, int]]:
+    day = func.date(func.timezone("UTC", AttemptEvent.received_at))
+    statement = (
+        select(
+            day,
+            func.count(AttemptEvent.server_seq),
+            func.count(AttemptEvent.server_seq).filter(AttemptEvent.is_correct),
+        )
+        .where(AttemptEvent.user_id == user_id, AttemptEvent.received_at >= since)
+        .group_by(day)
+        .order_by(day)
+    )
+    return list(db.execute(statement))
+
+
 def list_users(db: Session, after: str, limit: int) -> list[User]:
     return list(
         db.scalars(
-            select(User).where(User.username > after).order_by(User.username).limit(limit + 1)
+            select(User)
+            .where(User.username > after, User.role != "guest")
+            .order_by(User.username)
+            .limit(limit + 1)
         )
     )
 

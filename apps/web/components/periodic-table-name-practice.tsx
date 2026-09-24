@@ -65,7 +65,7 @@ export function PeriodicTableNamePractice({
 }: PeriodicTableNamePracticeProps) {
   const account = useAccount();
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
-  const [selection, changeSelection] = useSharedElementSelection(layout);
+  const [selection, changeSelection] = useSharedElementSelection(layout, account?.role === "guest");
   const [mode, setMode] = useState<ElementPromptMode>(DEFAULT_ELEMENT_PROMPT_MODE);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
@@ -84,9 +84,10 @@ export function PeriodicTableNamePractice({
   const modeGroupName = useId();
 
   useEffect(() => {
+    if (account?.role === "guest") return;
     const storedMode = loadNamePracticeMode();
     if (storedMode) setMode(storedMode);
-  }, []);
+  }, [account?.role]);
 
   const clearFlash = useCallback(() => {
     clearTimeout(flashTimerRef.current);
@@ -106,7 +107,7 @@ export function PeriodicTableNamePractice({
 
   function changeMode(next: ElementPromptMode) {
     setMode(next);
-    saveNamePracticeMode(next);
+    if (account?.role !== "guest") saveNamePracticeMode(next);
     updateAnswer("");
     setInputHint("");
   }
@@ -200,15 +201,17 @@ export function PeriodicTableNamePractice({
     );
     inputRef.current?.focus();
 
-    appendPeriodicTableAttempt(
-      {
-        questionId: question.id,
-        round: result.round,
-        isCorrect: evaluation.isCorrect,
-        direction: mode,
-      },
-      account?.id,
-    ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
+    if (account?.role !== "guest") {
+      appendPeriodicTableAttempt(
+        {
+          questionId: question.id,
+          round: result.round,
+          isCorrect: evaluation.isCorrect,
+          direction: mode,
+        },
+        account?.id,
+      ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
+    }
   }
 
   if (!session) {

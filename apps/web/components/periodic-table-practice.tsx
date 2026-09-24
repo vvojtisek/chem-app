@@ -47,7 +47,7 @@ export function PeriodicTablePractice({
       ),
     [layout],
   );
-  const [selection, changeSelection] = useSharedElementSelection(layout);
+  const [selection, changeSelection] = useSharedElementSelection(layout, account?.role === "guest");
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
   const wrongMarks = useWrongMarks();
@@ -101,15 +101,17 @@ export function PeriodicTablePractice({
       }`,
     );
 
-    appendPeriodicTableAttempt(
-      {
-        questionId: result.question.id,
-        round: result.round,
-        isCorrect: result.isCorrect,
-        direction: "name-to-position",
-      },
-      account?.id,
-    ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
+    if (account?.role !== "guest") {
+      appendPeriodicTableAttempt(
+        {
+          questionId: result.question.id,
+          round: result.round,
+          isCorrect: result.isCorrect,
+          direction: "name-to-position",
+        },
+        account?.id,
+      ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
+    }
   }
 
   function finish() {

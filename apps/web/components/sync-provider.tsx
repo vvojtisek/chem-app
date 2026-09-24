@@ -58,6 +58,13 @@ export function SyncProvider({
 
   const run = useCallback(async () => {
     if (active.current) {
+      if (!navigator.onLine) {
+        setState("offline");
+        void pendingCount(indexedDB, userId)
+          .then(setPending)
+          .catch(() => {});
+        return;
+      }
       rerun.current = true;
       return;
     }
@@ -76,7 +83,7 @@ export function SyncProvider({
       setPending(remaining);
       setState(remaining > 0 ? "pending" : "synced");
     } catch (error) {
-      setState("error");
+      setState(navigator.onLine ? "error" : "offline");
       setPending(await pendingCount(indexedDB, userId).catch(() => 0));
       setErrorMessage(
         error instanceof ApiError && error.code === "idempotency_conflict"
@@ -102,21 +109,29 @@ export function SyncProvider({
       if (document.visibilityState === "visible") void run();
     };
     const onRun = () => void run();
-    window.addEventListener("online", onRun);
-    window.addEventListener("offline", onRun);
+    const onOnline = onRun;
+    const onOffline = () => {
+      setState("offline");
+      void pendingCount(indexedDB, userId)
+        .then(setPending)
+        .catch(() => {});
+      void run();
+    };
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
     window.addEventListener("focus", onRun);
     window.addEventListener("inorganic:attempt-saved", onRun);
     document.addEventListener("visibilitychange", onVisible);
     const timer = window.setInterval(onRun, 5 * 60_000);
     return () => {
-      window.removeEventListener("online", onRun);
-      window.removeEventListener("offline", onRun);
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
       window.removeEventListener("focus", onRun);
       window.removeEventListener("inorganic:attempt-saved", onRun);
       document.removeEventListener("visibilitychange", onVisible);
       window.clearInterval(timer);
     };
-  }, [run]);
+  }, [run, userId]);
 
   const label =
     state === "offline"

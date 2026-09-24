@@ -96,7 +96,13 @@ async def test_login_me_logout_and_cookie_security(db: Session, user: User) -> N
     async with _client() as client:
         login = await _login(client, user)
         assert login.status_code == 200
-        assert login.json() == {"id": str(user.id), "username": user.username, "role": "user"}
+        assert login.json() == {
+            "id": str(user.id),
+            "username": user.username,
+            "role": "user",
+            "email": None,
+            "displayName": None,
+        }
         assert any(
             cookie.startswith("__Host-inorganic_session=")
             and "httponly" in cookie.lower()

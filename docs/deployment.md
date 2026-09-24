@@ -25,8 +25,9 @@ the Docker Compose plugin.
 4. Edit `.env.production`. Set `DOMAIN`, `ACME_EMAIL`, and fresh, unique
    secrets. Generate URL-safe database passwords and a random session/throttle
    secret, for example with `openssl rand -hex 32`. Set unique passwords of
-   at least 12 characters for all three initial accounts. Do not reuse the
-   example values. The example hostname is `chemie.vvojtisek.eu`.
+   at least 12 characters for all three initial accounts. Configure `SMTP_HOST`,
+   `SMTP_FROM`, and credentials for a relay that supports STARTTLS. Do not reuse
+   the example values. The example hostname is `chemie.vvojtisek.eu`.
 5. Keep this file out of Git and backups accessible to other users. The
    committed `.env.production.example` is only a placeholder template.
 
@@ -52,11 +53,12 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 The migration task must complete before the API starts accepting traffic. The
 seed command is idempotent and does not change an existing account. After it
 succeeds, remove all `SEED_*` entries from `.env.production` and keep the
-initial passwords in the operator's password manager. A seeded account can
-change its password through the API CLI. Confirm that Caddy, API, web, and DB
-containers are healthy, then open `https://<DOMAIN>` and verify login with the
-three provisioned roles. Check that non-admin accounts receive `403` from
-admin-only APIs and that no database port is published:
+initial passwords in the operator's password manager. Public registration and
+self-service password recovery are enabled; new accounts must verify their
+email address. Confirm that Caddy, API, web, and DB containers are healthy,
+then open `https://<DOMAIN>` and verify login with the three provisioned roles.
+Check that non-admin accounts receive `403` from admin-only APIs and that no
+database port is published:
 
 ```sh
 docker compose --env-file .env.production -f docker-compose.prod.yml ps
@@ -97,8 +99,11 @@ is the authoritative account and synchronized-attempt store.
 
 ## Account and secret operations
 
-- Create or update the three accounts through the API CLI; do not enable public
-  registration. Password changes revoke that account's sessions.
+- Public registration and password recovery use the configured SMTP relay.
+  Keep its credentials in `.env.production` with owner-only permissions or
+  inject them through the host's secret manager.
+- Password changes revoke that account's sessions. Admins can manage profile
+  details and set new passwords from `/admin`.
 - Revoke expired sessions periodically with
   `docker compose --env-file .env.production -f docker-compose.prod.yml exec api python -m inorganic_api.cli purge-sessions`.
 - If `SECRET_KEY` is exposed, replace it and revoke all active sessions with

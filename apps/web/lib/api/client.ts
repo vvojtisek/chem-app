@@ -6,6 +6,8 @@ const errorSchema = z.object({ error: z.object({ code: z.string(), message: z.st
 const csrfCookieName = "__Host-inorganic_csrf";
 
 export type CurrentUser = components["schemas"]["MeResponse"];
+export type UserProfile = components["schemas"]["ProfileResponse"];
+export type UserProgression = components["schemas"]["Progression"];
 
 export class ApiError extends Error {
   constructor(
@@ -63,13 +65,104 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   return unwrapApiResponse(await apiClient.GET("/api/v1/auth/me", { cache: "no-store" }));
 }
 
-export async function login(username: string, password: string): Promise<CurrentUser> {
-  return unwrapApiResponse(
-    await apiClient.POST("/api/v1/auth/login", { body: { username, password } }),
+export async function login(identifier: string, password: string): Promise<CurrentUser> {
+  const body = identifier.includes("@")
+    ? { email: identifier, password }
+    : { username: identifier, password };
+  return unwrapApiResponse(await apiClient.POST("/api/v1/auth/login", { body }));
+}
+
+async function unwrapEmptyResponse(result: { response: Response; error?: unknown }): Promise<void> {
+  if (!result.response.ok) throw parseApiError(result.response.status, result.error);
+}
+
+export async function registerAccount(email: string, password: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/auth/register", { body: { email, password } }),
+  );
+}
+
+export async function verifyEmail(token: string): Promise<void> {
+  await unwrapEmptyResponse(await apiClient.POST("/api/v1/auth/verify-email", { body: { token } }));
+}
+
+export async function requestEmailVerification(email: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/auth/verification/request", { body: { email } }),
+  );
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/auth/password-reset/request", { body: { email } }),
+  );
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/auth/password-reset/confirm", { body: { token, newPassword } }),
+  );
+}
+
+export async function guestLogin(): Promise<CurrentUser> {
+  return unwrapApiResponse(await apiClient.POST("/api/v1/auth/guest"));
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/me/password", { body: { currentPassword, newPassword } }),
+  );
+}
+
+export async function updateMyProfile(displayName: string): Promise<CurrentUser> {
+  const result = await apiClient.PATCH("/api/v1/me/profile", { body: { displayName } });
+  if (!result.response.ok) throw parseApiError(result.response.status, result.error);
+  return getCurrentUser();
+}
+
+export async function updateAdminProfile(
+  userId: string,
+  body: {
+    displayName?: string | null;
+    email?: string | null;
+    role?: "admin" | "user" | "tester";
+    isActive?: boolean;
+  },
+): Promise<void> {
+  const result = await apiClient.PATCH("/api/v1/admin/users/{user_id}/profile", {
+    params: { path: { user_id: userId } },
+    body,
+  });
+  await unwrapEmptyResponse(result);
+}
+
+export async function adminSetPassword(userId: string, newPassword: string): Promise<void> {
+  await unwrapEmptyResponse(
+    await apiClient.POST("/api/v1/admin/users/{user_id}/password", {
+      params: { path: { user_id: userId } },
+      body: { newPassword },
+    }),
   );
 }
 
 export async function logout(): Promise<void> {
   const result = await apiClient.POST("/api/v1/auth/logout");
   if (!result.response.ok) throw parseApiError(result.response.status, result.error);
+}
+
+export async function getMyProfile(): Promise<UserProfile> {
+  return unwrapApiResponse(await apiClient.GET("/api/v1/me/profile", { cache: "no-store" }));
+}
+
+export async function getAdminProfile(userId: string): Promise<UserProfile> {
+  return unwrapApiResponse(
+    await apiClient.GET("/api/v1/admin/users/{user_id}/profile", {
+      params: { path: { user_id: userId } },
+      cache: "no-store",
+    }),
+  );
+}
+
+export async function getMyProgression(): Promise<UserProgression> {
+  return unwrapApiResponse(await apiClient.GET("/api/v1/me/progression", { cache: "no-store" }));
 }

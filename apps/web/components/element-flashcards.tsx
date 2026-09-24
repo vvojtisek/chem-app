@@ -18,6 +18,7 @@ interface ElementFlashcardsProps {
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
   const account = useAccount();
+  const canEdit = account?.role !== "guest";
   const [storedCards, setStoredCards] = useState<readonly StoredElementCard[]>([]);
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [selectedId, setSelectedId] = useState(curatedElements[0]?.id ?? "");
@@ -55,6 +56,7 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
   }
 
   async function saveCard(card: EditableCard, isCustom: boolean) {
+    if (!canEdit) return;
     try {
       const stored: StoredElementCard = {
         ...card,
@@ -80,7 +82,7 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
   }
 
   async function resetCard() {
-    if (!selectedCard || !curatedElements.some((card) => card.id === selectedCard.id)) {
+    if (!canEdit || !selectedCard || !curatedElements.some((card) => card.id === selectedCard.id)) {
       return;
     }
     await createBrowserElementCardStore(globalThis.indexedDB, account?.id).remove(selectedCard.id);
@@ -196,14 +198,16 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
           >
             {isFlipped ? "Zobrazit značku" : "Otočit kartu"}
           </button>
-          <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
-            onClick={() => setEditor(toEditableCard(selectedCard))}
-            type="button"
-          >
-            Upravit kartu
-          </button>
-          {curatedElements.some((card) => card.id === selectedCard.id) ? (
+          {canEdit ? (
+            <button
+              className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+              onClick={() => setEditor(toEditableCard(selectedCard))}
+              type="button"
+            >
+              Upravit kartu
+            </button>
+          ) : null}
+          {canEdit && curatedElements.some((card) => card.id === selectedCard.id) ? (
             <button
               className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
               onClick={() => void resetCard()}
@@ -212,13 +216,15 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
               Obnovit výchozí
             </button>
           ) : null}
-          <button
-            className="min-h-11 rounded-xl border border-emerald-700 px-4 font-semibold text-emerald-900"
-            onClick={() => setEditor(createCustomCard(cards))}
-            type="button"
-          >
-            Přidat vlastní prvek
-          </button>
+          {canEdit ? (
+            <button
+              className="min-h-11 rounded-xl border border-emerald-700 px-4 font-semibold text-emerald-900"
+              onClick={() => setEditor(createCustomCard(cards))}
+              type="button"
+            >
+              Přidat vlastní prvek
+            </button>
+          ) : null}
         </div>
         {message ? (
           <p className="mt-5 text-center text-sm text-slate-700" role="status">

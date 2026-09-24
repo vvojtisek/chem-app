@@ -12,15 +12,15 @@ test("redirects without a session and shows an accessible invalid-login error", 
 }) => {
   await page.goto("/procvicovani");
   await expect(page).toHaveURL(/\/login\?next=%2Fprocvicovani/);
-  await page.getByRole("textbox", { name: "Uživatelské jméno" }).fill(username);
+  await page.getByRole("textbox", { name: "E-mail nebo uživatelské jméno" }).fill(username);
   await page.getByLabel("Heslo").fill("incorrect-credential");
   await page.getByRole("button", { name: "Přihlásit se" }).click();
-  await expect(page.locator("p[role='alert']")).toContainText("jméno nebo heslo");
+  await expect(page.locator("p[role='alert']")).toContainText("e-mail nebo heslo");
 });
 
 test("logs in, reaches the requested route, and logs out", async ({ page }) => {
   await page.goto("/procvicovani");
-  await page.getByRole("textbox", { name: "Uživatelské jméno" }).fill(username);
+  await page.getByRole("textbox", { name: "E-mail nebo uživatelské jméno" }).fill(username);
   await page.getByLabel("Heslo").fill(password);
   await page.getByRole("button", { name: "Přihlásit se" }).click();
   await expect(page).toHaveURL(/\/procvicovani$/);
@@ -36,7 +36,7 @@ test("logs in, reaches the requested route, and logs out", async ({ page }) => {
 
 test("denies the administration page to a regular user", async ({ page }) => {
   await page.goto("/login");
-  await page.getByRole("textbox", { name: "Uživatelské jméno" }).fill(username);
+  await page.getByRole("textbox", { name: "E-mail nebo uživatelské jméno" }).fill(username);
   await page.getByLabel("Heslo").fill(password);
   await page.getByRole("button", { name: "Přihlásit se" }).click();
   await expect(page).toHaveURL(/\/$/);
@@ -47,7 +47,7 @@ test("denies the administration page to a regular user", async ({ page }) => {
 test("allows the administration page to an administrator", async ({ page }) => {
   await page.goto("/login");
   await page
-    .getByRole("textbox", { name: "Uživatelské jméno" })
+    .getByRole("textbox", { name: "E-mail nebo uživatelské jméno" })
     .fill(process.env.SEED_ADMIN_USERNAME ?? "admin");
   await page.getByLabel("Heslo").fill(process.env.SEED_ADMIN_PASSWORD ?? "CiOnlyAdmin_2026_ABCDE");
   await page.getByRole("button", { name: "Přihlásit se" }).click();
@@ -59,7 +59,7 @@ test("allows the administration page to an administrator", async ({ page }) => {
 
 test("opens cached learning after a verified session goes offline", async ({ page, context }) => {
   await page.goto("/login");
-  await page.getByRole("textbox", { name: "Uživatelské jméno" }).fill(username);
+  await page.getByRole("textbox", { name: "E-mail nebo uživatelské jméno" }).fill(username);
   await page.getByLabel("Heslo").fill(password);
   await page.getByRole("button", { name: "Přihlásit se" }).click();
   await expect(page).toHaveURL(/\/$/);
@@ -128,5 +128,40 @@ test("syncs an offline attempt and pulls it into another browser context", async
   } finally {
     await first.close();
     await second.close();
+  }
+});
+
+test("guest can browse learning modes without controls that change saved data", async ({
+  page,
+}) => {
+  await page.context().clearCookies();
+  await page.goto("/login");
+  await page.evaluate(() => localStorage.clear());
+  await page.getByRole("button", { name: "Pokračovat jako host" }).click();
+
+  await expect(page).toHaveURL("/");
+  await expect(page.getByText("Host · jen pro čtení")).toBeVisible();
+
+  await page.goto("/flashcards/prvky");
+  await expect(page.getByRole("heading", { level: 1, name: "Prvky" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Upravit kartu" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Obnovit původní kartu" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Přidat vlastní prvek" })).toHaveCount(0);
+});
+
+test("account screens fit iPad portrait and landscape viewports", async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto("/register");
+
+  for (const viewport of [
+    { width: 1024, height: 768 },
+    { width: 768, height: 1024 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(page.getByRole("heading", { name: "Vytvořit účet" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Zaregistrovat se" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      viewport.width,
+    );
   }
 });

@@ -8,7 +8,7 @@ const markerSchema = z.strictObject({
   schemaVersion: z.literal(1),
   userId: z.uuid(),
   username: z.string().min(1),
-  role: z.enum(["admin", "user", "tester"]),
+  role: z.enum(["admin", "user", "tester", "guest"]),
   verifiedAt: z.iso.datetime(),
 });
 

@@ -16,18 +16,23 @@ type Layout = readonly PositionedPeriodicTableElement<ElementFlashcardData>[];
  */
 export function useSharedElementSelection(
   layout: Layout,
+  readOnly = false,
 ): readonly [ReadonlySet<string>, (selection: ReadonlySet<string>) => void] {
   const [selection, setSelection] = useState<ReadonlySet<string>>(() => defaultSelection(layout));
 
   useEffect(() => {
+    if (readOnly) return;
     const stored = loadElementSelection(new Set(layout.map(({ element }) => element.id)));
     if (stored) setSelection(stored);
-  }, [layout]);
+  }, [layout, readOnly]);
 
-  const changeSelection = useCallback((next: ReadonlySet<string>) => {
-    setSelection(next);
-    saveElementSelection(next);
-  }, []);
+  const changeSelection = useCallback(
+    (next: ReadonlySet<string>) => {
+      setSelection(next);
+      if (!readOnly) saveElementSelection(next);
+    },
+    [readOnly],
+  );
 
   return [selection, changeSelection];
 }

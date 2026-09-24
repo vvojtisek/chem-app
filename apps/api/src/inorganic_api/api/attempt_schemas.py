@@ -115,10 +115,33 @@ class AttemptStats(ApiModel):
     by_mode: list[ModeStats]
 
 
+class Rank(ApiModel):
+    id: Literal["novice", "student", "advanced", "master"]
+    title: str
+    minimum_correct_attempts: int
+    next_rank_at: int | None
+
+
+class DailyTrend(ApiModel):
+    day: str
+    total_attempts: int
+    correct_attempts: int
+
+
+class Progression(ApiModel):
+    total_attempts: int
+    correct_attempts: int
+    accuracy: float
+    rank: Rank
+    trend: list[DailyTrend]
+
+
 class AdminUser(ApiModel):
     id: UUID
     username: str
-    role: Literal["admin", "user", "tester"]
+    email: str | None
+    display_name: str | None
+    role: Literal["admin", "user", "tester", "guest"]
     is_active: bool
     created_at: datetime
     last_login_at: datetime | None

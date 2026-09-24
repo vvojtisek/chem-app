@@ -2,6 +2,7 @@ import base64
 import binascii
 import hashlib
 import json
+from datetime import UTC, datetime, time, timedelta
 from uuid import UUID
 
 from pydantic import TypeAdapter
@@ -15,13 +16,22 @@ from inorganic_api.api.attempt_schemas import (
     AttemptPage,
     AttemptStats,
     BatchResponse,
+    DailyTrend,
     ModeStats,
+    Progression,
+    Rank,
 )
 from inorganic_api.errors import AppError
 from inorganic_api.models import User
 from inorganic_api.repositories import attempts as repository
 
 EVENT_ADAPTER = TypeAdapter(AttemptInput)
+RANKS = (
+    ("novice", "Začátečník", 0),
+    ("student", "Student", 50),
+    ("advanced", "Pokročilý", 250),
+    ("master", "Mistr anorganické chemie", 1000),
+)
 
 
 def _require_owner(actor: User, owner_id: UUID) -> None:
@@ -54,6 +64,8 @@ def _decode_cursor(cursor: str | None, kind: str) -> str:
 
 
 def add_batch(db: Session, actor: User, events: list[AttemptInput]) -> BatchResponse:
+    if actor.role == "guest":
+        raise AppError(403, "forbidden", "Access denied.")
     repository.lock_user_writes(db, actor.id)
     accepted: list[str] = []
     duplicates: list[str] = []
@@ -100,6 +112,8 @@ def add_batch(db: Session, actor: User, events: list[AttemptInput]) -> BatchResp
 def list_events(
     db: Session, actor: User, owner_id: UUID, cursor: str | None, limit: int
 ) -> AttemptPage:
+    if actor.role == "guest":
+        raise AppError(403, "forbidden", "Access denied.")
     _require_owner(actor, owner_id)
     if owner_id != actor.id and repository.get_user(db, owner_id) is None:
         raise AppError(404, "not_found", "Account not found.")
@@ -119,6 +133,8 @@ def list_events(
 
 
 def stats(db: Session, actor: User, owner_id: UUID | None = None) -> AttemptStats:
+    if actor.role == "guest":
+        raise AppError(403, "forbidden", "Access denied.")
     if owner_id is None:
         _require_admin(actor)
     else:
@@ -134,6 +150,44 @@ def stats(db: Session, actor: User, owner_id: UUID | None = None) -> AttemptStat
     )
 
 
+def progression(db: Session, actor: User) -> Progression:
+    if actor.role in ("guest", "tester"):
+        raise AppError(403, "forbidden", "Access denied.")
+    counts = repository.mode_counts(db, actor.id)
+    total = sum(item[1] for item in counts)
+    correct = sum(item[2] for item in counts)
+    rank_index = max(index for index, (_, _, threshold) in enumerate(RANKS) if correct >= threshold)
+    rank_id, title, minimum = RANKS[rank_index]
+    next_rank_at = RANKS[rank_index + 1][2] if rank_index + 1 < len(RANKS) else None
+    now = datetime.now(UTC)
+    start_day = now.date() - timedelta(days=29)
+    since = datetime.combine(start_day, time.min, UTC)
+    daily = {
+        day: (total_count, correct_count)
+        for day, total_count, correct_count in repository.daily_counts(db, actor.id, since)
+    }
+    trend = [
+        DailyTrend(
+            day=(start_day + timedelta(days=index)).isoformat(),
+            total_attempts=daily.get(start_day + timedelta(days=index), (0, 0))[0],
+            correct_attempts=daily.get(start_day + timedelta(days=index), (0, 0))[1],
+        )
+        for index in range(30)
+    ]
+    return Progression(
+        total_attempts=total,
+        correct_attempts=correct,
+        accuracy=round(100 * correct / total, 1) if total else 0.0,
+        rank=Rank(
+            id=rank_id,
+            title=title,
+            minimum_correct_attempts=minimum,
+            next_rank_at=next_rank_at,
+        ),
+        trend=trend,
+    )
+
+
 def users_page(db: Session, actor: User, cursor: str | None, limit: int) -> AdminUserPage:
     _require_admin(actor)
     after = _decode_cursor(cursor, "user")
@@ -144,6 +198,8 @@ def users_page(db: Session, actor: User, cursor: str | None, limit: int) -> Admi
             AdminUser(
                 id=row.id,
                 username=row.username,
+                email=row.email,
+                display_name=row.display_name,
                 role=row.role,
                 is_active=row.is_active,
                 created_at=row.created_at,

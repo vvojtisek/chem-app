@@ -157,6 +157,10 @@ export function NomenclaturePractice({
   });
 
   useEffect(() => {
+    if (account?.role === "guest") {
+      setLoading(false);
+      return;
+    }
     const storedFilters = loadNomenclatureFilters();
     if (storedFilters) setFilters(storedFilters);
     const storedDirection = loadNomenclatureDirection();
@@ -179,7 +183,7 @@ export function NomenclaturePractice({
     return () => {
       mounted = false;
     };
-  }, [account?.id]);
+  }, [account?.id, account?.role]);
 
   useEffect(() => {
     if (runId > 0) inputRef.current?.focus();
@@ -187,7 +191,7 @@ export function NomenclaturePractice({
 
   /** Writes the current checkpoint (or removes it when there is none) with pending attempts. */
   function queueWrite(): void {
-    if (localOnlyRef.current) return;
+    if (localOnlyRef.current || account?.role === "guest") return;
     queuedWritesRef.current = queuedWritesRef.current
       .then(async () => {
         const current = checkpointRef.current;
@@ -218,6 +222,7 @@ export function NomenclaturePractice({
   }
 
   function saveProgress(next: Session, sessionId: string, event?: NomenclatureAttemptEvent) {
+    if (account?.role === "guest") return;
     if (event) pendingEventsRef.current.push(event);
     checkpointRef.current =
       next.status === "running" && next.current
@@ -244,12 +249,12 @@ export function NomenclaturePractice({
 
   function changeFilters(next: NomenclatureFilters) {
     setFilters(next);
-    saveNomenclatureFilters(next);
+    if (account?.role !== "guest") saveNomenclatureFilters(next);
   }
 
   function changeDirection(next: NomenclatureDirection) {
     setDirection(next);
-    saveNomenclatureDirection(next);
+    if (account?.role !== "guest") saveNomenclatureDirection(next);
     updateAnswer("");
     setInputHint("");
   }

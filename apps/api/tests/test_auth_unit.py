@@ -38,6 +38,8 @@ def test_password_hash_uses_argon2id_and_checks_input_size() -> None:
         ({"public_origin": "http://example.test"}, "PUBLIC_ORIGIN"),
         ({"session_cookie_secure": False}, "secure session cookies"),
         ({"forwarded_allow_ips": "*"}, "FORWARDED_ALLOW_IPS"),
+        ({"smtp_host": None}, "SMTP_HOST"),
+        ({"smtp_starttls": False}, "SMTP_STARTTLS"),
     ],
 )
 def test_production_rejects_unsafe_configuration(overrides: dict[str, object], reason: str) -> None:
@@ -48,6 +50,9 @@ def test_production_rejects_unsafe_configuration(overrides: dict[str, object], r
         "public_origin": "https://learn.example.test",
         "CORS_ORIGINS": ["https://learn.example.test"],
         "forwarded_allow_ips": "172.20.0.2",
+        "smtp_host": "mail.example.test",
+        "smtp_from": "noreply@example.test",
+        "smtp_starttls": True,
         **overrides,
     }
     with pytest.raises(ValidationError, match=reason):
@@ -63,6 +68,9 @@ def test_production_accepts_explicit_secure_configuration() -> None:
         public_origin="https://learn.example.test",
         CORS_ORIGINS=["https://learn.example.test"],
         forwarded_allow_ips="172.20.0.2",
+        smtp_host="mail.example.test",
+        smtp_from="noreply@example.test",
+        smtp_starttls=True,
     )
     assert settings.session_cookie_secure
 

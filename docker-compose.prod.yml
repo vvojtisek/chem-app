@@ -82,6 +82,13 @@ services:
       SESSION_COOKIE_NAME: __Host-inorganic_session
       CSRF_COOKIE_NAME: __Host-inorganic_csrf
       FORWARDED_ALLOW_IPS: 172.30.0.2
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP_HOST in .env.production}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_FROM: ${SMTP_FROM:?Set SMTP_FROM in .env.production}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      SMTP_TIMEOUT: ${SMTP_TIMEOUT:-10}
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
@@ -118,6 +125,13 @@ services:
       SESSION_COOKIE_SECURE: "true"
       CORS_ORIGINS: '["https://${DOMAIN}"]'
       FORWARDED_ALLOW_IPS: 172.30.0.2
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP_HOST in .env.production}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_FROM: ${SMTP_FROM:?Set SMTP_FROM in .env.production}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      SMTP_TIMEOUT: ${SMTP_TIMEOUT:-10}
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
@@ -174,6 +188,13 @@ services:
       SESSION_COOKIE_SECURE: "true"
       CORS_ORIGINS: '["https://${DOMAIN}"]'
       FORWARDED_ALLOW_IPS: 172.30.0.2
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP_HOST in .env.production}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_FROM: ${SMTP_FROM:?Set SMTP_FROM in .env.production}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      SMTP_TIMEOUT: ${SMTP_TIMEOUT:-10}
       SEED_ADMIN_USERNAME: ${SEED_ADMIN_USERNAME:-}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
       SEED_USER_USERNAME: ${SEED_USER_USERNAME:-}

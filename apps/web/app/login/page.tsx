@@ -1,10 +1,11 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, Suspense, useEffect, useState } from "react";
 
-import { ApiError, getCurrentUser, login } from "@/lib/api/client";
+import { ApiError, getCurrentUser, guestLogin, login } from "@/lib/api/client";
 import { saveAccountMarker } from "@/lib/auth/account-marker";
 import { safeNext } from "@/lib/auth/safe-next";
 import { queryKeys } from "@/lib/query-keys";
@@ -14,10 +15,17 @@ function LoginForm() {
   const params = useSearchParams();
   const queryClient = useQueryClient();
   const destination = safeNext(params.get("next"));
-  const [username, setUsername] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  function enterAccount(user: Awaited<ReturnType<typeof getCurrentUser>>) {
+    saveAccountMarker(user);
+    queryClient.setQueryData(queryKeys.auth.me, user);
+    router.replace(destination);
+    router.refresh();
+  }
 
   useEffect(() => {
     let active = true;
@@ -39,15 +47,12 @@ function LoginForm() {
     setError("");
     setBusy(true);
     try {
-      const user = await login(username, password);
-      saveAccountMarker(user);
-      queryClient.setQueryData(queryKeys.auth.me, user);
-      router.replace(destination);
-      router.refresh();
+      const user = await login(identifier, password);
+      enterAccount(user);
     } catch (cause) {
       setError(
         cause instanceof ApiError && cause.code === "invalid_credentials"
-          ? "Nesprávné uživatelské jméno nebo heslo."
+          ? "Nesprávný e-mail nebo heslo."
           : cause instanceof ApiError && cause.code === "too_many_attempts"
             ? "Příliš mnoho pokusů o přihlášení. Zkuste to později."
             : "Přihlášení se nepodařilo. Zkuste to znovu.",
@@ -57,20 +62,37 @@ function LoginForm() {
     }
   }
 
+  async function enterGuest() {
+    setError("");
+    setBusy(true);
+    try {
+      enterAccount(await guestLogin());
+    } catch {
+      setError("Hostovský přístup se nepodařilo otevřít. Zkuste to znovu.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
       <h1 className="text-3xl font-semibold text-slate-950">Přihlášení</h1>
-      <p className="mt-2 text-slate-600">Zadejte přidělené uživatelské jméno a heslo.</p>
+      <p className="mt-2 text-slate-600">Přihlaste se e-mailem nebo pokračujte jako host.</p>
+      {params.get("passwordChanged") === "1" ? (
+        <p className="mt-3 text-sm text-emerald-900" role="status">
+          Heslo bylo změněno. Přihlaste se novým heslem.
+        </p>
+      ) : null}
       <form className="mt-8 grid gap-4" onSubmit={(event) => void submit(event)}>
         <label className="grid gap-1 font-medium">
-          Uživatelské jméno
+          E-mail nebo uživatelské jméno
           <input
             autoComplete="username"
             className="min-h-11 rounded-xl border border-slate-300 px-3"
-            maxLength={80}
-            onChange={(event) => setUsername(event.target.value)}
+            maxLength={254}
+            onChange={(event) => setIdentifier(event.target.value)}
             required
-            value={username}
+            value={identifier}
           />
         </label>
         <label className="grid gap-1 font-medium">
@@ -95,6 +117,25 @@ function LoginForm() {
           {busy ? "Přihlašuji…" : "Přihlásit se"}
         </button>
       </form>
+      <div className="mt-4 flex flex-wrap gap-4 text-sm">
+        <Link className="underline" href="/reset-password">
+          Zapomenuté heslo
+        </Link>
+        <Link className="underline" href="/register">
+          Vytvořit účet
+        </Link>
+        <Link className="underline" href="/verify-email">
+          Znovu poslat potvrzení e-mailu
+        </Link>
+      </div>
+      <button
+        className="mt-6 min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900 disabled:opacity-50"
+        disabled={busy}
+        onClick={() => void enterGuest()}
+        type="button"
+      >
+        Pokračovat jako host
+      </button>
     </main>
   );
 }
