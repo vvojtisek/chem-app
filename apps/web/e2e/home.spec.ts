@@ -72,7 +72,7 @@ test("shows a Czech element card and saves a local edit", async ({ page }) => {
 
   await page.getByRole("button", { name: "Otočit kartu" }).click();
   await expect(page.getByRole("heading", { level: 2 })).toHaveText("Vodík");
-  await expect(page.getByText(/Mnemotechnika: Helenu Líbal/)).toBeVisible();
+  await expect(page.getByText("Valenční konfigurace")).toBeVisible();
 
   await page.getByRole("button", { name: "Upravit kartu" }).click();
   await page.getByLabel("Český název").fill("Vodík — moje poznámka");
