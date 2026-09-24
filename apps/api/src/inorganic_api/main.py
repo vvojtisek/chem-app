@@ -103,9 +103,7 @@ async def app_error_handler(request: Request, exception: AppError) -> JSONRespon
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_error_handler(
-    request: Request, exception: StarletteHTTPException
-) -> JSONResponse:
+async def http_error_handler(request: Request, exception: StarletteHTTPException) -> JSONResponse:
     message = exception.detail if isinstance(exception.detail, str) else "Request failed."
     return error_response(
         request, exception.status_code, "http_error", message, headers=exception.headers

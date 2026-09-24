@@ -86,7 +86,9 @@ def main() -> None:
     purge_parser.add_argument(
         "--all", action="store_true", help="revoke all sessions, including active ones"
     )
-    subparsers.add_parser("purge-expired", help="delete expired sessions, tokens, and account state")
+    subparsers.add_parser(
+        "purge-expired", help="delete expired sessions, tokens, and account state"
+    )
     args = parser.parse_args()
     try:
         with create_session_factory()() as db:
