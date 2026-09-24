@@ -53,10 +53,13 @@ database-backed per-account and per-IP throttles. Registration, verification,
 and recovery must also be rate limited.
 
 Email verification and password recovery tokens are cryptographically random,
-single use, short lived, and stored only as SHA-256 hashes. Password-reset
-responses must not reveal whether an account exists. Never log token values or
-complete action links. Production email delivery requires configured TLS SMTP
-settings; secrets belong in deployment environment or secret management.
+single use, short lived, and stored as SHA-256 hashes in the token tables.
+The temporary mail outbox holds encrypted token values until delivery. All
+registration and recovery responses must hide account existence, including
+SMTP timing. New users select a password only after email verification; delete
+unverified accounts after seven days. Never log token values or complete action
+links. Production email delivery requires configured TLS SMTP settings and a
+running mail worker; secrets belong in deployment environment or secret management.
 
 Session identifiers are random opaque values; store only SHA-256 token hashes
 in PostgreSQL. Enforce idle and absolute expiry and revoke sessions when an

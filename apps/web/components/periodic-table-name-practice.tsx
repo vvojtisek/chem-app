@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAccount } from "@/components/auth-gate";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
@@ -64,8 +64,9 @@ export function PeriodicTableNamePractice({
   random = Math.random,
 }: PeriodicTableNamePracticeProps) {
   const account = useAccount();
+  const { canSave } = useCapabilities();
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
-  const [selection, changeSelection] = useSharedElementSelection(layout, account?.role === "guest");
+  const [selection, changeSelection] = useSharedElementSelection(layout, !canSave);
   const [mode, setMode] = useState<ElementPromptMode>(DEFAULT_ELEMENT_PROMPT_MODE);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
@@ -84,10 +85,10 @@ export function PeriodicTableNamePractice({
   const modeGroupName = useId();
 
   useEffect(() => {
-    if (account?.role === "guest") return;
+    if (!canSave) return;
     const storedMode = loadNamePracticeMode();
     if (storedMode) setMode(storedMode);
-  }, [account?.role]);
+  }, [canSave]);
 
   const clearFlash = useCallback(() => {
     clearTimeout(flashTimerRef.current);
@@ -107,7 +108,7 @@ export function PeriodicTableNamePractice({
 
   function changeMode(next: ElementPromptMode) {
     setMode(next);
-    if (account?.role !== "guest") saveNamePracticeMode(next);
+    if (canSave) saveNamePracticeMode(next);
     updateAnswer("");
     setInputHint("");
   }
@@ -201,7 +202,7 @@ export function PeriodicTableNamePractice({
     );
     inputRef.current?.focus();
 
-    if (account?.role !== "guest") {
+    if (canSave) {
       appendPeriodicTableAttempt(
         {
           questionId: question.id,

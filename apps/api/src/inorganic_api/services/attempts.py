@@ -5,7 +5,7 @@ import json
 from datetime import UTC, datetime, time, timedelta
 from uuid import UUID
 
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 from sqlalchemy.orm import Session
 
 from inorganic_api.api.attempt_schemas import (
@@ -32,6 +32,7 @@ RANKS = (
     ("advanced", "Pokročilý", 250),
     ("master", "Mistr anorganické chemie", 1000),
 )
+MAX_DAILY_ATTEMPTS_PER_USER = 500
 
 
 def _require_owner(actor: User, owner_id: UUID) -> None:
@@ -63,18 +64,74 @@ def _decode_cursor(cursor: str | None, kind: str) -> str:
     return value
 
 
-def add_batch(db: Session, actor: User, events: list[AttemptInput]) -> BatchResponse:
+def add_batch(db: Session, actor: User, events: list[object]) -> BatchResponse:
     if actor.role == "guest":
         raise AppError(403, "forbidden", "Access denied.")
     repository.lock_user_writes(db, actor.id)
     accepted: list[str] = []
     duplicates: list[str] = []
-    conflicts: list[str] = []
-    for event in events:
+    rejected = []
+    now = datetime.now(UTC)
+    received_today = repository.count_received_since(
+        db, actor.id, datetime.combine(now.date(), time.min, UTC)
+    )
+    inserted_today = 0
+    for index, raw_event in enumerate(events):
+        if not isinstance(raw_event, dict):
+            rejected.append(
+                {
+                    "index": index,
+                    "event_id": None,
+                    "code": "validation_error",
+                    "message": "This attempt event does not match a supported format.",
+                }
+            )
+            continue
+        raw_id = raw_event.get("id")
+        event_id = raw_id if isinstance(raw_id, str) and len(raw_id) <= 128 else None
+        try:
+            event = EVENT_ADAPTER.validate_python(raw_event)
+        except ValidationError:
+            rejected.append(
+                {
+                    "index": index,
+                    "event_id": event_id,
+                    "code": "validation_error",
+                    "message": "This attempt event does not match a supported format.",
+                }
+            )
+            continue
+
         payload = event.model_dump(mode="json", by_alias=True)
         digest = hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
         ).hexdigest()
+        existing = repository.get_by_event_id(db, actor.id, event.id)
+        if existing is not None:
+            if existing.payload_hash == digest:
+                duplicates.append(event.id)
+            else:
+                rejected.append(
+                    {
+                        "index": index,
+                        "event_id": event.id,
+                        "code": "idempotency_conflict",
+                        "message": "This event ID was already used with different content.",
+                    }
+                )
+            continue
+
+        if received_today + inserted_today >= MAX_DAILY_ATTEMPTS_PER_USER:
+            rejected.append(
+                {
+                    "index": index,
+                    "event_id": event.id,
+                    "code": "quota_exceeded",
+                    "message": "The daily attempt upload limit has been reached.",
+                }
+            )
+            continue
+
         inserted = repository.insert_if_absent(
             db,
             {
@@ -91,22 +148,22 @@ def add_batch(db: Session, actor: User, events: list[AttemptInput]) -> BatchResp
         )
         if inserted:
             accepted.append(event.id)
+            inserted_today += 1
         else:
             existing = repository.get_by_event_id(db, actor.id, event.id)
             if existing is None or existing.payload_hash != digest:
-                conflicts.append(event.id)
+                rejected.append(
+                    {
+                        "index": index,
+                        "event_id": event.id,
+                        "code": "idempotency_conflict",
+                        "message": "This event ID was already used with different content.",
+                    }
+                )
             else:
                 duplicates.append(event.id)
-    if conflicts:
-        db.rollback()
-        raise AppError(
-            409,
-            "idempotency_conflict",
-            "An event ID was reused with different content.",
-            details={"eventIds": sorted(set(conflicts))},
-        )
     db.commit()
-    return BatchResponse(accepted=accepted, duplicates=duplicates)
+    return BatchResponse(accepted=accepted, duplicates=duplicates, rejected=rejected)
 
 
 def list_events(

@@ -3,9 +3,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
-import { useAccount } from "@/components/auth-gate";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { PageNavigation } from "@/components/page-navigation";
 import { useSync } from "@/components/sync-provider";
-import { ApiError, changePassword, getMyProfile, logout, updateMyProfile } from "@/lib/api/client";
 import {
   ApiError,
   changePassword,
@@ -15,17 +15,17 @@ import {
   updateMyProfile,
 } from "@/lib/api/client";
 import { clearAccountMarker } from "@/lib/auth/account-marker";
-import { queryKeys } from "@/lib/query-keys";
 import { resetLearningDatabase } from "@/lib/browser-learning-database";
+import { queryKeys } from "@/lib/query-keys";
 import { pendingCount } from "@/lib/sync/sync-store";
-import { PageNavigation } from "@/components/page-navigation";
 
 export default function AccountPage() {
   const account = useAccount();
+  const { canManageProfile, canViewProgress } = useCapabilities();
   const sync = useSync();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const isGuest = account?.role === "guest";
+  const isGuest = !canManageProfile;
   const profile = useQuery({
     queryKey: queryKeys.me.profile,
     queryFn: getMyProfile,
@@ -34,7 +34,7 @@ export default function AccountPage() {
   const progression = useQuery({
     queryKey: queryKeys.me.stats,
     queryFn: getMyProgression,
-    enabled: Boolean(account && !isGuest && account.role !== "tester"),
+    enabled: canViewProgress,
   });
   const [displayName, setDisplayName] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");

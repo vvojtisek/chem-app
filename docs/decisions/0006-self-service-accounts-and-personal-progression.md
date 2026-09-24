@@ -34,7 +34,9 @@ Personal statistics are computed from server-accepted attempt events. Guest
 and tester activity is excluded. Progression tiers use cumulative correct
 attempts with fixed thresholds: Začátečník (0), Student (50), Pokročilý (250),
 and Mistr anorganické chemie (1000). A bounded daily trend uses server-stored
-attempt history; client roles, scores, and mastery values are never trusted.
+attempt history. Attempt correctness is reported by the client and is therefore
+self-reported, not verified; rank is a personal learning indicator, never a
+competitive score, access-control input, or source of rewards.
 
 ## Consequences
 
@@ -45,6 +47,7 @@ attempt history; client roles, scores, and mastery values are never trusted.
   remain available for compatibility during transition.
 - Guest clients cannot store attempts, checkpoints, preferences, or card edits.
 - Profile progression can be recomputed from immutable server attempt history.
+- Per-account attempt uploads are limited to 500 new events per UTC day; duplicate events are free to retry.
 - Operators must configure SMTP credentials through runtime secret management
   before enabling email delivery in production.
 

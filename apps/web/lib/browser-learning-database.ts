@@ -1,9 +1,10 @@
 export const LEARNING_DATABASE_NAME = "inorganic-learning";
-export const LEARNING_DATABASE_VERSION = 5;
+export const LEARNING_DATABASE_VERSION = 6;
 export const ATTEMPT_EVENT_STORE = "attempt-events";
 export const ELEMENT_CARD_STORE = "element-cards";
 export const NOMENCLATURE_SESSION_STORE = "nomenclature-sessions";
 export const SYNC_OUTBOX_STORE = "sync-outbox";
+export const SYNC_QUARANTINE_STORE = "sync-quarantine";
 export const ACCOUNT_META_STORE = "account-meta";
 
 export function accountDatabaseName(userId: string): string {
@@ -56,6 +57,9 @@ function openCurrentLearningDatabase(indexedDb: IDBFactory, name: string): Promi
     }
     if (!database.objectStoreNames.contains(SYNC_OUTBOX_STORE)) {
       database.createObjectStore(SYNC_OUTBOX_STORE, { keyPath: "id" });
+    }
+    if (!database.objectStoreNames.contains(SYNC_QUARANTINE_STORE)) {
+      database.createObjectStore(SYNC_QUARANTINE_STORE, { keyPath: "id" });
     }
     if (!database.objectStoreNames.contains(ACCOUNT_META_STORE)) {
       database.createObjectStore(ACCOUNT_META_STORE, { keyPath: "key" });

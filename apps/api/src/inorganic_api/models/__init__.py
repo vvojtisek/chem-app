@@ -3,6 +3,7 @@ from inorganic_api.models.auth import (
     AuthSession,
     EmailVerificationToken,
     LoginThrottle,
+    MailOutbox,
     PasswordResetToken,
     User,
 )
@@ -12,6 +13,7 @@ __all__ = [
     "AuthSession",
     "EmailVerificationToken",
     "LoginThrottle",
+    "MailOutbox",
     "PasswordResetToken",
     "User",
 ]

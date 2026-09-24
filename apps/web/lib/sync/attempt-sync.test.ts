@@ -29,7 +29,7 @@ describe("attempt sync", () => {
     const remote: AttemptEvent = { ...event, id: "attempt.other-device" };
     const upload = vi
       .fn<SyncTransport["upload"]>()
-      .mockResolvedValue({ accepted: [], duplicates: [event.id] });
+      .mockResolvedValue({ accepted: [], duplicates: [event.id], rejected: [] });
     const list = vi
       .fn<SyncTransport["list"]>()
       .mockResolvedValueOnce({

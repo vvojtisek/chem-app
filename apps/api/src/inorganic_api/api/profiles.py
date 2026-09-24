@@ -144,7 +144,7 @@ def update_my_profile(
     operation_id="changeMyPassword",
     status_code=204,
     response_class=Response,
-    responses={**WRITE_ERRORS, 401: {"model": ErrorEnvelope}},
+    responses={**WRITE_ERRORS, 401: {"model": ErrorEnvelope}, 503: {"model": ErrorEnvelope}},
 )
 def change_my_password(
     body: ChangePasswordRequest,
@@ -158,7 +158,11 @@ def change_my_password(
     "/admin/users/{user_id}/profile",
     operation_id="adminUpdateProfile",
     response_model=ProfileResponse,
-    responses={**WRITE_ERRORS, 404: {"model": ErrorEnvelope}},
+    responses={
+        **WRITE_ERRORS,
+        404: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
+    },
 )
 def admin_update_profile(
     user_id: UUID,

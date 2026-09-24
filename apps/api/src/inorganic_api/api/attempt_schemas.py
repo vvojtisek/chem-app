@@ -84,12 +84,20 @@ AttemptInput = Annotated[
 
 
 class BatchRequest(ApiModel):
-    events: list[AttemptInput] = Field(min_length=1, max_length=200)
+    events: list[object] = Field(min_length=1, max_length=200)
+
+
+class RejectedAttempt(ApiModel):
+    index: int = Field(ge=0, le=199)
+    event_id: str | None = None
+    code: Literal["validation_error", "idempotency_conflict", "quota_exceeded"]
+    message: str
 
 
 class BatchResponse(ApiModel):
     accepted: list[str]
     duplicates: list[str]
+    rejected: list[RejectedAttempt]
 
 
 class AttemptItem(ApiModel):

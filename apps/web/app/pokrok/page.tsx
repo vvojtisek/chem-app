@@ -1,15 +1,16 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PageNavigation } from "@/components/page-navigation";
 import { ProgressionPanel } from "@/components/progression-panel";
-import { useAccount } from "@/components/auth-gate";
 import { getMyProgression } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 
 export default function ProgressPage() {
   const account = useAccount();
-  const isGuest = account?.role === "guest";
+  const { canViewProgress } = useCapabilities();
+  const isGuest = !canViewProgress;
   const isTester = account?.role === "tester";
   const progression = useQuery({
     queryKey: queryKeys.me.stats,

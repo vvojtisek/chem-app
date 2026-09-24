@@ -25,6 +25,18 @@ def insert_if_absent(db: Session, values: dict) -> bool:
     return db.scalar(statement) is not None
 
 
+def count_received_since(db: Session, user_id: UUID, since: datetime) -> int:
+    return int(
+        db.scalar(
+            select(func.count(AttemptEvent.server_seq)).where(
+                AttemptEvent.user_id == user_id,
+                AttemptEvent.received_at >= since,
+            )
+        )
+        or 0
+    )
+
+
 def get_by_event_id(db: Session, user_id: UUID, event_id: str) -> AttemptEvent | None:
     return db.scalar(
         select(AttemptEvent).where(

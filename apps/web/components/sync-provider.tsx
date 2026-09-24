@@ -13,7 +13,7 @@ import {
 import { ApiError } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 import { runAttemptSync } from "@/lib/sync/attempt-sync";
-import { pendingCount } from "@/lib/sync/sync-store";
+import { pendingCount, quarantineSummary } from "@/lib/sync/sync-store";
 
 type SyncState = "synced" | "pending" | "offline" | "error";
 interface SyncContextValue {
@@ -21,6 +21,8 @@ interface SyncContextValue {
   readonly running: boolean;
   readonly label: string;
   readonly error: string | null;
+  readonly quarantined: number;
+  readonly quarantineMessage: string | null;
   readonly run: () => Promise<void>;
 }
 const SyncContext = createContext<SyncContextValue>({
@@ -28,6 +30,8 @@ const SyncContext = createContext<SyncContextValue>({
   running: false,
   label: "Synchronizace se připravuje",
   error: null,
+  quarantined: 0,
+  quarantineMessage: null,
   run: async () => {},
 });
 
@@ -38,8 +42,11 @@ export function useSync(): SyncContextValue {
 export function SyncStatusIndicator() {
   const sync = useSync();
   return (
-    <span aria-live="polite" className="text-slate-600">
+    <span aria-live="polite" className="max-w-full text-slate-600">
       {sync.label}
+      {sync.quarantineMessage ? (
+        <span className="ml-2 text-amber-900">{sync.quarantineMessage}</span>
+      ) : null}
     </span>
   );
 }
@@ -53,6 +60,8 @@ export function SyncProvider({
   const [state, setState] = useState<SyncState>("pending");
   const [running, setRunning] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [quarantined, setQuarantined] = useState(0);
+  const [quarantineMessage, setQuarantineMessage] = useState<string | null>(null);
   const active = useRef(false);
   const rerun = useRef(false);
 
@@ -72,6 +81,9 @@ export function SyncProvider({
     setRunning(true);
     setErrorMessage(null);
     try {
+      const previousQuarantine = await quarantineSummary(indexedDB, userId);
+      setQuarantined(previousQuarantine.total);
+      setQuarantineMessage(formatQuarantineMessage(previousQuarantine));
       const initial = await pendingCount(indexedDB, userId);
       setPending(initial);
       if (!navigator.onLine) {
@@ -80,11 +92,19 @@ export function SyncProvider({
       }
       await runAttemptSync(indexedDB, userId);
       const remaining = await pendingCount(indexedDB, userId);
+      const quarantine = await quarantineSummary(indexedDB, userId);
       setPending(remaining);
+      setQuarantined(quarantine.total);
+      setQuarantineMessage(formatQuarantineMessage(quarantine));
       setState(remaining > 0 ? "pending" : "synced");
     } catch (error) {
       setState(navigator.onLine ? "error" : "offline");
       setPending(await pendingCount(indexedDB, userId).catch(() => 0));
+      const quarantine = await quarantineSummary(indexedDB, userId).catch(() => null);
+      if (quarantine) {
+        setQuarantined(quarantine.total);
+        setQuarantineMessage(formatQuarantineMessage(quarantine));
+      }
       setErrorMessage(
         error instanceof ApiError && error.code === "idempotency_conflict"
           ? "Server odmítl pokus se stejným ID a jiným obsahem. Lokální pokus zůstal uložený; obraťte se na správce."
@@ -138,14 +158,34 @@ export function SyncProvider({
       ? `Offline · čeká ${pending}`
       : state === "error"
         ? `Chyba synchronizace · čeká ${pending}`
-        : running
-          ? "Synchronizuji…"
-          : pending > 0
-            ? `Čeká ${pending}`
-            : "Synchronizováno";
+        : quarantined > 0
+          ? `V karanténě ${quarantined}`
+          : running
+            ? "Synchronizuji…"
+            : pending > 0
+              ? `Čeká ${pending}`
+              : "Synchronizováno";
   return (
-    <SyncContext.Provider value={{ pending, running, label, error: errorMessage, run }}>
+    <SyncContext.Provider
+      value={{
+        pending,
+        running,
+        label,
+        error: errorMessage,
+        quarantined,
+        quarantineMessage,
+        run,
+      }}
+    >
       {children}
     </SyncContext.Provider>
   );
+}
+
+function formatQuarantineMessage(
+  summary: Awaited<ReturnType<typeof quarantineSummary>>,
+): string | null {
+  if (summary.total === 0) return null;
+  const reasons = [...new Set(summary.recentReasons)].slice(0, 3).join(" ");
+  return `Odděleno ${summary.total} pokusů do lokální karantény. ${reasons}`.trim();
 }

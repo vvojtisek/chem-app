@@ -54,15 +54,16 @@ The migration task must complete before the API starts accepting traffic. The
 seed command is idempotent and does not change an existing account. After it
 succeeds, remove all `SEED_*` entries from `.env.production` and keep the
 initial passwords in the operator's password manager. Public registration and
-self-service password recovery are enabled; new accounts must verify their
-email address. Confirm that Caddy, API, web, and DB containers are healthy,
+self-service password recovery are enabled; new accounts set their password
+after following an email verification link. Confirm that Caddy, API, mail
+worker, web, and DB containers are running,
 then open `https://<DOMAIN>` and verify login with the three provisioned roles.
 Check that non-admin accounts receive `403` from admin-only APIs and that no
 database port is published:
 
 ```sh
 docker compose --env-file .env.production -f docker-compose.prod.yml ps
-docker compose --env-file .env.production -f docker-compose.prod.yml logs --tail=100 caddy api web db
+docker compose --env-file .env.production -f docker-compose.prod.yml logs --tail=100 caddy api mail-worker web db
 ```
 
 ## Updating the application
@@ -102,10 +103,21 @@ is the authoritative account and synchronized-attempt store.
 - Public registration and password recovery use the configured SMTP relay.
   Keep its credentials in `.env.production` with owner-only permissions or
   inject them through the host's secret manager.
+- Registration and recovery requests queue messages in PostgreSQL and return
+  immediately. The `mail-worker` service retries SMTP failures. Watch its logs
+  and the age of pending `mail_outbox` rows; an accepted `202` response confirms
+  queueing rather than delivery. Missing SMTP configuration returns `503` for
+  every address. Keep `SECRET_KEY` stable while mail is pending: rotating it
+  makes existing queued links unreadable and users must request new links.
+- Unverified accounts expire after seven days. Verification rejects old
+  accounts even before the scheduled purge removes their rows.
 - Password changes revoke that account's sessions. Admins can manage profile
   details and set new passwords from `/admin`.
-- Revoke expired sessions periodically with
-  `docker compose --env-file .env.production -f docker-compose.prod.yml exec api python -m inorganic_api.cli purge-sessions`.
+- Schedule the combined expired-state purge daily from the host (for example,
+  at 03:17) with this cron command:
+  `17 3 * * * cd /srv/chem-app && docker compose --env-file .env.production -f docker-compose.prod.yml exec -T api python -m inorganic_api.cli purge-expired >> /var/log/chem-app-purge.log 2>&1`.
+  It removes expired sessions and mail tokens, old throttle rows, unverified
+  accounts older than seven days, and stale guest accounts/outbox rows.
 - If `SECRET_KEY` is exposed, replace it and revoke all active sessions with
   `docker compose --env-file .env.production -f docker-compose.prod.yml exec api python -m inorganic_api.cli purge-sessions --all`; rotate account passwords as needed. Session records are server-side; changing this key alone is not a substitute for session revocation.
 - Remove seed passwords from the environment file after initial setup. Keep

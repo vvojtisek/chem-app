@@ -42,7 +42,9 @@ function ResetPasswordForm() {
           ? "Odkaz je neplatný nebo už vypršel. Požádejte o nový."
           : cause instanceof ApiError && cause.code === "too_many_attempts"
             ? "Příliš mnoho pokusů. Zkuste to později."
-            : "Požadavek se nepodařilo dokončit. Zkuste to znovu.",
+            : cause instanceof ApiError && cause.status === 503
+              ? "Služba teď není dostupná. Zkuste to později."
+              : "Požadavek se nepodařilo dokončit. Zkuste to znovu.",
       );
     } finally {
       setBusy(false);

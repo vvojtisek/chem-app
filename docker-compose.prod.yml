@@ -112,6 +112,40 @@ services:
       migrate:
         condition: service_completed_successfully
 
+  mail-worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ["python", "-m", "inorganic_api.mail_worker"]
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?Set runtime DATABASE_URL in .env.production}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env.production}
+      PUBLIC_ORIGIN: https://${DOMAIN:?Set DOMAIN in .env.production}
+      CORS_ORIGINS: '["https://${DOMAIN}"]'
+      SESSION_COOKIE_SECURE: "true"
+      FORWARDED_ALLOW_IPS: 172.30.0.2
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP_HOST in .env.production}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_FROM: ${SMTP_FROM:?Set SMTP_FROM in .env.production}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      SMTP_TIMEOUT: ${SMTP_TIMEOUT:-10}
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    pids_limit: 50
+    logging: *default-logging
+    networks: [internal-net]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
   migrate:
     build:
       context: .

@@ -8,9 +8,11 @@ from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
+from inorganic_api.config import get_settings
 from inorganic_api.database import create_session_factory
 from inorganic_api.models import User
 from inorganic_api.repositories import sessions, users
+from inorganic_api.services import maintenance as maintenance_service
 from inorganic_api.services.auth import normalize_username
 from inorganic_api.services.passwords import MAX_PASSWORD_BYTES, hash_password
 
@@ -84,6 +86,7 @@ def main() -> None:
     purge_parser.add_argument(
         "--all", action="store_true", help="revoke all sessions, including active ones"
     )
+    subparsers.add_parser("purge-expired", help="delete expired sessions, tokens, and account state")
     args = parser.parse_args()
     try:
         with create_session_factory()() as db:
@@ -92,6 +95,9 @@ def main() -> None:
             elif args.command == "set-password":
                 set_password(db, args.username)
                 print("Password updated and sessions revoked.")
+            elif args.command == "purge-expired":
+                counts = maintenance_service.purge_expired_state(db, get_settings())
+                print("Purged: " + ", ".join(f"{name}={count}" for name, count in counts.items()))
             else:
                 count = (
                     sessions.revoke_all(db)

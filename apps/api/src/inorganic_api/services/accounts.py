@@ -1,11 +1,11 @@
 """Verified account creation, recovery, and profile mutations."""
 
-import logging
 import re
 import secrets
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
+from sqlalchemy import delete
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from inorganic_api.config import Settings
 from inorganic_api.errors import AppError
 from inorganic_api.models import EmailVerificationToken, PasswordResetToken, User
-from inorganic_api.repositories import account_tokens, sessions, users
+from inorganic_api.repositories import account_tokens, mail_outbox, sessions, users
 from inorganic_api.services import auth, email
 from inorganic_api.services.passwords import hash_password, verify_password
 
@@ -23,7 +23,7 @@ EMAIL_PATTERN = re.compile(
 )
 VERIFY_TTL = timedelta(hours=24)
 RESET_TTL = timedelta(minutes=30)
-logger = logging.getLogger(__name__)
+UNVERIFIED_TTL = timedelta(days=7)
 
 
 def normalize_email(value: str) -> str:
@@ -43,11 +43,22 @@ def _new_token() -> tuple[str, str]:
     return token, auth.token_hash(token)
 
 
-def register(db: Session, settings: Settings, address: str, password: str, ip: str) -> None:
+def register(db: Session, settings: Settings, address: str, ip: str) -> None:
+    email.require_delivery_config(settings)
     if not auth.consume_rate_limit(db, settings, "register-ip", ip, limit=10):
         raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
     if not auth.consume_rate_limit(db, settings, "register-email", address, limit=3):
         return
+    now = datetime.now(UTC)
+    db.execute(
+        delete(User).where(
+            User.email == address,
+            User.role == "user",
+            User.is_active.is_(False),
+            User.email_verified_at.is_(None),
+            User.created_at <= now - UNVERIFIED_TTL,
+        )
+    )
     account_id = uuid4()
     username = f"user_{account_id.hex}"
     inserted = db.scalar(
@@ -57,7 +68,7 @@ def register(db: Session, settings: Settings, address: str, password: str, ip: s
             username=username,
             email=address,
             display_name=address.split("@", 1)[0][:80],
-            password_hash=hash_password(password),
+            password_hash="!pending-email-verification",
             role="user",
             is_active=False,
         )
@@ -65,45 +76,49 @@ def register(db: Session, settings: Settings, address: str, password: str, ip: s
         .returning(User.id)
     )
     if inserted is None:
-        db.rollback()
+        db.commit()
         return
     token, digest = _new_token()
-    db.add(
-        EmailVerificationToken(
-            user_id=inserted,
-            token_hash=digest,
-            expires_at=datetime.now(UTC) + VERIFY_TTL,
-        )
+    verification = EmailVerificationToken(
+        id=uuid4(), user_id=inserted, token_hash=digest, expires_at=now + VERIFY_TTL
     )
-    try:
-        email.send_account_link(settings, address, token, "verify")
-        db.commit()
-    except AppError:
-        db.rollback()
-        logger.error("Account verification email delivery failed")
+    db.add(verification)
+    mail_outbox.enqueue_verification(
+        db, address, email.encrypt_token(settings, token), verification
+    )
+    db.commit()
 
 
 def request_verification(db: Session, settings: Settings, address: str, ip: str) -> None:
+    email.require_delivery_config(settings)
     if not auth.consume_rate_limit(db, settings, "verify-request-ip", ip, limit=20):
         raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
     if not auth.consume_rate_limit(db, settings, "verify-request-email", address, limit=3):
         return
     user = users.get_by_email(db, address)
-    if user is None or user.role != "user" or user.is_active or user.email_verified_at is not None:
+    if (
+        user is None
+        or user.role != "user"
+        or user.is_active
+        or user.email_verified_at is not None
+        or user.created_at <= datetime.now(UTC) - UNVERIFIED_TTL
+    ):
+        db.commit()
         return
     now = datetime.now(UTC)
     token, digest = _new_token()
     account_tokens.revoke_verifications(db, user.id, now)
-    db.add(EmailVerificationToken(user_id=user.id, token_hash=digest, expires_at=now + VERIFY_TTL))
-    try:
-        email.send_account_link(settings, address, token, "verify")
-        db.commit()
-    except AppError:
-        db.rollback()
-        logger.error("Account verification email delivery failed")
+    verification = EmailVerificationToken(
+        id=uuid4(), user_id=user.id, token_hash=digest, expires_at=now + VERIFY_TTL
+    )
+    db.add(verification)
+    mail_outbox.enqueue_verification(
+        db, address, email.encrypt_token(settings, token), verification
+    )
+    db.commit()
 
 
-def verify_email(db: Session, settings: Settings, token: str, ip: str) -> None:
+def verify_email(db: Session, settings: Settings, token: str, password: str, ip: str) -> None:
     if not auth.consume_rate_limit(db, settings, "verify-ip", ip, limit=30):
         raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
     row = account_tokens.verification_for_update(db, auth.token_hash(token))
@@ -111,9 +126,16 @@ def verify_email(db: Session, settings: Settings, token: str, ip: str) -> None:
     if row is None or row.used_at is not None or row.expires_at <= now:
         raise AppError(400, "invalid_token", "This link is invalid or has expired.")
     user = users.get_by_id(db, row.user_id)
-    if user is None or user.role != "user" or user.email_verified_at is not None:
+    if (
+        user is None
+        or user.role != "user"
+        or user.email_verified_at is not None
+        or user.created_at <= now - UNVERIFIED_TTL
+    ):
         raise AppError(400, "invalid_token", "This link is invalid or has expired.")
     row.used_at = now
+    user.password_hash = hash_password(password)
+    user.password_changed_at = now
     user.email_verified_at = now
     user.is_active = True
     # The API session factory disables autoflush. Persist token consumption before
@@ -124,27 +146,25 @@ def verify_email(db: Session, settings: Settings, token: str, ip: str) -> None:
 
 
 def request_reset(db: Session, settings: Settings, address: str, ip: str) -> None:
+    email.require_delivery_config(settings)
     if not auth.consume_rate_limit(db, settings, "reset-ip", ip, limit=20):
         raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
     if not auth.consume_rate_limit(db, settings, "reset-email", address, limit=3):
         return
     user = users.get_by_email(db, address)
     if user is None or not user.is_active or user.email_verified_at is None:
+        db.commit()
         return
     token, digest = _new_token()
-    db.add(
-        PasswordResetToken(
-            user_id=user.id,
-            token_hash=digest,
-            expires_at=datetime.now(UTC) + RESET_TTL,
-        )
+    reset = PasswordResetToken(
+        id=uuid4(),
+        user_id=user.id,
+        token_hash=digest,
+        expires_at=datetime.now(UTC) + RESET_TTL,
     )
-    try:
-        email.send_account_link(settings, address, token, "reset")
-        db.commit()
-    except AppError:
-        db.rollback()
-        logger.error("Password reset email delivery failed")
+    db.add(reset)
+    mail_outbox.enqueue_reset(db, address, email.encrypt_token(settings, token), reset)
+    db.commit()
 
 
 def confirm_reset(db: Session, settings: Settings, token: str, password: str, ip: str) -> None:

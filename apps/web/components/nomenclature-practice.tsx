@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAccount } from "@/components/auth-gate";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { NomenclatureFilterStep } from "@/components/nomenclature-filters";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import {
@@ -95,6 +95,7 @@ export function NomenclaturePractice({
   // Persistence of the resumable practice (IndexedDB) and of attempts written with it.
   const storeRef = useRef<BrowserNomenclatureStore | null>(null);
   const account = useAccount();
+  const { canSave } = useCapabilities();
   const checkpointRef = useRef<NomenclatureCheckpoint | null>(null);
   const persistedRevisionRef = useRef(0);
   const queuedWritesRef = useRef<Promise<void>>(Promise.resolve());
@@ -157,7 +158,7 @@ export function NomenclaturePractice({
   });
 
   useEffect(() => {
-    if (account?.role === "guest") {
+    if (!canSave) {
       setLoading(false);
       return;
     }
@@ -183,7 +184,7 @@ export function NomenclaturePractice({
     return () => {
       mounted = false;
     };
-  }, [account?.id, account?.role]);
+  }, [account?.id, canSave]);
 
   useEffect(() => {
     if (runId > 0) inputRef.current?.focus();
@@ -191,7 +192,7 @@ export function NomenclaturePractice({
 
   /** Writes the current checkpoint (or removes it when there is none) with pending attempts. */
   function queueWrite(): void {
-    if (localOnlyRef.current || account?.role === "guest") return;
+    if (localOnlyRef.current || !canSave) return;
     queuedWritesRef.current = queuedWritesRef.current
       .then(async () => {
         const current = checkpointRef.current;
@@ -222,7 +223,7 @@ export function NomenclaturePractice({
   }
 
   function saveProgress(next: Session, sessionId: string, event?: NomenclatureAttemptEvent) {
-    if (account?.role === "guest") return;
+    if (!canSave) return;
     if (event) pendingEventsRef.current.push(event);
     checkpointRef.current =
       next.status === "running" && next.current
@@ -249,12 +250,12 @@ export function NomenclaturePractice({
 
   function changeFilters(next: NomenclatureFilters) {
     setFilters(next);
-    if (account?.role !== "guest") saveNomenclatureFilters(next);
+    if (canSave) saveNomenclatureFilters(next);
   }
 
   function changeDirection(next: NomenclatureDirection) {
     setDirection(next);
-    if (account?.role !== "guest") saveNomenclatureDirection(next);
+    if (canSave) saveNomenclatureDirection(next);
     updateAnswer("");
     setInputHint("");
   }
