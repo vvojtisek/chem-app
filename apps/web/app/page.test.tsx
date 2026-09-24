@@ -27,6 +27,6 @@ describe("HomePage", () => {
     expect(screen.queryByRole("link", { name: "Procvičit názvy" })).toBeNull();
     expect(screen.getByRole("link", { name: "Procvičit pozice" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Otevřít karty prvků" })).toBeInTheDocument();
-    expect(screen.getAllByText("Připravujeme obsah")).toHaveLength(2);
+    expect(screen.getAllByText("Připravujeme obsah")).toHaveLength(1);
   });
 });
