@@ -83,7 +83,8 @@ export function gradeEquationProducts(
   );
 }
 
-function parseCoefficient(value: string): number | null {
+/** A coefficient as the learner typed it: blank means 1; otherwise a whole number 1–999. */
+export function parseEquationCoefficient(value: string): number | null {
   if (value === "") return 1;
   if (!/^[1-9][0-9]{0,2}$/u.test(value)) return null;
   return Number(value);
@@ -109,7 +110,7 @@ export function gradeEquationCoefficients(
   ): EquationTerm[] | null => {
     const parsed: EquationTerm[] = [];
     for (const [index, term] of terms.entries()) {
-      const coefficient = parseCoefficient(values[`${side}-${index}`] ?? "");
+      const coefficient = parseEquationCoefficient(values[`${side}-${index}`] ?? "");
       if (coefficient === null) return null;
       parsed.push({ formula: term.formula, coefficient });
     }

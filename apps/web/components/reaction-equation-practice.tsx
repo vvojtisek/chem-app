@@ -6,6 +6,7 @@ import {
   gradeApprovedEquations,
   gradeEquationCoefficients,
   gradeEquationProducts,
+  parseEquationCoefficient,
 } from "@inorganic/chemistry";
 import {
   type PreparationProductionRuntimeProduct,
@@ -492,8 +493,8 @@ function CoefficientSide({
       {terms.map((term, index) => {
         const key = `${side}-${index}`;
         const value = values[key] ?? "";
-        // A blank field means 1, as in the grading; unreadable input steps from 1.
-        const current = /^[1-9][0-9]{0,2}$/u.test(value) ? Number(value) : 1;
+        // Unreadable input steps from 1, like a blank field.
+        const current = parseEquationCoefficient(value) ?? 1;
         const name = `koeficient ${label} ${term.formula}`;
         return (
           <span className="flex items-center gap-2" key={key}>

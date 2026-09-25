@@ -18,6 +18,7 @@ export {
   gradeApprovedEquations,
   gradeEquationCoefficients,
   gradeEquationProducts,
+  parseEquationCoefficient,
 } from "./evaluate-equation-answer";
 export {
   evaluateNomenclatureAnswer,
