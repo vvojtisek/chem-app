@@ -1,7 +1,7 @@
 "use client";
 
 import { type ElementAnswerMatch, evaluateElementAnswer } from "@inorganic/chemistry";
-import type { ElementFlashcardData } from "@inorganic/content/runtime";
+import { curriculumContentVersion, type ElementFlashcardData } from "@inorganic/content/runtime";
 import {
   type KeyboardEvent,
   useCallback,
@@ -12,12 +12,14 @@ import {
   useState,
 } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
 import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { usePeriodicSession } from "@/components/use-periodic-session";
 import { useWrongMarks } from "@/components/use-wrong-marks";
 import {
   appendPeriodicTableAttempt,
@@ -31,6 +33,11 @@ import {
   saveNamePracticeMode,
 } from "@/lib/periodic-table-preferences";
 import { selectElements } from "@/lib/periodic-table-scope";
+import {
+  PERIODIC_NAME_SESSION_ID,
+  type PeriodicCheckpoint,
+  restorePeriodicSession,
+} from "@/lib/periodic-table-session";
 import {
   answerPracticeQueue,
   createPracticeQueue,
@@ -66,6 +73,10 @@ export function PeriodicTableNamePractice({
   const account = useAccount();
   const { canSave } = useCapabilities();
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
+  const elementsById = useMemo(
+    () => new Map(elements.map((element) => [element.id, element])),
+    [elements],
+  );
   const [selection, changeSelection] = useSharedElementSelection(layout, !canSave);
   const [mode, setMode] = useState<ElementPromptMode>(DEFAULT_ELEMENT_PROMPT_MODE);
   const [session, setSession] = useState<Session | null>(null);
@@ -83,6 +94,25 @@ export function PeriodicTableNamePractice({
   const stopwatch = useStopwatch();
   const wrongMarks = useWrongMarks();
   const modeGroupName = useId();
+  const persisted = usePeriodicSession(
+    PERIODIC_NAME_SESSION_ID,
+    curriculumContentVersion,
+    (checkpoint: PeriodicCheckpoint) => {
+      const restored = restorePeriodicSession(checkpoint, elementsById, curriculumContentVersion);
+      if (checkpoint.mode === "name-to-position") throw new Error("Neplatný směr cvičení.");
+      changeSelection(new Set(checkpoint.selectedIds));
+      setMode(checkpoint.mode);
+      clearFlash();
+      wrongMarks.clear();
+      sessionRef.current = restored;
+      setSession(restored);
+      stopwatch.start(checkpoint.elapsedMs);
+      setLastAnswer(null);
+      updateAnswer("");
+      setRunId((previous) => previous + 1);
+      setAnnouncement("Rozpracované cvičení bylo obnoveno.");
+    },
+  );
 
   useEffect(() => {
     if (!canSave) return;
@@ -111,9 +141,13 @@ export function PeriodicTableNamePractice({
     if (canSave) saveNamePracticeMode(next);
     updateAnswer("");
     setInputHint("");
+    if (sessionRef.current?.status === "running") {
+      persisted.save(sessionRef.current, selection, next, stopwatch.readElapsed());
+    }
   }
 
   function start() {
+    if (persisted.storageBroken) return;
     const questions = selectElements(layout, selection);
     if (questions.length === 0) return;
 
@@ -129,6 +163,7 @@ export function PeriodicTableNamePractice({
     setLastAnswer(null);
     setAnnouncement("");
     setNotice("");
+    persisted.save(next, selection, mode, stopwatch.readElapsed());
   }
 
   function returnToSelection() {
@@ -139,6 +174,7 @@ export function PeriodicTableNamePractice({
     stopwatch.stop();
     setLastAnswer(null);
     setAnnouncement("");
+    persisted.discard();
   }
 
   function finish() {
@@ -150,6 +186,7 @@ export function PeriodicTableNamePractice({
     setSession(next);
     stopwatch.stop();
     setAnnouncement("Cvičení ukončeno.");
+    persisted.discard();
   }
 
   function flashInput() {
@@ -193,6 +230,7 @@ export function PeriodicTableNamePractice({
       wrongMarks.mark(question.id);
     }
     if (result.state.status === "finished") stopwatch.stop();
+    persisted.save(result.state, selection, mode, stopwatch.readElapsed());
     setAnnouncement(
       `${describeAnswer(question, evaluation.isCorrect)} ${
         result.state.current
@@ -215,14 +253,33 @@ export function PeriodicTableNamePractice({
     }
   }
 
+  if (persisted.loading) return <p role="status">Načítám uložené cvičení…</p>;
+
+  if (persisted.storageBroken && !session) {
+    return (
+      <PeriodicSessionNotice
+        notice={persisted.notice}
+        onRecover={persisted.recover}
+        storageBroken
+      />
+    );
+  }
+
   if (!session) {
     return (
-      <PeriodicTableSelectionStep
-        layout={layout}
-        onChange={changeSelection}
-        onStart={start}
-        selection={selection}
-      />
+      <>
+        <PeriodicTableSelectionStep
+          layout={layout}
+          onChange={changeSelection}
+          onStart={start}
+          selection={selection}
+        />
+        <PeriodicSessionNotice
+          notice={persisted.notice}
+          onRecover={persisted.recover}
+          storageBroken={false}
+        />
+      </>
     );
   }
 
@@ -339,6 +396,11 @@ export function PeriodicTableNamePractice({
           {notice}
         </p>
       ) : null}
+      <PeriodicSessionNotice
+        notice={persisted.notice}
+        onRecover={persisted.recover}
+        storageBroken={persisted.storageBroken}
+      />
     </div>
   );
 }

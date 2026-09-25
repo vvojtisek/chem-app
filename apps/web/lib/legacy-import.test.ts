@@ -1,3 +1,4 @@
+import { curatedElements, curriculumContentVersion } from "@inorganic/content/runtime";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   ATTEMPT_EVENT_STORE,
@@ -9,8 +10,11 @@ import {
   resetLearningDatabase,
   transactionCompleted,
 } from "./browser-learning-database";
+import { createBrowserPeriodicSessionStore } from "./browser-periodic-session-store";
 import { type AttemptEvent, createBrowserProgressStore } from "./browser-progress-store";
 import { importLegacyData, keepLegacyOutsideAccount, legacyAttemptCount } from "./legacy-import";
+import { createPeriodicCheckpoint, PERIODIC_NAME_SESSION_ID } from "./periodic-table-session";
+import { createPracticeQueue } from "./practice-queue";
 import { pendingCount } from "./sync/sync-store";
 
 const user = "33333333-3333-4333-8333-333333333333";
@@ -65,6 +69,50 @@ async function seedLegacyLocalState() {
 }
 
 describe("legacy import", () => {
+  it("does not offer account import for a device-local periodic checkpoint alone", async () => {
+    const elements = curatedElements.slice(0, 2);
+    const session = createPracticeQueue(elements, () => 0.999_999);
+    const checkpoint = createPeriodicCheckpoint(
+      PERIODIC_NAME_SESSION_ID,
+      session,
+      new Set(elements.map((element) => element.id)),
+      "name-to-symbol",
+      curriculumContentVersion,
+      1000,
+      1,
+    );
+    if (!checkpoint) throw new Error("Expected running checkpoint.");
+    const periodicStore = createBrowserPeriodicSessionStore(indexedDB);
+    await periodicStore.write(PERIODIC_NAME_SESSION_ID, checkpoint, 0);
+
+    expect(await legacyAttemptCount(indexedDB, user)).toBeNull();
+    expect(await periodicStore.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+  });
+
+  it("keeps an active periodic checkpoint on the device when old attempts are imported", async () => {
+    await seedLegacy();
+    const elements = curatedElements.slice(0, 2);
+    const checkpoint = createPeriodicCheckpoint(
+      PERIODIC_NAME_SESSION_ID,
+      createPracticeQueue(elements, () => 0.999_999),
+      new Set(elements.map((element) => element.id)),
+      "name-to-symbol",
+      curriculumContentVersion,
+      1000,
+      1,
+    );
+    if (!checkpoint) throw new Error("Expected running checkpoint.");
+    const periodicStore = createBrowserPeriodicSessionStore(indexedDB);
+    await periodicStore.write(PERIODIC_NAME_SESSION_ID, checkpoint, 0);
+
+    expect(await legacyAttemptCount(indexedDB, user)).toBe(1);
+    await importLegacyData(indexedDB, user);
+    expect(await periodicStore.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await createBrowserProgressStore(indexedDB, user).listAttempts()).toEqual([attempt]);
+    expect(await createBrowserProgressStore(indexedDB).listAttempts()).toEqual([]);
+    expect(await legacyAttemptCount(indexedDB, user)).toBeNull();
+  });
+
   it("copies events into the chosen account and queues them before deleting legacy data", async () => {
     await seedLegacy();
     await seedLegacyLocalState();

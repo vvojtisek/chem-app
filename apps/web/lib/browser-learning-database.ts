@@ -3,6 +3,8 @@ export const LEARNING_DATABASE_VERSION = 6;
 export const ATTEMPT_EVENT_STORE = "attempt-events";
 export const ELEMENT_CARD_STORE = "element-cards";
 export const NOMENCLATURE_SESSION_STORE = "nomenclature-sessions";
+/** Existing session store; retain its on-disk name for compatible periodic-table checkpoints. */
+export const PRACTICE_SESSION_STORE = NOMENCLATURE_SESSION_STORE;
 export const SYNC_OUTBOX_STORE = "sync-outbox";
 export const SYNC_QUARANTINE_STORE = "sync-quarantine";
 export const ACCOUNT_META_STORE = "account-meta";

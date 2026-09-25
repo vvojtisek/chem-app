@@ -1,14 +1,16 @@
 "use client";
 
-import type { ElementFlashcardData } from "@inorganic/content/runtime";
+import { curriculumContentVersion, type ElementFlashcardData } from "@inorganic/content/runtime";
 import { useMemo, useRef, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
 import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { usePeriodicSession } from "@/components/use-periodic-session";
 import { useWrongMarks } from "@/components/use-wrong-marks";
 import {
   appendPeriodicTableAttempt,
@@ -20,6 +22,11 @@ import {
   type PeriodicTablePosition,
 } from "@/lib/periodic-table-layout";
 import { selectElements } from "@/lib/periodic-table-scope";
+import {
+  PERIODIC_POSITION_SESSION_ID,
+  type PeriodicCheckpoint,
+  restorePeriodicSession,
+} from "@/lib/periodic-table-session";
 import {
   answerPracticeQueueBySelection,
   createPracticeQueue,
@@ -48,6 +55,10 @@ export function PeriodicTablePractice({
       ),
     [layout],
   );
+  const elementsById = useMemo(
+    () => new Map(elements.map((element) => [element.id, element])),
+    [elements],
+  );
   const [selection, changeSelection] = useSharedElementSelection(layout, !canSave);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
@@ -55,8 +66,22 @@ export function PeriodicTablePractice({
   const stopwatch = useStopwatch();
   const [announcement, setAnnouncement] = useState("");
   const [notice, setNotice] = useState("");
+  const persisted = usePeriodicSession(
+    PERIODIC_POSITION_SESSION_ID,
+    curriculumContentVersion,
+    (checkpoint: PeriodicCheckpoint) => {
+      const restored = restorePeriodicSession(checkpoint, elementsById, curriculumContentVersion);
+      changeSelection(new Set(checkpoint.selectedIds));
+      wrongMarks.clear();
+      sessionRef.current = restored;
+      setSession(restored);
+      stopwatch.start(checkpoint.elapsedMs);
+      setAnnouncement("Rozpracované cvičení bylo obnoveno.");
+    },
+  );
 
   function start() {
+    if (persisted.storageBroken) return;
     const questions = selectElements(layout, selection);
     if (questions.length === 0) return;
 
@@ -67,6 +92,7 @@ export function PeriodicTablePractice({
     stopwatch.start();
     setAnnouncement("");
     setNotice("");
+    persisted.save(next, selection, "name-to-position", stopwatch.readElapsed());
   }
 
   function returnToSelection() {
@@ -75,6 +101,7 @@ export function PeriodicTablePractice({
     setSession(null);
     stopwatch.stop();
     setAnnouncement("");
+    persisted.discard();
   }
 
   function select(position: PeriodicTablePosition) {
@@ -94,6 +121,7 @@ export function PeriodicTablePractice({
       wrongMarks.mark(selected.id);
     }
     if (result.state.status === "finished") stopwatch.stop();
+    persisted.save(result.state, selection, "name-to-position", stopwatch.readElapsed());
     setAnnouncement(
       `${result.isCorrect ? "Správně" : "Špatně"}. ${
         result.state.current
@@ -124,16 +152,36 @@ export function PeriodicTablePractice({
     setSession(next);
     stopwatch.stop();
     setAnnouncement("Cvičení ukončeno.");
+    persisted.discard();
+  }
+
+  if (persisted.loading) return <p role="status">Načítám uložené cvičení…</p>;
+
+  if (persisted.storageBroken && !session) {
+    return (
+      <PeriodicSessionNotice
+        notice={persisted.notice}
+        onRecover={persisted.recover}
+        storageBroken
+      />
+    );
   }
 
   if (!session) {
     return (
-      <PeriodicTableSelectionStep
-        layout={layout}
-        onChange={changeSelection}
-        onStart={start}
-        selection={selection}
-      />
+      <>
+        <PeriodicTableSelectionStep
+          layout={layout}
+          onChange={changeSelection}
+          onStart={start}
+          selection={selection}
+        />
+        <PeriodicSessionNotice
+          notice={persisted.notice}
+          onRecover={persisted.recover}
+          storageBroken={false}
+        />
+      </>
     );
   }
 
@@ -191,6 +239,11 @@ export function PeriodicTablePractice({
           {notice}
         </p>
       ) : null}
+      <PeriodicSessionNotice
+        notice={persisted.notice}
+        onRecover={persisted.recover}
+        storageBroken={persisted.storageBroken}
+      />
     </div>
   );
 }

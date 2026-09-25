@@ -8,6 +8,17 @@ vi.mock("@/lib/browser-progress-store", () => ({
   createBrowserProgressStore: () => ({ appendAttempt }),
 }));
 
+vi.mock("@/components/use-periodic-session", () => ({
+  usePeriodicSession: () => ({
+    loading: false,
+    storageBroken: false,
+    notice: "",
+    save: vi.fn(),
+    discard: vi.fn(),
+    recover: vi.fn(),
+  }),
+}));
+
 import { ELEMENT_SELECTION_KEY, NAME_PRACTICE_MODE_KEY } from "@/lib/periodic-table-preferences";
 import { INPUT_FLASH_DURATION_MS, PeriodicTableNamePractice } from "./periodic-table-name-practice";
 import { WRONG_MARK_DURATION_MS } from "./use-wrong-marks";

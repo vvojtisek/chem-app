@@ -44,3 +44,24 @@ repeats an original error once, and records the full immutable attempt context.
    incorrect-answer/retry path.
 4. Run the full gate from `docs/testing.md`; record any environment limitation
    in the PR.
+
+## Implementation update — 2026-09-25
+
+The earlier PT-UX follow-up is implemented, including the previously missing
+reload/offline recovery. Both practice directions save a versioned, validated
+checkpoint in the existing IndexedDB session store without bumping the database
+version. Restored state contains the chosen scope, mode, current question and
+queue, solved/missed IDs, counters, and elapsed time; it does not store answer
+text or emit a duplicate attempt. Invalid or outdated state can be removed
+without clearing attempt history. Legacy import preserves active periodic-table
+checkpoints, and a missed question can only receive one retry.
+
+Validation on 2026-09-25: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+`pnpm test`, `pnpm content:validate`, `pnpm contracts:check`, Ruff format and
+lint, API tests with isolated PostgreSQL (38 passed), `pnpm build`, and the full
+Playwright suite on desktop and mobile Chromium (70 passed). The app build used
+an API proxy target and E2E used isolated ports because the default local ports
+were occupied.
+
+Chemistry-SME review is unchanged; the eight named group records still need
+review before the curriculum release gate passes.

@@ -69,13 +69,15 @@ export function answerPracticeQueue<Question extends PracticeQueueQuestion>(
     };
   }
 
-  const [next = question, ...queue] = [...state.queue, question];
+  // A missed question is offered once more at the end; a wrong retry is final.
+  const [next = null, ...queue] = round === "initial" ? [...state.queue, question] : state.queue;
   return {
     question,
     isCorrect,
     round,
     state: {
       ...state,
+      status: next ? "running" : "finished",
       current: next,
       queue,
       missedIds: new Set(state.missedIds).add(question.id),
