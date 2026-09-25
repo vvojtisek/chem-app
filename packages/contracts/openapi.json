@@ -251,11 +251,17 @@
               }
             ],
             "title": "Nextcursor"
+          },
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
           }
         },
         "required": [
           "items",
-          "nextCursor"
+          "nextCursor",
+          "progressGeneration"
         ],
         "title": "AttemptPage",
         "type": "object"
@@ -470,6 +476,11 @@
             "title": "Occurredat",
             "type": "string"
           },
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
+          },
           "questionId": {
             "maxLength": 256,
             "minLength": 1,
@@ -492,6 +503,7 @@
           "occurredAt",
           "isCorrect",
           "round",
+          "progressGeneration",
           "mode",
           "direction",
           "matchPolicy"
@@ -571,6 +583,11 @@
             "title": "Occurredat",
             "type": "string"
           },
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
+          },
           "questionId": {
             "maxLength": 256,
             "minLength": 1,
@@ -605,6 +622,7 @@
           "occurredAt",
           "isCorrect",
           "round",
+          "progressGeneration",
           "mode",
           "eventSchemaVersion",
           "sessionId",
@@ -766,6 +784,11 @@
             "title": "Id",
             "type": "string"
           },
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
+          },
           "role": {
             "enum": [
               "admin",
@@ -786,7 +809,8 @@
           "username",
           "role",
           "email",
-          "displayName"
+          "displayName",
+          "progressGeneration"
         ],
         "title": "MeResponse",
         "type": "object"
@@ -899,6 +923,11 @@
             "title": "Outcome",
             "type": "string"
           },
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
+          },
           "questionId": {
             "maxLength": 256,
             "minLength": 1,
@@ -933,6 +962,7 @@
           "occurredAt",
           "isCorrect",
           "round",
+          "progressGeneration",
           "mode",
           "eventSchemaVersion",
           "sessionId",
@@ -996,6 +1026,11 @@
             "title": "Occurredat",
             "type": "string"
           },
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
+          },
           "questionId": {
             "maxLength": 256,
             "minLength": 1,
@@ -1018,6 +1053,7 @@
           "occurredAt",
           "isCorrect",
           "round",
+          "progressGeneration",
           "mode",
           "direction",
           "matchPolicy"
@@ -1107,6 +1143,21 @@
           "lastLoginAt"
         ],
         "title": "ProfileResponse",
+        "type": "object"
+      },
+      "ProgressGeneration": {
+        "additionalProperties": false,
+        "properties": {
+          "progressGeneration": {
+            "format": "uuid",
+            "title": "Progressgeneration",
+            "type": "string"
+          }
+        },
+        "required": [
+          "progressGeneration"
+        ],
+        "title": "ProgressGeneration",
         "type": "object"
       },
       "Progression": {
@@ -3196,6 +3247,186 @@
         "summary": "Update My Profile",
         "tags": [
           "profiles"
+        ]
+      }
+    },
+    "/api/v1/me/progress-generation": {
+      "get": {
+        "operationId": "getMyProgressGeneration",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressGeneration"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "My Progress Generation",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/api/v1/me/progress-reset": {
+      "post": {
+        "operationId": "resetMyProgress",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressGeneration"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Reset My Progress",
+        "tags": [
+          "attempts"
         ]
       }
     },

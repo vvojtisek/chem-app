@@ -44,6 +44,7 @@ class MeResponse(BaseModel):
     role: Literal["admin", "user", "tester", "guest"]
     email: str | None
     displayName: str | None  # noqa: N815 - API uses camelCase.
+    progressGeneration: UUID  # noqa: N815 - API uses camelCase.
 
 
 class EmailRequest(BaseModel):
@@ -89,6 +90,7 @@ def _me(current: auth.AuthenticatedSession | auth.NewSession) -> MeResponse:
         role=user.role,
         email=user.email,
         displayName=user.display_name,
+        progressGeneration=user.progress_generation,
     )
 
 

@@ -17,6 +17,18 @@ class AttemptBase(ApiModel):
     occurred_at: AwareDatetime
     is_correct: bool
     round: Literal["initial", "retry"]
+    progress_generation: UUID
+
+    @model_validator(mode="before")
+    @classmethod
+    def legacy_generation(cls, value: object) -> object:
+        if (
+            isinstance(value, dict)
+            and "progressGeneration" not in value
+            and "progress_generation" not in value
+        ):
+            return {**value, "progressGeneration": str(UUID(int=0))}
+        return value
 
 
 class ElementNameAttempt(AttemptBase):
@@ -138,6 +150,11 @@ class AttemptItem(ApiModel):
 class AttemptPage(ApiModel):
     items: list[AttemptItem]
     next_cursor: str | None
+    progress_generation: UUID
+
+
+class ProgressGeneration(ApiModel):
+    progress_generation: UUID
 
 
 class ModeStats(ApiModel):

@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from threading import Event, Thread
 from uuid import uuid4
 
 import pytest
@@ -100,6 +101,13 @@ async def upload(http: AsyncClient, events: list[dict]):
     )
 
 
+async def reset_progress(http: AsyncClient):
+    return await http.post(
+        "/api/v1/me/progress-reset",
+        headers={"Origin": ORIGIN, "X-CSRF-Token": http.cookies["__Host-inorganic_csrf"]},
+    )
+
+
 def event(event_id: str, **changes) -> dict:
     return {
         "id": event_id,
@@ -164,6 +172,82 @@ async def test_daily_quota_keeps_duplicates_free_and_rejects_only_new_events(
         assert duplicate.json()["duplicates"] == ["quota-1"]
         assert duplicate.json()["rejected"][0]["code"] == "quota_exceeded"
         assert db.query(AttemptEvent).filter_by(user_id=accounts["user"].id).count() == 2
+
+
+@pytest.mark.anyio
+async def test_progress_reset_archives_history_rejects_stale_events_and_preserves_quota(
+    db: Session, accounts: dict[str, User], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(attempts, "MAX_DAILY_ATTEMPTS_PER_USER", 2)
+    async with client() as http, client() as other:
+        await login(http, accounts["user"])
+        await login(other, accounts["admin"])
+        legacy = event("legacy")
+        assert (await upload(http, [legacy])).json()["accepted"] == ["legacy"]
+        zero = "00000000-0000-0000-0000-000000000000"
+        # Retrying an event accepted by the old client must keep its payload hash.
+        assert (await upload(http, [{**legacy, "progressGeneration": zero}])).json()[
+            "duplicates"
+        ] == ["legacy"]
+        before = (await http.get("/api/v1/me/progression")).json()
+        assert before["totalAttempts"] == 1
+        reset = await reset_progress(http)
+        assert reset.status_code == 200, reset.text
+        generation = reset.json()["progressGeneration"]
+        assert generation != zero
+        assert (await http.get("/api/v1/auth/me")).json()["progressGeneration"] == generation
+        assert (await http.get("/api/v1/me/progress-generation")).json()[
+            "progressGeneration"
+        ] == generation
+        assert (await http.get("/api/v1/me/stats")).json()["totalAttempts"] == 0
+        after = (await http.get("/api/v1/me/progression")).json()
+        assert after["totalAttempts"] == 0
+        assert after["rank"]["id"] == "novice"
+        assert all(day["totalAttempts"] == 0 for day in after["trend"])
+        page = (await http.get("/api/v1/me/attempt-events")).json()
+        assert page == {"items": [], "nextCursor": None, "progressGeneration": generation}
+        assert (await other.get("/api/v1/admin/stats")).json()["totalAttempts"] == 0
+        assert db.query(AttemptEvent).filter_by(user_id=accounts["user"].id).count() == 1
+        stale = await upload(http, [event("stale"), event("fresh", progressGeneration=generation)])
+        assert stale.status_code == 409
+        assert stale.json()["error"]["code"] == "progress_reset"
+        assert (await http.get("/api/v1/me/stats")).json()["totalAttempts"] == 0
+        fresh = await upload(http, [event("fresh", progressGeneration=generation)])
+        assert fresh.json()["accepted"] == ["fresh"]
+        limited = await upload(http, [event("limited", progressGeneration=generation)])
+        assert limited.json()["rejected"][0]["code"] == "quota_exceeded"
+        assert (await http.get("/api/v1/me/stats")).json()["totalAttempts"] == 1
+
+
+@pytest.mark.anyio
+async def test_progress_reset_requires_session_role_origin_and_csrf(
+    db: Session, accounts: dict[str, User]
+) -> None:
+    async with client() as anonymous, client() as tester, client() as guest, client() as admin:
+        assert (await anonymous.get("/api/v1/me/progress-generation")).status_code == 401
+        assert (await anonymous.post("/api/v1/me/progress-reset")).status_code == 401
+        await login(tester, accounts["tester"])
+        assert (await tester.get("/api/v1/me/progress-generation")).status_code == 200
+        assert (await reset_progress(tester)).status_code == 403
+        assert (
+            await guest.post("/api/v1/auth/guest", headers={"Origin": ORIGIN})
+        ).status_code == 200
+        assert (await guest.get("/api/v1/me/progress-generation")).status_code == 403
+        assert (await reset_progress(guest)).status_code == 403
+        await login(admin, accounts["admin"])
+        assert (
+            await admin.post("/api/v1/me/progress-reset", headers={"Origin": ORIGIN})
+        ).status_code == 403
+        assert (
+            await admin.post(
+                "/api/v1/me/progress-reset",
+                headers={
+                    "Origin": "https://wrong.example",
+                    "X-CSRF-Token": admin.cookies["__Host-inorganic_csrf"],
+                },
+            )
+        ).status_code == 403
+        assert (await reset_progress(admin)).status_code == 200
 
 
 @pytest.mark.anyio
@@ -295,7 +379,11 @@ async def test_user_scoping_paging_and_roles(db: Session, accounts: dict[str, Us
                 "/api/v1/me/attempt-events", params={"limit": 2, "cursor": last["nextCursor"]}
             )
         ).json()
-        assert empty == {"items": [], "nextCursor": None}
+        assert empty == {
+            "items": [],
+            "nextCursor": None,
+            "progressGeneration": "00000000-0000-0000-0000-000000000000",
+        }
         assert [
             item["event"]["id"]
             for item in (await tester.get("/api/v1/me/attempt-events")).json()["items"]
@@ -340,6 +428,64 @@ async def test_bad_cursors_and_bounds(db: Session, accounts: dict[str, User]) ->
         assert (await http.get("/api/v1/admin/users", params={"limit": 101})).status_code == 422
         unknown = await http.get(f"/api/v1/admin/users/{uuid4()}/attempt-events")
         assert unknown.status_code == 404
+
+
+def test_reset_waits_for_inflight_upload_and_archives_committed_attempt(engine) -> None:
+    account_id = uuid4()
+    with Session(engine) as setup:
+        setup.add(
+            User(
+                id=account_id,
+                username=f"reset_{account_id.hex[:12]}",
+                password_hash="unused",
+                role="user",
+            )
+        )
+        setup.commit()
+    started = Event()
+    finished = Event()
+    failures: list[Exception] = []
+
+    def reset_in_second_connection() -> None:
+        try:
+            with Session(engine) as session:
+                account = session.get(User, account_id)
+                assert account is not None
+                started.set()
+                attempts.reset_progress(session, account)
+        except Exception as error:
+            failures.append(error)
+        finally:
+            finished.set()
+
+    try:
+        with Session(engine) as uploader:
+            account = uploader.get(User, account_id)
+            assert account is not None
+            from inorganic_api.repositories.attempts import lock_user_writes
+
+            lock_user_writes(uploader, account_id)
+            worker = Thread(target=reset_in_second_connection, daemon=True)
+            worker.start()
+            assert started.wait(3)
+            assert not finished.wait(0.1)
+            assert attempts.add_batch(uploader, account, [event("inflight")]).accepted == [
+                "inflight"
+            ]
+        assert finished.wait(3)
+        worker.join(timeout=3)
+        assert not failures
+        with Session(engine) as verify:
+            account = verify.get(User, account_id)
+            assert account is not None
+            assert attempts.stats(verify, account, account_id).total_attempts == 0
+            assert verify.query(AttemptEvent).filter_by(user_id=account_id).count() == 1
+    finally:
+        with Session(engine) as cleanup:
+            account = cleanup.get(User, account_id)
+            if account is not None:
+                cleanup.delete(account)
+                cleanup.commit()
 
 
 def test_openapi_attempt_contracts() -> None:

@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { ApiError } from "@/lib/api/client";
+import { updateAccountMarkerProgressGeneration } from "@/lib/auth/account-marker";
 import { queryKeys } from "@/lib/query-keys";
 import { runAttemptSync } from "@/lib/sync/attempt-sync";
 import { pendingCount, quarantineSummary } from "@/lib/sync/sync-store";
@@ -90,7 +91,12 @@ export function SyncProvider({
         setState("offline");
         return;
       }
-      await runAttemptSync(indexedDB, userId);
+      const resetGeneration = await runAttemptSync(indexedDB, userId);
+      if (resetGeneration) {
+        updateAccountMarkerProgressGeneration(userId, resetGeneration);
+        window.location.reload();
+        return;
+      }
       const remaining = await pendingCount(indexedDB, userId);
       const quarantine = await quarantineSummary(indexedDB, userId);
       setPending(remaining);

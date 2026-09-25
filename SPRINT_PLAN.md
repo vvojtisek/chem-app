@@ -429,3 +429,15 @@ path in desktop and mobile Chromium (2 checks), web typecheck, formatting,
 lint, and production build passed on 2026-09-25. Sprint 6 progress reset, broader
 offline/browser/accessibility release checks, usability review, documentation,
 and chemistry-SME approvals remain open.
+
+### Update 2026-09-25 — Sprint 6 progress reset
+
+The `/pokrok` dashboard now offers an online, two-step reset to registered users
+and admins. Server progress generations prevent a second offline device from
+re-uploading old attempts. The reset clears this account's local attempts,
+outbox, quarantine, checkpoint, cursor, and retry state while retaining custom
+cards and settings. Old server events are archived outside current statistics
+and kept for daily quota accounting under ADR 0009. The old device-wide
+periodic checkpoint is copied once into account storage for compatible active
+accounts. Browser export/import, wider release testing, usability review, and
+chemistry-SME approvals remain open.

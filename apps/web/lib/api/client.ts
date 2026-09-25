@@ -171,3 +171,8 @@ export async function getMyProgression(): Promise<UserProgression> {
 export async function getMyAttemptStats(): Promise<UserAttemptStats> {
   return unwrapApiResponse(await apiClient.GET("/api/v1/me/stats", { cache: "no-store" }));
 }
+
+export async function resetMyProgress(): Promise<string> {
+  const response = unwrapApiResponse(await apiClient.POST("/api/v1/me/progress-reset"));
+  return response.progressGeneration;
+}

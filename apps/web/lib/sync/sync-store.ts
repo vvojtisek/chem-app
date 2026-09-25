@@ -1,6 +1,7 @@
 import {
   ACCOUNT_META_STORE,
   ATTEMPT_EVENT_STORE,
+  NOMENCLATURE_SESSION_STORE,
   openLearningDatabase,
   requestCompleted,
   SYNC_OUTBOX_STORE,
@@ -8,6 +9,58 @@ import {
   transactionCompleted,
 } from "../browser-learning-database";
 import { type AttemptEvent, attemptEventSchema } from "../browser-progress-store";
+import {
+  attemptGeneration,
+  INITIAL_PROGRESS_GENERATION,
+  progressGenerationSchema,
+} from "../progress-generation";
+
+export async function reconcileProgressGeneration(
+  indexedDb: IDBFactory,
+  userId: string,
+  serverGeneration: string,
+): Promise<boolean> {
+  const generation = progressGenerationSchema.parse(serverGeneration);
+  const database = await openLearningDatabase(indexedDb, userId);
+  try {
+    const transaction = database.transaction(
+      [
+        ACCOUNT_META_STORE,
+        ATTEMPT_EVENT_STORE,
+        SYNC_OUTBOX_STORE,
+        SYNC_QUARANTINE_STORE,
+        NOMENCLATURE_SESSION_STORE,
+      ],
+      "readwrite",
+    );
+    const completed = transactionCompleted(transaction);
+    const meta = transaction.objectStore(ACCOUNT_META_STORE);
+    const record: unknown = await requestCompleted(meta.get("progress-generation"));
+    const previous =
+      typeof record === "object" &&
+      record !== null &&
+      "value" in record &&
+      typeof record.value === "string"
+        ? progressGenerationSchema.parse(record.value)
+        : INITIAL_PROGRESS_GENERATION;
+    const changed = previous !== generation;
+    if (changed) {
+      transaction.objectStore(ATTEMPT_EVENT_STORE).clear();
+      transaction.objectStore(SYNC_OUTBOX_STORE).clear();
+      transaction.objectStore(SYNC_QUARANTINE_STORE).clear();
+      transaction.objectStore(NOMENCLATURE_SESSION_STORE).clear();
+      meta.delete("pull-cursor");
+      meta.delete(UPLOAD_RETRY_AT_KEY);
+      meta.delete(QUOTA_QUARANTINE_MIGRATED_KEY);
+      meta.put({ key: "legacy-import", value: "declined" });
+    }
+    meta.put({ key: "progress-generation", value: generation });
+    await completed;
+    return changed;
+  } finally {
+    database.close();
+  }
+}
 
 const UPLOAD_RETRY_AT_KEY = "attempt-upload-retry-at";
 const QUOTA_QUARANTINE_MIGRATED_KEY = "quota-quarantine-migrated-v1";
@@ -310,6 +363,7 @@ export async function savePulledAttempts(
   userId: string,
   attempts: readonly AttemptEvent[],
   cursor: string | null,
+  expectedGeneration = INITIAL_PROGRESS_GENERATION,
 ): Promise<void> {
   const database = await openLearningDatabase(indexedDb, userId);
   try {
@@ -317,10 +371,25 @@ export async function savePulledAttempts(
       [ATTEMPT_EVENT_STORE, ACCOUNT_META_STORE],
       "readwrite",
     );
+    const meta = transaction.objectStore(ACCOUNT_META_STORE);
+    const stored: unknown = await requestCompleted(meta.get("progress-generation"));
+    const current =
+      typeof stored === "object" &&
+      stored !== null &&
+      "value" in stored &&
+      typeof stored.value === "string"
+        ? progressGenerationSchema.parse(stored.value)
+        : INITIAL_PROGRESS_GENERATION;
+    if (
+      current !== expectedGeneration ||
+      attempts.some((attempt) => attemptGeneration(attempt) !== expectedGeneration)
+    ) {
+      transaction.abort();
+      throw new Error("Pokrok se během synchronizace změnil. Zkuste to znovu.");
+    }
     for (const attempt of attempts)
       transaction.objectStore(ATTEMPT_EVENT_STORE).put(attemptEventSchema.parse(attempt));
-    if (cursor !== null)
-      transaction.objectStore(ACCOUNT_META_STORE).put({ key: "pull-cursor", value: cursor });
+    if (cursor !== null) meta.put({ key: "pull-cursor", value: cursor });
     await transactionCompleted(transaction);
   } finally {
     database.close();
