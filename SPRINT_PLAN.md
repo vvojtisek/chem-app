@@ -406,3 +406,26 @@ unit suite (170 tests), API suite (38 tests with isolated PostgreSQL), and
 Playwright (70 tests across desktop and mobile Chromium). The Sprint 2
 implementation gap is closed; the separate chemistry-SME review of the eight
 named groups remains open and continues to block the curriculum release gate.
+
+### Update 2026-09-25 — Sprint 6 mastery and mode summaries
+
+The `/pokrok` dashboard now shows a personal periodic-table mastery heatmap
+derived from the active account's IndexedDB attempts. It counts only
+`periodic-table` attempts for currently reviewed elements, groups them by
+element ID, and refreshes after a local save or sync pull. One or two answers
+show insufficient evidence. From three answers onward, correctness is weighted
+by recency (each newer answer has twice the weight of the preceding one): below
+50% means practice needed, 50–79% developing, and 80% or more mastered. The
+legend and each cell expose visible non-color marks and accessible text; no
+data has its own state. The local view remains available offline.
+
+The same dashboard now displays per-mode counts from the existing
+`/api/v1/me/stats` endpoint alongside the existing progression summary. Guest
+and tester accounts remain excluded. The server summary reports only accepted,
+synchronized attempts; its unavailable state does not hide the local heatmap.
+
+Verification: 186 web unit/component tests, the new offline dashboard Playwright
+path in desktop and mobile Chromium (2 checks), web typecheck, formatting,
+lint, and production build passed on 2026-09-25. Sprint 6 progress reset, broader
+offline/browser/accessibility release checks, usability review, documentation,
+and chemistry-SME approvals remain open.

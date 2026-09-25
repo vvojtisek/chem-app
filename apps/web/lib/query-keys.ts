@@ -3,6 +3,8 @@ export const queryKeys = {
   me: {
     profile: ["me", "profile"] as const,
     stats: ["me", "stats"] as const,
+    attemptStats: (userId: string) => ["me", "attempt-stats", userId] as const,
+    periodicMastery: (userId: string) => ["me", "periodic-mastery", userId] as const,
   },
   admin: {
     users: ["admin", "users"] as const,

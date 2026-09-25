@@ -8,6 +8,7 @@ const csrfCookieName = process.env.NEXT_PUBLIC_CSRF_COOKIE_NAME ?? "__Host-inorg
 export type CurrentUser = components["schemas"]["MeResponse"];
 export type UserProfile = components["schemas"]["ProfileResponse"];
 export type UserProgression = components["schemas"]["Progression"];
+export type UserAttemptStats = components["schemas"]["AttemptStats"];
 
 export class ApiError extends Error {
   constructor(
@@ -165,4 +166,8 @@ export async function getAdminProfile(userId: string): Promise<UserProfile> {
 
 export async function getMyProgression(): Promise<UserProgression> {
   return unwrapApiResponse(await apiClient.GET("/api/v1/me/progression", { cache: "no-store" }));
+}
+
+export async function getMyAttemptStats(): Promise<UserAttemptStats> {
+  return unwrapApiResponse(await apiClient.GET("/api/v1/me/stats", { cache: "no-store" }));
 }
