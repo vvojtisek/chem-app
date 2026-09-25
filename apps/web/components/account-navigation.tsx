@@ -11,7 +11,7 @@ export function AccountNavigation() {
   return (
     <nav
       aria-label="Navigace účtu"
-      className="sticky top-0 z-30 flex flex-wrap items-center justify-end gap-2 border-b border-slate-200 bg-white/95 px-3 py-2 text-sm backdrop-blur sm:gap-3 sm:px-8"
+      className="flex flex-wrap items-center justify-end gap-2 border-b border-slate-200 bg-white px-3 py-2 text-sm sm:gap-3 sm:px-8"
     >
       {isGuest ? (
         <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700">

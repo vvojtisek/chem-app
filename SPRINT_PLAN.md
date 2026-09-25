@@ -483,3 +483,21 @@ content validation, contract check, Ruff, 41 API tests against an isolated
 PostgreSQL database, production build, and 76 desktop/mobile Playwright tests.
 The release gate remains intentionally red until a chemistry SME reviews the
 pending records.
+
+### Update 2026-09-25 — Automated WCAG 2.2 AA browser checks
+
+Added axe-core Playwright checks tagged for WCAG 2.0/2.1/2.2 A and AA on the
+unauthenticated login and registration screens and the authenticated home,
+periodic-table selection and active exercise, nomenclature, equations,
+flashcards, progress dashboard, and profile. Both desktop Chromium and the
+mobile Chromium project run the checks. The first run found a periodic-table
+scroll region unavailable to keyboard users and account navigation covering
+practice controls on small screens. The table region is now keyboard
+focusable, and account navigation no longer stays sticky over content.
+
+Verification: 4/4 accessibility Playwright tests passed on desktop and mobile,
+covering all listed page states. The production build, workspace typecheck,
+format and lint checks, and 377 unit/component tests passed. This automated
+check does not complete manual keyboard review, focus-visibility review,
+screen-reader testing, or physical iPad/Safari testing; those remain release
+tasks.
