@@ -89,12 +89,20 @@ function parseCoefficient(value: string): number | null {
   return Number(value);
 }
 
-/** Grade a complete coefficient entry by conservation and its lowest integer ratio. */
+/**
+ * Grade a complete coefficient entry by conservation and its lowest integer ratio. `balanced`
+ * tells a conserving entry apart from a correct one: balanced but not correct means the
+ * coefficients can still be divided by a common factor.
+ */
 export function gradeEquationCoefficients(
   values: Readonly<Record<string, string>>,
   approved: ParsedEquation,
   allowedSymbols: ReadonlySet<string>,
-): { readonly correct: boolean; readonly atomBalance: EquationAtomBalance | null } {
+): {
+  readonly correct: boolean;
+  readonly balanced: boolean;
+  readonly atomBalance: EquationAtomBalance | null;
+} {
   const withCoefficients = (
     terms: readonly EquationTerm[],
     side: "reactant" | "product",
@@ -110,14 +118,13 @@ export function gradeEquationCoefficients(
   const reactants = withCoefficients(approved.reactants, "reactant");
   const products = withCoefficients(approved.products, "product");
   if (reactants === null || products === null) {
-    return { correct: false, atomBalance: null };
+    return { correct: false, balanced: false, atomBalance: null };
   }
   const atomBalance = countEquationAtoms(reactants, products, allowedSymbols);
+  const balanced = atomBalance !== null && isBalancedEquation(reactants, products, allowedSymbols);
   return {
-    correct:
-      atomBalance !== null &&
-      isBalancedEquation(reactants, products, allowedSymbols) &&
-      hasReducedEquationCoefficients(reactants, products),
+    correct: balanced && hasReducedEquationCoefficients(reactants, products),
+    balanced,
     atomBalance,
   };
 }

@@ -39,6 +39,29 @@ describe("equation answer grading", () => {
     ).toBe(false);
   });
 
+  it("marks a conserving entry that is not in the lowest ratio as balanced but not correct", () => {
+    expect(
+      gradeEquationCoefficients(
+        { "reactant-0": "2", "reactant-1": "4", "product-0": "2", "product-1": "2" },
+        zinc,
+        symbols,
+      ),
+    ).toMatchObject({ correct: false, balanced: true });
+    expect(gradeEquationCoefficients({ "reactant-1": "2" }, zinc, symbols)).toMatchObject({
+      correct: true,
+      balanced: true,
+    });
+    expect(gradeEquationCoefficients({}, zinc, symbols)).toMatchObject({
+      correct: false,
+      balanced: false,
+    });
+    expect(gradeEquationCoefficients({ "reactant-1": "x" }, zinc, symbols)).toMatchObject({
+      correct: false,
+      balanced: false,
+      atomBalance: null,
+    });
+  });
+
   it("accepts independent reduced balancing solutions for approved formula terms", () => {
     expect(
       gradeEquationCoefficients(
