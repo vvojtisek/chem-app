@@ -193,7 +193,7 @@ export function ReactionEquationPractice({
 
   if (questions.length === 0) {
     return (
-      <p className="mt-6 rounded-2xl border bg-white p-5">
+      <p className="mt-6 rounded-2xl border bg-surface p-5">
         Pro tuto úroveň nejsou připravena zadání.
       </p>
     );
@@ -205,7 +205,7 @@ export function ReactionEquationPractice({
         {(["beginner", "advanced", "pro"] as const).map((option) => (
           <button
             aria-pressed={level === option}
-            className={`min-h-12 rounded-xl px-3 font-semibold ${level === option ? "bg-slate-950 text-white" : "border border-slate-300 bg-white text-slate-900"}`}
+            className={`min-h-12 rounded-xl px-3 font-semibold ${level === option ? "bg-accent text-on-fill" : "border border-line-strong bg-surface text-ink"}`}
             key={option}
             onClick={() => changeLevel(option)}
             type="button"
@@ -214,7 +214,7 @@ export function ReactionEquationPractice({
           </button>
         ))}
       </nav>
-      <p className="mt-3 text-sm leading-6 text-slate-600">
+      <p className="mt-3 text-sm leading-6 text-ink-2">
         {level === "beginner"
           ? "Vzorce reaktantů i produktů jsou uvedené. Doplňte koeficienty na obou stranách; prázdné pole znamená 1."
           : level === "advanced"
@@ -222,25 +222,25 @@ export function ReactionEquationPractice({
             : "Podle názvu a vzorce produktu napište jednu správnou rovnici výroby. Pokud znáte více ověřených možností, oddělte je středníkem."}
       </p>
       <div className="mt-5 flex flex-wrap gap-3 text-sm">
-        <span className="rounded-full bg-slate-100 px-3 py-1 font-medium">
+        <span className="rounded-full bg-surface-3 px-3 py-1 font-medium">
           Otázka {Math.min(questionIndex + 1, questions.length)} z {questions.length}
         </span>
-        <span className="rounded-full bg-emerald-100 px-3 py-1 font-medium text-emerald-900">
+        <span className="rounded-full bg-good-soft px-3 py-1 font-medium text-good">
           Správně: {correctCount}
         </span>
-        <span className="rounded-full bg-rose-100 px-3 py-1 font-medium text-rose-900">
+        <span className="rounded-full bg-bad-soft px-3 py-1 font-medium text-bad">
           Chybně: {incorrectCount}
         </span>
       </div>
 
       {!question ? (
-        <section className="mt-4 rounded-2xl border bg-white p-5">
+        <section className="mt-4 rounded-2xl border bg-surface p-5">
           <h2 className="text-2xl font-semibold">Tato série je hotová</h2>
           <p className="mt-2">
             Správně: {correctCount} · Chybně: {incorrectCount}
           </p>
           <button
-            className="mt-4 min-h-11 rounded-xl border border-slate-300 px-4 font-semibold"
+            className="mt-4 min-h-11 rounded-xl border border-line-strong px-4 font-semibold"
             onClick={() => changeLevel(level)}
             type="button"
           >
@@ -250,9 +250,9 @@ export function ReactionEquationPractice({
       ) : (
         <section
           aria-labelledby="equation-heading"
-          className="mt-4 rounded-2xl border bg-white p-5 sm:p-7"
+          className="mt-4 rounded-2xl border bg-surface p-5 sm:p-7"
         >
-          <p className="text-sm font-semibold text-emerald-800">
+          <p className="text-sm font-semibold text-good">
             {question.route.kind === "preparation" ? "Příprava" : "Výroba"}
           </p>
           <h2 className="mt-1 text-xl font-semibold" id="equation-heading">
@@ -271,13 +271,13 @@ export function ReactionEquationPractice({
                 Chemická rovnice
                 <input
                   autoComplete="off"
-                  className="min-h-12 w-full rounded-xl border border-slate-300 px-3 font-mono"
+                  className="min-h-12 w-full rounded-xl border border-line-strong px-3 font-mono"
                   onChange={(event) => setEquationAnswer(event.target.value)}
                   placeholder="např. C + H2O -> H2 + CO"
                   value={equationAnswer}
                 />
               </label>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-ink-2">
                 U této látky existuje {proQuestions.length} ověřených rovnic výroby.
               </p>
               {!feedback ? <SubmitButton>Vyhodnotit rovnici</SubmitButton> : null}
@@ -296,7 +296,7 @@ export function ReactionEquationPractice({
                 </div>
               ) : (
                 <>
-                  <p className="mt-5 rounded-xl bg-slate-50 p-4 font-mono leading-7">
+                  <p className="mt-5 rounded-xl bg-surface-2 p-4 font-mono leading-7">
                     {formatFormulaSide(question.route.reactants)} → ?
                   </p>
                   {phase === "products" ? (
@@ -311,7 +311,7 @@ export function ReactionEquationPractice({
                         Produkty na pravé straně (vzorce oddělte znakem +)
                         <input
                           autoComplete="off"
-                          className="min-h-12 rounded-xl border border-slate-300 px-3 font-mono"
+                          className="min-h-12 rounded-xl border border-line-strong px-3 font-mono"
                           onChange={(event) => setProductAnswer(event.target.value)}
                           placeholder="např. H2 + ZnCl2"
                           value={productAnswer}
@@ -321,7 +321,7 @@ export function ReactionEquationPractice({
                     </form>
                   ) : (
                     <div className="mt-4">
-                      <p className="font-mono text-slate-700">
+                      <p className="font-mono text-ink-2">
                         {formatFormulaSide(question.route.reactants)} →{" "}
                         {formatFormulaSide(question.route.products)}
                       </p>
@@ -351,12 +351,10 @@ export function ReactionEquationPractice({
             </>
           )}
           {feedback ? (
-            <div aria-live="polite" className="mt-4 rounded-xl bg-slate-50 p-4" role="status">
+            <div aria-live="polite" className="mt-4 rounded-xl bg-surface-2 p-4" role="status">
               <p
                 className={
-                  feedback === "correct"
-                    ? "font-semibold text-emerald-900"
-                    : "font-semibold text-rose-900"
+                  feedback === "correct" ? "font-semibold text-good" : "font-semibold text-bad"
                 }
               >
                 {feedback === "correct" ? "Správně." : "To není správné řešení."}
@@ -388,7 +386,7 @@ export function ReactionEquationPractice({
                 </ul>
               ) : null}
               <button
-                className="mt-3 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+                className="mt-3 min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
                 onClick={advance}
                 type="button"
               >
@@ -397,7 +395,7 @@ export function ReactionEquationPractice({
             </div>
           ) : null}
           {saveNotice ? (
-            <p className="mt-3 text-sm text-rose-800" role="alert">
+            <p className="mt-3 text-sm text-bad" role="alert">
               {saveNotice}
             </p>
           ) : null}
@@ -417,7 +415,7 @@ function EquationWithCoefficients({
   onChange: (key: string, value: string) => void;
 }>) {
   return (
-    <div className="grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+    <div className="grid gap-3 rounded-xl bg-surface-2 p-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
       <CoefficientSide
         side="reactant"
         label="Reaktant"
@@ -463,7 +461,7 @@ function CoefficientSide({
             </span>
             <input
               autoComplete="off"
-              className="h-10 w-14 rounded-lg border border-slate-300 bg-white px-2 text-center font-mono"
+              className="h-10 w-14 rounded-lg border border-line-strong bg-surface px-2 text-center font-mono"
               inputMode="numeric"
               maxLength={3}
               onChange={(event) => onChange(`${side}-${index}`, event.target.value)}
@@ -480,10 +478,7 @@ function CoefficientSide({
 
 function SubmitButton({ children }: Readonly<{ children: string }>) {
   return (
-    <button
-      className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
-      type="submit"
-    >
+    <button className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill" type="submit">
       {children}
     </button>
   );

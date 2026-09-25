@@ -143,7 +143,7 @@ export default function AdminPage() {
   return (
     <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8">
       <h1 className="text-3xl font-semibold">Správa účtů</h1>
-      <p className="mt-2 text-slate-600">Testovací účty jsou ze souhrnných statistik vyloučeny.</p>
+      <p className="mt-2 text-ink-2">Testovací účty jsou ze souhrnných statistik vyloučeny.</p>
       {stats.data ? (
         <section aria-label="Souhrnné statistiky" className="mt-6 rounded-xl border p-4">
           <p>Celkem pokusů: {stats.data.totalAttempts}</p>
@@ -156,14 +156,14 @@ export default function AdminPage() {
       )}
       <h2 className="mt-8 text-xl font-semibold">Účty</h2>
       {users.data ? (
-        <ul className="mt-3 divide-y rounded-xl border bg-white">
+        <ul className="mt-3 divide-y rounded-xl border bg-surface">
           {users.data.items.map((user) => (
             <li className="flex flex-wrap items-center justify-between gap-3 p-3" key={user.id}>
               <span>
                 {user.displayName || user.username} · {user.role}
                 {user.isActive ? "" : " · neaktivní"}
-                {user.email ? <small className="block text-slate-600">{user.email}</small> : null}
-                <small className="block text-slate-600">
+                {user.email ? <small className="block text-ink-2">{user.email}</small> : null}
+                <small className="block text-ink-2">
                   Poslední přihlášení:{" "}
                   {user.lastLoginAt
                     ? new Date(user.lastLoginAt).toLocaleString("cs-CZ")
@@ -193,7 +193,7 @@ export default function AdminPage() {
       {profile.data ? (
         <section
           aria-labelledby="selected-account"
-          className="mt-8 rounded-2xl border bg-white p-5"
+          className="mt-8 rounded-2xl border bg-surface p-5"
         >
           <h2 className="text-xl font-semibold" id="selected-account">
             Účet: {profile.data.username}
@@ -220,14 +220,14 @@ export default function AdminPage() {
                 type="email"
                 value={email}
               />
-              <span className="text-xs text-slate-600">
+              <span className="text-xs text-ink-2">
                 Upravená adresa bude označena jako potvrzená správcem.
               </span>
             </label>
             <label className="grid gap-1 font-medium">
               Role
               <select
-                className="min-h-11 rounded-xl border bg-white px-3"
+                className="min-h-11 rounded-xl border bg-surface px-3"
                 onChange={(event) => setRole(event.target.value as "admin" | "user" | "tester")}
                 value={role}
               >
@@ -245,7 +245,7 @@ export default function AdminPage() {
               Aktivní účet
             </label>
             <button
-              className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50 sm:col-span-2 sm:justify-self-start"
+              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50 sm:col-span-2 sm:justify-self-start"
               disabled={busy}
               type="submit"
             >
@@ -293,12 +293,12 @@ export default function AdminPage() {
             </button>
           </form>
           {message ? (
-            <p className="mt-4 text-emerald-900" role="status">
+            <p className="mt-4 text-good" role="status">
               {message}
             </p>
           ) : null}
           {error ? (
-            <p className="mt-4 text-rose-800" role="alert">
+            <p className="mt-4 text-bad" role="alert">
               {error}
             </p>
           ) : null}
@@ -313,7 +313,7 @@ export default function AdminPage() {
         <section aria-label="Historie pokusů" className="mt-8">
           <h2 className="text-xl font-semibold">Historie pokusů</h2>
           {attempts.data ? (
-            <ul className="mt-3 divide-y rounded-xl border bg-white">
+            <ul className="mt-3 divide-y rounded-xl border bg-surface">
               {attempts.data.items.map(({ event }) => (
                 <li className="p-3" key={event.id}>
                   {event.mode} · {event.questionId} · {event.isCorrect ? "správně" : "chybně"}

@@ -34,19 +34,17 @@ export default function ElementLearningPage() {
     <main className="mx-auto min-h-dvh w-full max-w-6xl px-5 py-8 sm:px-8">
       <PracticeNavigation backHref="/" />
       <header className="max-w-3xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
-          Výukový set
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+        <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">Výukový set</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Prvky a jejich skupiny
         </h1>
-        <p className="mt-3 leading-7 text-slate-700">
+        <p className="mt-3 leading-7 text-ink-2">
           Procházejte údaje o všech 118 prvcích. Rozbalte prvek pro jeho český a latinský název,
           umístění v tabulce, relativní atomovou hmotnost a valenční konfiguraci. Tato sada slouží k
           učení: neobsahuje otázky ani nezaznamenává pokusy.
         </p>
         <Link
-          className="mt-4 inline-flex min-h-11 items-center rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+          className="mt-4 inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
           href="/uceni/priprava-vyroba"
         >
           Procházet všechny přípravy a výroby
@@ -60,24 +58,24 @@ export default function ElementLearningPage() {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {groups.map(({ groupNumber, groupInfo, elements }) => (
             <section
-              className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"
+              className="rounded-2xl border border-line bg-surface p-4 sm:p-5"
               key={groupNumber}
             >
               <h3 className="text-lg font-semibold">
                 {groupInfo?.nameCs ?? `Skupina ${groupNumber}`}
-                <span className="ml-2 text-sm font-normal text-slate-600">
+                <span className="ml-2 text-sm font-normal text-ink-2">
                   ({groupNumber}. skupina)
                 </span>
               </h3>
               {groupInfo ? <GroupMnemonics group={groupInfo} /> : null}
               <ul className="mt-3 flex flex-wrap gap-2">
                 {elements.map((element) => (
-                  <li className="rounded-lg bg-slate-100 px-2.5 py-1 text-sm" key={element.id}>
+                  <li className="rounded-lg bg-surface-3 px-2.5 py-1 text-sm" key={element.id}>
                     <span className="font-semibold">{element.symbol}</span> {element.nameCs}
                   </li>
                 ))}
               </ul>
-              <ul className="mt-4 divide-y divide-slate-100 border-t border-slate-100">
+              <ul className="mt-4 divide-y divide-line border-t border-line">
                 {elements.map((element) => (
                   <li className="py-2" key={element.id}>
                     <ElementStudyCard
@@ -89,13 +87,13 @@ export default function ElementLearningPage() {
               </ul>
             </section>
           ))}
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <section className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
             <h3 className="text-lg font-semibold">f-blok</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-700">
+            <p className="mt-2 text-sm leading-6 text-ink-2">
               Lanthanoidy a aktinoidy jsou uvedeny samostatně, protože nemají číslo skupiny v hlavní
               části tabulky.
             </p>
-            <ul className="mt-4 divide-y divide-slate-100 border-t border-slate-100">
+            <ul className="mt-4 divide-y divide-line border-t border-line">
               {fBlockElements.map((element) => (
                 <li className="py-2" key={element.id}>
                   <ElementStudyCard
@@ -121,16 +119,16 @@ function ElementStudyCard({
 }>) {
   return (
     <details className="group rounded-lg">
-      <summary className="min-h-11 cursor-pointer list-none rounded-lg py-2 font-medium marker:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">
+      <summary className="min-h-11 cursor-pointer list-none rounded-lg py-2 font-medium marker:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
         <span
           aria-hidden="true"
-          className="mr-2 inline-block w-8 text-center font-semibold text-emerald-900"
+          className="mr-2 inline-block w-8 text-center font-semibold text-good"
         >
           {element.symbol}
         </span>
         {element.nameCs}
-        <span className="ml-2 text-sm text-slate-500">{element.atomicNumber}</span>
-        <span aria-hidden="true" className="float-right px-2 text-slate-500 group-open:rotate-180">
+        <span className="ml-2 text-sm text-ink-3">{element.atomicNumber}</span>
+        <span aria-hidden="true" className="float-right px-2 text-ink-3 group-open:rotate-180">
           ⌄
         </span>
       </summary>
@@ -156,19 +154,19 @@ function ElementStudyCard({
         >
           <h3 className="font-semibold">Příprava a výroba {product.nameCs}</h3>
           {product.notes.map((note) => (
-            <p className="mt-2 text-sm leading-6 text-slate-700" key={`${note.kind}-${note.text}`}>
+            <p className="mt-2 text-sm leading-6 text-ink-2" key={`${note.kind}-${note.text}`}>
               {note.kind === "preparation" ? "Příprava" : "Výroba"}: {note.text}
             </p>
           ))}
           {product.routes.length > 0 ? (
             <ul className="mt-3 grid gap-2 text-sm">
               {product.routes.map((route) => (
-                <li className="rounded-lg bg-slate-50 p-3" key={route.id}>
+                <li className="rounded-lg bg-surface-2 p-3" key={route.id}>
                   <span className="font-medium">
                     {route.kind === "preparation" ? "Příprava" : "Výroba"}: {formatReaction(route)}
                   </span>
                   {route.conditionsCs ? (
-                    <span className="ml-2 text-slate-600">({route.conditionsCs} nad šipkou)</span>
+                    <span className="ml-2 text-ink-2">({route.conditionsCs} nad šipkou)</span>
                   ) : null}
                 </li>
               ))}
@@ -199,8 +197,8 @@ function formatReaction(route: PreparationProductionRuntimeProduct["routes"][num
 function StudyFact({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
     <div>
-      <dt className="text-slate-600">{label}</dt>
-      <dd className="font-medium text-slate-950">{value}</dd>
+      <dt className="text-ink-2">{label}</dt>
+      <dd className="font-medium text-ink">{value}</dd>
     </div>
   );
 }

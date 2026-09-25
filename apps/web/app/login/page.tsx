@@ -76,10 +76,10 @@ function LoginForm() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
-      <h1 className="text-3xl font-semibold text-slate-950">Přihlášení</h1>
-      <p className="mt-2 text-slate-600">Přihlaste se e-mailem nebo pokračujte jako host.</p>
+      <h1 className="text-3xl font-semibold text-ink">Přihlášení</h1>
+      <p className="mt-2 text-ink-2">Přihlaste se e-mailem nebo pokračujte jako host.</p>
       {params.get("passwordChanged") === "1" ? (
-        <p className="mt-3 text-sm text-emerald-900" role="status">
+        <p className="mt-3 text-sm text-good" role="status">
           Heslo bylo změněno. Přihlaste se novým heslem.
         </p>
       ) : null}
@@ -88,7 +88,7 @@ function LoginForm() {
           E-mail nebo uživatelské jméno
           <input
             autoComplete="username"
-            className="min-h-11 rounded-xl border border-slate-300 px-3"
+            className="min-h-11 rounded-xl border border-line-strong px-3"
             maxLength={254}
             onChange={(event) => setIdentifier(event.target.value)}
             required
@@ -99,18 +99,18 @@ function LoginForm() {
           Heslo
           <input
             autoComplete="current-password"
-            className="min-h-11 rounded-xl border border-slate-300 px-3"
+            className="min-h-11 rounded-xl border border-line-strong px-3"
             onChange={(event) => setPassword(event.target.value)}
             required
             type="password"
             value={password}
           />
         </label>
-        <p aria-live="polite" className="text-sm text-rose-800" role={error ? "alert" : undefined}>
+        <p aria-live="polite" className="text-sm text-bad" role={error ? "alert" : undefined}>
           {error}
         </p>
         <button
-          className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50"
+          className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50"
           disabled={busy}
           type="submit"
         >
@@ -129,7 +129,7 @@ function LoginForm() {
         </Link>
       </div>
       <button
-        className="mt-6 min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900 disabled:opacity-50"
+        className="mt-6 min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink disabled:opacity-50"
         disabled={busy}
         onClick={() => void enterGuest()}
         type="button"

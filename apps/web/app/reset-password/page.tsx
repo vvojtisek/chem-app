@@ -53,10 +53,10 @@ function ResetPasswordForm() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
-      <h1 className="text-3xl font-semibold text-slate-950">
+      <h1 className="text-3xl font-semibold text-ink">
         {token ? "Nastavit nové heslo" : "Obnovit heslo"}
       </h1>
-      <p className="mt-2 text-slate-600">
+      <p className="mt-2 text-ink-2">
         {token
           ? "Zvolte nové heslo alespoň o 12 znacích."
           : "Pošleme vám odkaz, pokud je e-mail spojený s účtem."}
@@ -68,7 +68,7 @@ function ResetPasswordForm() {
               Nové heslo
               <input
                 autoComplete="new-password"
-                className="min-h-11 rounded-xl border border-slate-300 px-3"
+                className="min-h-11 rounded-xl border border-line-strong px-3"
                 maxLength={1024}
                 minLength={12}
                 onChange={(event) => setPassword(event.target.value)}
@@ -81,7 +81,7 @@ function ResetPasswordForm() {
               Potvrdit nové heslo
               <input
                 autoComplete="new-password"
-                className="min-h-11 rounded-xl border border-slate-300 px-3"
+                className="min-h-11 rounded-xl border border-line-strong px-3"
                 maxLength={1024}
                 minLength={12}
                 onChange={(event) => setConfirmation(event.target.value)}
@@ -96,7 +96,7 @@ function ResetPasswordForm() {
             E-mail
             <input
               autoComplete="email"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              className="min-h-11 rounded-xl border border-line-strong px-3"
               maxLength={254}
               onChange={(event) => setEmail(event.target.value)}
               required
@@ -106,17 +106,17 @@ function ResetPasswordForm() {
           </label>
         )}
         {error ? (
-          <p className="text-sm text-rose-800" role="alert">
+          <p className="text-sm text-bad" role="alert">
             {error}
           </p>
         ) : null}
         {message ? (
-          <p className="text-sm text-emerald-900" role="status">
+          <p className="text-sm text-good" role="status">
             {message}
           </p>
         ) : null}
         <button
-          className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50"
+          className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50"
           disabled={busy}
           type="submit"
         >

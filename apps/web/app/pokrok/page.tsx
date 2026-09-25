@@ -42,19 +42,17 @@ export default function ProgressPage() {
   return (
     <main className="mx-auto min-h-dvh w-full max-w-4xl px-5 py-8 sm:px-8">
       <PageNavigation />
-      <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
-        Osobní přehled
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+      <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">Osobní přehled</p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
         Statistika
       </h1>
       {isGuest ? (
-        <p className="mt-5 rounded-2xl border bg-white p-5 text-slate-700">
+        <p className="mt-5 rounded-2xl border bg-surface p-5 text-ink-2">
           Hostovský přístup nezaznamenává osobní pokusy. Pro zobrazení vlastního pokroku se
           přihlaste k účtu.
         </p>
       ) : isTester ? (
-        <p className="mt-5 rounded-2xl border bg-white p-5 text-slate-700">
+        <p className="mt-5 rounded-2xl border bg-surface p-5 text-ink-2">
           Testovací účet nemá osobní statistiky pokroku.
         </p>
       ) : (

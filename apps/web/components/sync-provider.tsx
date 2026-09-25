@@ -43,10 +43,10 @@ export function useSync(): SyncContextValue {
 export function SyncStatusIndicator() {
   const sync = useSync();
   return (
-    <span aria-live="polite" className="max-w-full text-slate-600">
+    <span aria-live="polite" className="max-w-full text-ink-2">
       {sync.label}
       {sync.quarantineMessage ? (
-        <span className="ml-2 text-amber-900">{sync.quarantineMessage}</span>
+        <span className="ml-2 text-warn">{sync.quarantineMessage}</span>
       ) : null}
     </span>
   );

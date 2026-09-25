@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Offline výuková aplikace pro anorganickou chemii.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f4f7f8",
-    theme_color: "#087f5b",
+    background_color: "#f2f6f7",
+    theme_color: "#0a6a9e",
     lang: "cs",
     icons: [
       {

@@ -72,14 +72,14 @@ export function PracticeDashboard({
   onFinish,
 }: PracticeDashboardProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3">
-      <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-900">
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-surface p-3">
+      <span className="rounded-full bg-good-soft px-3 py-1 text-sm font-semibold text-good">
         Správně: {correct}
       </span>
-      <span className="rounded-full bg-rose-100 px-3 py-1 text-sm font-semibold text-rose-900">
+      <span className="rounded-full bg-bad-soft px-3 py-1 text-sm font-semibold text-bad">
         Špatně: {incorrect}
       </span>
-      <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
+      <span className="rounded-full bg-surface-3 px-3 py-1 text-sm font-semibold text-ink">
         Čas{" "}
         <span className="font-mono tabular-nums" role="timer">
           {formatElapsed(elapsedMs)}
@@ -87,14 +87,14 @@ export function PracticeDashboard({
       </span>
       <div className="ml-auto flex gap-2">
         <button
-          className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+          className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink"
           onClick={onReset}
           type="button"
         >
           Reset
         </button>
         <button
-          className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
           disabled={!running}
           onClick={onFinish}
           type="button"
@@ -139,10 +139,10 @@ export function PracticeSummary({
   return (
     <section
       aria-labelledby={headingId}
-      className="mt-6 rounded-2xl border border-emerald-900/15 bg-emerald-50 p-5"
+      className="mt-6 rounded-2xl border border-good/15 bg-good-soft p-5"
     >
       <h2
-        className="text-2xl font-semibold text-slate-950"
+        className="text-2xl font-semibold text-ink"
         id={headingId}
         ref={headingRef}
         tabIndex={focusOnMount ? -1 : undefined}
@@ -164,8 +164,8 @@ export function PracticeSummary({
 function SummaryFact({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div>
-      <dt className="text-sm text-slate-600">{label}</dt>
-      <dd className="mt-1 text-xl font-semibold text-slate-950">{value}</dd>
+      <dt className="text-sm text-ink-2">{label}</dt>
+      <dd className="mt-1 text-xl font-semibold text-ink">{value}</dd>
     </div>
   );
 }

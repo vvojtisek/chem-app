@@ -401,13 +401,13 @@ export function NomenclaturePractice({
   const notices = (
     <>
       {notice ? (
-        <p className="mt-4 text-sm text-slate-700" role="status">
+        <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}
         </p>
       ) : null}
       {storageBroken ? (
         <button
-          className="mt-2 min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+          className="mt-2 min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
           onClick={() => void recoverStorage()}
           type="button"
         >
@@ -447,7 +447,7 @@ export function NomenclaturePractice({
 
       <fieldset className="mt-4">
         <legend className="sr-only">Směr zkoušení</legend>
-        <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1">
+        <div className="inline-flex rounded-xl border border-line-strong bg-surface-3 p-1">
           {DIRECTION_OPTIONS.map((option) => (
             <label key={option.direction}>
               <input
@@ -458,7 +458,7 @@ export function NomenclaturePractice({
                 type="radio"
                 value={option.direction}
               />
-              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-slate-700 peer-checked:bg-white peer-checked:text-slate-950 peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#0b7285]">
+              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
                 {direction === option.direction ? <span aria-hidden="true">✓</span> : null}
                 {option.label}
               </span>
@@ -469,7 +469,7 @@ export function NomenclaturePractice({
 
       {record ? (
         <>
-          <h2 className="mt-6 text-4xl font-semibold tracking-tight break-words text-slate-950 sm:text-6xl">
+          <h2 className="mt-6 text-4xl font-semibold tracking-tight break-words text-ink sm:text-6xl">
             <span className="sr-only">Zadání:</span>{" "}
             {asked === "formula-to-name" ? (
               <span aria-label={plainFormula(record.formula, record.charge)} role="img">
@@ -486,13 +486,13 @@ export function NomenclaturePractice({
               submit();
             }}
           >
-            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-slate-800">
+            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-ink-2">
               {asked === "formula-to-name" ? "Český název" : "Chemický vzorec"}
               <input
                 autoCapitalize="off"
                 autoComplete="off"
                 autoCorrect="off"
-                className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-base"
+                className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 text-base"
                 onChange={(event) => {
                   updateAnswer(event.target.value);
                   setInputHint("");
@@ -504,7 +504,7 @@ export function NomenclaturePractice({
               />
             </label>
             <button
-              className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
               type="submit"
             >
               Odeslat
@@ -513,7 +513,7 @@ export function NomenclaturePractice({
           {asked === "name-to-formula" && answer.trim() ? (
             <FormulaPreview input={answer} symbols={symbols} />
           ) : null}
-          <p className="mt-2 min-h-5 text-sm text-amber-800">{inputHint}</p>
+          <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
           <FeedbackLine feedback={feedback} />
         </>
       ) : (
@@ -527,7 +527,7 @@ export function NomenclaturePractice({
           total={session.total}
         >
           <button
-            className="mt-4 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
             onClick={returnToFilters}
             type="button"
           >
@@ -552,7 +552,7 @@ function FormulaPreview({
 }) {
   const parsed = parseFormula(input, symbols);
   return (
-    <p className="mt-2 text-sm text-slate-600">
+    <p className="mt-2 text-sm text-ink-2">
       Náhled:{" "}
       {parsed.ok ? (
         <span aria-label={parsed.canonical} role="img">
@@ -569,12 +569,12 @@ function FeedbackLine({ feedback }: { readonly feedback: Feedback | null }) {
   if (!feedback) return <p className="min-h-5" />;
   const { record, isCorrect } = feedback;
   return (
-    <div className={`text-sm ${isCorrect ? "text-emerald-800" : "text-rose-800"}`}>
+    <div className={`text-sm ${isCorrect ? "text-good" : "text-bad"}`}>
       <p>
         <span aria-hidden="true">{isCorrect ? "✓ " : "✗ "}</span>
         {isCorrect ? "Správně" : "Špatně"}: {describeRecord(record)}.{feedback.hint}
       </p>
-      {isCorrect ? null : <p className="mt-1 text-slate-600">{record.explanationCs}</p>}
+      {isCorrect ? null : <p className="mt-1 text-ink-2">{record.explanationCs}</p>}
     </div>
   );
 }

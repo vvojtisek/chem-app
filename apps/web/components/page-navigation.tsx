@@ -9,7 +9,7 @@ export function PageNavigation() {
   return (
     <nav aria-label="Navigace stránky" className="mb-6 flex flex-wrap gap-2">
       <button
-        className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+        className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
         onClick={() => router.back()}
         type="button"
       >
@@ -19,7 +19,7 @@ export function PageNavigation() {
         Zpět
       </button>
       <Link
-        className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+        className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
         href="/"
       >
         <span aria-hidden="true" className="mr-1">

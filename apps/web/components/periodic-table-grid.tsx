@@ -81,7 +81,7 @@ export function PeriodicTableFrame({
       <section aria-label="Periodická tabulka" className="overflow-x-auto pb-3" tabIndex={0}>
         <div className="min-w-180">
           {columnHeader ? (
-            <div className="mb-3 grid grid-cols-18 gap-1 border-b border-slate-300 pb-3">
+            <div className="mb-3 grid grid-cols-18 gap-1 border-b border-line-strong pb-3">
               {columns.map((column) => (
                 <div key={column} style={{ gridColumn: column }}>
                   {columnHeader(column)}
@@ -108,7 +108,7 @@ export function PeriodicTableFrame({
 }
 
 function defaultSeriesHeading(_section: PeriodicTableSeriesSection, label: string): ReactNode {
-  return <h3 className="mb-2 text-sm font-semibold text-slate-700">{label}</h3>;
+  return <h3 className="mb-2 text-sm font-semibold text-ink-2">{label}</h3>;
 }
 
 function PositionCell({
@@ -142,9 +142,9 @@ function PositionCell({
 }
 
 const CELL_STYLES: Readonly<Record<PeriodicTableCellResult | "blank", string>> = {
-  solved: "border border-emerald-300 bg-emerald-100 text-emerald-950",
-  incorrect: "border border-rose-300 bg-rose-50 text-rose-900",
-  blank: "border border-slate-300 bg-slate-50 text-slate-700",
+  solved: "border border-good bg-good-soft text-good",
+  incorrect: "border border-bad bg-bad-soft text-bad",
+  blank: "border border-line-strong bg-surface-2 text-ink-2",
 };
 
 function cellLabel(

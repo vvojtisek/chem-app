@@ -44,8 +44,8 @@ const ELEMENT_COUNT_OPTIONS: readonly {
 
 const PILL =
   "inline-flex min-h-11 items-center gap-1 rounded-full border-2 px-4 text-sm font-semibold";
-const PILL_ON = "border-emerald-700 bg-emerald-50 text-emerald-950";
-const PILL_OFF = "border-slate-300 bg-white text-slate-700";
+const PILL_ON = "border-good bg-good-soft text-good";
+const PILL_OFF = "border-line-strong bg-surface text-ink-2";
 
 interface NomenclatureFilterStepProps {
   readonly compounds: readonly NomenclatureRuntimeRecord[];
@@ -100,24 +100,21 @@ export function NomenclatureFilterStep({
   }
 
   return (
-    <section
-      aria-labelledby={headingId}
-      className="rounded-3xl border border-slate-200 bg-white p-6"
-    >
+    <section aria-labelledby={headingId} className="rounded-3xl border border-line bg-surface p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-semibold text-slate-950" id={headingId}>
+        <h2 className="text-2xl font-semibold text-ink" id={headingId}>
           Výběr látek
         </h2>
         <div className="flex flex-wrap gap-2">
           <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
             onClick={() => onChange({ ...filters, categories: [...available], families: [] })}
             type="button"
           >
             Vybrat vše
           </button>
           <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
             onClick={() => onChange({ ...filters, categories: [], families: [] })}
             type="button"
           >
@@ -127,7 +124,7 @@ export function NomenclatureFilterStep({
       </div>
 
       <fieldset className="mt-5">
-        <legend className="font-semibold text-slate-950">Kategorie</legend>
+        <legend className="font-semibold text-ink">Kategorie</legend>
         <div className="mt-3 flex flex-wrap gap-2">
           {available.map((category) => {
             const on = selected.has(category);
@@ -145,7 +142,7 @@ export function NomenclatureFilterStep({
               >
                 {on ? <span aria-hidden="true">✓</span> : null}
                 {CATEGORY_LABELS[category]}
-                <span className="font-normal text-slate-600">({count})</span>
+                <span className="font-normal text-ink-2">({count})</span>
               </button>
             );
           })}
@@ -153,7 +150,7 @@ export function NomenclatureFilterStep({
         {[...quickFamilies].map(([category, families]) =>
           selected.has(category) && families.length > 0 ? (
             <fieldset className="mt-4" key={category}>
-              <legend className="text-sm font-medium text-slate-700">
+              <legend className="text-sm font-medium text-ink-2">
                 Rychlý výběr – {CATEGORY_LABELS[category].toLowerCase()}
               </legend>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -171,7 +168,7 @@ export function NomenclatureFilterStep({
                     >
                       {on ? <span aria-hidden="true">✓</span> : null}
                       {familyLabel(family)}
-                      <span className="text-slate-600">({count})</span>
+                      <span className="text-ink-2">({count})</span>
                     </button>
                   );
                 })}
@@ -182,8 +179,8 @@ export function NomenclatureFilterStep({
       </fieldset>
 
       <fieldset className="mt-6">
-        <legend className="font-semibold text-slate-950">Počet prvků ve sloučenině</legend>
-        <div className="mt-3 inline-flex flex-wrap rounded-xl border border-slate-300 bg-slate-100 p-1">
+        <legend className="font-semibold text-ink">Počet prvků ve sloučenině</legend>
+        <div className="mt-3 inline-flex flex-wrap rounded-xl border border-line-strong bg-surface-3 p-1">
           {ELEMENT_COUNT_OPTIONS.map((option) => (
             <label key={option.value}>
               <input
@@ -194,7 +191,7 @@ export function NomenclatureFilterStep({
                 type="radio"
                 value={option.value}
               />
-              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-slate-700 peer-checked:bg-white peer-checked:text-slate-950 peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#0b7285]">
+              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
                 {filters.elementCount === option.value ? <span aria-hidden="true">✓</span> : null}
                 {option.label}
               </span>
@@ -204,7 +201,7 @@ export function NomenclatureFilterStep({
       </fieldset>
 
       <button
-        className="mt-6 min-h-11 rounded-xl bg-slate-950 px-5 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+        className="mt-6 min-h-11 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
         disabled={matching === 0}
         onClick={onStart}
         type="button"
@@ -212,7 +209,7 @@ export function NomenclatureFilterStep({
         Spustit cvičení ({czechCount(matching)})
       </button>
       {matching === 0 ? (
-        <p className="mt-2 text-sm text-amber-800" role="status">
+        <p className="mt-2 text-sm text-warn" role="status">
           Této kombinaci filtrů neodpovídá žádná látka. Upravte kategorie nebo počet prvků.
         </p>
       ) : null}

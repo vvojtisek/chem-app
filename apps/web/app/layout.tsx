@@ -5,6 +5,8 @@ import { AppProviders } from "@/components/app-providers";
 import { AuthGate } from "@/components/auth-gate";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 
+import "@fontsource-variable/atkinson-hyperlegible-next";
+import "@fontsource-variable/bricolage-grotesque";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,8 +16,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
-  themeColor: "#087f5b",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f6f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b131b" },
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

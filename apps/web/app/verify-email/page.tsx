@@ -69,15 +69,15 @@ function VerifyEmailForm() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
-      <h1 className="text-3xl font-semibold text-slate-950">Potvrzení e-mailu</h1>
+      <h1 className="text-3xl font-semibold text-ink">Potvrzení e-mailu</h1>
       {token ? (
         <form className="mt-8 grid gap-4" onSubmit={(event) => void confirmEmail(event)}>
-          <p className="text-slate-600">Zvolte heslo pro svůj účet (alespoň 12 znaků).</p>
+          <p className="text-ink-2">Zvolte heslo pro svůj účet (alespoň 12 znaků).</p>
           <label className="grid gap-1 font-medium">
             Heslo
             <input
               autoComplete="new-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              className="min-h-11 rounded-xl border border-line-strong px-3"
               maxLength={1024}
               minLength={12}
               onChange={(event) => setPassword(event.target.value)}
@@ -90,7 +90,7 @@ function VerifyEmailForm() {
             Potvrdit heslo
             <input
               autoComplete="new-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              className="min-h-11 rounded-xl border border-line-strong px-3"
               maxLength={1024}
               minLength={12}
               onChange={(event) => setConfirmation(event.target.value)}
@@ -100,17 +100,17 @@ function VerifyEmailForm() {
             />
           </label>
           {error ? (
-            <p className="text-sm text-rose-800" role="alert">
+            <p className="text-sm text-bad" role="alert">
               {error}
             </p>
           ) : null}
           {message ? (
-            <p className="text-sm text-emerald-900" role="status">
+            <p className="text-sm text-good" role="status">
               {message}
             </p>
           ) : null}
           <button
-            className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50"
+            className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50"
             disabled={busy}
             type="submit"
           >
@@ -119,13 +119,13 @@ function VerifyEmailForm() {
         </form>
       ) : (
         <>
-          <p className="mt-2 text-slate-600">Pošleme nový odkaz k potvrzení nepotvrzeného účtu.</p>
+          <p className="mt-2 text-ink-2">Pošleme nový odkaz k potvrzení nepotvrzeného účtu.</p>
           <form className="mt-8 grid gap-4" onSubmit={(event) => void resend(event)}>
             <label className="grid gap-1 font-medium">
               E-mail
               <input
                 autoComplete="email"
-                className="min-h-11 rounded-xl border border-slate-300 px-3"
+                className="min-h-11 rounded-xl border border-line-strong px-3"
                 maxLength={254}
                 onChange={(event) => setEmail(event.target.value)}
                 required
@@ -134,17 +134,17 @@ function VerifyEmailForm() {
               />
             </label>
             {error ? (
-              <p className="text-sm text-rose-800" role="alert">
+              <p className="text-sm text-bad" role="alert">
                 {error}
               </p>
             ) : null}
             {message ? (
-              <p className="text-sm text-emerald-900" role="status">
+              <p className="text-sm text-good" role="status">
                 {message}
               </p>
             ) : null}
             <button
-              className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50"
+              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50"
               disabled={busy}
               type="submit"
             >

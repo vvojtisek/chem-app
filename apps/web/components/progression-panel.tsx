@@ -9,7 +9,7 @@ export function ProgressionPanel({
 }>) {
   if (!progression) {
     return (
-      <section className="mt-6 rounded-2xl border bg-white p-5">
+      <section className="mt-6 rounded-2xl border bg-surface p-5">
         <p role="status">
           {isLoading ? "Načítám statistiky…" : "Osobní statistiky se nepodařilo načíst."}
         </p>
@@ -22,16 +22,16 @@ export function ProgressionPanel({
     : 100;
 
   return (
-    <section aria-labelledby="progress-heading" className="mt-6 rounded-2xl border bg-white p-5">
+    <section aria-labelledby="progress-heading" className="mt-6 rounded-2xl border bg-surface p-5">
       <h2 className="text-xl font-semibold" id="progress-heading">
         Souhrn pokroku
       </h2>
       <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm text-slate-600">Úroveň</p>
-          <p className="text-2xl font-semibold text-emerald-900">{progression.rank.title}</p>
+          <p className="text-sm text-ink-2">Úroveň</p>
+          <p className="text-2xl font-semibold text-good">{progression.rank.title}</p>
         </div>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-ink-2">
           {progression.rank.nextRankAt
             ? `${progression.correctAttempts} / ${progression.rank.nextRankAt} správných odpovědí k další úrovni`
             : `${progression.correctAttempts} správných odpovědí · nejvyšší úroveň`}
@@ -42,25 +42,22 @@ export function ProgressionPanel({
         aria-valuemax={100}
         aria-valuemin={0}
         aria-valuenow={Math.round(progressToNext)}
-        className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"
+        className="mt-3 h-2 overflow-hidden rounded-full bg-surface-3"
         role="progressbar"
       >
-        <div
-          className="h-full rounded-full bg-emerald-700"
-          style={{ width: `${progressToNext}%` }}
-        />
+        <div className="h-full rounded-full bg-good" style={{ width: `${progressToNext}%` }} />
       </div>
       <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-600">Pokusy</dt>
+        <div className="rounded-xl bg-surface-2 p-3">
+          <dt className="text-xs text-ink-2">Pokusy</dt>
           <dd className="mt-1 text-xl font-semibold">{progression.totalAttempts}</dd>
         </div>
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-600">Správně</dt>
+        <div className="rounded-xl bg-surface-2 p-3">
+          <dt className="text-xs text-ink-2">Správně</dt>
           <dd className="mt-1 text-xl font-semibold">{progression.correctAttempts}</dd>
         </div>
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-600">Úspěšnost</dt>
+        <div className="rounded-xl bg-surface-2 p-3">
+          <dt className="text-xs text-ink-2">Úspěšnost</dt>
           <dd className="mt-1 text-xl font-semibold">{progression.accuracy} %</dd>
         </div>
       </dl>
@@ -71,17 +68,17 @@ export function ProgressionPanel({
       >
         {progression.trend.map((day) => (
           <li className="flex min-w-0 flex-col items-center gap-1" key={day.day}>
-            <span className="text-[10px] text-slate-600">{day.totalAttempts}</span>
+            <span className="text-[10px] text-ink-2">{day.totalAttempts}</span>
             <span
               aria-label={`${new Date(`${day.day}T00:00:00Z`).toLocaleDateString("cs-CZ")}: ${day.totalAttempts} pokusů, ${day.correctAttempts} správně`}
-              className="w-full rounded-t bg-emerald-700"
+              className="w-full rounded-t bg-good"
               role="img"
               style={{ height: `${Math.max(3, (48 * day.totalAttempts) / maxDaily)}px` }}
             />
           </li>
         ))}
       </ol>
-      <p className="mt-2 text-xs text-slate-600">
+      <p className="mt-2 text-xs text-ink-2">
         Souhrn vychází ze synchronizovaných pokusů. Pokusy se ukládají i bez připojení a doplní se
         po synchronizaci.
       </p>

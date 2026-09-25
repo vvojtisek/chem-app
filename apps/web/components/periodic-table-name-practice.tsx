@@ -304,7 +304,7 @@ export function PeriodicTableNamePractice({
 
       <fieldset className="mt-4">
         <legend className="sr-only">Režim procvičování</legend>
-        <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1">
+        <div className="inline-flex rounded-xl border border-line-strong bg-surface-3 p-1">
           {MODE_OPTIONS.map((option) => (
             <label key={option.mode}>
               <input
@@ -315,7 +315,7 @@ export function PeriodicTableNamePractice({
                 type="radio"
                 value={option.mode}
               />
-              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-slate-700 peer-checked:bg-white peer-checked:text-slate-950 peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#0b7285]">
+              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
                 {mode === option.mode ? <span aria-hidden="true">✓</span> : null}
                 {option.label}
               </span>
@@ -326,7 +326,7 @@ export function PeriodicTableNamePractice({
 
       {prompt ? (
         <>
-          <h2 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
+          <h2 className="mt-6 text-4xl font-semibold tracking-tight text-ink sm:text-6xl">
             <span className="sr-only">Zadání:</span> {promptOf(prompt, mode)}
           </h2>
           <form
@@ -336,7 +336,7 @@ export function PeriodicTableNamePractice({
               submit();
             }}
           >
-            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-slate-800">
+            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-ink-2">
               {mode === "name-to-symbol" ? "Značka prvku" : "Český název prvku"}
               <input
                 autoCapitalize="off"
@@ -344,8 +344,8 @@ export function PeriodicTableNamePractice({
                 autoCorrect="off"
                 className={`min-h-11 rounded-xl border px-3 text-base ${
                   inputFlash
-                    ? "border-rose-600 bg-rose-50 ring-2 ring-rose-300"
-                    : "border-slate-300 bg-white"
+                    ? "border-bad bg-bad-soft ring-2 ring-bad"
+                    : "border-line-strong bg-surface"
                 }`}
                 data-flash={inputFlash ? "incorrect" : undefined}
                 onChange={(event) => {
@@ -359,13 +359,13 @@ export function PeriodicTableNamePractice({
               />
             </label>
             <button
-              className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
               type="submit"
             >
               Odeslat
             </button>
           </form>
-          <p className="mt-2 min-h-5 text-sm text-amber-800">{inputHint}</p>
+          <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
           <LastAnswerLine answer={lastAnswer} />
         </>
       ) : (
@@ -379,7 +379,7 @@ export function PeriodicTableNamePractice({
           total={session.total}
         >
           <button
-            className="mt-4 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
             onClick={returnToSelection}
             type="button"
           >
@@ -393,7 +393,7 @@ export function PeriodicTableNamePractice({
 
       <PeriodicTableGrid cellResult={cellResult} layout={layout} />
       {notice ? (
-        <p className="mt-4 text-sm text-slate-700" role="status">
+        <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}
         </p>
       ) : null}
@@ -410,7 +410,7 @@ function LastAnswerLine({ answer }: { readonly answer: LastAnswer | null }) {
   if (!answer) return <p className="min-h-5" />;
 
   return (
-    <p className={`min-h-5 text-sm ${answer.isCorrect ? "text-emerald-800" : "text-rose-800"}`}>
+    <p className={`min-h-5 text-sm ${answer.isCorrect ? "text-good" : "text-bad"}`}>
       <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
       {describeAnswer(answer.element, answer.isCorrect)}
       {answerHint(answer.match)}

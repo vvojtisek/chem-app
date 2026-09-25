@@ -120,16 +120,16 @@ export function ElementFlashcardPractice({
   return (
     <section aria-labelledby="flashcard-practice-heading" className="mx-auto w-full max-w-5xl">
       <header>
-        <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
+        <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">
           Pětiminutový kvíz
         </p>
         <h1
-          className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl"
+          className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-5xl"
           id="flashcard-practice-heading"
         >
           Značky prvků
         </h1>
-        <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+        <p className="mt-3 max-w-2xl leading-7 text-ink-2">
           Podle českého názvu si vybavte značku prvku. Vyberte prvky a spusťte časovaný kvíz.
         </p>
       </header>
@@ -149,18 +149,18 @@ export function ElementFlashcardPractice({
         <div className="mt-6 grid gap-5">
           <section
             aria-label="Průběh kvízu"
-            className="sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur"
+            className="sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-surface/95 p-3 shadow-sm backdrop-blur"
           >
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-950">
+            <span className="rounded-full bg-good-soft px-3 py-1 text-sm font-semibold text-good">
               Správně: {correct}
             </span>
-            <span className="rounded-full bg-rose-100 px-3 py-1 text-sm font-semibold text-rose-950">
+            <span className="rounded-full bg-bad-soft px-3 py-1 text-sm font-semibold text-bad">
               Špatně: {incorrect}
             </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
+            <span className="rounded-full bg-surface-3 px-3 py-1 text-sm font-semibold text-ink">
               Zbývá: {remainingCards}
             </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
+            <span className="rounded-full bg-surface-3 px-3 py-1 text-sm font-semibold text-ink">
               Čas{" "}
               <span className="font-mono tabular-nums" role="timer">
                 {formatRemaining(remainingTimeMs)}
@@ -168,14 +168,14 @@ export function ElementFlashcardPractice({
             </span>
             <div className="ml-auto flex gap-2">
               <button
-                className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+                className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink"
                 onClick={startRound}
                 type="button"
               >
                 Reset
               </button>
               <button
-                className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+                className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
                 onClick={finishRound}
                 type="button"
               >
@@ -187,9 +187,9 @@ export function ElementFlashcardPractice({
           {current ? (
             <article
               aria-label={`Karta ${questionIndex + 1} z ${questions.length}`}
-              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"
+              className="rounded-3xl border border-line bg-surface p-5 shadow-sm sm:p-8"
             >
-              <p className="text-sm font-medium text-slate-600">
+              <p className="text-sm font-medium text-ink-2">
                 Karta {questionIndex + 1} z {questions.length}
               </p>
               <div className="mt-4 [perspective:1000px]">
@@ -199,12 +199,12 @@ export function ElementFlashcardPractice({
                 >
                   <div
                     aria-hidden={feedback !== null}
-                    className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-5 text-center [backface-visibility:hidden]"
+                    className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-surface-2 p-5 text-center [backface-visibility:hidden]"
                   >
-                    <p className="text-sm font-semibold tracking-wide text-slate-600 uppercase">
+                    <p className="text-sm font-semibold tracking-wide text-ink-2 uppercase">
                       Jaká je chemická značka?
                     </p>
-                    <h2 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+                    <h2 className="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
                       {current.nameCs}
                     </h2>
                     <form
@@ -219,7 +219,7 @@ export function ElementFlashcardPractice({
                       </label>
                       <input
                         autoComplete="off"
-                        className="min-h-12 min-w-40 flex-1 rounded-xl border border-slate-300 bg-white px-4 text-center text-xl font-semibold"
+                        className="min-h-12 min-w-40 flex-1 rounded-xl border border-line-strong bg-surface px-4 text-center text-xl font-semibold"
                         disabled={feedback !== null}
                         id="element-symbol-answer"
                         onChange={(event) => setAnswer(event.target.value)}
@@ -227,7 +227,7 @@ export function ElementFlashcardPractice({
                         value={answer}
                       />
                       <button
-                        className="min-h-12 rounded-xl bg-slate-950 px-5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:opacity-50"
                         disabled={feedback !== null}
                         type="submit"
                       >
@@ -235,7 +235,7 @@ export function ElementFlashcardPractice({
                       </button>
                     </form>
                     <button
-                      className="mt-3 min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-3 min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-50"
                       disabled={feedback !== null}
                       onClick={() => reveal("", false)}
                       type="button"
@@ -245,21 +245,19 @@ export function ElementFlashcardPractice({
                   </div>
                   <div
                     aria-hidden={feedback === null}
-                    className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-5 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]"
+                    className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-surface-2 p-5 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]"
                   >
-                    <p className="text-sm font-semibold tracking-wide text-slate-600 uppercase">
+                    <p className="text-sm font-semibold tracking-wide text-ink-2 uppercase">
                       {current.nameCs}
                     </p>
-                    <p className="mt-3 text-7xl font-bold tracking-tight text-slate-950 sm:text-8xl">
+                    <p className="mt-3 text-7xl font-bold tracking-tight text-ink sm:text-8xl">
                       {current.symbol}
                     </p>
                     {feedback ? (
                       <p
                         aria-live="polite"
                         className={`mt-4 rounded-full px-4 py-2 font-semibold ${
-                          feedback.isCorrect
-                            ? "bg-emerald-100 text-emerald-950"
-                            : "bg-rose-100 text-rose-950"
+                          feedback.isCorrect ? "bg-good-soft text-good" : "bg-bad-soft text-bad"
                         }`}
                         role="status"
                       >
@@ -274,13 +272,13 @@ export function ElementFlashcardPractice({
                 </div>
               </div>
               {notice ? (
-                <p className="mt-3 text-center text-sm text-amber-900" role="alert">
+                <p className="mt-3 text-center text-sm text-warn" role="alert">
                   {notice}
                 </p>
               ) : null}
               {feedback ? (
                 <button
-                  className="mt-5 min-h-12 w-full rounded-xl bg-slate-950 px-5 font-semibold text-white sm:w-auto"
+                  className="mt-5 min-h-12 w-full rounded-xl bg-accent px-5 font-semibold text-on-fill sm:w-auto"
                   onClick={nextCard}
                   type="button"
                 >
@@ -304,14 +302,14 @@ export function ElementFlashcardPractice({
             total={questions.length}
           >
             <button
-              className="mt-4 min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+              className="mt-4 min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
               onClick={startRound}
               type="button"
             >
               Zkusit znovu
             </button>
             <button
-              className="mt-4 ml-2 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+              className="mt-4 ml-2 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
               onClick={changeSelection}
               type="button"
             >

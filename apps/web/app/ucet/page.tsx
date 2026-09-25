@@ -123,7 +123,7 @@ export default function AccountPage() {
       <main className="mx-auto w-full max-w-2xl px-5 py-10">
         <PageNavigation />
         <h1 className="text-3xl font-semibold">Hostovský přístup</h1>
-        <p className="mt-3 text-slate-700">
+        <p className="mt-3 text-ink-2">
           Prohlížíte aplikaci pouze pro čtení. Úpravy karet, pokusy ani nastavení se neukládají.
         </p>
         <button
@@ -134,7 +134,7 @@ export default function AccountPage() {
         >
           Ukončit hostovský přístup
         </button>
-        <p aria-live="polite" className="mt-3 text-rose-800" role={error ? "alert" : undefined}>
+        <p aria-live="polite" className="mt-3 text-bad" role={error ? "alert" : undefined}>
           {error}
         </p>
       </main>
@@ -148,21 +148,21 @@ export default function AccountPage() {
       <PageNavigation />
       <h1 className="text-3xl font-semibold">Profil</h1>
       {profile.data ? (
-        <section aria-label="Údaje profilu" className="mt-5 rounded-2xl border bg-white p-5">
+        <section aria-label="Údaje profilu" className="mt-5 rounded-2xl border bg-surface p-5">
           <dl className="grid gap-3 sm:grid-cols-2">
             <div>
-              <dt className="text-sm text-slate-600">Přihlašovací jméno</dt>
+              <dt className="text-sm text-ink-2">Přihlašovací jméno</dt>
               <dd className="font-medium">{profile.data.username}</dd>
             </div>
             <div>
-              <dt className="text-sm text-slate-600">E-mail</dt>
+              <dt className="text-sm text-ink-2">E-mail</dt>
               <dd className="font-medium">
                 {profile.data.email ?? "Není nastaven"}
                 {profile.data.email && !profile.data.emailVerified ? " · nepotvrzený" : ""}
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-slate-600">Role</dt>
+              <dt className="text-sm text-ink-2">Role</dt>
               <dd className="font-medium">
                 {account.role === "admin"
                   ? "Správce"
@@ -172,7 +172,7 @@ export default function AccountPage() {
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-slate-600">Synchronizace</dt>
+              <dt className="text-sm text-ink-2">Synchronizace</dt>
               <dd className="font-medium">{sync.label}</dd>
             </div>
           </dl>
@@ -184,7 +184,7 @@ export default function AccountPage() {
               Zobrazované jméno
               <input
                 autoComplete="nickname"
-                className="min-h-11 rounded-xl border border-slate-300 px-3"
+                className="min-h-11 rounded-xl border border-line-strong px-3"
                 maxLength={80}
                 onChange={(event) => setDisplayName(event.target.value)}
                 required
@@ -211,7 +211,10 @@ export default function AccountPage() {
         <ProgressionPanel progression={progression.data} isLoading={progression.isPending} />
       ) : null}
 
-      <section aria-labelledby="password-heading" className="mt-6 rounded-2xl border bg-white p-5">
+      <section
+        aria-labelledby="password-heading"
+        className="mt-6 rounded-2xl border bg-surface p-5"
+      >
         <h2 className="text-xl font-semibold" id="password-heading">
           Změnit heslo
         </h2>
@@ -223,7 +226,7 @@ export default function AccountPage() {
             Současné heslo
             <input
               autoComplete="current-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              className="min-h-11 rounded-xl border border-line-strong px-3"
               maxLength={1024}
               onChange={(event) => setCurrentPassword(event.target.value)}
               required
@@ -235,7 +238,7 @@ export default function AccountPage() {
             Nové heslo (alespoň 12 znaků)
             <input
               autoComplete="new-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              className="min-h-11 rounded-xl border border-line-strong px-3"
               maxLength={1024}
               minLength={12}
               onChange={(event) => setNewPassword(event.target.value)}
@@ -248,7 +251,7 @@ export default function AccountPage() {
             Potvrdit nové heslo
             <input
               autoComplete="new-password"
-              className="min-h-11 rounded-xl border border-slate-300 px-3"
+              className="min-h-11 rounded-xl border border-line-strong px-3"
               maxLength={1024}
               minLength={12}
               onChange={(event) => setPasswordConfirmation(event.target.value)}
@@ -258,7 +261,7 @@ export default function AccountPage() {
             />
           </label>
           <button
-            className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white disabled:opacity-50"
+            className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50"
             disabled={busy}
             type="submit"
           >
@@ -285,7 +288,7 @@ export default function AccountPage() {
           Odhlásit
         </button>
         <button
-          className="min-h-11 rounded-xl border border-rose-300 px-4 text-left text-rose-900"
+          className="min-h-11 rounded-xl border border-bad px-4 text-left text-bad"
           disabled={busy || sync.running}
           onClick={() => void signOut(true)}
           type="button"
@@ -294,23 +297,23 @@ export default function AccountPage() {
         </button>
       </div>
       {sync.pending > 0 ? (
-        <p className="mt-4 text-sm text-amber-900">
+        <p className="mt-4 text-sm text-warn">
           Na odeslání čeká {sync.pending} pokusů. Smazání dat je nevratně odstraní z tohoto
           zařízení.
         </p>
       ) : null}
       {sync.error ? (
-        <p className="mt-4 text-rose-800" role="alert">
+        <p className="mt-4 text-bad" role="alert">
           {sync.error}
         </p>
       ) : null}
       {message ? (
-        <p className="mt-4 text-emerald-900" role="status">
+        <p className="mt-4 text-good" role="status">
           {message}
         </p>
       ) : null}
       {error ? (
-        <p className="mt-4 text-rose-800" role="alert">
+        <p className="mt-4 text-bad" role="alert">
           {error}
         </p>
       ) : null}
@@ -327,7 +330,7 @@ function ProgressionPanel({
 }>) {
   if (!progression) {
     return (
-      <section className="mt-6 rounded-2xl border bg-white p-5">
+      <section className="mt-6 rounded-2xl border bg-surface p-5">
         <h2 className="text-xl font-semibold">Pokrok</h2>
         <p className="mt-3" role="status">
           {isLoading ? "Načítám statistiky…" : "Osobní statistiky se nepodařilo načíst."}
@@ -341,16 +344,16 @@ function ProgressionPanel({
     : 100;
 
   return (
-    <section aria-labelledby="progress-heading" className="mt-6 rounded-2xl border bg-white p-5">
+    <section aria-labelledby="progress-heading" className="mt-6 rounded-2xl border bg-surface p-5">
       <h2 className="text-xl font-semibold" id="progress-heading">
         Pokrok
       </h2>
       <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm text-slate-600">Úroveň</p>
-          <p className="text-2xl font-semibold text-emerald-900">{progression.rank.title}</p>
+          <p className="text-sm text-ink-2">Úroveň</p>
+          <p className="text-2xl font-semibold text-good">{progression.rank.title}</p>
         </div>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-ink-2">
           {progression.rank.nextRankAt
             ? `${progression.correctAttempts} / ${progression.rank.nextRankAt} správných odpovědí k další úrovni`
             : `${progression.correctAttempts} správných odpovědí · nejvyšší úroveň`}
@@ -361,25 +364,22 @@ function ProgressionPanel({
         aria-valuemax={100}
         aria-valuemin={0}
         aria-valuenow={Math.round(progressToNext)}
-        className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"
+        className="mt-3 h-2 overflow-hidden rounded-full bg-surface-3"
         role="progressbar"
       >
-        <div
-          className="h-full rounded-full bg-emerald-700"
-          style={{ width: `${progressToNext}%` }}
-        />
+        <div className="h-full rounded-full bg-good" style={{ width: `${progressToNext}%` }} />
       </div>
       <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-600">Pokusy</dt>
+        <div className="rounded-xl bg-surface-2 p-3">
+          <dt className="text-xs text-ink-2">Pokusy</dt>
           <dd className="mt-1 text-xl font-semibold">{progression.totalAttempts}</dd>
         </div>
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-600">Správně</dt>
+        <div className="rounded-xl bg-surface-2 p-3">
+          <dt className="text-xs text-ink-2">Správně</dt>
           <dd className="mt-1 text-xl font-semibold">{progression.correctAttempts}</dd>
         </div>
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-600">Úspěšnost</dt>
+        <div className="rounded-xl bg-surface-2 p-3">
+          <dt className="text-xs text-ink-2">Úspěšnost</dt>
           <dd className="mt-1 text-xl font-semibold">{progression.accuracy} %</dd>
         </div>
       </dl>
@@ -390,17 +390,17 @@ function ProgressionPanel({
       >
         {progression.trend.map((day) => (
           <li className="flex min-w-0 flex-col items-center gap-1" key={day.day}>
-            <span className="text-[10px] text-slate-600">{day.totalAttempts}</span>
+            <span className="text-[10px] text-ink-2">{day.totalAttempts}</span>
             <span
               aria-label={`${new Date(`${day.day}T00:00:00Z`).toLocaleDateString("cs-CZ")}: ${day.totalAttempts} pokusů, ${day.correctAttempts} správně`}
-              className="w-full rounded-t bg-emerald-700"
+              className="w-full rounded-t bg-good"
               role="img"
               style={{ height: `${Math.max(3, (48 * day.totalAttempts) / maxDaily)}px` }}
             />
           </li>
         ))}
       </ol>
-      <p className="mt-2 text-xs text-slate-600">
+      <p className="mt-2 text-xs text-ink-2">
         Souhrn vychází ze synchronizovaných pokusů. Pokusy se ukládají i bez připojení a doplní se
         po synchronizaci.
       </p>

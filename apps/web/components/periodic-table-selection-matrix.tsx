@@ -24,17 +24,17 @@ const PRESSED: Readonly<Record<SelectionCoverage, "true" | "mixed" | "false">> =
   none: "false",
 };
 
-const SELECTED_STYLE = "border-2 border-sky-700 bg-sky-50 text-slate-950";
+const SELECTED_STYLE = "border-2 border-accent bg-accent-soft text-ink";
 const UNSELECTED_STYLE =
-  "border border-dashed border-slate-400 bg-slate-50 text-slate-950 opacity-60 grayscale";
+  "border border-dashed border-line-strong bg-surface-2 text-ink opacity-60 grayscale";
 
 // Group headers and row toggles are pills in green (selected), amber (partly) or red (not
 // selected), deliberately unlike the element cells; the border style and the struck-through
 // label repeat the state for anyone who cannot tell the colors apart.
 const TOGGLE_STYLE: Readonly<Record<SelectionCoverage, string>> = {
-  all: "border-2 border-emerald-700 bg-emerald-100 text-emerald-900",
-  some: "border-2 border-dotted border-amber-600 bg-amber-50 text-amber-950",
-  none: "border-2 border-dashed border-rose-600 bg-rose-100 text-rose-800 line-through",
+  all: "border-2 border-good bg-good-soft text-good",
+  some: "border-2 border-dotted border-warn bg-warn-soft text-warn",
+  none: "border-2 border-dashed border-bad bg-bad-soft text-bad line-through",
 };
 
 export function PeriodicTableSelectionMatrix({

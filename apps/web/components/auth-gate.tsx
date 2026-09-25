@@ -29,10 +29,7 @@ function AuthenticatedShell({
   return (
     <AccountContext.Provider value={account}>
       {offline ? (
-        <p
-          className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-950"
-          role="status"
-        >
+        <p className="border-b border-warn bg-warn-soft px-4 py-2 text-sm text-warn" role="status">
           Síťové ověření není dostupné. Pokračujete s naposledy ověřeným účtem; synchronizace se
           obnoví po připojení.
         </p>

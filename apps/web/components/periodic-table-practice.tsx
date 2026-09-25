@@ -214,7 +214,7 @@ export function PeriodicTablePractice({
           total={session.total}
         >
           <button
-            className="mt-4 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
             onClick={returnToSelection}
             type="button"
           >
@@ -222,7 +222,7 @@ export function PeriodicTablePractice({
           </button>
         </PracticeSummary>
       ) : (
-        <h2 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
+        <h2 className="mt-6 text-4xl font-semibold tracking-tight text-ink sm:text-6xl">
           <span className="sr-only">Hledaný prvek:</span> {session.current?.nameCs ?? "…"}
         </h2>
       )}
@@ -236,7 +236,7 @@ export function PeriodicTablePractice({
         onSelect={finished ? undefined : select}
       />
       {notice ? (
-        <p className="mt-4 text-sm text-slate-700" role="status">
+        <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}
         </p>
       ) : null}

@@ -22,27 +22,27 @@ const LEVELS: Readonly<Record<MasteryLevel, { label: string; mark: string; style
   "no-data": {
     label: "Bez dat",
     mark: "—",
-    style: "border border-slate-300 bg-slate-50 text-slate-700",
+    style: "border border-line-strong bg-surface-2 text-ink-2",
   },
   starting: {
     label: "Zatím málo pokusů",
     mark: "·",
-    style: "border border-dashed border-sky-500 bg-sky-50 text-sky-950",
+    style: "border border-dashed border-accent bg-accent-soft text-ink",
   },
   low: {
     label: "K procvičení",
     mark: "1",
-    style: "border border-rose-500 bg-rose-50 text-rose-950",
+    style: "border border-bad bg-bad-soft text-bad",
   },
   developing: {
     label: "Na cestě",
     mark: "2",
-    style: "border border-amber-500 bg-amber-50 text-amber-950",
+    style: "border border-warn bg-warn-soft text-warn",
   },
   mastered: {
     label: "Zvládnuté",
     mark: "✓",
-    style: "border border-emerald-700 bg-emerald-50 text-emerald-950",
+    style: "border border-good bg-good-soft text-good",
   },
 };
 
@@ -76,11 +76,11 @@ export function PeriodicMasteryHeatmap({ userId }: Readonly<{ userId: string }>)
   }, [running, queryClient, queryKey]);
 
   return (
-    <section aria-labelledby="mastery-heading" className="mt-6 rounded-2xl border bg-white p-5">
+    <section aria-labelledby="mastery-heading" className="mt-6 rounded-2xl border bg-surface p-5">
       <h2 className="text-xl font-semibold" id="mastery-heading">
         Zvládnutí periodické tabulky
       </h2>
-      <p className="mt-2 text-sm text-slate-700">
+      <p className="mt-2 text-sm text-ink-2">
         Přehled vychází z pokusů uložených na tomto zařízení. Funguje i bez připojení a po
         synchronizaci se doplní pokusy z dalších zařízení.
       </p>
@@ -90,7 +90,7 @@ export function PeriodicMasteryHeatmap({ userId }: Readonly<{ userId: string }>)
       ) : null}
       {attempts.isSuccess ? (
         <>
-          <p className="mt-3 text-sm text-slate-700" role="status">
+          <p className="mt-3 text-sm text-ink-2" role="status">
             {studiedCount === 0
               ? "Zatím nemáte žádné pokusy z periodické tabulky."
               : `Procvičené prvky: ${studiedCount} z ${curatedElements.length}.`}
@@ -108,7 +108,7 @@ export function PeriodicMasteryHeatmap({ userId }: Readonly<{ userId: string }>)
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-xs text-slate-600">
+          <p className="mt-2 text-xs text-ink-2">
             Hodnocení začíná po {MIN_MASTERY_ATTEMPTS} pokusech o prvek. Novější odpovědi mají větší
             váhu; značka v každém políčku opakuje úroveň bez barvy.
           </p>
