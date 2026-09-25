@@ -4,6 +4,7 @@ import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { GroupMnemonics } from "@/components/group-mnemonics";
+import { ElementFlashcardPractice } from "@/components/element-flashcard-practice";
 
 import {
   createBrowserElementCardStore,
@@ -18,6 +19,22 @@ interface ElementFlashcardsProps {
 }
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
+  return (
+    <div className="mx-auto grid w-full max-w-5xl gap-8">
+      <ElementFlashcardPractice elements={curatedElements} />
+      <details className="rounded-2xl border border-slate-200 bg-white p-5">
+        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-slate-950">
+          Prohlížet karty prvků
+        </summary>
+        <div className="mt-4">
+          <ElementCardLibrary curatedElements={curatedElements} groups={groups} />
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps) {
   const account = useAccount();
   const { canEdit } = useCapabilities();
   const [storedCards, setStoredCards] = useState<readonly StoredElementCard[]>([]);
@@ -102,12 +119,12 @@ export function ElementFlashcards({ curatedElements, groups }: ElementFlashcards
           <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
             Flashcards
           </p>
-          <h1
+          <h2
             id="flashcard-heading"
             className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl"
           >
             Prvky
-          </h1>
+          </h2>
           <p className="mt-3 max-w-2xl leading-7 text-slate-600">
             Česká jména, značky a základní údaje. Vaše úpravy zůstávají lokálně v tomto zařízení.
           </p>

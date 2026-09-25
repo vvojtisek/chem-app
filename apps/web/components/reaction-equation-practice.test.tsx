@@ -49,7 +49,10 @@ beforeEach(() => {
   appendAttempt.mockReset();
   appendAttempt.mockResolvedValue(undefined);
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 describe("reaction equation practice", () => {
   it("shows atom counts after a wrong beginner answer and saves the retry", async () => {
@@ -112,6 +115,23 @@ describe("reaction equation practice", () => {
       direction: "complete-equation",
       isCorrect: true,
     });
+  });
+
+  it("evaluates coefficients when randomUUID is unavailable on an HTTP LAN origin", () => {
+    vi.stubGlobal("crypto", {
+      getRandomValues: (bytes: Uint8Array) => {
+        bytes.fill(0);
+        return bytes;
+      },
+    });
+    renderPractice();
+
+    fireEvent.click(screen.getByRole("button", { name: "Vyhodnotit koeficienty" }));
+
+    expect(screen.getByText("To není správné řešení.")).toBeInTheDocument();
+    expect(appendAttempt.mock.calls[0]?.[0].id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-8[0-9a-f]{3}-[0-9a-f]{12}$/u,
+    );
   });
 
   it("lets a guest practice without writing attempts", () => {

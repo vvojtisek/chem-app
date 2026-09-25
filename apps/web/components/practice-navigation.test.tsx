@@ -6,7 +6,7 @@ import { PRACTICE_HUB_HREF, PracticeNavigation } from "./practice-navigation";
 afterEach(cleanup);
 
 describe("PracticeNavigation", () => {
-  it("offers Zpět to the practice categories and Domů to the dashboard", () => {
+  it("offers Zpět to the practice categories and Testy to the dashboard", () => {
     render(<PracticeNavigation backHref={PRACTICE_HUB_HREF} />);
     const navigation = screen.getByRole("navigation", { name: "Navigace procvičování" });
 
@@ -14,13 +14,13 @@ describe("PracticeNavigation", () => {
       "href",
       "/procvicovani",
     );
-    expect(within(navigation).getByRole("link", { name: /Domů/ })).toHaveAttribute("href", "/");
+    expect(within(navigation).getByRole("link", { name: /Testy/ })).toHaveAttribute("href", "/");
   });
 
-  it("offers only Domů where there is no level above", () => {
+  it("offers only Testy where there is no level above", () => {
     render(<PracticeNavigation />);
 
     expect(screen.queryByRole("link", { name: /Zpět/ })).toBeNull();
-    expect(screen.getByRole("link", { name: /Domů/ })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: /Testy/ })).toHaveAttribute("href", "/");
   });
 });

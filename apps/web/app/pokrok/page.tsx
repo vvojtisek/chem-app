@@ -46,7 +46,7 @@ export default function ProgressPage() {
         Osobní přehled
       </p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-        Dashboard s pokrokem
+        Statistika
       </h1>
       {isGuest ? (
         <p className="mt-5 rounded-2xl border bg-white p-5 text-slate-700">

@@ -22,7 +22,7 @@ export async function appendPeriodicTableAttempt(
 ): Promise<void> {
   const store = createBrowserProgressStore(globalThis.indexedDB, userId);
   const base = {
-    id: crypto.randomUUID(),
+    id: createClientId(),
     questionId: attempt.questionId,
     contentVersion: curriculumContentVersion,
     occurredAt: new Date().toISOString(),
@@ -59,3 +59,4 @@ export function describeAttemptSaveFailure(error: unknown): string {
     ? `Pokus se nepodařilo uložit: ${error.message}`
     : "Pokus se nepodařilo uložit lokálně.";
 }
+import { createClientId } from "./client-id";

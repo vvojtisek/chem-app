@@ -52,7 +52,7 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await expectWcag22Aa(page);
 
   await page.goto("/pokrok");
-  await expect(page.getByRole("heading", { name: "Dashboard s pokrokem" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Statistika" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Zvládnutí periodické tabulky" })).toBeVisible();
   await expectWcag22Aa(page);
 
