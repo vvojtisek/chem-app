@@ -61,9 +61,18 @@ test("confirmed reset clears local mastery and rejects a second device's offline
 
     await page.goto("/pokrok");
     await expect(page.getByRole("heading", { name: "Zvládnutí periodické tabulky" })).toBeVisible();
-    await page.getByRole("button", { name: "Resetovat pokrok" }).click();
-    await expect(page.getByText(/vynulovat celý osobní pokrok/)).toBeVisible();
-    await page.getByRole("button", { name: "Ano, resetovat pokrok" }).click();
+    await expect(page.getByRole("button", { name: "Resetovat pokrok" })).toHaveCount(0);
+
+    await page.goto("/ucet");
+    const dangerZone = page.getByRole("region", { name: "Nebezpečná zóna" });
+    await dangerZone.getByRole("button", { name: "Resetovat pokrok" }).click();
+    await expect(dangerZone.getByText(/vynulovat celý osobní pokrok/)).toBeVisible();
+    await dangerZone.getByRole("button", { name: "Ano, resetovat pokrok" }).click();
+    // The profile reloads once the reset has finished; the confirmation is gone afterwards.
+    await expect(page.getByRole("button", { name: "Ano, resetovat pokrok" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 1, name: "Profil" })).toBeVisible();
+
+    await page.goto("/pokrok");
     await expect(page.getByText("Zatím nemáte žádné pokusy z periodické tabulky.")).toBeVisible();
     await expect(page.getByText("Začátečník")).toBeVisible();
 

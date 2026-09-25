@@ -1,13 +1,27 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@/components/auth-gate", () => ({
+  useAccount: () => ({ id: "guest", username: "host", role: "guest" }),
+  useCapabilities: () => ({ canSave: false, canViewProgress: false }),
+}));
 
 import HomePage from "./page";
 
 afterEach(cleanup);
 
+function renderHome() {
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <HomePage />
+    </QueryClientProvider>,
+  );
+}
+
 describe("HomePage", () => {
-  it("presents the three numbered learning modules", () => {
-    render(<HomePage />);
+  it("presents the three practice areas", () => {
+    renderHome();
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Anorganická chemie");
     expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
@@ -25,7 +39,7 @@ describe("HomePage", () => {
   });
 
   it("links one element name and symbol practice next to the blind table and flashcards", () => {
-    render(<HomePage />);
+    renderHome();
 
     expect(screen.getByRole("link", { name: "Procvičit názvy a značky" })).toHaveAttribute(
       "href",

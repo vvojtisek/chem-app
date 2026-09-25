@@ -5,15 +5,9 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PageHeader } from "@/components/page-header";
+import { ProgressReset } from "@/components/progress-reset";
 import { useSync } from "@/components/sync-provider";
-import {
-  ApiError,
-  changePassword,
-  getMyProfile,
-  getMyProgression,
-  logout,
-  updateMyProfile,
-} from "@/lib/api/client";
+import { ApiError, changePassword, getMyProfile, logout, updateMyProfile } from "@/lib/api/client";
 import { clearAccountMarker } from "@/lib/auth/account-marker";
 import { resetLearningDatabase } from "@/lib/browser-learning-database";
 import { queryKeys } from "@/lib/query-keys";
@@ -21,7 +15,7 @@ import { pendingCount } from "@/lib/sync/sync-store";
 
 export default function AccountPage() {
   const account = useAccount();
-  const { canManageProfile, canViewProgress } = useCapabilities();
+  const { canManageProfile } = useCapabilities();
   const sync = useSync();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -30,11 +24,6 @@ export default function AccountPage() {
     queryKey: queryKeys.me.profile,
     queryFn: getMyProfile,
     enabled: Boolean(account && !isGuest),
-  });
-  const progression = useQuery({
-    queryKey: queryKeys.me.stats,
-    queryFn: getMyProgression,
-    enabled: canViewProgress,
   });
   const [displayName, setDisplayName] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -203,10 +192,6 @@ export default function AccountPage() {
         <p role="status">{profile.isError ? "Profil se nepodařilo načíst." : "Načítám profil…"}</p>
       )}
 
-      {account.role !== "tester" ? (
-        <ProgressionPanel progression={progression.data} isLoading={progression.isPending} />
-      ) : null}
-
       <section
         aria-labelledby="password-heading"
         className="mt-6 rounded-2xl border bg-surface p-5"
@@ -266,38 +251,67 @@ export default function AccountPage() {
         </form>
       </section>
 
-      <div className="mt-6 flex flex-col gap-3">
-        <button
-          className="min-h-11 rounded-xl border px-4 text-left"
-          disabled={busy || sync.running}
-          onClick={() => void sync.run()}
-          type="button"
-        >
-          Synchronizovat nyní
-        </button>
-        <button
-          className="min-h-11 rounded-xl border px-4 text-left"
-          disabled={busy || sync.running}
-          onClick={() => void signOut(false)}
-          type="button"
-        >
-          Odhlásit
-        </button>
-        <button
-          className="min-h-11 rounded-xl border border-bad px-4 text-left text-bad"
-          disabled={busy || sync.running}
-          onClick={() => void signOut(true)}
-          type="button"
-        >
-          Odhlásit a smazat data z tohoto zařízení
-        </button>
-      </div>
-      {sync.pending > 0 ? (
-        <p className="mt-4 text-sm text-warn">
-          Na odeslání čeká {sync.pending} pokusů. Smazání dat je nevratně odstraní z tohoto
-          zařízení.
+      <section
+        aria-labelledby="session-heading"
+        className="mt-6 rounded-2xl border border-line bg-surface p-5"
+      >
+        <h2 className="text-xl font-semibold" id="session-heading">
+          Synchronizace a odhlášení
+        </h2>
+        <p className="mt-1 text-sm text-ink-2">Stav synchronizace: {sync.label}</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold"
+            disabled={busy || sync.running}
+            onClick={() => void sync.run()}
+            type="button"
+          >
+            Synchronizovat nyní
+          </button>
+          <button
+            className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold"
+            disabled={busy || sync.running}
+            onClick={() => void signOut(false)}
+            type="button"
+          >
+            Odhlásit
+          </button>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="danger-heading"
+        className="mt-6 rounded-2xl border border-bad/40 bg-surface p-5"
+      >
+        <h2 className="text-xl font-semibold text-bad" id="danger-heading">
+          Nebezpečná zóna
+        </h2>
+        <p className="mt-1 text-sm text-ink-2">
+          Tyto akce nelze vrátit zpět. Každá se před provedením ještě jednou ptá.
         </p>
-      ) : null}
+        <ProgressReset />
+        <div className="mt-6 border-t border-line pt-5">
+          <h3 className="text-lg font-semibold text-ink">Data v tomto zařízení</h3>
+          <p className="mt-2 text-sm text-ink-2">
+            Odhlásí vás a smaže lokální karty, rozpracovaná cvičení a pokusy tohoto účtu z tohoto
+            zařízení.
+          </p>
+          {sync.pending > 0 ? (
+            <p className="mt-2 text-sm text-warn">
+              Na odeslání čeká {sync.pending} pokusů. Smazání dat je nevratně odstraní z tohoto
+              zařízení.
+            </p>
+          ) : null}
+          <button
+            className="mt-4 min-h-11 rounded-xl border border-bad px-4 font-semibold text-bad"
+            disabled={busy || sync.running}
+            onClick={() => void signOut(true)}
+            type="button"
+          >
+            Odhlásit a smazat data z tohoto zařízení
+          </button>
+        </div>
+      </section>
       {sync.error ? (
         <p className="mt-4 text-bad" role="alert">
           {sync.error}
@@ -314,92 +328,5 @@ export default function AccountPage() {
         </p>
       ) : null}
     </main>
-  );
-}
-
-function ProgressionPanel({
-  progression,
-  isLoading,
-}: Readonly<{
-  progression: Awaited<ReturnType<typeof getMyProgression>> | undefined;
-  isLoading: boolean;
-}>) {
-  if (!progression) {
-    return (
-      <section className="mt-6 rounded-2xl border bg-surface p-5">
-        <h2 className="text-xl font-semibold">Pokrok</h2>
-        <p className="mt-3" role="status">
-          {isLoading ? "Načítám statistiky…" : "Osobní statistiky se nepodařilo načíst."}
-        </p>
-      </section>
-    );
-  }
-  const maxDaily = Math.max(1, ...progression.trend.map((day) => day.totalAttempts));
-  const progressToNext = progression.rank.nextRankAt
-    ? Math.min(100, (100 * progression.correctAttempts) / progression.rank.nextRankAt)
-    : 100;
-
-  return (
-    <section aria-labelledby="progress-heading" className="mt-6 rounded-2xl border bg-surface p-5">
-      <h2 className="text-xl font-semibold" id="progress-heading">
-        Pokrok
-      </h2>
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm text-ink-2">Úroveň</p>
-          <p className="text-2xl font-semibold text-good">{progression.rank.title}</p>
-        </div>
-        <p className="text-sm text-ink-2">
-          {progression.rank.nextRankAt
-            ? `${progression.correctAttempts} / ${progression.rank.nextRankAt} správných odpovědí k další úrovni`
-            : `${progression.correctAttempts} správných odpovědí · nejvyšší úroveň`}
-        </p>
-      </div>
-      <div
-        aria-label={`Postup k další úrovni: ${Math.round(progressToNext)} procent`}
-        aria-valuemax={100}
-        aria-valuemin={0}
-        aria-valuenow={Math.round(progressToNext)}
-        className="mt-3 h-2 overflow-hidden rounded-full bg-surface-3"
-        role="progressbar"
-      >
-        <div className="h-full rounded-full bg-good" style={{ width: `${progressToNext}%` }} />
-      </div>
-      <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-xl bg-surface-2 p-3">
-          <dt className="text-xs text-ink-2">Pokusy</dt>
-          <dd className="mt-1 text-xl font-semibold">{progression.totalAttempts}</dd>
-        </div>
-        <div className="rounded-xl bg-surface-2 p-3">
-          <dt className="text-xs text-ink-2">Správně</dt>
-          <dd className="mt-1 text-xl font-semibold">{progression.correctAttempts}</dd>
-        </div>
-        <div className="rounded-xl bg-surface-2 p-3">
-          <dt className="text-xs text-ink-2">Úspěšnost</dt>
-          <dd className="mt-1 text-xl font-semibold">{progression.accuracy} %</dd>
-        </div>
-      </dl>
-      <h3 className="mt-6 font-semibold">Posledních 30 dní</h3>
-      <ol
-        aria-label="Denní počet pokusů za posledních 30 dní"
-        className="mt-3 grid grid-cols-10 items-end gap-1 sm:grid-cols-[repeat(30,minmax(0,1fr))]"
-      >
-        {progression.trend.map((day) => (
-          <li className="flex min-w-0 flex-col items-center gap-1" key={day.day}>
-            <span className="text-[10px] text-ink-2">{day.totalAttempts}</span>
-            <span
-              aria-label={`${new Date(`${day.day}T00:00:00Z`).toLocaleDateString("cs-CZ")}: ${day.totalAttempts} pokusů, ${day.correctAttempts} správně`}
-              className="w-full rounded-t bg-good"
-              role="img"
-              style={{ height: `${Math.max(3, (48 * day.totalAttempts) / maxDaily)}px` }}
-            />
-          </li>
-        ))}
-      </ol>
-      <p className="mt-2 text-xs text-ink-2">
-        Souhrn vychází ze synchronizovaných pokusů. Pokusy se ukládají i bez připojení a doplní se
-        po synchronizaci.
-      </p>
-    </section>
   );
 }

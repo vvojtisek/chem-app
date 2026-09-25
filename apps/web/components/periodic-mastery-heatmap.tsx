@@ -76,8 +76,11 @@ export function PeriodicMasteryHeatmap({ userId }: Readonly<{ userId: string }>)
   }, [running, queryClient, queryKey]);
 
   return (
-    <section aria-labelledby="mastery-heading" className="mt-6 rounded-2xl border bg-surface p-5">
-      <h2 className="text-xl font-semibold" id="mastery-heading">
+    <section
+      aria-labelledby="mastery-heading"
+      className="rounded-2xl border border-line bg-surface p-5 sm:p-6"
+    >
+      <h2 className="font-display text-xl font-bold text-ink" id="mastery-heading">
         Zvládnutí periodické tabulky
       </h2>
       <p className="mt-2 text-sm text-ink-2">

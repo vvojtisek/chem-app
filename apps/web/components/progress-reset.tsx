@@ -42,13 +42,10 @@ export function ProgressReset() {
   }
 
   return (
-    <section
-      aria-labelledby="progress-reset-heading"
-      className="mt-6 rounded-2xl border border-bad bg-surface p-5"
-    >
-      <h2 id="progress-reset-heading" className="text-lg font-semibold text-ink">
+    <section aria-labelledby="progress-reset-heading" className="mt-5">
+      <h3 id="progress-reset-heading" className="text-lg font-semibold text-ink">
         Reset pokroku
-      </h2>
+      </h3>
       <p className="mt-2 text-sm text-ink-2">
         Vynuluje zobrazovanou historii pokusů, úroveň a rozpracovaná cvičení na všech zařízeních po
         jejich synchronizaci. Účet, nastavení a vlastní karty zůstanou zachované. Starší pokusy
@@ -56,7 +53,7 @@ export function ProgressReset() {
       </p>
       {!confirming ? (
         <button
-          className="mt-4 min-h-11 rounded-xl border border-bad px-4 text-bad"
+          className="mt-4 min-h-11 rounded-xl border border-bad px-4 font-semibold text-bad"
           onClick={() => {
             setConfirming(true);
             setError("");

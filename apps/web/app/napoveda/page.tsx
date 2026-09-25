@@ -47,12 +47,14 @@ export default function HelpPage() {
           <p className="mt-2 leading-7 text-ink-2">
             Osobní stránka Pokrok zobrazuje místní zvládnutí prvků a souhrn synchronizovaných
             výsledků. Zvládnutí vyžaduje alespoň tři odpovědi a více zohledňuje novější pokusy.
+            Prvky, které potřebují opakování, najdete v části K zopakování na úvodní stránce i na
+            stránce Pokrok; odtud je procvičíte ve slepé tabulce.
           </p>
           <p className="mt-2 leading-7 text-ink-2">
-            Reset pokroku je dostupný po přihlášení a potvrzení. Vynuluje aktivní statistiky a
-            místní rozpracované pokusy na zařízeních při jejich příštím připojení. Starší serverové
-            události zůstávají uchované pro výpočet denního limitu nahrávání; reset není žádost o
-            výmaz účtu.
+            Reset pokroku najdete v Profilu v části Nebezpečná zóna; provede se až po potvrzení.
+            Vynuluje aktivní statistiky a místní rozpracované pokusy na zařízeních při jejich
+            příštím připojení. Starší serverové události zůstávají uchované pro výpočet denního
+            limitu nahrávání; reset není žádost o výmaz účtu.
           </p>
         </section>
 

@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ModeStatsPanel } from "./mode-stats-panel";
@@ -32,7 +32,7 @@ describe("ModeStatsPanel", () => {
     );
     const periodic = screen.getByRole("heading", { name: "Periodická tabulka" }).closest("li");
     if (!periodic) throw new Error("Periodická tabulka není v souhrnu režimů.");
-    expect(within(periodic).getByText("4 pokusů · 3 správně")).toBeInTheDocument();
+    expect(periodic).toHaveTextContent("75 % · 3 správně · 4 odpovědi");
     expect(screen.getByRole("heading", { name: "Chemické rovnice" })).toBeInTheDocument();
   });
 

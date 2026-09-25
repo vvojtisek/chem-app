@@ -5,6 +5,7 @@ import {
   calculatePeriodicTableMastery,
   MIN_MASTERY_ATTEMPTS,
   masteryForElement,
+  weakestElements,
 } from "./periodic-table-mastery";
 
 function periodic(id: number, isCorrect: boolean, questionId = "element.h"): AttemptEvent {
@@ -100,5 +101,28 @@ describe("calculatePeriodicTableMastery", () => {
     ]);
     expect(masteryForElement(mastery, "element.h")).toMatchObject({ attempts: 1, correct: 0 });
     expect(masteryForElement(mastery, "element.he")).toMatchObject({ attempts: 1, correct: 1 });
+  });
+});
+
+describe("weakestElements", () => {
+  const answers = (questionId: string, results: readonly boolean[], offset: number) =>
+    results.map((isCorrect, index) => periodic(offset + index, isCorrect, questionId));
+
+  it("lists rated elements below mastery, weakest first, up to the limit", () => {
+    const mastery = calculatePeriodicTableMastery([
+      ...answers("element.mn", [true, false, false], 1),
+      ...answers("element.cr", [true, false, true], 4),
+      ...answers("element.fe", [true, true, true], 7),
+      ...answers("element.co", [false, false], 10),
+      ...answers("element.ni", [true, true, false], 12),
+    ]);
+
+    expect(weakestElements(mastery, 5).map((item) => item.elementId)).toEqual([
+      "element.mn",
+      "element.ni",
+      "element.cr",
+    ]);
+    expect(weakestElements(mastery, 1).map((item) => item.elementId)).toEqual(["element.mn"]);
+    expect(weakestElements(mastery, 5)[0]?.mastery).toMatchObject({ attempts: 3, correct: 1 });
   });
 });
