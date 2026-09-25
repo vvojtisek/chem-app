@@ -113,7 +113,7 @@ Do not mirror one category into another without a specific synchronization contr
 
 ## Offline and update model
 
-Core learning routes, required assets, the application shell, and a reviewed curriculum snapshot are precached or made available through an explicit runtime policy. Authenticated API responses are not placed in a shared service-worker cache.
+Core learning routes, `/napoveda`, `/soukromi`, required assets, the application shell, and a reviewed curriculum snapshot are precached or made available through an explicit runtime policy. Authenticated API responses are not placed in a shared service-worker cache.
 
 Every persisted database and browser-store format has a schema version. The application migrates compatible data transactionally. If migration cannot be safe, it offers an explicit export/reset or recoverable reset path instead of failing to render.
 

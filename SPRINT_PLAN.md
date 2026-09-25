@@ -441,3 +441,16 @@ and kept for daily quota accounting under ADR 0009. The old device-wide
 periodic checkpoint is copied once into account storage for compatible active
 accounts. Browser export/import, wider release testing, usability review, and
 chemistry-SME approvals remain open.
+
+### Update 2026-09-25 — Learner help and release documentation
+
+Added in-app Czech help and technical privacy pages, cached by the offline
+shell, plus public-facing content credits and a known-limitations summary. The
+deployment runbook now calls out the unfinished privacy notice and curriculum
+release gates, as well as the no-downgrade condition after progress reset.
+Playwright verifies the help/privacy path offline in desktop and mobile
+Chromium. Operator identity/contact, data retention and erasure policy,
+physical-device and assistive-technology review, moderated usability sessions,
+performance/cache-update matrix, and chemistry-SME approvals remain release
+blockers. `pnpm content:release-check` was run and currently fails on the eight
+named periodic groups (0/8 have a current SME review).

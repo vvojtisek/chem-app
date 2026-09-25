@@ -59,6 +59,8 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 ## Shared behavior
 
+- `/napoveda` explains study, practice, offline use, synchronization, progress reset, and curriculum review status. `/soukromi` summarizes the data handled by the app and links to the deployment owner's privacy notice; both pages are part of the offline shell. The current privacy page is explicitly incomplete until the deployment owner fills in identity, contact, retention, and erasure details.
+
 - Learning routes require an authenticated account or a read-only guest
   session. Public registration uses email verification, and the learner sets
   their password from the verification link. A previously verified account
