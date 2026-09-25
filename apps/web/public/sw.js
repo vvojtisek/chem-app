@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "inorganic-shell-";
-const CACHE_NAME = "inorganic-shell-v5";
+const CACHE_NAME = "inorganic-shell-v6";
 const APP_SHELL = [
   "/",
   "/procvicovani",
@@ -11,6 +11,8 @@ const APP_SHELL = [
   "/uceni/prvky",
   "/uceni/priprava-vyroba",
   "/pokrok",
+  "/napoveda",
+  "/soukromi",
   "/flashcards/prvky",
   "/manifest.webmanifest",
 ];

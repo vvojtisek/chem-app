@@ -125,6 +125,7 @@ export function ReactionEquationPractice({
       level,
       direction: direction[level],
       matchPolicy: "approved-balanced" as const,
+      progressGeneration: account.progressGeneration,
     };
     void createBrowserProgressStore(indexedDB, account.id)
       .appendAttempt(attempt)

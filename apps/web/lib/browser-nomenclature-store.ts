@@ -1,4 +1,5 @@
 import {
+  ACCOUNT_META_STORE,
   ATTEMPT_EVENT_STORE,
   NOMENCLATURE_SESSION_STORE,
   openLearningDatabase,
@@ -12,6 +13,7 @@ import {
   type NomenclatureCheckpoint,
   nomenclatureCheckpointSchema,
 } from "./nomenclature-session";
+import { INITIAL_PROGRESS_GENERATION, progressGenerationSchema } from "./progress-generation";
 
 /** The stored practice is from the older series-based version and cannot be resumed. */
 export class LegacyNomenclatureCheckpointError extends Error {
@@ -76,11 +78,20 @@ export function createBrowserNomenclatureStore(
       try {
         const stores =
           validAttempts.length > 0
-            ? [NOMENCLATURE_SESSION_STORE, ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE]
+            ? [
+                NOMENCLATURE_SESSION_STORE,
+                ATTEMPT_EVENT_STORE,
+                SYNC_OUTBOX_STORE,
+                ACCOUNT_META_STORE,
+              ]
             : [NOMENCLATURE_SESSION_STORE];
         const transaction = database.transaction(stores, "readwrite");
         const completion = transactionCompleted(transaction);
         const sessionStore = transaction.objectStore(NOMENCLATURE_SESSION_STORE);
+        const generationRequest =
+          validAttempts.length > 0
+            ? transaction.objectStore(ACCOUNT_META_STORE).get("progress-generation")
+            : null;
         let conflict: Error | undefined;
         function save(): void {
           if (valid) sessionStore.put(valid);
@@ -107,20 +118,42 @@ export function createBrowserNomenclatureStore(
               return;
             }
             const attemptStore = transaction.objectStore(ATTEMPT_EVENT_STORE);
+            const generationRecord: unknown = generationRequest?.result;
+            const generation =
+              typeof generationRecord === "object" &&
+              generationRecord !== null &&
+              "value" in generationRecord &&
+              typeof generationRecord.value === "string"
+                ? progressGenerationSchema.parse(generationRecord.value)
+                : INITIAL_PROGRESS_GENERATION;
             let checked = 0;
             for (const validAttempt of validAttempts) {
+              if (
+                (validAttempt.progressGeneration &&
+                  validAttempt.progressGeneration !== generation) ||
+                (userId &&
+                  generation !== INITIAL_PROGRESS_GENERATION &&
+                  !validAttempt.progressGeneration)
+              ) {
+                abort("Pokrok účtu byl resetován. Obnovte stránku.");
+                return;
+              }
+              const stamped =
+                generation === INITIAL_PROGRESS_GENERATION
+                  ? validAttempt
+                  : { ...validAttempt, progressGeneration: generation };
               const attemptRequest = attemptStore.get(validAttempt.id);
               attemptRequest.onsuccess = () => {
                 const existing: unknown = attemptRequest.result;
                 if (
                   existing !== undefined &&
-                  JSON.stringify(existing) !== JSON.stringify(validAttempt)
+                  JSON.stringify(existing) !== JSON.stringify(stamped)
                 ) {
                   abort("Pokus se stejným ID obsahuje jiná data.");
                   return;
                 }
                 if (existing === undefined) {
-                  attemptStore.add(validAttempt);
+                  attemptStore.add(stamped);
                   transaction.objectStore(SYNC_OUTBOX_STORE).add({ id: validAttempt.id });
                 }
                 checked += 1;

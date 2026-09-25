@@ -6,6 +6,7 @@ import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { ModeStatsPanel } from "@/components/mode-stats-panel";
 import { PageNavigation } from "@/components/page-navigation";
 import { PeriodicMasteryHeatmap } from "@/components/periodic-mastery-heatmap";
+import { ProgressReset } from "@/components/progress-reset";
 import { ProgressionPanel } from "@/components/progression-panel";
 import { useSync } from "@/components/sync-provider";
 import { getMyAttemptStats, getMyProgression } from "@/lib/api/client";
@@ -61,6 +62,7 @@ export default function ProgressPage() {
           <ProgressionPanel progression={progression.data} isLoading={progression.isPending} />
           <ModeStatsPanel stats={attemptStats.data} isLoading={attemptStats.isPending} />
           {account ? <PeriodicMasteryHeatmap userId={account.id} /> : null}
+          <ProgressReset />
         </>
       )}
     </main>

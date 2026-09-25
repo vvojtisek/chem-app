@@ -13,6 +13,7 @@ import {
   type PeriodicSessionMode,
 } from "@/lib/periodic-table-session";
 import type { PracticeQueueState } from "@/lib/practice-queue";
+import { useAccount } from "./auth-gate";
 
 interface PeriodicSessionPersistence {
   readonly loading: boolean;
@@ -33,6 +34,7 @@ export function usePeriodicSession(
   contentVersion: string,
   onRestore: (checkpoint: PeriodicCheckpoint) => void,
 ): PeriodicSessionPersistence {
+  const userId = useAccount()?.id;
   const [loading, setLoading] = useState(true);
   const [storageBroken, setStorageBroken] = useState(false);
   const [notice, setNotice] = useState("");
@@ -43,13 +45,13 @@ export function usePeriodicSession(
   const restore = useEffectEvent(onRestore);
 
   function store(): BrowserPeriodicSessionStore {
-    storeRef.current ??= createBrowserPeriodicSessionStore();
+    storeRef.current ??= createBrowserPeriodicSessionStore(indexedDB, userId);
     return storeRef.current;
   }
 
   useEffect(() => {
     let mounted = true;
-    const browserStore = createBrowserPeriodicSessionStore();
+    const browserStore = createBrowserPeriodicSessionStore(indexedDB, userId);
     storeRef.current = browserStore;
     browserStore
       .load(id)
@@ -83,7 +85,7 @@ export function usePeriodicSession(
     return () => {
       mounted = false;
     };
-  }, [id, contentVersion]);
+  }, [id, contentVersion, userId]);
 
   function queueWrite(
     session: PracticeQueueState<ElementFlashcardData> | null,

@@ -1,9 +1,10 @@
 import { readFile } from "node:fs/promises";
 
 import {
-  alternateGroupMnemonicCollectionSchema,
   type AlternateGroupMnemonicRecord,
+  alternateGroupMnemonicCollectionSchema,
 } from "./alternate-group-mnemonic-schema";
+import { findAlternateGroupMnemonicProblems } from "./alternate-group-mnemonic-validation";
 import { findReviewFingerprintProblems } from "./review";
 import {
   type ElementRecord,
@@ -19,7 +20,6 @@ import {
   findReviewerReferenceProblems,
   type ValidationProblem,
 } from "./validation";
-import { findAlternateGroupMnemonicProblems } from "./alternate-group-mnemonic-validation";
 
 export const contentFiles = {
   elements: new URL("../data/elements.json", import.meta.url),
@@ -51,7 +51,11 @@ export async function loadAuthoringContent(): Promise<AuthoringContent> {
 }
 
 export function findContentProblems(content: AuthoringContent): readonly ValidationProblem[] {
-  const reviewableRecords = [...content.elements, ...content.groups];
+  const reviewableRecords = [
+    ...content.elements,
+    ...content.groups,
+    ...content.alternateGroupMnemonics,
+  ];
 
   return [
     ...findElementCollectionProblems(content.elements),

@@ -139,6 +139,7 @@ export function PeriodicTablePractice({
           direction: "name-to-position",
         },
         account?.id,
+        account?.progressGeneration,
       ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
     }
   }

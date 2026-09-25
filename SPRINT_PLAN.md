@@ -429,3 +429,57 @@ path in desktop and mobile Chromium (2 checks), web typecheck, formatting,
 lint, and production build passed on 2026-09-25. Sprint 6 progress reset, broader
 offline/browser/accessibility release checks, usability review, documentation,
 and chemistry-SME approvals remain open.
+
+### Update 2026-09-25 — Sprint 6 progress reset
+
+The `/pokrok` dashboard now offers an online, two-step reset to registered users
+and admins. Server progress generations prevent a second offline device from
+re-uploading old attempts. The reset clears this account's local attempts,
+outbox, quarantine, checkpoint, cursor, and retry state while retaining custom
+cards and settings. Old server events are archived outside current statistics
+and kept for daily quota accounting under ADR 0009. The old device-wide
+periodic checkpoint is copied once into account storage for compatible active
+accounts. Browser export/import, wider release testing, usability review, and
+chemistry-SME approvals remain open.
+
+### Update 2026-09-25 — Learner help and release documentation
+
+Added in-app Czech help and technical privacy pages, cached by the offline
+shell, plus public-facing content credits and a known-limitations summary. The
+deployment runbook now calls out the unfinished privacy notice and curriculum
+release gates, as well as the no-downgrade condition after progress reset.
+Playwright verifies the help/privacy path offline and upgrades the app-shell
+cache from v5 to v6 without deleting unrelated caches in desktop and mobile
+Chromium. Operator identity/contact, data retention and erasure policy,
+physical-device and assistive-technology review, moderated usability sessions,
+performance/cache-update matrix, and chemistry-SME approvals remain release
+blockers. The content gate now checks all shipped curriculum families and
+`pnpm content:release-check` reports per-family current SME coverage. Its
+2026-09-25 run passed content validation and correctly blocked release with
+678 pending records: elements 118/118, groups 0/8, alternate mnemonics 0/8,
+nomenclature 0/469, products 0/77, and routes 0/116. No SME review metadata was
+added by this implementation; a chemistry SME must review and record those
+attestations before curriculum release.
+
+### Update 2026-09-25 — Complete chemistry release review gate
+
+Extended `pnpm content:validate` and `pnpm content:release-check` to cover every
+shipped content family: elements, named groups, alternate group mnemonics,
+nomenclature records, product records, and individual preparation/production
+routes. The review CLI accepts stable IDs from these families and fingerprints
+the scientific content; route fingerprints also include the parent product
+identity and sources. A change to covered content invalidates its SME review.
+The release command first validates content, then reports current approvals
+and pending IDs by family. Owner-approved development content remains available
+but does not satisfy the release gate.
+
+Verification: content validation passed and the release gate correctly failed
+with 678 pending records (groups 8, alternate mnemonics 8, nomenclature 469,
+products 77, routes 116); all 118 elements retain their current SME review.
+No chemistry data or review attestations were changed. Content tests,
+typecheck, build, and scoped formatting/lint checks passed. The full repository
+gate also passed: formatting, lint, typecheck, 377 unit/component tests,
+content validation, contract check, Ruff, 41 API tests against an isolated
+PostgreSQL database, production build, and 76 desktop/mobile Playwright tests.
+The release gate remains intentionally red until a chemistry SME reviews the
+pending records.

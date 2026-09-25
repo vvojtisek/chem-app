@@ -10,6 +10,8 @@ This document defines canonical chemistry input, normalization, validation, alia
 
 `content/data/alternate-group-mnemonics.json` holds owner-provided alternate memory aids for the traditional I–VIII A groups. Each record lists its full element-symbol sequence, which validation compares against the reviewed element group assignments. The original group mnemonic remains available; the alternate text and its explanation are shown as an optional disclosure and are labeled as owner-provided rather than chemistry-SME reviewed.
 
+Because these alternatives are displayed to learners and include factual symbol sequences, the production release gate requires a current SME review of each shipped alternative. Owner approval remains sufficient for the development runtime, and the learner label remains conservative even after SME review.
+
 User-created or locally edited cards are browser-local learning notes. They are not reviewed curriculum and must not be exported or treated as canonical content without a separate authoring and review workflow.
 
 ## Preparation and production by product
@@ -130,9 +132,11 @@ ownerApprovedBy/ownerApprovedAt: required for explicitly owner-approved nomencla
 
 `content/data/reviewers.json` registers each reviewer once with a stable `reviewer.*` ID, a name, and a role: `chemistry-sme` (must state a qualification) or `curriculum-editor`. Only a `chemistry-sme` review satisfies the SME release requirement. A `curriculum-editor` approval keeps a record shippable during development but is reported as pending SME review.
 
-`reviewFingerprint` covers every record field, including `sources`, except `status`, `author`, and the review fields themselves. If any covered field changes after the review, `pnpm content:validate` fails with `stale_review_fingerprint`. This enforces the rule below that a scientific change reopens review.
+`reviewFingerprint` covers the reviewed content fields, including `sources`, and excludes `status`, `author`, owner approval metadata, editorial review notes, and the SME review fields themselves. If any covered field changes after the review, `pnpm content:validate` fails with `stale_review_fingerprint`. This enforces the rule below that a scientific change reopens review.
 
-Runtime generation of element and group records includes only `reviewed` records that pass all validators. Nomenclature runtime generation includes `reviewed` records and the explicitly authorized `owner-approved` set, both subject to parser, collision, issue, and source validation. It excludes authoring-only personal metadata and every draft, in-review, or deprecated record. `owner-approved` must not be presented as SME-reviewed.
+The same optional `reviewedBy`, `reviewedAt`, and `reviewFingerprint` fields are available for published nomenclature records, alternate mnemonics, preparation/production products, and individual routes. A product fingerprint covers its identity, formula, notes, and sources but excludes its child routes; each route receives its own fingerprint covering reactants, products, aliases, conditions, and its parent product identity and sources. This makes a changed equation or cited source invalidate the relevant review without invalidating unrelated sibling routes. `ownerApprovedBy` and `ownerApprovedAt` preserve the original release authorization but do not count as an SME review or enter the scientific fingerprint. A reviewed record whose reviewer lacks the registered `chemistry-sme` role does not satisfy the production gate.
+
+Runtime generation of element and group records includes only `reviewed` records that pass all validators. Nomenclature runtime generation includes `reviewed` records and the explicitly authorized `owner-approved` set, both subject to parser, collision, issue, and source validation. Preparation/production routes and alternate mnemonics follow the same owner-approved or reviewed development policy. It excludes authoring-only personal metadata and every draft, in-review, or deprecated record. `owner-approved` must not be presented as SME-reviewed.
 
 ## Required fixtures
 
@@ -157,8 +161,8 @@ Each fixture has a stable ID, input/options, expected structured result or stabl
 2. Automated validation checks schema, IDs, references, grammar, balance, aliases, and coverage.
 3. Chemistry SME reviews scientific meaning, equations, Czech nomenclature, industrial conditions, and intended difficulty.
 4. Author resolves findings and adds/updates negative fixtures where ambiguity was discovered.
-5. The reviewer, registered as a `chemistry-sme`, records the review: `pnpm content:record-review --reviewer <reviewer-id> --date <YYYY-MM-DD> <record-id>...` (or `--all`). The command marks the records reviewed, stores the fingerprint, and refuses unknown or non-SME reviewers. Only the named reviewer, or someone acting on their explicit instruction, runs it.
+5. The reviewer, registered as a `chemistry-sme`, records the review: `pnpm content:record-review --reviewer <reviewer-id> --date <YYYY-MM-DD> <record-id>...` (or `--all`). It accepts IDs from all published content families (elements, named groups, alternate mnemonics, nomenclature, products, and routes), marks exactly the selected records reviewed, stores their fingerprints, and regenerates the nomenclature snapshot when necessary. Unknown IDs and non-SME reviewers are refused. Only the named reviewer, or someone acting on their explicit instruction, runs it; agents must not stamp records on their own.
 6. Production generation proves that drafts, failed records, and deprecated records do not ship.
-7. Before a release, `pnpm content:release-check` must pass: every shipped record has a current chemistry-SME review.
+7. Before a release, `pnpm content:release-check` must pass: every shipped element, named group, alternate mnemonic, nomenclature entry, preparation/production product, and approved route has a current chemistry-SME review. The command first runs `pnpm content:validate`, then reports approved/total counts per family and the IDs still blocking release. Owner-approved content remains available for development but blocks this production gate. In-review routes and draft nomenclature entries do not ship and are excluded from its denominator.
 
 Review is reopened when a scientific field, canonical answer, alias, equation, production condition, or source changes. For an SME-reviewed record, validation enforces this. Either the SME re-records the review for the changed record, or the author sets `status: in-review` and removes the review fields, which stops the record from shipping until it is reviewed again. Pure formatting or metadata corrections may follow the documented lightweight review path once one exists.

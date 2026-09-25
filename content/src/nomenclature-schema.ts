@@ -61,6 +61,10 @@ export const nomenclatureRecordSchema = z
     sources: z.array(sourceSchema).min(1),
     reviewedBy: z.string().min(1).optional(),
     reviewedAt: z.iso.date().optional(),
+    reviewFingerprint: z
+      .string()
+      .regex(/^sha256:[a-f0-9]{64}$/u)
+      .optional(),
     ownerApprovedBy: z.string().min(1).optional(),
     ownerApprovedAt: z.iso.date().optional(),
   })

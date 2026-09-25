@@ -45,6 +45,29 @@ export default async function globalSetup(): Promise<void> {
     ["--directory", "../api", "run", "python", "-m", "inorganic_api.cli", "seed-accounts"],
     { cwd: webDirectory, env, stdio: "inherit" },
   );
+  const resetAccounts = ["reset_chromium", "reset_mobile_chromium"];
+  const seedResetAccounts = [
+    "from sqlalchemy import select",
+    "from inorganic_api.database import create_session_factory",
+    "from inorganic_api.models import User",
+    "from inorganic_api.services.passwords import hash_password",
+    "import os",
+    "names = os.environ['E2E_RESET_ACCOUNTS'].split(',')",
+    "with create_session_factory()() as db:",
+    "    for name in names:",
+    "        if db.scalar(select(User).where(User.username == name)) is None:",
+    "            db.add(User(username=name, password_hash=hash_password(os.environ['E2E_RESET_PASSWORD']), role='user'))",
+    "    db.commit()",
+  ].join("\n");
+  execFileSync("uv", ["--directory", "../api", "run", "python", "-c", seedResetAccounts], {
+    cwd: webDirectory,
+    env: {
+      ...env,
+      E2E_RESET_ACCOUNTS: resetAccounts.join(","),
+      E2E_RESET_PASSWORD: process.env.E2E_RESET_PASSWORD ?? "CiOnlyReset_2026_ABCDE",
+    },
+    stdio: "inherit",
+  });
   const context = await request.newContext({ baseURL: origin });
   try {
     const response = await context.post("/api/v1/auth/login", {

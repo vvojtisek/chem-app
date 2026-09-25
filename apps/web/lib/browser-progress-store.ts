@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  ACCOUNT_META_STORE,
   ATTEMPT_EVENT_STORE,
   LEARNING_DATABASE_NAME,
   LEARNING_DATABASE_VERSION,
@@ -9,6 +10,11 @@ import {
   SYNC_OUTBOX_STORE,
   transactionCompleted,
 } from "./browser-learning-database";
+import {
+  attemptGeneration,
+  INITIAL_PROGRESS_GENERATION,
+  progressGenerationSchema,
+} from "./progress-generation";
 
 export const PROGRESS_DATABASE_NAME = LEARNING_DATABASE_NAME;
 export const PROGRESS_DATABASE_VERSION = LEARNING_DATABASE_VERSION;
@@ -20,6 +26,7 @@ const baseAttemptSchema = z.strictObject({
   occurredAt: z.iso.datetime({ offset: true }),
   isCorrect: z.boolean(),
   round: z.enum(["initial", "retry"]),
+  progressGeneration: progressGenerationSchema.optional(),
 });
 
 const elementAttemptSchema = baseAttemptSchema.extend({
@@ -131,10 +138,31 @@ export function createBrowserProgressStore(
       const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(
-          [ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE],
+          [ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE, ACCOUNT_META_STORE],
           "readwrite",
         );
-        transaction.objectStore(ATTEMPT_EVENT_STORE).add(attemptEventSchema.parse(event));
+        const storedGeneration: unknown = await requestCompleted(
+          transaction.objectStore(ACCOUNT_META_STORE).get("progress-generation"),
+        );
+        const current =
+          typeof storedGeneration === "object" &&
+          storedGeneration !== null &&
+          "value" in storedGeneration &&
+          typeof storedGeneration.value === "string"
+            ? progressGenerationSchema.parse(storedGeneration.value)
+            : INITIAL_PROGRESS_GENERATION;
+        if (
+          (event.progressGeneration && attemptGeneration(event) !== current) ||
+          (userId && current !== INITIAL_PROGRESS_GENERATION && !event.progressGeneration)
+        ) {
+          transaction.abort();
+          throw new Error("Pokrok účtu byl resetován. Obnovte stránku.");
+        }
+        const stamped =
+          current === INITIAL_PROGRESS_GENERATION
+            ? event
+            : { ...event, progressGeneration: current };
+        transaction.objectStore(ATTEMPT_EVENT_STORE).add(attemptEventSchema.parse(stamped));
         transaction.objectStore(SYNC_OUTBOX_STORE).add({ id: event.id });
         await transactionCompleted(transaction);
         if (typeof window !== "undefined")

@@ -1,10 +1,84 @@
 import {
+  ACCOUNT_META_STORE,
+  LEARNING_DATABASE_NAME,
   openLearningDatabase,
   PRACTICE_SESSION_STORE,
   requestCompleted,
   transactionCompleted,
 } from "./browser-learning-database";
-import { type PeriodicCheckpoint, periodicCheckpointSchema } from "./periodic-table-session";
+import {
+  PERIODIC_NAME_SESSION_ID,
+  PERIODIC_POSITION_SESSION_ID,
+  type PeriodicCheckpoint,
+  periodicCheckpointSchema,
+} from "./periodic-table-session";
+import { INITIAL_PROGRESS_GENERATION } from "./progress-generation";
+
+/** Copy checkpoints from the former device-wide store once, without removing the source. */
+export async function copyLegacyPeriodicCheckpoints(
+  indexedDb: IDBFactory,
+  userId: string,
+  generation: string,
+): Promise<void> {
+  if (generation !== INITIAL_PROGRESS_GENERATION) return;
+  const account = await openLearningDatabase(indexedDb, userId);
+  try {
+    const check = account.transaction(ACCOUNT_META_STORE, "readonly");
+    const completed = transactionCompleted(check);
+    const copied = await requestCompleted(
+      check.objectStore(ACCOUNT_META_STORE).get("legacy-periodic-copy-v1"),
+    );
+    await completed;
+    if (copied !== undefined) return;
+    const known = await indexedDb.databases();
+    const values: unknown[] = [];
+    if (known.some(({ name }) => name === LEARNING_DATABASE_NAME)) {
+      const legacy = await openLearningDatabase(indexedDb);
+      try {
+        const transaction = legacy.transaction(PRACTICE_SESSION_STORE, "readonly");
+        const completed = transactionCompleted(transaction);
+        for (const id of [PERIODIC_POSITION_SESSION_ID, PERIODIC_NAME_SESSION_ID]) {
+          const value: unknown = await requestCompleted(
+            transaction.objectStore(PRACTICE_SESSION_STORE).get(id),
+          );
+          if (value !== undefined) values.push(value);
+        }
+        await completed;
+      } finally {
+        legacy.close();
+      }
+    }
+    const target = account.transaction([ACCOUNT_META_STORE, PRACTICE_SESSION_STORE], "readwrite");
+    const completedTarget = transactionCompleted(target);
+    const meta = target.objectStore(ACCOUNT_META_STORE);
+    const currentGeneration: unknown = await requestCompleted(meta.get("progress-generation"));
+    if (
+      typeof currentGeneration === "object" &&
+      currentGeneration !== null &&
+      "value" in currentGeneration &&
+      currentGeneration.value !== INITIAL_PROGRESS_GENERATION
+    ) {
+      target.abort();
+      throw new Error("Pokrok se během obnovy starší série změnil.");
+    }
+    const store = target.objectStore(PRACTICE_SESSION_STORE);
+    for (const value of values) {
+      if (
+        typeof value !== "object" ||
+        value === null ||
+        !("id" in value) ||
+        (value.id !== PERIODIC_POSITION_SESSION_ID && value.id !== PERIODIC_NAME_SESSION_ID)
+      )
+        continue;
+      const existing = await requestCompleted(store.get(value.id));
+      if (existing === undefined) store.put(value);
+    }
+    meta.put({ key: "legacy-periodic-copy-v1", value: true });
+    await completedTarget;
+  } finally {
+    account.close();
+  }
+}
 
 export interface BrowserPeriodicSessionStore {
   load(id: PeriodicCheckpoint["id"]): Promise<PeriodicCheckpoint | null>;
@@ -16,13 +90,13 @@ export interface BrowserPeriodicSessionStore {
   clear(id: PeriodicCheckpoint["id"]): Promise<void>;
 }
 
-/** Checkpoints live in the device-local database, independently of account attempt history. */
 export function createBrowserPeriodicSessionStore(
   indexedDb: IDBFactory = globalThis.indexedDB,
+  userId?: string,
 ): BrowserPeriodicSessionStore {
   return {
     async load(id) {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(PRACTICE_SESSION_STORE, "readonly");
         const value: unknown = await requestCompleted(
@@ -41,7 +115,7 @@ export function createBrowserPeriodicSessionStore(
       if (valid && (valid.id !== id || valid.revision !== expectedRevision + 1)) {
         throw new Error("Nesouhlasí revize uložené série.");
       }
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(PRACTICE_SESSION_STORE, "readwrite");
         const completion = transactionCompleted(transaction);
@@ -76,7 +150,7 @@ export function createBrowserPeriodicSessionStore(
     },
 
     async clear(id) {
-      const database = await openLearningDatabase(indexedDb);
+      const database = await openLearningDatabase(indexedDb, userId);
       try {
         const transaction = database.transaction(PRACTICE_SESSION_STORE, "readwrite");
         transaction.objectStore(PRACTICE_SESSION_STORE).delete(id);

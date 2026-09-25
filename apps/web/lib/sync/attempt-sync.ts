@@ -1,5 +1,5 @@
 import type { components } from "@inorganic/contracts";
-import { apiClient, unwrapApiResponse } from "../api/client";
+import { ApiError, apiClient, unwrapApiResponse } from "../api/client";
 import { type AttemptEvent, attemptEventSchema } from "../browser-progress-store";
 import { type ApiAttempt, mapAttempt } from "./attempt-mapper";
 import {
@@ -8,6 +8,7 @@ import {
   pullCursor,
   type QuarantineInput,
   quarantineRejectedAttempts,
+  reconcileProgressGeneration,
   restoreLegacyQuotaAttempts,
   savePulledAttempts,
   setUploadRetryAt,
@@ -18,11 +19,18 @@ type BatchResponse = components["schemas"]["BatchResponse"];
 type AttemptPage = components["schemas"]["AttemptPage"];
 
 export interface SyncTransport {
+  generation(): Promise<string>;
   upload(events: ApiAttempt[]): Promise<BatchResponse>;
   list(cursor: string | null): Promise<AttemptPage>;
 }
 
 const apiTransport: SyncTransport = {
+  async generation() {
+    const response = unwrapApiResponse(
+      await apiClient.GET("/api/v1/me/progress-generation", { cache: "no-store" }),
+    );
+    return response.progressGeneration;
+  },
   async upload(events) {
     return unwrapApiResponse(
       await apiClient.POST("/api/v1/me/attempt-events/batch", { body: { events } }),
@@ -42,7 +50,10 @@ export async function runAttemptSync(
   indexedDb: IDBFactory,
   userId: string,
   transport: SyncTransport = apiTransport,
-): Promise<void> {
+): Promise<string | null> {
+  const currentGeneration = await transport.generation();
+  if (await reconcileProgressGeneration(indexedDb, userId, currentGeneration))
+    return currentGeneration;
   await restoreLegacyQuotaAttempts(indexedDb, userId);
   const retryAt = await uploadRetryAt(indexedDb, userId);
   if (retryAt !== null && Date.now() >= retryAt) {
@@ -51,7 +62,17 @@ export async function runAttemptSync(
   for (; retryAt === null || Date.now() >= retryAt; ) {
     const pending = await pendingAttempts(indexedDb, userId, 100);
     if (pending.length === 0) break;
-    const response = await transport.upload(pending.map(mapAttempt));
+    let response: BatchResponse;
+    try {
+      response = await transport.upload(pending.map(mapAttempt));
+    } catch (error) {
+      if (error instanceof ApiError && error.code === "progress_reset") {
+        const newGeneration = await transport.generation();
+        if (await reconcileProgressGeneration(indexedDb, userId, newGeneration))
+          return newGeneration;
+      }
+      throw error;
+    }
     const acknowledged = new Set([...response.accepted, ...response.duplicates]);
     const rejectedByIndex = new Map(
       response.rejected.map((rejection) => [rejection.index, rejection]),
@@ -105,6 +126,8 @@ export async function runAttemptSync(
   let cursor = await pullCursor(indexedDb, userId);
   for (;;) {
     const page = await transport.list(cursor);
+    if (await reconcileProgressGeneration(indexedDb, userId, page.progressGeneration))
+      return page.progressGeneration;
     if (page.items.length === 0) break;
     if (page.nextCursor === null || page.nextCursor === cursor)
       throw new Error("Server nevrátil platný pokračovací kurzor.");
@@ -129,9 +152,10 @@ export async function runAttemptSync(
       }
     }
     if (rejected.length > 0) await quarantineRejectedAttempts(indexedDb, userId, rejected);
-    await savePulledAttempts(indexedDb, userId, attempts, page.nextCursor);
+    await savePulledAttempts(indexedDb, userId, attempts, page.nextCursor, page.progressGeneration);
     cursor = page.nextCursor;
   }
+  return null;
 }
 
 function rejectionReason(code: string): string {

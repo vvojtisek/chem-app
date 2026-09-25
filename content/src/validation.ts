@@ -1,3 +1,4 @@
+import type { ReviewableRecord } from "./review";
 import type { ElementRecord, GroupRecord, ReviewerRecord } from "./schema";
 
 export interface ValidationProblem {
@@ -90,7 +91,7 @@ export function findElementCollectionProblems(
 }
 
 export function findReviewerReferenceProblems(
-  records: readonly (ElementRecord | GroupRecord)[],
+  records: readonly ReviewableRecord[],
   reviewers: readonly ReviewerRecord[],
 ): readonly ValidationProblem[] {
   const problems: ValidationProblem[] = [];

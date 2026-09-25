@@ -59,6 +59,8 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 ## Shared behavior
 
+- `/napoveda` explains study, practice, offline use, synchronization, progress reset, and curriculum review status. `/soukromi` summarizes the data handled by the app and links to the deployment owner's privacy notice; both pages are part of the offline shell. The current privacy page is explicitly incomplete until the deployment owner fills in identity, contact, retention, and erasure details.
+
 - Learning routes require an authenticated account or a read-only guest
   session. Public registration uses email verification, and the learner sets
   their password from the verification link. A previously verified account
@@ -77,6 +79,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - Attempts are client-reported, self-study data; ranks are not verified assessments or competitive scores.
 - After a successful initial load, core learning modes remain usable without a network connection.
 - A mastery heatmap distinguishes no data from low mastery and uses a minimum evidence threshold so one correct answer is not presented as full mastery.
+- Registered users and admins can reset their own progress from `/pokrok` after a second explicit confirmation while online. This hides prior attempt history, rank, trend, and mastery on all synchronized devices and clears account-local pending attempts and unfinished practice, while preserving account identity, preferences, and custom cards. Old server events remain archived for quota accounting; reset is not a personal-data erasure request.
 
 ## MVP content baseline
 

@@ -5,19 +5,37 @@ const sourceSchema = z.object({
   locator: z.string().min(1),
 });
 
-export const alternateGroupMnemonicRecordSchema = z.object({
-  id: z.string().regex(/^group-mnemonic-alternative\.(?:[1-9]|1[0-8])$/u),
-  groupNumber: z.number().int().min(1).max(18),
-  traditionalLabelCs: z.string().min(1),
-  elementSymbols: z.array(z.string().regex(/^[A-Z][a-z]?$/u)).min(1),
-  mnemonicCs: z.string().min(1),
-  explanationCs: z.string().min(1),
-  status: z.literal("owner-approved"),
-  author: z.string().min(1),
-  sources: z.array(sourceSchema).min(1),
-  ownerApprovedBy: z.string().min(1),
-  ownerApprovedAt: z.iso.date(),
-});
+export const alternateGroupMnemonicRecordSchema = z
+  .object({
+    id: z.string().regex(/^group-mnemonic-alternative\.(?:[1-9]|1[0-8])$/u),
+    groupNumber: z.number().int().min(1).max(18),
+    traditionalLabelCs: z.string().min(1),
+    elementSymbols: z.array(z.string().regex(/^[A-Z][a-z]?$/u)).min(1),
+    mnemonicCs: z.string().min(1),
+    explanationCs: z.string().min(1),
+    status: z.enum(["owner-approved", "reviewed"]),
+    author: z.string().min(1),
+    sources: z.array(sourceSchema).min(1),
+    ownerApprovedBy: z.string().min(1),
+    ownerApprovedAt: z.iso.date(),
+    reviewedBy: z
+      .string()
+      .regex(/^reviewer\.[a-z0-9]+(?:-[a-z0-9]+)*$/u)
+      .optional(),
+    reviewedAt: z.iso.date().optional(),
+    reviewFingerprint: z
+      .string()
+      .regex(/^sha256:[a-f0-9]{64}$/u)
+      .optional(),
+  })
+  .superRefine((record, context) => {
+    if (record.status === "reviewed" && (!record.reviewedBy || !record.reviewedAt)) {
+      context.addIssue({
+        code: "custom",
+        message: "Reviewed mnemonics require reviewer and date.",
+      });
+    }
+  });
 
 export const alternateGroupMnemonicCollectionSchema = z.object({
   schemaVersion: z.literal(1),

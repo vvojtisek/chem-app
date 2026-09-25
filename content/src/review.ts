@@ -1,9 +1,16 @@
 import { createHash } from "node:crypto";
 
-import type { ElementRecord, GroupRecord, ReviewerRecord } from "./schema";
+import type { ReviewerRecord } from "./schema";
 import type { ValidationProblem } from "./validation";
 
-export type ReviewableRecord = ElementRecord | GroupRecord;
+export interface ReviewableRecord {
+  readonly id: string;
+  readonly status: string;
+  readonly reviewedBy?: string | undefined;
+  readonly reviewedAt?: string | undefined;
+  readonly reviewFingerprint?: string | undefined;
+  readonly fingerprintInput?: object | undefined;
+}
 
 export interface SmeReviewCoverage {
   readonly smeReviewed: readonly string[];
@@ -22,9 +29,12 @@ const reviewMetadataKeys: ReadonlySet<string> = new Set([
   "reviewedBy",
   "reviewedAt",
   "reviewFingerprint",
+  "ownerApprovedBy",
+  "ownerApprovedAt",
+  "reviewNote",
 ]);
 
-export function createReviewFingerprint(record: ReviewableRecord): string {
+export function createReviewFingerprint(record: object): string {
   const reviewedFields = Object.entries(record).filter(([key]) => !reviewMetadataKeys.has(key));
   const digest = createHash("sha256")
     .update(toCanonicalJson(Object.fromEntries(reviewedFields)))
@@ -33,8 +43,8 @@ export function createReviewFingerprint(record: ReviewableRecord): string {
   return `sha256:${digest}`;
 }
 
-export function findReviewFingerprintProblems(
-  records: readonly ReviewableRecord[],
+export function findReviewFingerprintProblems<T extends ReviewableRecord>(
+  records: readonly T[],
   reviewers: readonly ReviewerRecord[],
 ): readonly ValidationProblem[] {
   const reviewersById = new Map(reviewers.map((reviewer) => [reviewer.id, reviewer]));
@@ -47,7 +57,9 @@ export function findReviewFingerprintProblems(
       if (isSmeReviewer(record, reviewersById)) {
         problems.push({ code: "missing_review_fingerprint", recordId: record.id });
       }
-    } else if (record.reviewFingerprint !== createReviewFingerprint(record)) {
+    } else if (
+      record.reviewFingerprint !== createReviewFingerprint(record.fingerprintInput ?? record)
+    ) {
       problems.push({ code: "stale_review_fingerprint", recordId: record.id });
     }
   }
@@ -55,15 +67,17 @@ export function findReviewFingerprintProblems(
   return problems;
 }
 
-export function summarizeSmeReviewCoverage(
-  records: readonly ReviewableRecord[],
+export function summarizeSmeReviewCoverage<T extends ReviewableRecord>(
+  records: readonly T[],
   reviewers: readonly ReviewerRecord[],
 ): SmeReviewCoverage {
   const reviewersById = new Map(reviewers.map((reviewer) => [reviewer.id, reviewer]));
-  const shipped = records.filter((record) => record.status === "reviewed");
+  const shipped = records.filter(
+    (record) => record.status === "reviewed" || record.status === "owner-approved",
+  );
   const hasCurrentSmeReview = (record: ReviewableRecord) =>
     isSmeReviewer(record, reviewersById) &&
-    record.reviewFingerprint === createReviewFingerprint(record);
+    record.reviewFingerprint === createReviewFingerprint(record.fingerprintInput ?? record);
 
   return {
     smeReviewed: shipped.filter(hasCurrentSmeReview).map(({ id }) => id),
