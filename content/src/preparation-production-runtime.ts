@@ -53,7 +53,7 @@ export const curatedPreparationProduction: readonly PreparationProductionRuntime
       routes: product.routes
         .filter(
           (route) =>
-            route.status === "owner-approved" &&
+            (route.status === "owner-approved" || route.status === "reviewed") &&
             isBalancedEquation(route.reactants, route.products, allowedSymbols) &&
             hasReducedEquationCoefficients(route.reactants, route.products),
         )

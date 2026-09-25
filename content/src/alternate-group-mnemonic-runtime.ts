@@ -12,7 +12,7 @@ const alternatives = alternateGroupMnemonicCollectionSchema.parse(rawAlternative
 
 export const curatedAlternateGroupMnemonics: readonly AlternateGroupMnemonicData[] =
   alternatives.records
-    .filter((record) => record.status === "owner-approved")
+    .filter((record) => record.status === "owner-approved" || record.status === "reviewed")
     .map(({ groupNumber, traditionalLabelCs, mnemonicCs, explanationCs }) => ({
       groupNumber,
       traditionalLabelCs,

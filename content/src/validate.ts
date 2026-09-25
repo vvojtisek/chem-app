@@ -3,9 +3,11 @@ import { readFile } from "node:fs/promises";
 import { findContentProblems, loadAuthoringContent } from "./authoring-content";
 import { createNomenclatureSnapshot, validateNomenclatureRecords } from "./nomenclature-runtime";
 import { nomenclatureCollectionSchema } from "./nomenclature-schema";
-import { summarizeSmeReviewCoverage } from "./review";
 import { preparationProductionCollectionSchema } from "./preparation-production-schema";
 import { findPreparationProductionProblems } from "./preparation-production-validation";
+import { collectReleaseReviewTargets } from "./release-review";
+import { findReviewFingerprintProblems, summarizeSmeReviewCoverage } from "./review";
+import { findReviewerReferenceProblems } from "./validation";
 
 const content = await loadAuthoringContent();
 const problems = findContentProblems(content);
@@ -41,6 +43,15 @@ if (preparationProductionProblems.length > 0) {
   );
 }
 
+const reviewTargets = collectReleaseReviewTargets(content, { nomenclature, preparationProduction });
+const reviewProblems = [
+  ...findReviewerReferenceProblems(reviewTargets, content.reviewers),
+  ...findReviewFingerprintProblems(reviewTargets, content.reviewers),
+];
+if (reviewProblems.length > 0) {
+  throw new Error(`Content review validation failed:\n${JSON.stringify(reviewProblems, null, 2)}`);
+}
+
 const expectedSnapshot = createNomenclatureSnapshot(nomenclature.records, elementSymbols);
 const generatedSnapshot: unknown = JSON.parse(
   await readFile(new URL("../generated/nomenclature-runtime.json", import.meta.url), "utf8"),
@@ -71,7 +82,10 @@ console.log(
 );
 const equationCount = preparationProduction.products.reduce(
   (total, product) =>
-    total + product.routes.filter((route) => route.status === "owner-approved").length,
+    total +
+    product.routes.filter(
+      (route) => route.status === "owner-approved" || route.status === "reviewed",
+    ).length,
   0,
 );
 const unreviewedEquationCount = preparationProduction.products.reduce(

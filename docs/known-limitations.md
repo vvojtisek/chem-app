@@ -2,12 +2,14 @@
 
 ## Curriculum
 
-- The 118 element records have a current chemistry-SME review; the eight named
-  groups still need that review.
-- The 469 enabled nomenclature records and 116 enabled preparation/production
-  equations are owner-approved, not chemistry-SME reviewed. One unbalanced
-  source equation is held out. See [curriculum credits](content-credits.md)
-  and the review ledgers under `docs/exec-plans/active/`.
+- The release gate covers six shipped families: elements, named groups,
+  alternate group mnemonics, nomenclature, preparation/production products,
+  and individual production routes. The latest run reports 118/118 elements
+  reviewed; 0/8 groups, 0/8 alternate mnemonics, 0/469 nomenclature records,
+  0/77 products, and 0/116 routes reviewed. The 678 outstanding records block
+  curriculum release. One unbalanced source equation is held out. See
+  [curriculum credits](content-credits.md) and the review ledgers under
+  `docs/exec-plans/active/`.
 - Equation validation proves supported syntax and atom balance, not that each
   reaction is chemically plausible or that its conditions are correct.
 - The equation parser intentionally supports a documented subset of chemical
@@ -33,7 +35,8 @@
   supported browsers. No moderated usability sessions or screen-reader review
   have been completed yet, and no performance budget has been signed off.
 - A chemistry content release remains blocked until every shipped curriculum
-  record passes `pnpm content:release-check`.
+  record passes `pnpm content:release-check`. That command validates the
+  authoring data and reports current SME coverage by content family.
 - Public operation also requires a completed privacy notice, DNS/firewall/TLS
   configuration, working SMTP delivery, backup restoration checks, and the
   scheduled purge job. See [deployment runbook](deployment.md) and the

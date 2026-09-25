@@ -35,7 +35,7 @@ export function findPreparationProductionProblems(
     if (!parseEquationFormula(product.formula, allowedSymbols)) {
       problems.push({ code: "invalid_product_formula", recordId: product.id });
     }
-    if (product.status === "owner-approved" && product.sources.length === 0) {
+    if (product.sources.length === 0) {
       problems.push({ code: "missing_source", recordId: product.id });
     }
 
@@ -68,7 +68,7 @@ export function findPreparationProductionProblems(
           if (parsed) seen.add(parsed.canonical);
         }
       }
-      if (route.status !== "owner-approved") continue;
+      if (route.status !== "owner-approved" && route.status !== "reviewed") continue;
       if (!isBalancedEquation(route.reactants, route.products, allowedSymbols)) {
         problems.push({ code: "unbalanced_approved_equation", recordId: route.id });
       }
