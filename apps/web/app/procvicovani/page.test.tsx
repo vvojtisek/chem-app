@@ -8,7 +8,7 @@ describe("PracticeHubPage", () => {
     render(<PracticeHubPage />);
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Vyberte kategorii");
-    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
     expect(screen.getByRole("link", { name: "Procvičit názvy a značky" })).toHaveAttribute(
       "href",
       "/procvicovani/prvky",
@@ -21,7 +21,15 @@ describe("PracticeHubPage", () => {
       "href",
       "/procvicovani/nazvoslovi",
     );
-    expect(screen.getByRole("link", { name: /Domů/ })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Procvičit rovnice" })).toHaveAttribute(
+      "href",
+      "/procvicovani/rovnice",
+    );
+    expect(screen.getByRole("link", { name: "Procházet výskyt a výrobu" })).toHaveAttribute(
+      "href",
+      "/uceni/priprava-vyroba",
+    );
+    expect(screen.getByRole("link", { name: /Testy/ })).toHaveAttribute("href", "/");
     expect(screen.queryByRole("link", { name: /Zpět/ })).toBeNull();
   });
 });

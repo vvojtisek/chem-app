@@ -29,6 +29,17 @@ API_PROXY_TARGET="http://127.0.0.1:${api_port}" \
   NEXT_PUBLIC_CSRF_COOKIE_NAME=inorganic_csrf \
   NEXT_PUBLIC_SESSION_COOKIE_NAME=inorganic_session pnpm build
 
+# Next's standalone output intentionally omits static assets. The standalone
+# server resolves `/_next/static/*` relative to its own `.next` directory.
+standalone_next_dir="apps/web/.next/standalone/apps/web/.next"
+[[ -d "$standalone_next_dir" ]] || fail "standalone server output is missing at $standalone_next_dir."
+mkdir -p "$standalone_next_dir/static"
+cp -a apps/web/.next/static/. "$standalone_next_dir/static/"
+if [[ -d apps/web/public ]]; then
+  mkdir -p apps/web/.next/standalone/apps/web/public
+  cp -a apps/web/public/. apps/web/.next/standalone/apps/web/public/
+fi
+
 api_pid=''
 web_pid=''
 mail_pid=''

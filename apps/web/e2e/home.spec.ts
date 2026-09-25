@@ -2,13 +2,11 @@ import { readFileSync } from "node:fs";
 
 import { expect, type Page, test } from "@playwright/test";
 
-const elementIdByName = new Map(
-  (
-    JSON.parse(
-      readFileSync(new URL("../../../content/data/elements.json", import.meta.url), "utf8"),
-    ) as readonly { readonly id: string; readonly nameCs: string }[]
-  ).map(({ id, nameCs }) => [nameCs, id]),
-);
+const elements = JSON.parse(
+  readFileSync(new URL("../../../content/data/elements.json", import.meta.url), "utf8"),
+) as readonly { readonly id: string; readonly nameCs: string; readonly symbol: string }[];
+const elementIdByName = new Map(elements.map(({ id, nameCs }) => [nameCs, id]));
+const elementSymbolByName = new Map(elements.map(({ nameCs, symbol }) => [nameCs, symbol]));
 
 async function keepQuestionOrder(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -16,11 +14,11 @@ async function keepQuestionOrder(page: Page): Promise<void> {
   });
 }
 
-test("shows the four learning modes on desktop and mobile", async ({ page }) => {
+test("shows the three numbered learning modules on desktop and mobile", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
-  await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+  await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
   await expect(page.getByText("Offline výuka")).toHaveCount(0);
   await expect(page.getByText("Vyberte, co chcete trénovat")).toHaveCount(0);
   await expect(page.getByText("Příprava MVP")).toHaveCount(0);
@@ -36,7 +34,7 @@ test("fits the learning modes in an iPad-sized viewport", async ({ page }, testI
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
 
     await expect(page.getByRole("heading", { level: 1, name: "Anorganická chemie" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
     await expect(page.getByRole("heading", { level: 3 }).last()).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       viewport.width,
@@ -64,14 +62,29 @@ test("reopens the shell while offline", async ({ context, page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
 });
 
-test("shows a Czech element card and saves a local edit", async ({ page }) => {
+test("practices a shuffled element symbol and keeps the editable card library", async ({
+  page,
+}) => {
+  await keepQuestionOrder(page);
   await page.goto("/flashcards/prvky");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Prvky");
-  await expect(page.getByText("H", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Značky prvků");
+  await page.getByRole("button", { name: /^Přejít na cvičení/ }).click();
+  await expect(page.getByRole("timer")).toHaveText("05:00");
+  const card = page.getByRole("article", { name: /^Karta 1 z/ });
+  const prompt = await card.getByRole("heading", { level: 2 }).textContent();
+  if (!prompt) throw new Error("The first flashcard has no element-name prompt.");
+  const symbol = elementSymbolByName.get(prompt);
+  if (!symbol) throw new Error(`No symbol found for element "${prompt}".`);
+  await card.getByRole("textbox", { name: "Chemická značka" }).fill(symbol);
+  await card.getByRole("textbox", { name: "Chemická značka" }).press("Enter");
+  await expect(card.getByRole("status")).toHaveText("Správně.");
+  await expect(card.getByRole("button", { name: "Další" })).toBeVisible();
 
+  await page.getByText("Prohlížet karty prvků").click();
+  await expect(page.getByText("H", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Otočit kartu" }).click();
-  await expect(page.getByRole("heading", { level: 2 })).toHaveText("Vodík");
+  await expect(page.getByRole("heading", { level: 2, name: "Vodík" })).toBeVisible();
   await expect(page.getByText("Valenční konfigurace")).toBeVisible();
 
   await page.getByRole("button", { name: "Upravit kartu" }).click();
@@ -474,7 +487,7 @@ test("returns from an exercise to the practice categories and to the dashboard",
   await expect(page).toHaveURL(/\/procvicovani\/nazvoslovi$/);
   await page
     .getByRole("navigation", { name: "Navigace procvičování" })
-    .getByRole("link", { name: "Domů" })
+    .getByRole("link", { name: "Testy" })
     .click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");

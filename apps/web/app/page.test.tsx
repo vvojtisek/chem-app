@@ -6,15 +6,22 @@ import HomePage from "./page";
 afterEach(cleanup);
 
 describe("HomePage", () => {
-  it("presents all four learning modes", () => {
+  it("presents the three numbered learning modules", () => {
     render(<HomePage />);
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Anorganická chemie");
-    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
     expect(screen.getByText("Periodická tabulka")).toBeInTheDocument();
-    expect(screen.getByText("Chemické rovnice")).toBeInTheDocument();
+    expect(screen.getByText("Chemické rovnice, výskyt a výroba")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Procvičit rovnice" })).toHaveAttribute(
+      "href",
+      "/procvicovani/rovnice",
+    );
+    expect(screen.getByRole("link", { name: "Procházet výskyt a výrobu" })).toHaveAttribute(
+      "href",
+      "/uceni/priprava-vyroba",
+    );
     expect(screen.getByText("Názvosloví")).toBeInTheDocument();
-    expect(screen.getByText("Výskyt a výroba")).toBeInTheDocument();
   });
 
   it("links one element name and symbol practice next to the blind table and flashcards", () => {
@@ -27,6 +34,6 @@ describe("HomePage", () => {
     expect(screen.queryByRole("link", { name: "Procvičit názvy" })).toBeNull();
     expect(screen.getByRole("link", { name: "Procvičit pozice" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Otevřít karty prvků" })).toBeInTheDocument();
-    expect(screen.getAllByText("Připravujeme obsah")).toHaveLength(1);
+    expect(screen.queryByText("Připravujeme obsah")).toBeNull();
   });
 });

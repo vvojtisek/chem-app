@@ -1,6 +1,6 @@
 import type { NomenclatureRuntimeRecord } from "@inorganic/content/nomenclature-schema";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   NOMENCLATURE_SESSION_STORE,
   openLearningDatabase,
@@ -63,7 +63,10 @@ const potassiumBromide = record({
 const keepOrder = () => 0.999_999;
 const symbols = ["Ag", "Br", "Cl", "H", "K", "Mg", "Na", "O", "S"];
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 beforeEach(async () => {
   window.localStorage.clear();
   await resetLearningDatabase(indexedDB);
@@ -114,6 +117,21 @@ describe("NomenclaturePractice filters", () => {
     fireEvent.click(screen.getByRole("radio", { name: "1" }));
     expect(await startButton()).toBeDisabled();
     expect(screen.getByText(/neodpovídá žádná látka/)).toBeInTheDocument();
+  });
+
+  it("starts a session when randomUUID is unavailable on an HTTP LAN origin", async () => {
+    vi.stubGlobal("crypto", {
+      getRandomValues: (bytes: Uint8Array) => {
+        bytes.fill(0);
+        return bytes;
+      },
+    });
+    renderPractice();
+
+    fireEvent.click(await startButton());
+
+    expect(prompt()).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
 
   it("narrows a salt category with a quick family selection and remembers the filters", async () => {

@@ -24,7 +24,7 @@ export function AccountNavigation() {
       ) : null}
       {canSync ? <SyncStatusIndicator /> : null}
       <Link className="min-h-10 rounded-lg px-2 py-2 underline" href="/">
-        Domů
+        Testy
       </Link>
       <Link
         className="min-h-10 rounded-lg px-2 py-2 underline"
@@ -35,7 +35,7 @@ export function AccountNavigation() {
         Učivo
       </Link>
       <Link className="min-h-10 rounded-lg px-2 py-2 underline" href="/pokrok">
-        Pokrok
+        Statistika
       </Link>
       <Link className="min-h-10 rounded-lg px-2 py-2 underline" href="/napoveda">
         Nápověda
@@ -46,7 +46,7 @@ export function AccountNavigation() {
         </Link>
       ) : null}
       <Link aria-label="Profil" className="min-h-10 rounded-lg px-2 py-2 underline" href="/ucet">
-        {isGuest ? "Host" : "Profil"}
+        Profil
       </Link>
     </nav>
   );

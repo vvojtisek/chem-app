@@ -3,7 +3,7 @@ import Link from "next/link";
 export const PRACTICE_HUB_HREF = "/procvicovani";
 
 interface PracticeNavigationProps {
-  /** Where „Zpět“ leads; omit it on the practice hub itself, which only needs „Domů“. */
+  /** Where „Zpět“ leads; omit it on the practice hub itself, which only needs „Testy“. */
   readonly backHref?: string | undefined;
 }
 
@@ -25,7 +25,7 @@ export function PracticeNavigation({ backHref }: PracticeNavigationProps) {
         className="inline-flex min-h-11 items-center gap-1 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
         href="/"
       >
-        <span aria-hidden="true">⌂</span> Domů
+        <span aria-hidden="true">⌂</span> Testy
       </Link>
     </nav>
   );

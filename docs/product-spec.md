@@ -21,8 +21,9 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 ### Navigation
 
 - `/procvicovani` lists the practice categories and their exercises, from the same catalog as the home page.
-- Every exercise page (blind table, names and symbols, nomenclature, element flashcards) starts with a navigation bar that stays at the top while scrolling: „Zpět“ returns to `/procvicovani` and „Domů“ to `/`. The `/procvicovani` page itself offers only „Domů“.
-- The authenticated application navigation offers quick links to home, the separate progression dashboard (`/pokrok`), and profile settings (`/ucet`). The dashboard contains personal statistics and ranking; profile settings contain account identity and password controls.
+- Every exercise page (blind table, names and symbols, nomenclature, element flashcards) starts with a navigation bar that stays at the top while scrolling: „Zpět“ returns to `/procvicovani` and „Testy“ to `/`. The `/procvicovani` page itself offers only „Testy“.
+- The authenticated application navigation offers „Testy“ (`/`), „Učivo“ (`/uceni/prvky`), „Statistika“ (`/pokrok`), „Nápověda“ (`/napoveda`), and „Profil“ (`/ucet`). Statistics include personal progress; profile settings contain account identity and password controls.
+- The test dashboard has three numbered modules. Module 02 combines equation practice and the related occurrence/preparation-production study material; module 03 is nomenclature.
 - The home page links to `/uceni/prvky` in a new tab. This read-only learning set browses reviewed element and group records without questions or attempt tracking, including element facts and available group mnemonics.
 
 ### Chemical equations
@@ -47,6 +48,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - Cover mineral-to-element matching and the principles, conditions, and equations of important production processes.
 - Provide two-sided element cards with occurrence, important ores, preparation, production, and equations where applicable.
 - “Knew it / Didn’t know it” grading drives a deterministic spaced-repetition schedule.
+- Element flashcards also offer a timed five-minute symbol-recall exercise. Learners choose elements using the same shared periodic-table selection as the name/symbol and blind-table exercises. Cards are shuffled at start; each shows a Czech name and symbol input, Enter or „Nevím“ reveals the back with correctness feedback, and „Další“ advances. The HUD shows correct, incorrect, remaining, and time; Reset restarts the same selection, while Ukončit shows current results.
 
 ### Preparation and production equation practice
 

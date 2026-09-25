@@ -22,18 +22,16 @@ export const practiceCategories: readonly PracticeCategory[] = [
     ],
   },
   {
-    title: "Chemické rovnice",
-    description: "Vyčíslování a doplňování reaktantů a produktů.",
-    links: [{ href: "/procvicovani/rovnice", label: "Procvičit rovnice" }],
+    title: "Chemické rovnice, výskyt a výroba",
+    description: "Vyčíslování reakcí, minerály a postupy přípravy či průmyslové výroby látek.",
+    links: [
+      { href: "/procvicovani/rovnice", label: "Procvičit rovnice" },
+      { href: "/uceni/priprava-vyroba", label: "Procházet výskyt a výrobu" },
+    ],
   },
   {
     title: "Názvosloví",
     description: "Převod mezi českými názvy a chemickými vzorci.",
     links: [{ href: "/procvicovani/nazvoslovi", label: "Procvičit názvosloví" }],
-  },
-  {
-    title: "Výskyt a výroba",
-    description: "Minerály, průmyslové procesy a opakovací karty.",
-    links: [],
   },
 ];

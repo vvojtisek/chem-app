@@ -25,7 +25,7 @@ export function PageNavigation() {
         <span aria-hidden="true" className="mr-1">
           ⌂
         </span>{" "}
-        Domů
+        Testy
       </Link>
     </nav>
   );

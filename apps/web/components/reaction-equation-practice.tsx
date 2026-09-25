@@ -14,6 +14,7 @@ import {
 import { useMemo, useRef, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
+import { createClientId } from "@/lib/client-id";
 
 type Level = "beginner" | "advanced" | "pro";
 type Route = PreparationProductionRuntimeProduct["routes"][number];
@@ -105,14 +106,14 @@ export function ReactionEquationPractice({
 
   function recordAttempt(isCorrect: boolean) {
     if (!canSave || !account || !question) return;
-    sessionId.current ??= crypto.randomUUID();
+    sessionId.current ??= createClientId();
     const direction = {
       beginner: "coefficients",
       advanced: "products-and-coefficients",
       pro: "complete-equation",
     } as const;
     const attempt = {
-      id: crypto.randomUUID(),
+      id: createClientId(),
       questionId: level === "pro" ? question.product.id : question.route.id,
       contentVersion: preparationProductionContentVersion,
       occurredAt: new Date().toISOString(),

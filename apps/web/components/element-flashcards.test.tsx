@@ -46,6 +46,7 @@ beforeEach(() => {
 describe("ElementFlashcards", () => {
   it("shows the Czech name and the group mnemonic after flipping a card", () => {
     render(<ElementFlashcards curatedElements={[hydrogen]} groups={[groupOne]} />);
+    fireEvent.click(screen.getByText("Prohlížet karty prvků"));
 
     fireEvent.click(screen.getByRole("button", { name: "Otočit kartu" }));
 
@@ -55,6 +56,7 @@ describe("ElementFlashcards", () => {
 
   it("saves a local edit and restores the curated card", async () => {
     render(<ElementFlashcards curatedElements={[hydrogen]} groups={[groupOne]} />);
+    fireEvent.click(screen.getByText("Prohlížet karty prvků"));
 
     fireEvent.click(screen.getByRole("button", { name: "Upravit kartu" }));
     fireEvent.change(screen.getByLabelText("Český název"), {

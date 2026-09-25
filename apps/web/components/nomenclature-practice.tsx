@@ -20,6 +20,7 @@ import {
   LegacyNomenclatureCheckpointError,
 } from "@/lib/browser-nomenclature-store";
 import type { NomenclatureAttemptEvent } from "@/lib/browser-progress-store";
+import { createClientId } from "@/lib/client-id";
 import { formatFormula, plainFormula } from "@/lib/formula-display";
 import {
   loadNomenclatureDirection,
@@ -269,7 +270,7 @@ export function NomenclaturePractice({
     const questions = filterCompounds(compounds, filters);
     if (questions.length === 0) return;
     const next = createPracticeQueue(questions, random);
-    sessionIdRef.current = crypto.randomUUID();
+    sessionIdRef.current = createClientId();
     sequenceRef.current = 0;
     sessionRef.current = next;
     setSession(next);
