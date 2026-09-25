@@ -76,7 +76,9 @@ export function PeriodicTableFrame({
 
   return (
     <div className="mt-6">
-      <section aria-label="Periodická tabulka" className="overflow-x-auto pb-3">
+      {/* Keyboard focus lets Safari users scroll the table when its cells are not interactive. */}
+      {/* biome-ignore lint/a11y/noNoninteractiveTabindex: A scrollable region needs keyboard access even without enabled cells. */}
+      <section aria-label="Periodická tabulka" className="overflow-x-auto pb-3" tabIndex={0}>
         <div className="min-w-180">
           {columnHeader ? (
             <div className="mb-3 grid grid-cols-18 gap-1 border-b border-slate-300 pb-3">
