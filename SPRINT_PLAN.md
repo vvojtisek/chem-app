@@ -448,7 +448,8 @@ Added in-app Czech help and technical privacy pages, cached by the offline
 shell, plus public-facing content credits and a known-limitations summary. The
 deployment runbook now calls out the unfinished privacy notice and curriculum
 release gates, as well as the no-downgrade condition after progress reset.
-Playwright verifies the help/privacy path offline in desktop and mobile
+Playwright verifies the help/privacy path offline and upgrades the app-shell
+cache from v5 to v6 without deleting unrelated caches in desktop and mobile
 Chromium. Operator identity/contact, data retention and erasure policy,
 physical-device and assistive-technology review, moderated usability sessions,
 performance/cache-update matrix, and chemistry-SME approvals remain release
