@@ -37,6 +37,9 @@ export function AccountNavigation() {
       <Link className="min-h-10 rounded-lg px-2 py-2 underline" href="/pokrok">
         Pokrok
       </Link>
+      <Link className="min-h-10 rounded-lg px-2 py-2 underline" href="/napoveda">
+        Nápověda
+      </Link>
       {account.role === "admin" ? (
         <Link className="underline" href="/admin">
           Správa
