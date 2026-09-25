@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { ModeStatsPanel } from "@/components/mode-stats-panel";
-import { PageNavigation } from "@/components/page-navigation";
+import { PageHeader } from "@/components/page-header";
 import { PeriodicMasteryHeatmap } from "@/components/periodic-mastery-heatmap";
 import { ProgressReset } from "@/components/progress-reset";
 import { ProgressionPanel } from "@/components/progression-panel";
@@ -40,12 +40,8 @@ export default function ProgressPage() {
   }, [running, account, isGuest, isTester, queryClient]);
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-4xl px-5 py-8 sm:px-8">
-      <PageNavigation />
-      <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">Osobní přehled</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-        Statistika
-      </h1>
+    <main className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader title="Pokrok" />
       {isGuest ? (
         <p className="mt-5 rounded-2xl border bg-surface p-5 text-ink-2">
           Hostovský přístup nezaznamenává osobní pokusy. Pro zobrazení vlastního pokroku se

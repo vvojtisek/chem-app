@@ -108,8 +108,16 @@
 
 html {
   background: var(--ground);
-  /* Keeps focused controls clear of the sticky mobile header and pinned prompts. */
+  /* Keeps focused controls clear of the sticky top bar and pinned prompts. */
   scroll-padding-top: 6rem;
+  /* Keeps focused controls clear of the fixed tab bar on phones. */
+  scroll-padding-bottom: 5.5rem;
+}
+
+@media (min-width: 48rem) {
+  html {
+    scroll-padding-bottom: 0;
+  }
 }
 
 body {

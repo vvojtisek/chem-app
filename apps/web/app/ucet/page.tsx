@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
-import { PageNavigation } from "@/components/page-navigation";
+import { PageHeader } from "@/components/page-header";
 import { useSync } from "@/components/sync-provider";
 import {
   ApiError,
@@ -120,14 +120,13 @@ export default function AccountPage() {
 
   if (isGuest) {
     return (
-      <main className="mx-auto w-full max-w-2xl px-5 py-10">
-        <PageNavigation />
-        <h1 className="text-3xl font-semibold">Hostovský přístup</h1>
-        <p className="mt-3 text-ink-2">
-          Prohlížíte aplikaci pouze pro čtení. Úpravy karet, pokusy ani nastavení se neukládají.
-        </p>
+      <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-8 lg:py-10">
+        <PageHeader
+          description="Prohlížíte aplikaci pouze pro čtení. Úpravy karet, pokusy ani nastavení se neukládají."
+          title="Hostovský přístup"
+        />
         <button
-          className="mt-6 min-h-11 rounded-xl border px-4 font-semibold"
+          className="min-h-11 rounded-xl border px-4 font-semibold"
           disabled={busy}
           onClick={() => void signOut(false)}
           type="button"
@@ -144,11 +143,10 @@ export default function AccountPage() {
   if (!account) return null;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8">
-      <PageNavigation />
-      <h1 className="text-3xl font-semibold">Profil</h1>
+    <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader title="Profil" />
       {profile.data ? (
-        <section aria-label="Údaje profilu" className="mt-5 rounded-2xl border bg-surface p-5">
+        <section aria-label="Údaje profilu" className="rounded-2xl border bg-surface p-5">
           <dl className="grid gap-3 sm:grid-cols-2">
             <div>
               <dt className="text-sm text-ink-2">Přihlašovací jméno</dt>
@@ -202,9 +200,7 @@ export default function AccountPage() {
           {profile.isError ? <p role="alert">Údaje profilu se nepodařilo načíst.</p> : null}
         </section>
       ) : (
-        <p className="mt-5" role="status">
-          {profile.isError ? "Profil se nepodařilo načíst." : "Načítám profil…"}
-        </p>
+        <p role="status">{profile.isError ? "Profil se nepodařilo načíst." : "Načítám profil…"}</p>
       )}
 
       {account.role !== "tester" ? (

@@ -473,11 +473,18 @@ test("returns from an exercise to the practice categories and to the dashboard",
   page,
 }) => {
   await page.goto("/procvicovani/periodicka-tabulka");
-  const navigation = page.getByRole("navigation", { name: "Navigace procvičování" });
+  const mainNavigation = page.getByRole("navigation", { name: "Hlavní navigace" });
+  await expect(mainNavigation.getByRole("link", { name: "Procvičovat" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 
-  await navigation.getByRole("link", { name: "Zpět" }).click();
+  await page
+    .getByRole("navigation", { name: "Drobečková navigace" })
+    .getByRole("link", { name: "Procvičovat" })
+    .click();
   await expect(page).toHaveURL(/\/procvicovani$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Vyberte kategorii");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Procvičovat");
 
   await expect(page.getByRole("link", { name: "Procvičit názvosloví" })).toHaveCSS(
     "color",
@@ -485,10 +492,7 @@ test("returns from an exercise to the practice categories and to the dashboard",
   );
   await page.getByRole("link", { name: "Procvičit názvosloví" }).click();
   await expect(page).toHaveURL(/\/procvicovani\/nazvoslovi$/);
-  await page
-    .getByRole("navigation", { name: "Navigace procvičování" })
-    .getByRole("link", { name: "Testy" })
-    .click();
+  await mainNavigation.getByRole("link", { name: "Domů" }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
 });

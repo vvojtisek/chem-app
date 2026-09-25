@@ -1,19 +1,16 @@
 import Link from "next/link";
 
+import { PageHeader } from "@/components/page-header";
+
 export default function HelpPage() {
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-3xl px-5 py-8 sm:px-8">
-      <Link className="inline-flex min-h-11 items-center underline" href="/">
-        Zpět na úvod
-      </Link>
-      <header className="mt-5">
-        <h1 className="text-3xl font-semibold tracking-tight text-ink">Nápověda</h1>
-        <p className="mt-2 leading-7 text-ink-2">
-          Stručný průvodce učením, procvičováním a ukládáním pokroku.
-        </p>
-      </header>
+    <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader
+        description="Stručný průvodce učením, procvičováním a ukládáním pokroku."
+        title="Nápověda"
+      />
 
-      <div className="mt-7 grid gap-5">
+      <div className="grid gap-5">
         <section aria-labelledby="help-learning" className="rounded-2xl border border-line p-5">
           <h2 className="text-xl font-semibold" id="help-learning">
             Učení a procvičování

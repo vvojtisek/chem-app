@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import PracticeHubPage from "./page";
 
 describe("PracticeHubPage", () => {
-  it("lists the practice categories with their exercises and a way home", () => {
+  it("lists the practice categories with their exercises", () => {
     render(<PracticeHubPage />);
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Vyberte kategorii");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Procvičovat");
     expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
     expect(screen.getByRole("link", { name: "Procvičit názvy a značky" })).toHaveAttribute(
       "href",
@@ -29,7 +29,6 @@ describe("PracticeHubPage", () => {
       "href",
       "/uceni/priprava-vyroba",
     );
-    expect(screen.getByRole("link", { name: /Testy/ })).toHaveAttribute("href", "/");
-    expect(screen.queryByRole("link", { name: /Zpět/ })).toBeNull();
+    expect(screen.queryByRole("navigation", { name: "Drobečková navigace" })).toBeNull();
   });
 });

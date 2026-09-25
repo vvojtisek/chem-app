@@ -1,19 +1,15 @@
-import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
 
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-3xl px-5 py-8 sm:px-8">
-      <Link className="inline-flex min-h-11 items-center underline" href="/napoveda">
-        Zpět na nápovědu
-      </Link>
-      <header className="mt-5">
-        <h1 className="text-3xl font-semibold tracking-tight text-ink">Ochrana soukromí</h1>
-        <p className="mt-2 leading-7 text-ink-2">
-          Stručné technické informace o údajích, se kterými aplikace pracuje.
-        </p>
-      </header>
+    <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader
+        breadcrumbs={[{ label: "Nápověda", href: "/napoveda" }, { label: "Ochrana soukromí" }]}
+        description="Stručné technické informace o údajích, se kterými aplikace pracuje."
+        title="Ochrana soukromí"
+      />
 
-      <aside className="mt-6 rounded-2xl border border-warn bg-warn-soft p-5 text-warn">
+      <aside className="rounded-2xl border border-warn bg-warn-soft p-5 text-warn">
         <h2 className="font-semibold">Informace pro správce před veřejným spuštěním</h2>
         <p className="mt-2 leading-7">
           Toto technické shrnutí nenahrazuje úplné informační oznámení. Provozovatel musí před

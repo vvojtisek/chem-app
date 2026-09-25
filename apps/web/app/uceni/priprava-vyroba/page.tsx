@@ -1,31 +1,25 @@
 import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
 import Link from "next/link";
-import { PracticeNavigation } from "@/components/practice-navigation";
+import { PageHeader } from "@/components/page-header";
 
 export default function PreparationProductionLearningPage() {
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-5xl px-5 py-8 sm:px-8">
-      <PracticeNavigation backHref="/uceni/prvky" />
-      <header className="max-w-3xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">Výukový set</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Příprava a výroba látek
-        </h1>
-        <p className="mt-3 leading-7 text-ink-2">
-          Procházejte přípravu a výrobu prvků i sloučenin podle konkrétního produktu. Jde o studijní
-          materiál bez otázek a ukládání pokusů. Reakční rovnice pocházejí z e-learningu VŠCHT.
-        </p>
-        <p className="mt-2 text-sm leading-6 text-ink-2">
-          Jedna rovnice pro přípravu azoxidu na zdrojové stránce není atomově vyvážená, proto není
-          zařazena do učiva ani procvičování.
-        </p>
-        <Link
-          className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-accent px-4 font-semibold text-on-fill"
-          href="/procvicovani/rovnice"
-        >
-          Procvičit chemické rovnice
-        </Link>
-      </header>
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader
+        breadcrumbs={[{ label: "Učivo", href: "/uceni/prvky" }, { label: "Příprava a výroba" }]}
+        description="Procházejte přípravu a výrobu prvků i sloučenin podle konkrétního produktu. Jde o studijní materiál bez otázek a ukládání pokusů. Reakční rovnice pocházejí z e-learningu VŠCHT."
+        title="Příprava a výroba látek"
+      />
+      <p className="max-w-3xl text-sm leading-6 text-ink-2">
+        Jedna rovnice pro přípravu azoxidu na zdrojové stránce není atomově vyvážená, proto není
+        zařazena do učiva ani procvičování.
+      </p>
+      <Link
+        className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-accent px-4 font-semibold text-on-fill"
+        href="/procvicovani/rovnice"
+      >
+        Procvičit chemické rovnice
+      </Link>
 
       <ul className="mt-8 grid list-none gap-3 p-0 md:grid-cols-2">
         {curatedPreparationProduction.map((product) => (

@@ -12,7 +12,6 @@ vi.mock("@/components/auth-gate", () => ({
   useAccount: () => ({ id: "account-current", username: "Learner", role: mocks.role }),
   useCapabilities: () => ({ canViewProgress: mocks.role === "user" }),
 }));
-vi.mock("@/components/page-navigation", () => ({ PageNavigation: () => null }));
 vi.mock("@/components/periodic-mastery-heatmap", () => ({
   PeriodicMasteryHeatmap: ({ userId }: { userId: string }) => <p>Heatmap for {userId}</p>,
 }));

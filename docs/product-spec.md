@@ -21,8 +21,9 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 ### Navigation
 
 - `/procvicovani` lists the practice categories and their exercises, from the same catalog as the home page.
-- Every exercise page (blind table, names and symbols, nomenclature, element flashcards) starts with a navigation bar that stays at the top while scrolling: „Zpět“ returns to `/procvicovani` and „Testy“ to `/`. The `/procvicovani` page itself offers only „Testy“.
-- The authenticated application navigation offers „Testy“ (`/`), „Učivo“ (`/uceni/prvky`), „Statistika“ (`/pokrok`), „Nápověda“ (`/napoveda`), and „Profil“ (`/ucet`). Statistics include personal progress; profile settings contain account identity and password controls.
+- The authenticated application has one navigation landmark („Hlavní navigace“) with four primary destinations: „Domů“ (`/`), „Procvičovat“ (`/procvicovani`, also active for every exercise and `/flashcards/*`), „Učivo“ (`/uceni/prvky`, active for `/uceni/*`), and „Pokrok“ (`/pokrok`). From 768 px it is a side rail; on narrower screens it is a tab bar fixed to the bottom edge. The active destination has `aria-current="page"`.
+- „Nápověda“ (`/napoveda`), „Profil“ (`/ucet`) and, for administrators, „Správa“ (`/admin`) sit at the bottom of the rail; on phones „Nápověda“ and „Profil“ are icon links in the top bar. A sticky top bar shows the account badge (guest or tester) and the synchronization status on every screen size. Pokrok contains personal progress; Profil contains account identity and password controls.
+- Every screen below a primary destination starts with a breadcrumb trail („Drobečková navigace“), for example Procvičovat › Názvosloví, whose first item returns to the destination. Exercises no longer carry their own „Zpět“/„Testy“ bar.
 - The test dashboard has three numbered modules. Module 02 combines equation practice and the related occurrence/preparation-production study material; module 03 is nomenclature.
 - The home page links to `/uceni/prvky` in a new tab. This read-only learning set browses reviewed element and group records without questions or attempt tracking, including element facts and available group mnemonics.
 

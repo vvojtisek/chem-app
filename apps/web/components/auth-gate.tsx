@@ -13,7 +13,7 @@ import {
 import { copyLegacyPeriodicCheckpoints } from "@/lib/browser-periodic-session-store";
 import { queryKeys } from "@/lib/query-keys";
 import { reconcileProgressGeneration } from "@/lib/sync/sync-store";
-import { AccountNavigation } from "./account-navigation";
+import { AppShell } from "./app-shell";
 import { LegacyImportDialog } from "./legacy-import-dialog";
 import { SyncProvider } from "./sync-provider";
 
@@ -26,24 +26,22 @@ function AuthenticatedShell({
   children,
   offline = false,
 }: Readonly<{ account: ActiveAccount; children: ReactNode; offline?: boolean }>) {
+  const notice = offline ? (
+    <p className="border-b border-warn/40 bg-warn-soft px-4 py-2 text-sm text-warn" role="status">
+      Síťové ověření není dostupné. Pokračujete s naposledy ověřeným účtem; synchronizace se obnoví
+      po připojení.
+    </p>
+  ) : null;
   return (
     <AccountContext.Provider value={account}>
-      {offline ? (
-        <p className="border-b border-warn bg-warn-soft px-4 py-2 text-sm text-warn" role="status">
-          Síťové ověření není dostupné. Pokračujete s naposledy ověřeným účtem; synchronizace se
-          obnoví po připojení.
-        </p>
-      ) : null}
       {account.role === "guest" ? (
-        <>
-          <AccountNavigation />
-          {children}
-        </>
+        <AppShell notice={notice}>{children}</AppShell>
       ) : (
         <SyncProvider userId={account.id}>
-          <AccountNavigation />
-          <LegacyImportDialog />
-          {children}
+          <AppShell notice={notice}>
+            <LegacyImportDialog />
+            {children}
+          </AppShell>
         </SyncProvider>
       )}
     </AccountContext.Provider>

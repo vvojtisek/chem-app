@@ -6,7 +6,7 @@ import {
 import { parseEquationFormula } from "@inorganic/chemistry";
 import Link from "next/link";
 import { GroupMnemonics } from "@/components/group-mnemonics";
-import { PracticeNavigation } from "@/components/practice-navigation";
+import { PageHeader } from "@/components/page-header";
 
 const numberFormatter = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 6 });
 const elementSymbols = new Set(curatedElements.map((element) => element.symbol));
@@ -31,25 +31,17 @@ export default function ElementLearningPage() {
   const fBlockElements = curatedElements.filter((element) => element.group === null);
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-6xl px-5 py-8 sm:px-8">
-      <PracticeNavigation backHref="/" />
-      <header className="max-w-3xl">
-        <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">Výukový set</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Prvky a jejich skupiny
-        </h1>
-        <p className="mt-3 leading-7 text-ink-2">
-          Procházejte údaje o všech 118 prvcích. Rozbalte prvek pro jeho český a latinský název,
-          umístění v tabulce, relativní atomovou hmotnost a valenční konfiguraci. Tato sada slouží k
-          učení: neobsahuje otázky ani nezaznamenává pokusy.
-        </p>
-        <Link
-          className="mt-4 inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-          href="/uceni/priprava-vyroba"
-        >
-          Procházet všechny přípravy a výroby
-        </Link>
-      </header>
+    <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader
+        description="Procházejte údaje o všech 118 prvcích. Rozbalte prvek pro jeho český a latinský název, umístění v tabulce, relativní atomovou hmotnost a valenční konfiguraci. Tato sada slouží k učení: neobsahuje otázky ani nezaznamenává pokusy."
+        title="Prvky a jejich skupiny"
+      />
+      <Link
+        className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
+        href="/uceni/priprava-vyroba"
+      >
+        Procházet všechny přípravy a výroby
+      </Link>
 
       <section aria-labelledby="groups-heading" className="mt-8">
         <h2 className="text-2xl font-semibold" id="groups-heading">

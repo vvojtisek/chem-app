@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
+import { PageHeader } from "@/components/page-header";
 import {
   adminSetPassword,
   ApiError,
@@ -76,9 +77,8 @@ export default function AdminPage() {
 
   if (!allowed)
     return (
-      <main className="mx-auto max-w-2xl p-5">
-        <h1 className="text-2xl font-semibold">Přístup odepřen</h1>
-        <p>Správa je dostupná pouze správci.</p>
+      <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-8 lg:py-10">
+        <PageHeader description="Správa je dostupná pouze správci." title="Přístup odepřen" />
       </main>
     );
 
@@ -141,11 +141,13 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8">
-      <h1 className="text-3xl font-semibold">Správa účtů</h1>
-      <p className="mt-2 text-ink-2">Testovací účty jsou ze souhrnných statistik vyloučeny.</p>
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader
+        description="Testovací účty jsou ze souhrnných statistik vyloučeny."
+        title="Správa účtů"
+      />
       {stats.data ? (
-        <section aria-label="Souhrnné statistiky" className="mt-6 rounded-xl border p-4">
+        <section aria-label="Souhrnné statistiky" className="rounded-xl border p-4">
           <p>Celkem pokusů: {stats.data.totalAttempts}</p>
           <p>Správně: {stats.data.correctAttempts}</p>
         </section>
