@@ -73,7 +73,7 @@ The root scripts have these responsibilities:
 - `content:validate` — schemas, stable-ID uniqueness, references, formula parsing, equation balance, review status and review fingerprints, aliases, and coverage reports, including chemistry-SME review coverage.
 - `contracts:check` — regenerate OpenAPI/client artifacts in a temporary location and fail if committed generated artifacts differ.
 - `build` — production builds for all deployable applications and packages.
-- `test:e2e` — production-like Playwright tests, including offline startup and each learning mode's happy/error path.
+- `test:e2e` — production-like Playwright tests, including offline startup and each learning mode's happy/error path. `offline-mode-matrix.spec.ts` visits only the home page online, then verifies the periodic table, nomenclature, equations, and flashcards hydrate and respond offline on desktop and mobile Chromium.
 
 No gate may silently skip a workspace because it has no matching files. Intentional exclusions must be explicit in configuration.
 

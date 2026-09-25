@@ -473,6 +473,17 @@ The release command first validates content, then reports current approvals
 and pending IDs by family. Owner-approved development content remains available
 but does not satisfy the release gate.
 
+### Update 2026-09-25 — Offline first-visit mode matrix
+
+Added a production-build Playwright scenario that visits the home page once,
+waits for the service worker to control the page, disables network access, and
+then opens and interacts with all four learning modes: periodic table,
+nomenclature, equations, and flashcards. This checks that route code and shared
+assets are available after the first online visit, including on mobile
+Chromium. The focused scenario passed in desktop and mobile Chromium. Physical
+iPad/Safari and other agreed browser coverage remain part of the manual release
+matrix.
+
 Verification: content validation passed and the release gate correctly failed
 with 678 pending records (groups 8, alternate mnemonics 8, nomenclature 469,
 products 77, routes 116); all 118 elements retain their current SME review.
