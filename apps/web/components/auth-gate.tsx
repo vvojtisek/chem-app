@@ -10,12 +10,14 @@ import {
   readAccountMarker,
   saveAccountMarker,
 } from "@/lib/auth/account-marker";
+import { copyLegacyPeriodicCheckpoints } from "@/lib/browser-periodic-session-store";
 import { queryKeys } from "@/lib/query-keys";
+import { reconcileProgressGeneration } from "@/lib/sync/sync-store";
 import { AccountNavigation } from "./account-navigation";
 import { LegacyImportDialog } from "./legacy-import-dialog";
 import { SyncProvider } from "./sync-provider";
 
-export type ActiveAccount = Pick<CurrentUser, "id" | "username" | "role">;
+export type ActiveAccount = Pick<CurrentUser, "id" | "username" | "role" | "progressGeneration">;
 const AccountContext = createContext<ActiveAccount | null>(null);
 const publicAuthPaths = new Set(["/login", "/register", "/reset-password", "/verify-email"]);
 
@@ -48,6 +50,58 @@ function AuthenticatedShell({
         </SyncProvider>
       )}
     </AccountContext.Provider>
+  );
+}
+
+function ProgressBootstrap({
+  account,
+  children,
+  offline,
+}: Readonly<{
+  account: ActiveAccount & { progressGeneration: string };
+  children: ReactNode;
+  offline?: boolean;
+}>) {
+  const [readyKey, setReadyKey] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+  const key = `${account.id}:${account.progressGeneration}`;
+  useEffect(() => {
+    let active = true;
+    setError(false);
+    if (account.role === "guest") {
+      setReadyKey(key);
+      return () => {
+        active = false;
+      };
+    }
+    void reconcileProgressGeneration(indexedDB, account.id, account.progressGeneration)
+      .then(async () => {
+        await copyLegacyPeriodicCheckpoints(indexedDB, account.id, account.progressGeneration);
+        if (active) setReadyKey(key);
+      })
+      .catch(() => {
+        if (active) setError(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [account.id, account.role, account.progressGeneration, key]);
+  if (error)
+    return (
+      <p role="alert" className="p-5">
+        Pokrok účtu se nepodařilo připravit. Obnovte stránku a zkuste to znovu.
+      </p>
+    );
+  if (readyKey !== key)
+    return (
+      <p role="status" className="p-5">
+        Připravuji osobní pokrok…
+      </p>
+    );
+  return (
+    <AuthenticatedShell account={account} {...(offline ? { offline } : {})}>
+      {children}
+    </AuthenticatedShell>
   );
 }
 
@@ -116,16 +170,21 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
         Ověřuji účet…
       </p>
     );
-  if (me.data) return <AuthenticatedShell account={me.data}>{children}</AuthenticatedShell>;
+  if (me.data) return <ProgressBootstrap account={me.data}>{children}</ProgressBootstrap>;
   const networkUnavailable = !online || isNetworkUnavailable(me.error);
   if (networkUnavailable && marker) {
     return (
-      <AuthenticatedShell
-        account={{ id: marker.userId, username: marker.username, role: marker.role }}
+      <ProgressBootstrap
+        account={{
+          id: marker.userId,
+          username: marker.username,
+          role: marker.role,
+          progressGeneration: marker.progressGeneration,
+        }}
         offline
       >
         {children}
-      </AuthenticatedShell>
+      </ProgressBootstrap>
     );
   }
   if (me.error instanceof ApiError && me.error.status === 401) return null;

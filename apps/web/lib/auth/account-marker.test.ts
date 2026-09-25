@@ -12,6 +12,7 @@ const user = {
   role: "user",
   email: null,
   displayName: null,
+  progressGeneration: "00000000-0000-0000-0000-000000000000",
 } as const;
 
 beforeEach(() => localStorage.clear());

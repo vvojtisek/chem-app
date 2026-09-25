@@ -27,6 +27,12 @@ class User(Base):
     )
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     password_changed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    progress_generation: Mapped[UUID] = mapped_column(
+        Uuid(as_uuid=True),
+        nullable=False,
+        default=lambda: UUID(int=0),
+        server_default="00000000-0000-0000-0000-000000000000",
+    )
     sessions: Mapped[list["AuthSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )

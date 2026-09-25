@@ -18,6 +18,7 @@ from inorganic_api.api.attempt_schemas import (
     BatchResponse,
     DailyTrend,
     ModeStats,
+    ProgressGeneration,
     Progression,
     Rank,
 )
@@ -68,6 +69,19 @@ def add_batch(db: Session, actor: User, events: list[object]) -> BatchResponse:
     if actor.role == "guest":
         raise AppError(403, "forbidden", "Access denied.")
     repository.lock_user_writes(db, actor.id)
+    generation = repository.current_generation(db, actor.id)
+    # Refuse the entire request before any insert if even one readable event
+    # belongs to a previous progress generation.
+    for raw_event in events:
+        if isinstance(raw_event, dict):
+            try:
+                parsed = EVENT_ADAPTER.validate_python(raw_event)
+            except ValidationError:
+                continue
+            if parsed.progress_generation != generation:
+                raise AppError(
+                    409, "progress_reset", "Learning progress was reset. Refresh and retry."
+                )
     accepted: list[str] = []
     duplicates: list[str] = []
     rejected = []
@@ -103,6 +117,9 @@ def add_batch(db: Session, actor: User, events: list[object]) -> BatchResponse:
             continue
 
         payload = event.model_dump(mode="json", by_alias=True)
+        if event.progress_generation.int == 0:
+            # Existing stored hashes and payloads did not contain this field.
+            payload.pop("progressGeneration")
         digest = hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
         ).hexdigest()
@@ -144,6 +161,7 @@ def add_batch(db: Session, actor: User, events: list[object]) -> BatchResponse:
                 "is_correct": event.is_correct,
                 "payload": payload,
                 "payload_hash": digest,
+                "progress_generation": generation,
             },
         )
         if inserted:
@@ -174,8 +192,10 @@ def list_events(
     _require_owner(actor, owner_id)
     if owner_id != actor.id and repository.get_user(db, owner_id) is None:
         raise AppError(404, "not_found", "Account not found.")
+    repository.lock_user_writes(db, owner_id)
+    generation = repository.current_generation(db, owner_id)
     after = int(_decode_cursor(cursor, "attempt"))
-    page = repository.list_for_user(db, owner_id, after, limit)
+    page = repository.list_for_user(db, owner_id, generation, after, limit)
     return AttemptPage(
         items=[
             AttemptItem(
@@ -186,6 +206,7 @@ def list_events(
             for row in page
         ],
         next_cursor=_encode_cursor(str(page[-1].server_seq)) if page else None,
+        progress_generation=generation,
     )
 
 
@@ -243,6 +264,21 @@ def progression(db: Session, actor: User) -> Progression:
         ),
         trend=trend,
     )
+
+
+def progress_generation(db: Session, actor: User) -> ProgressGeneration:
+    if actor.role == "guest":
+        raise AppError(403, "forbidden", "Access denied.")
+    return ProgressGeneration(progress_generation=repository.current_generation(db, actor.id))
+
+
+def reset_progress(db: Session, actor: User) -> ProgressGeneration:
+    if actor.role not in ("user", "admin"):
+        raise AppError(403, "forbidden", "Access denied.")
+    repository.lock_user_writes(db, actor.id)
+    generation = repository.rotate_generation(db, actor.id)
+    db.commit()
+    return ProgressGeneration(progress_generation=generation)
 
 
 def users_page(db: Session, actor: User, cursor: str | None, limit: int) -> AdminUserPage:

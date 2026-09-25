@@ -15,7 +15,7 @@ import { type AttemptEvent, createBrowserProgressStore } from "./browser-progres
 import { importLegacyData, keepLegacyOutsideAccount, legacyAttemptCount } from "./legacy-import";
 import { createPeriodicCheckpoint, PERIODIC_NAME_SESSION_ID } from "./periodic-table-session";
 import { createPracticeQueue } from "./practice-queue";
-import { pendingCount } from "./sync/sync-store";
+import { pendingCount, reconcileProgressGeneration } from "./sync/sync-store";
 
 const user = "33333333-3333-4333-8333-333333333333";
 const attempt: AttemptEvent = {
@@ -69,6 +69,15 @@ async function seedLegacyLocalState() {
 }
 
 describe("legacy import", () => {
+  it("does not revive a prior generation through legacy import after reset", async () => {
+    await seedLegacy();
+    await reconcileProgressGeneration(indexedDB, user, "44444444-4444-4444-8444-444444444444");
+    expect(await legacyAttemptCount(indexedDB, user)).toBeNull();
+    await expect(importLegacyData(indexedDB, user)).rejects.toThrow("resetu pokroku");
+    expect(await createBrowserProgressStore(indexedDB, user).listAttempts()).toEqual([]);
+    expect(await createBrowserProgressStore(indexedDB).listAttempts()).toEqual([attempt]);
+  });
+
   it("does not offer account import for a device-local periodic checkpoint alone", async () => {
     const elements = curatedElements.slice(0, 2);
     const session = createPracticeQueue(elements, () => 0.999_999);

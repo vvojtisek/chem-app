@@ -1,7 +1,7 @@
 from datetime import datetime
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -45,11 +45,17 @@ def get_by_event_id(db: Session, user_id: UUID, event_id: str) -> AttemptEvent |
     )
 
 
-def list_for_user(db: Session, user_id: UUID, after: int, limit: int) -> list[AttemptEvent]:
+def list_for_user(
+    db: Session, user_id: UUID, generation: UUID, after: int, limit: int
+) -> list[AttemptEvent]:
     return list(
         db.scalars(
             select(AttemptEvent)
-            .where(AttemptEvent.user_id == user_id, AttemptEvent.server_seq > after)
+            .where(
+                AttemptEvent.user_id == user_id,
+                AttemptEvent.progress_generation == generation,
+                AttemptEvent.server_seq > after,
+            )
             .order_by(AttemptEvent.server_seq)
             .limit(limit)
         )
@@ -64,10 +70,13 @@ def mode_counts(db: Session, user_id: UUID | None = None) -> list[tuple[str, int
     )
     if user_id is None:
         statement = statement.join(User, User.id == AttemptEvent.user_id).where(
-            User.role != "tester"
+            User.role != "tester", AttemptEvent.progress_generation == User.progress_generation
         )
     else:
-        statement = statement.where(AttemptEvent.user_id == user_id)
+        statement = statement.join(User, User.id == AttemptEvent.user_id).where(
+            AttemptEvent.user_id == user_id,
+            AttemptEvent.progress_generation == User.progress_generation,
+        )
     return [
         (mode, total, correct)
         for mode, total, correct in db.execute(statement.group_by(AttemptEvent.mode))
@@ -82,7 +91,12 @@ def daily_counts(db: Session, user_id: UUID, since: datetime) -> list[tuple[obje
             func.count(AttemptEvent.server_seq),
             func.count(AttemptEvent.server_seq).filter(AttemptEvent.is_correct),
         )
-        .where(AttemptEvent.user_id == user_id, AttemptEvent.received_at >= since)
+        .join(User, User.id == AttemptEvent.user_id)
+        .where(
+            AttemptEvent.user_id == user_id,
+            AttemptEvent.progress_generation == User.progress_generation,
+            AttemptEvent.received_at >= since,
+        )
         .group_by(day)
         .order_by(day)
     )
@@ -102,3 +116,16 @@ def list_users(db: Session, after: str, limit: int) -> list[User]:
 
 def get_user(db: Session, user_id: UUID) -> User | None:
     return db.get(User, user_id)
+
+
+def current_generation(db: Session, user_id: UUID) -> UUID:
+    generation = db.scalar(select(User.progress_generation).where(User.id == user_id))
+    if generation is None:
+        raise LookupError("Account not found")
+    return generation
+
+
+def rotate_generation(db: Session, user_id: UUID) -> UUID:
+    generation = uuid4()
+    db.execute(update(User).where(User.id == user_id).values(progress_generation=generation))
+    return generation

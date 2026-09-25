@@ -91,6 +91,7 @@ aggregate learning statistics.
 5. A successful acknowledgement removes the event from the pending queue. Retryable failure keeps it queued; permanent rejection is visible and recoverable.
 
 The application does not use last-write-wins for immutable attempt events.
+Progress reset rotates a per-account generation under the same transaction lock as uploads. An event is bound to that generation when the answer is created; missing generation in legacy events means the initial generation only. The API rejects old-generation uploads, and every history/statistics query filters to the current generation. Archived immutable events still count toward daily upload quota. Before rendering authenticated practice, the browser reconciles its account-partitioned progress stores to the generation from `/auth/me`; sync checks it again before upload and during pull. A mismatch atomically clears only that account's progress stores, cursor, and retry metadata. Card edits and preferences remain. See ADR 0009.
 Legacy v4 attempts are imported only after an explicit user choice and are
 removed from the legacy database only after a successful copy. Checkpoints,
 flashcard edits, and other learning state remain local. User preferences that

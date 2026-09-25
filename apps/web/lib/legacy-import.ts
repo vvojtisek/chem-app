@@ -12,6 +12,7 @@ import {
   transactionCompleted,
 } from "./browser-learning-database";
 import { PERIODIC_NAME_SESSION_ID, PERIODIC_POSITION_SESSION_ID } from "./periodic-table-session";
+import { INITIAL_PROGRESS_GENERATION } from "./progress-generation";
 
 const stores = [ATTEMPT_EVENT_STORE, ELEMENT_CARD_STORE, NOMENCLATURE_SESSION_STORE] as const;
 
@@ -31,7 +32,17 @@ export async function legacyAttemptCount(
     const decision = await requestCompleted(
       transaction.objectStore(ACCOUNT_META_STORE).get("legacy-import"),
     );
+    const generation: unknown = await requestCompleted(
+      transaction.objectStore(ACCOUNT_META_STORE).get("progress-generation"),
+    );
     await transactionCompleted(transaction);
+    if (
+      typeof generation === "object" &&
+      generation !== null &&
+      "value" in generation &&
+      generation.value !== INITIAL_PROGRESS_GENERATION
+    )
+      return null;
     if (decision !== undefined) return null;
   } finally {
     account.close();
@@ -88,23 +99,44 @@ export async function importLegacyData(indexedDb: IDBFactory, userId: string): P
         [...stores, SYNC_OUTBOX_STORE, ACCOUNT_META_STORE],
         "readwrite",
       );
-      for (const [index, store] of present.entries()) {
-        for (const value of values[index] ?? []) {
-          if (store === NOMENCLATURE_SESSION_STORE && isPeriodicCheckpoint(value)) continue;
-          target.objectStore(store).add(value);
-          if (
-            store === ATTEMPT_EVENT_STORE &&
-            typeof value === "object" &&
-            value !== null &&
-            "id" in value &&
-            typeof value.id === "string"
-          ) {
-            target.objectStore(SYNC_OUTBOX_STORE).add({ id: value.id });
+      const completed = transactionCompleted(target);
+      let resetError: Error | null = null;
+      const meta = target.objectStore(ACCOUNT_META_STORE);
+      const generationRequest = meta.get("progress-generation");
+      generationRequest.onsuccess = () => {
+        const generation: unknown = generationRequest.result;
+        if (
+          typeof generation === "object" &&
+          generation !== null &&
+          "value" in generation &&
+          generation.value !== INITIAL_PROGRESS_GENERATION
+        ) {
+          resetError = new Error("Staré pokusy nelze importovat po resetu pokroku účtu.");
+          target.abort();
+          return;
+        }
+        for (const [index, store] of present.entries()) {
+          for (const value of values[index] ?? []) {
+            if (store === NOMENCLATURE_SESSION_STORE && isPeriodicCheckpoint(value)) continue;
+            target.objectStore(store).add(value);
+            if (
+              store === ATTEMPT_EVENT_STORE &&
+              typeof value === "object" &&
+              value !== null &&
+              "id" in value &&
+              typeof value.id === "string"
+            ) {
+              target.objectStore(SYNC_OUTBOX_STORE).add({ id: value.id });
+            }
           }
         }
+        meta.put({ key: "legacy-import", value: "imported" });
+      };
+      try {
+        await completed;
+      } catch (error) {
+        throw resetError ?? error;
       }
-      target.objectStore(ACCOUNT_META_STORE).put({ key: "legacy-import", value: "imported" });
-      await transactionCompleted(target);
     } finally {
       account.close();
     }

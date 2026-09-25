@@ -36,6 +36,9 @@ class AttemptEvent(Base):
     is_correct: Mapped[bool] = mapped_column(Boolean, nullable=False)
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False)
     payload_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    progress_generation: Mapped[UUID] = mapped_column(
+        Uuid(as_uuid=True), nullable=False, server_default="00000000-0000-0000-0000-000000000000"
+    )
 
     __table_args__ = (
         Index("ix_attempt_events_user_seq", "user_id", "server_seq"),
