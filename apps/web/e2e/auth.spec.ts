@@ -51,7 +51,8 @@ test("allows the administration page to an administrator", async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Správa účtů" })).toBeVisible();
-  await expect(page.getByRole("list").first()).toContainText(username);
+  // The app shell's navigation list comes first; the account list is part of the page content.
+  await expect(page.getByRole("main").getByRole("list").first()).toContainText(username);
 });
 
 test("opens cached learning after a verified session goes offline", async ({ page, context }) => {

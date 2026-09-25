@@ -26,7 +26,7 @@ const PRESSED: Readonly<Record<SelectionCoverage, "true" | "mixed" | "false">> =
 
 const SELECTED_STYLE = "border-2 border-accent bg-accent-soft text-ink";
 const UNSELECTED_STYLE =
-  "border border-dashed border-line-strong bg-surface-2 text-ink opacity-60 grayscale";
+  "border border-dashed border-line-strong bg-surface-2 text-ink opacity-75 grayscale";
 
 // Group headers and row toggles are pills in green (selected), amber (partly) or red (not
 // selected), deliberately unlike the element cells; the border style and the struck-through
