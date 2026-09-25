@@ -389,3 +389,20 @@ All items above are resolved on `main` except the group part of BUG-009.
 | BUG-013 | Resolved | #9: the flashcard group mnemonic removed in #8 was restored (found in the 2026-09-22 audit) |
 
 The same SME review also corrected the beryllium Czech name from `Berylium` to `Beryllium`, identical to the Latin name.
+
+### Update 2026-09-25 — Sprint 2 session recovery
+
+The Sprint 2 periodic-table follow-up is now implemented in both practice
+directions. A validated version-1 checkpoint in IndexedDB restores the selected
+elements, prompt mode, current question and queue, solved/missed IDs, score, and
+elapsed time. Resume does not create another attempt or store answer text.
+Unsupported or corrupt checkpoints can be discarded without deleting attempt
+history. Legacy import no longer treats a checkpoint alone as importable data,
+and importing real legacy attempts preserves the checkpoint. A missed question
+is offered exactly one retry; a second wrong answer ends the session.
+
+Verification: full repository gates passed on 2026-09-25, including the web
+unit suite (170 tests), API suite (38 tests with isolated PostgreSQL), and
+Playwright (70 tests across desktop and mobile Chromium). The Sprint 2
+implementation gap is closed; the separate chemistry-SME review of the eight
+named groups remains open and continues to block the curriculum release gate.

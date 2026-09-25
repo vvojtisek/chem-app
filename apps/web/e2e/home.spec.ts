@@ -282,9 +282,15 @@ test("restores the element selection and the mode after a reload", async ({ page
   await page.getByText("Značka → Název", { exact: true }).click();
   await expect(page.getByRole("radio", { name: "Značka → Název" })).toBeChecked();
   await expect(page.getByRole("heading", { name: "Zadání: He" })).toBeVisible();
+  await waitForPeriodicCheckpoint(page, "periodic-table-name", "element.002-he", "symbol-to-name");
 
   await page.reload();
 
+  await expect(page.getByRole("heading", { name: "Zadání: He" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Značka → Název" })).toBeChecked();
+  await expect(page.getByRole("textbox", { name: "Český název prvku" })).toBeFocused();
+  await page.getByRole("button", { name: "Ukončit" }).click();
+  await page.getByRole("button", { name: "Změnit výběr" }).click();
   await expect(page.getByRole("button", { name: "Přejít na cvičení (103 prvků)" })).toBeVisible();
   await expect(lanthanides).toHaveAttribute("aria-pressed", "true");
   await expect(table.getByRole("button", { name: "Vodík (H)" })).toHaveAttribute(
@@ -294,6 +300,99 @@ test("restores the element selection and the mode after a reload", async ({ page
   await page.getByRole("button", { name: "Přejít na cvičení (103 prvků)" }).click();
   await expect(page.getByRole("radio", { name: "Značka → Název" })).toBeChecked();
   await expect(page.getByRole("textbox", { name: "Český název prvku" })).toBeFocused();
+});
+
+async function waitForPeriodicCheckpoint(
+  page: Page,
+  id: string,
+  currentId: string,
+  mode: string | null = null,
+): Promise<void> {
+  await page.waitForFunction(
+    async ({ sessionId, expectedId, expectedMode }) => {
+      const databases = await indexedDB.databases();
+      if (!databases.some((database) => database.name === "inorganic-learning")) return false;
+      const request = indexedDB.open("inorganic-learning");
+      const database = await new Promise<IDBDatabase>((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      try {
+        if (!database.objectStoreNames.contains("nomenclature-sessions")) return false;
+        const transaction = database.transaction("nomenclature-sessions", "readonly");
+        const value = await new Promise<unknown>((resolve, reject) => {
+          const read = transaction.objectStore("nomenclature-sessions").get(sessionId);
+          read.onsuccess = () => resolve(read.result);
+          read.onerror = () => reject(read.error);
+        });
+        return (
+          typeof value === "object" &&
+          value !== null &&
+          "currentId" in value &&
+          value.currentId === expectedId &&
+          (!expectedMode || ("mode" in value && value.mode === expectedMode))
+        );
+      } finally {
+        database.close();
+      }
+    },
+    { sessionId: id, expectedId: currentId, expectedMode: mode },
+  );
+}
+
+test("resumes a typed periodic-table retry offline without revealing the earlier answer", async ({
+  context,
+  page,
+}) => {
+  await keepQuestionOrder(page);
+  await page.goto("/procvicovani/periodicka-tabulka/nazvy");
+  await page.evaluate(async () => navigator.serviceWorker.ready);
+  await page.reload();
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  await page.getByRole("button", { name: "Zrušit výběr" }).click();
+  await table.getByRole("button", { name: "Vodík (H)" }).click();
+  await table.getByRole("button", { name: "Helium (He)" }).click();
+  await page.getByRole("button", { name: "Přejít na cvičení (2 prvky)" }).click();
+  const input = page.getByRole("textbox", { name: "Značka prvku" });
+  await input.fill("X");
+  await input.press("Enter");
+  await expect(page.getByRole("heading", { name: "Zadání: Helium" })).toBeVisible();
+  await waitForPeriodicCheckpoint(page, "periodic-table-name", "element.002-he");
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Zadání: Helium" })).toBeVisible();
+  await expect(page.getByText("Špatně: 1", { exact: true })).toBeVisible();
+  await expect(page.getByText("Špatně: Vodík (H).")).toHaveCount(0);
+  const restoredInput = page.getByRole("textbox", { name: "Značka prvku" });
+  await restoredInput.fill("He");
+  await restoredInput.press("Enter");
+  await expect(page.getByRole("heading", { name: "Zadání: Vodík" })).toBeVisible();
+  await restoredInput.fill("H");
+  await restoredInput.press("Enter");
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toContainText("2 z 2");
+});
+
+test("resumes a blind periodic table with solved cells after a reload", async ({ page }) => {
+  await keepQuestionOrder(page);
+  await page.goto("/procvicovani/periodicka-tabulka");
+  const table = page.getByRole("region", { name: "Periodická tabulka" });
+  await page.getByRole("button", { name: "Zrušit výběr" }).click();
+  await table.getByRole("button", { name: "Vodík (H)" }).click();
+  await table.getByRole("button", { name: "Helium (He)" }).click();
+  await page.getByRole("button", { name: "Přejít na cvičení (2 prvky)" }).click();
+  await table.getByRole("button", { name: "Perioda 1, skupina 1", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Helium" })).toBeVisible();
+  await waitForPeriodicCheckpoint(page, "periodic-table-position", "element.002-he");
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Hledaný prvek: Helium" })).toBeVisible();
+  await expect(page.getByText("Správně: 1", { exact: true })).toBeVisible();
+  await expect(table.getByRole("button", { name: "Perioda 1, skupina 1: H, vyřešeno" })).toHaveText(
+    "H",
+  );
+  await table.getByRole("button", { name: "Perioda 1, skupina 18", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toContainText("2 z 2");
 });
 
 test("keeps the element selection and the name exercise usable on a 360 px screen", async ({

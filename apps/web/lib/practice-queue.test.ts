@@ -70,13 +70,31 @@ describe("practice queue", () => {
     });
   });
 
-  it("asks the last missed question again until it is placed", () => {
+  it("offers a missed question once more", () => {
     let state = createPracticeQueue([{ id: "h" }], keepOrder);
 
     state = answer(state, "he").state;
     expect(state).toMatchObject({ status: "running", incorrect: 1 });
     expect(state.current?.id).toBe("h");
     expect(answer(state, "h").state.status).toBe("finished");
+  });
+
+  it("finishes after a wrong retry without making an endless queue", () => {
+    const first = answerPracticeQueue(createPracticeQueue([{ id: "h" }], keepOrder), false);
+    expect(first?.round).toBe("initial");
+    expect(first?.state.status).toBe("running");
+    if (!first) return;
+
+    const retry = answerPracticeQueue(first.state, false);
+    expect(retry?.round).toBe("retry");
+    expect(retry?.state).toMatchObject({
+      status: "finished",
+      current: null,
+      queue: [],
+      incorrect: 2,
+      correct: 0,
+    });
+    expect(retry && answerPracticeQueue(retry.state, false)).toBeNull();
   });
 
   it("ignores clicks on already solved cells and after the exercise is finished", () => {

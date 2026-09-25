@@ -8,8 +8,10 @@ import {
   requestCompleted,
   resetLearningDatabase,
   SYNC_OUTBOX_STORE,
+  SYNC_QUARANTINE_STORE,
   transactionCompleted,
 } from "./browser-learning-database";
+import { PERIODIC_NAME_SESSION_ID, PERIODIC_POSITION_SESSION_ID } from "./periodic-table-session";
 
 const stores = [ATTEMPT_EVENT_STORE, ELEMENT_CARD_STORE, NOMENCLATURE_SESSION_STORE] as const;
 
@@ -38,9 +40,15 @@ export async function legacyAttemptCount(
   if (!legacy) return null;
   try {
     if (!legacy.objectStoreNames.contains(ATTEMPT_EVENT_STORE)) return 0;
-    const transaction = legacy.transaction(ATTEMPT_EVENT_STORE, "readonly");
-    const count = await requestCompleted(transaction.objectStore(ATTEMPT_EVENT_STORE).count());
+    const transaction = legacy.transaction(stores, "readonly");
+    const [count, cardCount, oldSession] = await Promise.all([
+      requestCompleted(transaction.objectStore(ATTEMPT_EVENT_STORE).count()),
+      requestCompleted(transaction.objectStore(ELEMENT_CARD_STORE).count()),
+      requestCompleted(transaction.objectStore(NOMENCLATURE_SESSION_STORE).get("active")),
+    ]);
     await transactionCompleted(transaction);
+    // A periodic-table checkpoint uses the old device database but is not legacy account data.
+    if (count === 0 && cardCount === 0 && oldSession === undefined) return null;
     return count;
   } finally {
     legacy.close();
@@ -64,6 +72,7 @@ export async function keepLegacyOutsideAccount(
 export async function importLegacyData(indexedDb: IDBFactory, userId: string): Promise<void> {
   const legacy = await openLegacyDatabase(indexedDb);
   if (!legacy) return;
+  let hasPeriodicCheckpoints = false;
   try {
     const present = stores.filter((store) => legacy.objectStoreNames.contains(store));
     const source = legacy.transaction(present, "readonly");
@@ -71,6 +80,8 @@ export async function importLegacyData(indexedDb: IDBFactory, userId: string): P
       present.map((store) => requestCompleted<unknown[]>(source.objectStore(store).getAll())),
     );
     await transactionCompleted(source);
+    hasPeriodicCheckpoints =
+      values[present.indexOf(NOMENCLATURE_SESSION_STORE)]?.some(isPeriodicCheckpoint) ?? false;
     const account = await openLearningDatabase(indexedDb, userId);
     try {
       const target = account.transaction(
@@ -79,6 +90,7 @@ export async function importLegacyData(indexedDb: IDBFactory, userId: string): P
       );
       for (const [index, store] of present.entries()) {
         for (const value of values[index] ?? []) {
+          if (store === NOMENCLATURE_SESSION_STORE && isPeriodicCheckpoint(value)) continue;
           target.objectStore(store).add(value);
           if (
             store === ATTEMPT_EVENT_STORE &&
@@ -99,6 +111,40 @@ export async function importLegacyData(indexedDb: IDBFactory, userId: string): P
   } finally {
     legacy.close();
   }
-  await resetLearningDatabase(indexedDb);
+  if (!hasPeriodicCheckpoints) {
+    await resetLearningDatabase(indexedDb);
+  } else {
+    // Preserve active device-local periodic practices while removing imported account data.
+    const database = await openLearningDatabase(indexedDb);
+    try {
+      const transaction = database.transaction(
+        [
+          ATTEMPT_EVENT_STORE,
+          ELEMENT_CARD_STORE,
+          NOMENCLATURE_SESSION_STORE,
+          SYNC_OUTBOX_STORE,
+          SYNC_QUARANTINE_STORE,
+        ],
+        "readwrite",
+      );
+      transaction.objectStore(ATTEMPT_EVENT_STORE).clear();
+      transaction.objectStore(ELEMENT_CARD_STORE).clear();
+      transaction.objectStore(NOMENCLATURE_SESSION_STORE).delete("active");
+      transaction.objectStore(SYNC_OUTBOX_STORE).clear();
+      transaction.objectStore(SYNC_QUARANTINE_STORE).clear();
+      await transactionCompleted(transaction);
+    } finally {
+      database.close();
+    }
+  }
   if (typeof window !== "undefined") window.dispatchEvent(new Event("inorganic:attempt-saved"));
+}
+
+function isPeriodicCheckpoint(value: unknown): boolean {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    (value.id === PERIODIC_POSITION_SESSION_ID || value.id === PERIODIC_NAME_SESSION_ID)
+  );
 }
