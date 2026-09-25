@@ -249,6 +249,7 @@ export function PeriodicTableNamePractice({
           direction: mode,
         },
         account?.id,
+        account?.progressGeneration,
       ).catch((error: unknown) => setNotice(describeAttemptSaveFailure(error)));
     }
   }

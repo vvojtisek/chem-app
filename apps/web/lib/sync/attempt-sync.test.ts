@@ -2,6 +2,7 @@ import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../api/client";
 import { type AttemptEvent, createBrowserProgressStore } from "../browser-progress-store";
+import { INITIAL_PROGRESS_GENERATION } from "../progress-generation";
 import { runAttemptSync, type SyncTransport } from "./attempt-sync";
 import {
   pendingCount,
@@ -30,21 +31,98 @@ beforeEach(() => {
 });
 
 describe("attempt sync", () => {
+  it("discards a stale device outbox before upload and accepts new-generation answers", async () => {
+    const generation = "55555555-5555-4555-8555-555555555555";
+    await createBrowserProgressStore(database, userId).appendAttempt(event);
+    const upload = vi
+      .fn<SyncTransport["upload"]>()
+      .mockResolvedValue({ accepted: ["fresh"], duplicates: [], rejected: [] });
+    const list = vi
+      .fn<SyncTransport["list"]>()
+      .mockResolvedValue({ items: [], nextCursor: null, progressGeneration: generation });
+    const transport: SyncTransport = { generation: async () => generation, upload, list };
+    expect(await runAttemptSync(database, userId, transport)).toBe(generation);
+    expect(upload).not.toHaveBeenCalled();
+    expect(await pendingCount(database, userId)).toBe(0);
+    await createBrowserProgressStore(database, userId).appendAttempt({
+      ...event,
+      id: "fresh",
+      progressGeneration: generation,
+    });
+    expect(await runAttemptSync(database, userId, transport)).toBeNull();
+    expect(upload).toHaveBeenCalledWith([
+      { ...event, id: "fresh", progressGeneration: generation },
+    ]);
+  });
+
+  it("detects reset racing with upload and does not retry stale events", async () => {
+    await createBrowserProgressStore(database, userId).appendAttempt(event);
+    const generation = "66666666-6666-4666-8666-666666666666";
+    const current = vi
+      .fn()
+      .mockResolvedValueOnce(INITIAL_PROGRESS_GENERATION)
+      .mockResolvedValueOnce(generation);
+    const upload = vi
+      .fn<SyncTransport["upload"]>()
+      .mockRejectedValue(new ApiError(409, "progress_reset", "Reset"));
+    expect(
+      await runAttemptSync(database, userId, { generation: current, upload, list: vi.fn() }),
+    ).toBe(generation);
+    expect(upload).toHaveBeenCalledTimes(1);
+    expect(await pendingCount(database, userId)).toBe(0);
+  });
+
+  it("detects reset racing with pull before storing an old page", async () => {
+    const generation = "77777777-7777-4777-8777-777777777777";
+    const list = vi
+      .fn<SyncTransport["list"]>()
+      .mockResolvedValue({ items: [], nextCursor: null, progressGeneration: generation });
+    expect(
+      await runAttemptSync(database, userId, {
+        generation: async () => INITIAL_PROGRESS_GENERATION,
+        upload: vi.fn(),
+        list,
+      }),
+    ).toBe(generation);
+    expect(await pullCursor(database, userId)).toBeNull();
+  });
+
   it("uploads pending attempts, accepts duplicates, and pulls events without requeueing", async () => {
     await createBrowserProgressStore(database, userId).appendAttempt(event);
-    const remote: AttemptEvent = { ...event, id: "attempt.other-device" };
+    const remote: AttemptEvent = {
+      ...event,
+      id: "attempt.other-device",
+      progressGeneration: INITIAL_PROGRESS_GENERATION,
+    };
     const upload = vi
       .fn<SyncTransport["upload"]>()
       .mockResolvedValue({ accepted: [], duplicates: [event.id], rejected: [] });
     const list = vi
       .fn<SyncTransport["list"]>()
       .mockResolvedValueOnce({
-        items: [{ event: remote, serverSeq: 2, receivedAt: "2026-09-23T11:00:00.000Z" }],
+        items: [
+          {
+            event: { ...remote, progressGeneration: INITIAL_PROGRESS_GENERATION },
+            serverSeq: 2,
+            receivedAt: "2026-09-23T11:00:00.000Z",
+          },
+        ],
         nextCursor: "cursor-2",
+        progressGeneration: INITIAL_PROGRESS_GENERATION,
       })
-      .mockResolvedValueOnce({ items: [], nextCursor: null });
-    await runAttemptSync(database, userId, { upload, list });
-    expect(upload).toHaveBeenCalledWith([event]);
+      .mockResolvedValueOnce({
+        items: [],
+        nextCursor: null,
+        progressGeneration: INITIAL_PROGRESS_GENERATION,
+      });
+    await runAttemptSync(database, userId, {
+      generation: async () => INITIAL_PROGRESS_GENERATION,
+      upload,
+      list,
+    });
+    expect(upload).toHaveBeenCalledWith([
+      { ...event, progressGeneration: INITIAL_PROGRESS_GENERATION },
+    ]);
     expect(list).toHaveBeenNthCalledWith(2, "cursor-2");
     expect(await pendingCount(database, userId)).toBe(0);
     expect(await pullCursor(database, userId)).toBe("cursor-2");
@@ -59,6 +137,7 @@ describe("attempt sync", () => {
     async (failure) => {
       await createBrowserProgressStore(database, userId).appendAttempt(event);
       const transport: SyncTransport = {
+        generation: async () => INITIAL_PROGRESS_GENERATION,
         upload: vi.fn().mockRejectedValue(failure),
         list: vi.fn(),
       };
@@ -98,8 +177,9 @@ describe("attempt sync", () => {
     const list = vi.fn<SyncTransport["list"]>().mockResolvedValue({
       items: [],
       nextCursor: null,
+      progressGeneration: INITIAL_PROGRESS_GENERATION,
     });
-    const transport = { upload, list };
+    const transport = { generation: async () => INITIAL_PROGRESS_GENERATION, upload, list };
 
     await runAttemptSync(database, userId, transport);
     expect(await pendingCount(database, userId)).toBe(1);
@@ -116,7 +196,9 @@ describe("attempt sync", () => {
       clock.mockRestore();
     }
     expect(upload).toHaveBeenCalledTimes(2);
-    expect(upload).toHaveBeenLastCalledWith([deferred]);
+    expect(upload).toHaveBeenLastCalledWith([
+      { ...deferred, progressGeneration: INITIAL_PROGRESS_GENERATION },
+    ]);
     expect(await pendingCount(database, userId)).toBe(0);
     expect(await uploadRetryAt(database, userId)).toBeNull();
   });
@@ -140,10 +222,17 @@ describe("attempt sync", () => {
       rejected: [],
     });
     await runAttemptSync(database, userId, {
+      generation: async () => INITIAL_PROGRESS_GENERATION,
       upload,
-      list: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+      list: vi.fn().mockResolvedValue({
+        items: [],
+        nextCursor: null,
+        progressGeneration: INITIAL_PROGRESS_GENERATION,
+      }),
     });
-    expect(upload).toHaveBeenCalledWith([event]);
+    expect(upload).toHaveBeenCalledWith([
+      { ...event, progressGeneration: INITIAL_PROGRESS_GENERATION },
+    ]);
     expect(await pendingCount(database, userId)).toBe(0);
     expect((await quarantineSummary(database, userId)).total).toBe(0);
   });

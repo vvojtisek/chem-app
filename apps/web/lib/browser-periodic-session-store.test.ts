@@ -9,7 +9,10 @@ import {
   resetLearningDatabase,
   transactionCompleted,
 } from "./browser-learning-database";
-import { createBrowserPeriodicSessionStore } from "./browser-periodic-session-store";
+import {
+  copyLegacyPeriodicCheckpoints,
+  createBrowserPeriodicSessionStore,
+} from "./browser-periodic-session-store";
 import {
   createPeriodicCheckpoint,
   PERIODIC_NAME_SESSION_ID,
@@ -17,6 +20,8 @@ import {
   restorePeriodicSession,
 } from "./periodic-table-session";
 import { answerPracticeQueue, createPracticeQueue } from "./practice-queue";
+import { INITIAL_PROGRESS_GENERATION } from "./progress-generation";
+import { reconcileProgressGeneration } from "./sync/sync-store";
 
 const elements = curatedElements.slice(0, 3);
 const byId = new Map(elements.map((element) => [element.id, element]));
@@ -43,6 +48,22 @@ beforeEach(async () => {
 });
 
 describe("periodic-table checkpoint store", () => {
+  it("copies a legacy device checkpoint once into the account and never restores it after reset", async () => {
+    const userId = "88888888-8888-4888-8888-888888888888";
+    await resetLearningDatabase(indexedDB, userId);
+    const accountStore = createBrowserPeriodicSessionStore(indexedDB, userId);
+    const { checkpoint } = initialCheckpoint();
+    await store.write(PERIODIC_NAME_SESSION_ID, checkpoint, 0);
+    await copyLegacyPeriodicCheckpoints(indexedDB, userId, INITIAL_PROGRESS_GENERATION);
+    expect(await accountStore.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    const rotated = "99999999-9999-4999-8999-999999999999";
+    await reconcileProgressGeneration(indexedDB, userId, rotated);
+    await copyLegacyPeriodicCheckpoints(indexedDB, userId, rotated);
+    expect(await accountStore.load(PERIODIC_NAME_SESSION_ID)).toBeNull();
+    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+  });
+
   it("restores order, retry queue, score, and elapsed time without a new attempt", async () => {
     const { checkpoint, session } = initialCheckpoint();
     await store.write(PERIODIC_NAME_SESSION_ID, checkpoint, 0);

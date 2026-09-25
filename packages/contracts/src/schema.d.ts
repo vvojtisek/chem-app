@@ -346,6 +346,40 @@ export interface paths {
         patch: operations["updateMyProfile"];
         trace?: never;
     };
+    "/api/v1/me/progress-generation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Progress Generation */
+        get: operations["getMyProgressGeneration"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/progress-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reset My Progress */
+        post: operations["resetMyProgress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/progression": {
         parameters: {
             query?: never;
@@ -453,6 +487,11 @@ export interface components {
             items: components["schemas"]["AttemptItem"][];
             /** Nextcursor */
             nextCursor: string | null;
+            /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
         };
         /** AttemptStats */
         AttemptStats: {
@@ -528,6 +567,11 @@ export interface components {
              * Format: date-time
              */
             occurredAt: string;
+            /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
             /** Questionid */
             questionId: string;
             /**
@@ -579,6 +623,11 @@ export interface components {
              * Format: date-time
              */
             occurredAt: string;
+            /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
             /** Questionid */
             questionId: string;
             /**
@@ -652,6 +701,11 @@ export interface components {
              */
             id: string;
             /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
+            /**
              * Role
              * @enum {string}
              */
@@ -716,6 +770,11 @@ export interface components {
              * @enum {string}
              */
             outcome: "correct" | "incorrect" | "revealed";
+            /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
             /** Questionid */
             questionId: string;
             /**
@@ -756,6 +815,11 @@ export interface components {
              * Format: date-time
              */
             occurredAt: string;
+            /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
             /** Questionid */
             questionId: string;
             /**
@@ -793,6 +857,14 @@ export interface components {
             role: "admin" | "user" | "tester" | "guest";
             /** Username */
             username: string;
+        };
+        /** ProgressGeneration */
+        ProgressGeneration: {
+            /**
+             * Progressgeneration
+             * Format: uuid
+             */
+            progressGeneration: string;
         };
         /** Progression */
         Progression: {
@@ -2261,6 +2333,147 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getMyProgressGeneration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgressGeneration"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    resetMyProgress: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgressGeneration"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
             /** @description Unauthorized */

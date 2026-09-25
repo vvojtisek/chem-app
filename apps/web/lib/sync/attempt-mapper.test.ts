@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AttemptEvent } from "../browser-progress-store";
+import { INITIAL_PROGRESS_GENERATION } from "../progress-generation";
 import { mapAttempt } from "./attempt-mapper";
 
 describe("attempt mapper", () => {
@@ -21,7 +22,10 @@ describe("attempt mapper", () => {
       direction: "formula-to-name",
       matchPolicy: "name-strict",
     };
-    expect(mapAttempt(event)).toEqual(event);
+    expect(mapAttempt(event)).toEqual({
+      ...event,
+      progressGeneration: INITIAL_PROGRESS_GENERATION,
+    });
   });
 
   it("maps an equation attempt to the generated event union", () => {
@@ -40,6 +44,9 @@ describe("attempt mapper", () => {
       direction: "coefficients",
       matchPolicy: "approved-balanced",
     };
-    expect(mapAttempt(event)).toEqual(event);
+    expect(mapAttempt(event)).toEqual({
+      ...event,
+      progressGeneration: INITIAL_PROGRESS_GENERATION,
+    });
   });
 });

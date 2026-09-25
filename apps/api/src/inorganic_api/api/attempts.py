@@ -10,6 +10,7 @@ from inorganic_api.api.attempt_schemas import (
     AttemptStats,
     BatchRequest,
     BatchResponse,
+    ProgressGeneration,
     Progression,
 )
 from inorganic_api.api.dependencies import get_current_user, require_csrf, require_role
@@ -33,6 +34,32 @@ WRITE_ERRORS = {
     422: {"model": ErrorEnvelope},
 }
 ADMIN_ERRORS = {**READ_ERRORS, 403: {"model": ErrorEnvelope}, 404: {"model": ErrorEnvelope}}
+
+
+@router.get(
+    "/me/progress-generation",
+    operation_id="getMyProgressGeneration",
+    response_model=ProgressGeneration,
+    responses={**READ_ERRORS, 403: {"model": ErrorEnvelope}},
+)
+def my_progress_generation(
+    current: Annotated[AuthenticatedSession, Depends(get_current_user)],
+    db: Annotated[Session, Depends(session_dependency)],
+) -> ProgressGeneration:
+    return attempts.progress_generation(db, current.user)
+
+
+@router.post(
+    "/me/progress-reset",
+    operation_id="resetMyProgress",
+    response_model=ProgressGeneration,
+    responses=WRITE_ERRORS,
+)
+def reset_my_progress(
+    current: Annotated[AuthenticatedSession, Depends(require_csrf)],
+    db: Annotated[Session, Depends(session_dependency)],
+) -> ProgressGeneration:
+    return attempts.reset_progress(db, current.user)
 
 
 @router.post(

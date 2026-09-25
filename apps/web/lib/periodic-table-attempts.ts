@@ -18,6 +18,7 @@ export interface PeriodicTableAttempt {
 export async function appendPeriodicTableAttempt(
   attempt: PeriodicTableAttempt,
   userId?: string,
+  progressGeneration?: string,
 ): Promise<void> {
   const store = createBrowserProgressStore(globalThis.indexedDB, userId);
   const base = {
@@ -28,6 +29,7 @@ export async function appendPeriodicTableAttempt(
     isCorrect: attempt.isCorrect,
     round: attempt.round,
     mode: "periodic-table",
+    ...(progressGeneration ? { progressGeneration } : {}),
   } as const;
 
   switch (attempt.direction) {

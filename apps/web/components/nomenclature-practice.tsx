@@ -347,6 +347,7 @@ export function NomenclaturePractice({
       isCorrect: evaluation.isCorrect,
       round: result.round,
       mode: "nomenclature" as const,
+      ...(account?.progressGeneration ? { progressGeneration: account.progressGeneration } : {}),
       outcome: evaluation.isCorrect ? ("correct" as const) : ("incorrect" as const),
       match: evaluation.match,
     };
