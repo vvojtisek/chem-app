@@ -30,7 +30,8 @@
 
 - Automated browser coverage uses desktop and mobile Chromium. It does not
   replace testing on physical iPad/Safari, assistive technology, or other
-  supported browsers.
+  supported browsers. No moderated usability sessions or screen-reader review
+  have been completed yet, and no performance budget has been signed off.
 - A chemistry content release remains blocked until every shipped curriculum
   record passes `pnpm content:release-check`.
 - Public operation also requires a completed privacy notice, DNS/firewall/TLS
