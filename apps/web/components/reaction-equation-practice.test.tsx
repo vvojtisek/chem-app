@@ -1,5 +1,5 @@
 import type { PreparationProductionRuntimeProduct } from "@inorganic/content/preparation-production";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const appendAttempt = vi.hoisted(() => vi.fn());
@@ -132,6 +132,55 @@ describe("reaction equation practice", () => {
     expect(appendAttempt.mock.calls[0]?.[0].id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-8[0-9a-f]{3}-[0-9a-f]{12}$/u,
     );
+  });
+
+  it("steps coefficients and recounts the atoms on every change", () => {
+    renderPractice();
+    const atoms = () => screen.getByRole("table", { name: "Počty atomů" });
+    const row = (symbol: string) =>
+      within(atoms()).getByRole("rowheader", { name: symbol }).closest("tr") as HTMLTableRowElement;
+
+    expect(row("H")).toHaveTextContent("H12≠ nesouhlasí");
+    expect(row("Zn")).toHaveTextContent("Zn11✓ souhlasí");
+    expect(screen.getByRole("button", { name: "Snížit koeficient reaktant HCl" })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Zvýšit koeficient reaktant HCl" }));
+
+    expect(screen.getByRole("textbox", { name: "Koeficient reaktant HCl" })).toHaveValue("2");
+    expect(row("H")).toHaveTextContent("H22✓ souhlasí");
+    expect(row("Cl")).toHaveTextContent("Cl22✓ souhlasí");
+    fireEvent.click(screen.getByRole("button", { name: "Snížit koeficient reaktant HCl" }));
+    expect(screen.getByRole("textbox", { name: "Koeficient reaktant HCl" })).toHaveValue("1");
+  });
+
+  it("explains that a balanced entry is not in the lowest ratio", () => {
+    renderPractice();
+    for (const [name, value] of [
+      ["Koeficient reaktant Zn", "2"],
+      ["Koeficient reaktant HCl", "4"],
+      ["Koeficient produkt H2", "2"],
+      ["Koeficient produkt ZnCl2", "2"],
+    ] as const) {
+      fireEvent.change(screen.getByRole("textbox", { name }), { target: { value } });
+    }
+    fireEvent.click(screen.getByRole("button", { name: "Vyhodnotit koeficienty" }));
+
+    expect(screen.getByText("To není správné řešení.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Počty atomů souhlasí, ale koeficienty nejsou v nejmenším celočíselném poměru.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("asks for whole numbers instead of counting unreadable coefficients", () => {
+    renderPractice();
+    fireEvent.change(screen.getByRole("textbox", { name: "Koeficient reaktant HCl" }), {
+      target: { value: "0" },
+    });
+
+    expect(screen.queryByRole("table", { name: "Počty atomů" })).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent("celá čísla od 1 do 999");
   });
 
   it("lets a guest practice without writing attempts", () => {

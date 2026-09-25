@@ -4,6 +4,7 @@ import {
   gradeApprovedEquations,
   gradeEquationCoefficients,
   gradeEquationProducts,
+  parseEquationCoefficient,
 } from "./evaluate-equation-answer";
 import { parseEquationAnswer } from "./parse-equation";
 
@@ -37,6 +38,29 @@ describe("equation answer grading", () => {
         symbols,
       ).correct,
     ).toBe(false);
+  });
+
+  it("marks a conserving entry that is not in the lowest ratio as balanced but not correct", () => {
+    expect(
+      gradeEquationCoefficients(
+        { "reactant-0": "2", "reactant-1": "4", "product-0": "2", "product-1": "2" },
+        zinc,
+        symbols,
+      ),
+    ).toMatchObject({ correct: false, balanced: true });
+    expect(gradeEquationCoefficients({ "reactant-1": "2" }, zinc, symbols)).toMatchObject({
+      correct: true,
+      balanced: true,
+    });
+    expect(gradeEquationCoefficients({}, zinc, symbols)).toMatchObject({
+      correct: false,
+      balanced: false,
+    });
+    expect(gradeEquationCoefficients({ "reactant-1": "x" }, zinc, symbols)).toMatchObject({
+      correct: false,
+      balanced: false,
+      atomBalance: null,
+    });
   });
 
   it("accepts independent reduced balancing solutions for approved formula terms", () => {
@@ -93,5 +117,19 @@ describe("equation answer grading", () => {
       true,
     );
     expect(gradeEquationProducts("H2 + ZnCl", approved.products, symbols)).toBe(false);
+  });
+
+  it.each([
+    ["", 1],
+    ["1", 1],
+    ["12", 12],
+    ["999", 999],
+    ["0", null],
+    ["02", null],
+    ["1000", null],
+    ["x", null],
+    [" 2", null],
+  ] as const)("reads the coefficient %j as %j", (value, expected) => {
+    expect(parseEquationCoefficient(value)).toBe(expected);
   });
 });

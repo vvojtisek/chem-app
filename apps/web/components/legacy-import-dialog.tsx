@@ -45,10 +45,10 @@ export function LegacyImportDialog() {
     <div
       aria-labelledby="legacy-title"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-5"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-accent/60 p-5"
       role="dialog"
     >
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl">
         <h2 className="text-xl font-semibold" id="legacy-title">
           Starší lokální data
         </h2>
@@ -56,13 +56,13 @@ export function LegacyImportDialog() {
           Na tomto zařízení je {count} pokusů z doby před přihlášením. Chcete je převést do účtu{" "}
           {account.username}? Převedou se také místní karty a rozpracované cvičení.
         </p>
-        <p aria-live="polite" className="mt-2 text-rose-800">
+        <p aria-live="polite" className="mt-2 text-bad">
           {error}
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <button
             ref={firstButton}
-            className="min-h-11 rounded-xl bg-slate-950 px-4 text-white"
+            className="min-h-11 rounded-xl bg-accent px-4 text-on-fill"
             disabled={busy}
             onClick={() => void decide(true)}
             type="button"

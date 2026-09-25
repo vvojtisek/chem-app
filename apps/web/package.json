@@ -12,6 +12,8 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
     "@inorganic/chemistry": "workspace:*",
     "@inorganic/content": "workspace:*",
     "@inorganic/contracts": "workspace:*",

@@ -1,20 +1,16 @@
 import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
 import { curatedElements } from "@inorganic/content/runtime";
-import { PracticeNavigation } from "@/components/practice-navigation";
+import { PageHeader } from "@/components/page-header";
+import { PRACTICE_BREADCRUMB } from "@/components/practice-breadcrumb";
 import { ReactionEquationPractice } from "@/components/reaction-equation-practice";
 
 export default function EquationPracticePage() {
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-5xl px-5 py-8 sm:px-8">
-      <PracticeNavigation backHref="/procvicovani" />
-      <header className="mb-6">
-        <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
-          Procvičování
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-          Chemické rovnice
-        </h1>
-      </header>
+    <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader
+        breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Chemické rovnice" }]}
+        title="Chemické rovnice"
+      />
       <ReactionEquationPractice
         products={curatedPreparationProduction}
         allowedSymbols={curatedElements.map((element) => element.symbol)}

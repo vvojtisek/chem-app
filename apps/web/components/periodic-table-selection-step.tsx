@@ -55,22 +55,22 @@ export function PeriodicTableSelectionStep({
   return (
     <section
       aria-labelledby="periodic-table-selection"
-      className="rounded-3xl border border-slate-200 bg-white p-6"
+      className="rounded-3xl border border-line bg-surface p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="periodic-table-selection" className="text-2xl font-semibold text-slate-950">
+        <h2 id="periodic-table-selection" className="text-2xl font-semibold text-ink">
           Výběr prvků
         </h2>
         <div className="flex flex-wrap gap-2">
           <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
             onClick={() => onChange(new Set(layout.map(({ element }) => element.id)))}
             type="button"
           >
             Vybrat vše
           </button>
           <button
-            className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-slate-900"
+            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
             onClick={() => onChange(new Set())}
             type="button"
           >
@@ -80,7 +80,7 @@ export function PeriodicTableSelectionStep({
       </div>
       <PeriodicTableSelectionMatrix layout={layout} onChange={onChange} selection={selection} />
       <button
-        className="mt-4 min-h-11 rounded-xl bg-slate-950 px-5 font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+        className="mt-4 min-h-11 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
         disabled={selectedCount === 0}
         onClick={onStart}
         type="button"
@@ -88,7 +88,7 @@ export function PeriodicTableSelectionStep({
         Přejít na cvičení ({czechCount(selectedCount, ELEMENT_FORMS)})
       </button>
       {selectedCount === 0 ? (
-        <p className="mt-2 text-sm text-slate-700">Vyberte alespoň jeden prvek.</p>
+        <p className="mt-2 text-sm text-ink-2">Vyberte alespoň jeden prvek.</p>
       ) : null}
     </section>
   );

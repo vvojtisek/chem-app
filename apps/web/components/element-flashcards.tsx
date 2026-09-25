@@ -20,10 +20,10 @@ interface ElementFlashcardsProps {
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
   return (
-    <div className="mx-auto grid w-full max-w-5xl gap-8">
+    <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-8">
       <ElementFlashcardPractice elements={curatedElements} />
-      <details className="rounded-2xl border border-slate-200 bg-white p-5">
-        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-slate-950">
+      <details className="rounded-2xl border border-line bg-surface p-5">
+        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-ink">
           Prohlížet karty prvků
         </summary>
         <div className="mt-4">
@@ -116,23 +116,21 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
     <section aria-labelledby="flashcard-heading" className="mx-auto w-full max-w-4xl">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
-            Flashcards
-          </p>
+          <p className="text-sm font-semibold text-ink-3">Karty prvků</p>
           <h2
             id="flashcard-heading"
-            className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl"
+            className="mt-1 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
           >
             Prvky
           </h2>
-          <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+          <p className="mt-3 max-w-2xl leading-7 text-ink-2">
             Česká jména, značky a základní údaje. Vaše úpravy zůstávají lokálně v tomto zařízení.
           </p>
         </div>
-        <label className="grid gap-1 text-sm font-medium text-slate-800">
+        <label className="grid gap-1 text-sm font-medium text-ink-2">
           Skupina
           <select
-            className="min-h-11 rounded-xl border border-slate-300 bg-white px-3"
+            className="min-h-11 rounded-xl border border-line-strong bg-surface px-3"
             onChange={(event) => selectGroup(event.target.value)}
             value={selectedGroup}
           >
@@ -146,16 +144,16 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
         </label>
       </div>
 
-      <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_16px_45px_rgb(15_23_42/0.06)] sm:p-10">
+      <div className="mt-8 rounded-3xl border border-line bg-surface p-6 shadow-[0_16px_45px_rgb(15_23_42/0.06)] sm:p-10">
         <div className="flex items-start justify-between gap-4">
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-900">
+          <span className="rounded-full bg-good-soft px-3 py-1 text-sm font-semibold text-good">
             {selectedCard.atomicNumber}. prvek
           </span>
-          <label className="grid gap-1 text-sm font-medium text-slate-800">
+          <label className="grid gap-1 text-sm font-medium text-ink-2">
             Vybraná karta
             <select
               aria-label="Vybraná karta"
-              className="min-h-11 max-w-52 rounded-xl border border-slate-300 bg-white px-3"
+              className="min-h-11 max-w-52 rounded-xl border border-line-strong bg-surface px-3"
               onChange={(event) => {
                 setSelectedId(event.target.value);
                 setIsFlipped(false);
@@ -174,8 +172,8 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
         <div className="mt-12 text-center" aria-live="polite">
           {isFlipped ? (
             <>
-              <h2 className="text-3xl font-semibold text-slate-950">{selectedCard.nameCs}</h2>
-              <p className="mt-2 text-lg text-slate-600">{selectedCard.nameLat}</p>
+              <h2 className="text-3xl font-semibold text-ink">{selectedCard.nameCs}</h2>
+              <p className="mt-2 text-lg text-ink-2">{selectedCard.nameLat}</p>
               <dl className="mx-auto mt-8 grid max-w-xl gap-4 text-left sm:grid-cols-2">
                 <Fact label="Perioda" value={String(selectedCard.period)} />
                 <Fact
@@ -191,8 +189,8 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
             </>
           ) : (
             <>
-              <p className="text-lg text-slate-600">Jak se tento prvek nazývá česky?</p>
-              <p className="mt-6 text-7xl font-semibold tracking-tight text-slate-950 sm:text-8xl">
+              <p className="text-lg text-ink-2">Jak se tento prvek nazývá česky?</p>
+              <p className="mt-6 text-7xl font-semibold tracking-tight text-ink sm:text-8xl">
                 {selectedCard.symbol}
               </p>
             </>
@@ -200,15 +198,15 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
         </div>
 
         {selectedGroupInfo ? (
-          <aside className="mt-10 rounded-2xl border border-emerald-900/15 bg-emerald-50 p-5 text-left">
-            <h3 className="font-semibold text-slate-950">{selectedGroupInfo.nameCs}</h3>
+          <aside className="mt-10 rounded-2xl border border-good/15 bg-good-soft p-5 text-left">
+            <h3 className="font-semibold text-ink">{selectedGroupInfo.nameCs}</h3>
             <GroupMnemonics group={selectedGroupInfo} />
           </aside>
         ) : null}
 
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <button
-            className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+            className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
             onClick={() => setIsFlipped((value) => !value)}
             type="button"
           >
@@ -216,7 +214,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
           </button>
           {canEdit ? (
             <button
-              className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+              className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink"
               onClick={() => setEditor(toEditableCard(selectedCard))}
               type="button"
             >
@@ -225,7 +223,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
           ) : null}
           {canEdit && curatedElements.some((card) => card.id === selectedCard.id) ? (
             <button
-              className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+              className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink"
               onClick={() => void resetCard()}
               type="button"
             >
@@ -234,7 +232,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
           ) : null}
           {canEdit ? (
             <button
-              className="min-h-11 rounded-xl border border-emerald-700 px-4 font-semibold text-emerald-900"
+              className="min-h-11 rounded-xl border border-good px-4 font-semibold text-good"
               onClick={() => setEditor(createCustomCard(cards))}
               type="button"
             >
@@ -243,7 +241,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
           ) : null}
         </div>
         {message ? (
-          <p className="mt-5 text-center text-sm text-slate-700" role="status">
+          <p className="mt-5 text-center text-sm text-ink-2" role="status">
             {message}
           </p>
         ) : null}
@@ -264,8 +262,8 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
 function Fact({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div>
-      <dt className="text-sm text-slate-600">{label}</dt>
-      <dd className="mt-1 font-semibold text-slate-950">{value}</dd>
+      <dt className="text-sm text-ink-2">{label}</dt>
+      <dd className="mt-1 font-semibold text-ink">{value}</dd>
     </div>
   );
 }
@@ -306,14 +304,14 @@ function ElementEditor({
   return (
     <form
       aria-label="Editor karty prvku"
-      className="mt-8 rounded-3xl border border-slate-200 bg-white p-6"
+      className="mt-8 rounded-3xl border border-line bg-surface p-6"
       noValidate
       onSubmit={(event) => void submit(event)}
     >
-      <h2 className="text-2xl font-semibold text-slate-950">
+      <h2 className="text-2xl font-semibold text-ink">
         {isCustom ? "Nový vlastní prvek" : "Lokální úprava karty"}
       </h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">
+      <p className="mt-2 text-sm leading-6 text-ink-2">
         Úpravy nejsou publikací kurikula; uloží se jen do tohoto prohlížeče.
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -359,19 +357,19 @@ function ElementEditor({
         />
       </div>
       {error ? (
-        <p className="mt-4 text-sm text-red-700" role="alert">
+        <p className="mt-4 text-sm text-bad" role="alert">
           {error}
         </p>
       ) : null}
       <div className="mt-6 flex flex-wrap gap-3">
         <button
-          className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+          className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
           type="submit"
         >
           Uložit lokálně
         </button>
         <button
-          className="min-h-11 rounded-xl border border-slate-300 px-4 font-semibold text-slate-900"
+          className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink"
           onClick={onCancel}
           type="button"
         >
@@ -394,10 +392,10 @@ function Field({
   readonly value: string;
 }) {
   return (
-    <label className="grid gap-1 text-sm font-medium text-slate-800">
+    <label className="grid gap-1 text-sm font-medium text-ink-2">
       {label}
       <input
-        className="min-h-11 rounded-xl border border-slate-300 px-3"
+        className="min-h-11 rounded-xl border border-line-strong px-3"
         onChange={(event) => onChange(event.target.value)}
         required={label !== "Skupina (nechte prázdné pro f-blok)"}
         step={type === "number" ? "any" : undefined}

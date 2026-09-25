@@ -102,6 +102,10 @@ function prompt(): HTMLElement {
   return screen.getByRole("heading", { name: /^Zadání:/ });
 }
 
+function scripts(element: HTMLElement, tag: "sub" | "sup"): string[] {
+  return [...element.querySelectorAll(tag)].map((node) => node.textContent ?? "");
+}
+
 describe("NomenclaturePractice filters", () => {
   it("counts the matching compounds per category and on the start button", async () => {
     renderPractice([silverChloride, sodiumChloride, hydrate, sulfate]);
@@ -172,9 +176,13 @@ describe("NomenclaturePractice exercise", () => {
     answer("  CHLORID   stribrny ");
 
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Postup cvičením" })).toHaveAttribute(
+      "aria-valuetext",
+      "1 z 2",
+    );
     expect(prompt()).toHaveAccessibleName("Zadání: NaCl");
     expect(screen.getByRole("textbox")).toHaveValue("");
-    expect(screen.getByText(/Přesný zápis: chlorid stříbrný/)).toBeInTheDocument();
+    expect(screen.getByText("Uznáno. Přesný zápis: chlorid stříbrný.")).toBeInTheDocument();
     await waitFor(async () =>
       expect(await createBrowserProgressStore().listAttempts()).toEqual([
         expect.objectContaining({
@@ -192,7 +200,8 @@ describe("NomenclaturePractice exercise", () => {
   it("accepts a hydrate name without diacritics or spaces", async () => {
     renderPractice([hydrate]);
     fireEvent.click(await startButton());
-    expect(prompt()).toHaveTextContent("MgCl₂·6H₂O");
+    expect(prompt()).toHaveTextContent("MgCl2·6H2O");
+    expect(scripts(prompt(), "sub")).toEqual(["2", "2"]);
 
     answer("hexahydratchloriduhorecnateho");
 
@@ -206,7 +215,9 @@ describe("NomenclaturePractice exercise", () => {
     answer("chlorid sodný");
 
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
-    expect(screen.getByText("Špatně: AgCl = chlorid stříbrný.")).toBeInTheDocument();
+    expect(screen.getByText("Špatně", { exact: true })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "AgCl" })).toBeInTheDocument();
+    expect(screen.getByText("chlorid stříbrný")).toBeInTheDocument();
     expect(screen.getByText("Fixture explanation.")).toBeInTheDocument();
     expect(prompt()).toHaveAccessibleName("Zadání: NaCl");
 
@@ -240,7 +251,8 @@ describe("NomenclaturePractice exercise", () => {
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
 
     expect(prompt()).toHaveAccessibleName("Zadání: SO4 2-");
-    expect(prompt()).toHaveTextContent("SO₄²⁻");
+    expect(scripts(prompt(), "sub")).toEqual(["4"]);
+    expect(scripts(prompt(), "sup")).toEqual(["2−"]);
     expect(screen.getByRole("textbox", { name: "Český název" })).toBeInTheDocument();
     answer("anion síranový");
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();

@@ -71,3 +71,28 @@ export function masteryForElement(
 ): ElementMastery {
   return mastery.get(elementId) ?? EMPTY_MASTERY;
 }
+
+export interface WeakElement {
+  readonly elementId: string;
+  readonly mastery: ElementMastery;
+}
+
+/**
+ * Rated elements that still need practice (below 80 % weighted accuracy), weakest first. Elements
+ * with fewer than MIN_MASTERY_ATTEMPTS answers have no rating and are left out.
+ */
+export function weakestElements(
+  mastery: ReadonlyMap<string, ElementMastery>,
+  limit: number,
+): readonly WeakElement[] {
+  return [...mastery]
+    .filter(([, state]) => state.level === "low" || state.level === "developing")
+    .sort(
+      ([leftId, left], [rightId, right]) =>
+        (left.weightedAccuracy ?? 0) - (right.weightedAccuracy ?? 0) ||
+        right.attempts - left.attempts ||
+        leftId.localeCompare(rightId),
+    )
+    .slice(0, limit)
+    .map(([elementId, state]) => ({ elementId, mastery: state }));
+}

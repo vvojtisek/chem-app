@@ -15,9 +15,20 @@ import { updateAccountMarkerProgressGeneration } from "@/lib/auth/account-marker
 import { queryKeys } from "@/lib/query-keys";
 import { runAttemptSync } from "@/lib/sync/attempt-sync";
 import { pendingCount, quarantineSummary } from "@/lib/sync/sync-store";
+import { AlertIcon, ClockIcon, CloudCheckIcon, CloudOffIcon } from "./icons";
 
 type SyncState = "synced" | "pending" | "offline" | "error";
+/** What the status chip shows, derived from the sync state and the local queues. */
+export type SyncStatus =
+  | "preparing"
+  | "synced"
+  | "running"
+  | "pending"
+  | "offline"
+  | "error"
+  | "quarantine";
 interface SyncContextValue {
+  readonly status: SyncStatus;
   readonly pending: number;
   readonly running: boolean;
   readonly label: string;
@@ -27,6 +38,7 @@ interface SyncContextValue {
   readonly run: () => Promise<void>;
 }
 const SyncContext = createContext<SyncContextValue>({
+  status: "preparing",
   pending: 0,
   running: false,
   label: "Synchronizace se připravuje",
@@ -40,14 +52,43 @@ export function useSync(): SyncContextValue {
   return useContext(SyncContext);
 }
 
-export function SyncStatusIndicator() {
+const CHIP_STYLE: Readonly<Record<SyncStatus, string>> = {
+  preparing: "border-line bg-surface-2 text-ink-2",
+  synced: "border-good/40 bg-good-soft text-good",
+  running: "border-line bg-surface-2 text-ink-2",
+  pending: "border-warn/40 bg-warn-soft text-warn",
+  offline: "border-line bg-surface-2 text-ink-2",
+  error: "border-bad/40 bg-bad-soft text-bad",
+  quarantine: "border-warn/40 bg-warn-soft text-warn",
+};
+
+function ChipIcon({ status }: Readonly<{ status: SyncStatus }>) {
+  switch (status) {
+    case "synced":
+      return <CloudCheckIcon />;
+    case "offline":
+      return <CloudOffIcon />;
+    case "error":
+    case "quarantine":
+      return <AlertIcon />;
+    case "preparing":
+    case "running":
+    case "pending":
+      return <ClockIcon />;
+  }
+}
+
+/** Sync state as an icon plus words, so it never depends on colour alone. */
+export function SyncStatusChip() {
   const sync = useSync();
   return (
-    <span aria-live="polite" className="max-w-full text-slate-600">
-      {sync.label}
-      {sync.quarantineMessage ? (
-        <span className="ml-2 text-amber-900">{sync.quarantineMessage}</span>
-      ) : null}
+    <span
+      aria-live="polite"
+      className={`inline-flex min-h-8 min-w-0 max-w-full items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${CHIP_STYLE[sync.status]}`}
+      title={sync.quarantineMessage ?? undefined}
+    >
+      <ChipIcon status={sync.status} />
+      <span className="truncate">{sync.label}</span>
     </span>
   );
 }
@@ -159,6 +200,18 @@ export function SyncProvider({
     };
   }, [run, userId]);
 
+  const status: SyncStatus =
+    state === "offline"
+      ? "offline"
+      : state === "error"
+        ? "error"
+        : quarantined > 0
+          ? "quarantine"
+          : running
+            ? "running"
+            : pending > 0
+              ? "pending"
+              : "synced";
   const label =
     state === "offline"
       ? `Offline · čeká ${pending}`
@@ -174,6 +227,7 @@ export function SyncProvider({
   return (
     <SyncContext.Provider
       value={{
+        status,
         pending,
         running,
         label,

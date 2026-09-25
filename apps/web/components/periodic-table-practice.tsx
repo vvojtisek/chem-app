@@ -4,7 +4,11 @@ import { curriculumContentVersion, type ElementFlashcardData } from "@inorganic/
 import { useMemo, useRef, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
-import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
+import {
+  type PeriodicTableCellResult,
+  PeriodicTableGrid,
+  PeriodicTableLegend,
+} from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
@@ -201,6 +205,7 @@ export function PeriodicTablePractice({
         incorrect={session.incorrect}
         onFinish={finish}
         onReset={start}
+        progress={{ done: session.solvedIds.size, total: session.total }}
         running={session.status === "running"}
       />
 
@@ -214,7 +219,7 @@ export function PeriodicTablePractice({
           total={session.total}
         >
           <button
-            className="mt-4 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
             onClick={returnToSelection}
             type="button"
           >
@@ -222,9 +227,15 @@ export function PeriodicTablePractice({
           </button>
         </PracticeSummary>
       ) : (
-        <h2 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
-          <span className="sr-only">Hledaný prvek:</span> {session.current?.nameCs ?? "…"}
-        </h2>
+        // Pinned under the top bar, so the sought element stays in view while the table scrolls.
+        <div className="sticky top-14 z-10 -mx-4 mt-4 border-y border-line bg-surface/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:px-5">
+          <p aria-hidden="true" className="text-sm font-semibold text-ink-3">
+            Najděte
+          </p>
+          <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-5xl">
+            <span className="sr-only">Hledaný prvek:</span> {session.current?.nameCs ?? "…"}
+          </h2>
+        </div>
       )}
       <p aria-live="polite" className="sr-only">
         {announcement}
@@ -234,9 +245,11 @@ export function PeriodicTablePractice({
         cellResult={cellResult}
         layout={layout}
         onSelect={finished ? undefined : select}
+        secondsLeft={wrongMarks.secondsLeft}
       />
+      <PeriodicTableLegend />
       {notice ? (
-        <p className="mt-4 text-sm text-slate-700" role="status">
+        <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}
         </p>
       ) : null}

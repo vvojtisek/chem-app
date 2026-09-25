@@ -12,11 +12,13 @@ vi.mock("@/components/auth-gate", () => ({
   useAccount: () => ({ id: "account-current", username: "Learner", role: mocks.role }),
   useCapabilities: () => ({ canViewProgress: mocks.role === "user" }),
 }));
-vi.mock("@/components/page-navigation", () => ({ PageNavigation: () => null }));
 vi.mock("@/components/periodic-mastery-heatmap", () => ({
   PeriodicMasteryHeatmap: ({ userId }: { userId: string }) => <p>Heatmap for {userId}</p>,
 }));
 vi.mock("@/components/sync-provider", () => ({ useSync: () => ({ running: false }) }));
+vi.mock("@/components/weak-elements", () => ({
+  WeakElements: ({ userId }: { userId: string }) => <p>Weak elements for {userId}</p>,
+}));
 vi.mock("@/lib/api/client", () => ({
   getMyAttemptStats: mocks.getMyAttemptStats,
   getMyProgression: mocks.getMyProgression,
@@ -56,8 +58,15 @@ afterEach(cleanup);
 describe("ProgressPage", () => {
   it("shows personal local heatmap and server mode summaries for the active account", async () => {
     renderPage();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Pokrok");
     expect(screen.getByText("Heatmap for account-current")).toBeInTheDocument();
-    expect(await screen.findByText("3 pokusů · 2 správně")).toBeInTheDocument();
+    expect(screen.getByText("Weak elements for account-current")).toBeInTheDocument();
+    const periodic = (await screen.findByRole("heading", { name: "Periodická tabulka" })).closest(
+      "li",
+    );
+    expect(periodic).toHaveTextContent("66,7 % · 2 správně · 3 odpovědi");
+    expect(screen.getByText("Začátečník")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Resetovat pokrok" })).toBeNull();
     expect(mocks.getMyAttemptStats).toHaveBeenCalledOnce();
     expect(mocks.getMyProgression).toHaveBeenCalledOnce();
   });
@@ -66,6 +75,7 @@ describe("ProgressPage", () => {
     mocks.role = role;
     renderPage();
     expect(screen.queryByText("Heatmap for account-current")).toBeNull();
+    expect(screen.queryByText("Weak elements for account-current")).toBeNull();
     expect(mocks.getMyAttemptStats).not.toHaveBeenCalled();
     expect(mocks.getMyProgression).not.toHaveBeenCalled();
     if (role === "tester") {

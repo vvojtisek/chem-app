@@ -13,7 +13,11 @@ import {
 } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
-import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
+import {
+  type PeriodicTableCellResult,
+  PeriodicTableGrid,
+  PeriodicTableLegend,
+} from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
@@ -299,12 +303,13 @@ export function PeriodicTableNamePractice({
         incorrect={session.incorrect}
         onFinish={finish}
         onReset={start}
+        progress={{ done: session.solvedIds.size, total: session.total }}
         running={session.status === "running"}
       />
 
       <fieldset className="mt-4">
         <legend className="sr-only">Režim procvičování</legend>
-        <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1">
+        <div className="inline-flex rounded-xl border border-line-strong bg-surface-3 p-1">
           {MODE_OPTIONS.map((option) => (
             <label key={option.mode}>
               <input
@@ -315,7 +320,7 @@ export function PeriodicTableNamePractice({
                 type="radio"
                 value={option.mode}
               />
-              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-slate-700 peer-checked:bg-white peer-checked:text-slate-950 peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#0b7285]">
+              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
                 {mode === option.mode ? <span aria-hidden="true">✓</span> : null}
                 {option.label}
               </span>
@@ -325,27 +330,33 @@ export function PeriodicTableNamePractice({
       </fieldset>
 
       {prompt ? (
-        <>
-          <h2 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
+        <section
+          aria-label="Otázka"
+          className="mt-4 max-w-2xl rounded-2xl border border-line bg-surface p-5 sm:p-7"
+        >
+          <p className="text-sm font-semibold text-ink-3">
+            {mode === "name-to-symbol" ? "Napište značku prvku" : "Napište český název prvku"}
+          </p>
+          <h2 className="mt-2 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
             <span className="sr-only">Zadání:</span> {promptOf(prompt, mode)}
           </h2>
           <form
-            className="mt-4 flex max-w-xl flex-wrap items-end gap-2"
+            className="mt-6 flex flex-wrap items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
               submit();
             }}
           >
-            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-slate-800">
+            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-ink-2">
               {mode === "name-to-symbol" ? "Značka prvku" : "Český název prvku"}
               <input
                 autoCapitalize="off"
                 autoComplete="off"
                 autoCorrect="off"
-                className={`min-h-11 rounded-xl border px-3 text-base ${
+                className={`min-h-12 rounded-xl border px-3 text-lg text-ink ${
                   inputFlash
-                    ? "border-rose-600 bg-rose-50 ring-2 ring-rose-300"
-                    : "border-slate-300 bg-white"
+                    ? "border-bad bg-bad-soft ring-2 ring-bad"
+                    : "border-line-strong bg-surface"
                 }`}
                 data-flash={inputFlash ? "incorrect" : undefined}
                 onChange={(event) => {
@@ -359,15 +370,15 @@ export function PeriodicTableNamePractice({
               />
             </label>
             <button
-              className="min-h-11 rounded-xl bg-slate-950 px-4 font-semibold text-white"
+              className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill"
               type="submit"
             >
               Odeslat
             </button>
           </form>
-          <p className="mt-2 min-h-5 text-sm text-amber-800">{inputHint}</p>
+          <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
           <LastAnswerLine answer={lastAnswer} />
-        </>
+        </section>
       ) : (
         <PracticeSummary
           correct={session.correct}
@@ -379,7 +390,7 @@ export function PeriodicTableNamePractice({
           total={session.total}
         >
           <button
-            className="mt-4 min-h-11 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-slate-900"
+            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
             onClick={returnToSelection}
             type="button"
           >
@@ -391,9 +402,14 @@ export function PeriodicTableNamePractice({
         {announcement}
       </p>
 
-      <PeriodicTableGrid cellResult={cellResult} layout={layout} />
+      <PeriodicTableGrid
+        cellResult={cellResult}
+        layout={layout}
+        secondsLeft={wrongMarks.secondsLeft}
+      />
+      <PeriodicTableLegend />
       {notice ? (
-        <p className="mt-4 text-sm text-slate-700" role="status">
+        <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}
         </p>
       ) : null}
@@ -407,10 +423,16 @@ export function PeriodicTableNamePractice({
 }
 
 function LastAnswerLine({ answer }: { readonly answer: LastAnswer | null }) {
-  if (!answer) return <p className="min-h-5" />;
+  if (!answer) return null;
 
   return (
-    <p className={`min-h-5 text-sm ${answer.isCorrect ? "text-emerald-800" : "text-rose-800"}`}>
+    <p
+      className={`mt-1 rounded-xl border px-4 py-3 font-semibold ${
+        answer.isCorrect
+          ? "border-good/40 bg-good-soft text-good"
+          : "border-bad/40 bg-bad-soft text-bad"
+      }`}
+    >
       <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
       {describeAnswer(answer.element, answer.isCorrect)}
       {answerHint(answer.match)}

@@ -4,11 +4,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { ModeStatsPanel } from "@/components/mode-stats-panel";
-import { PageNavigation } from "@/components/page-navigation";
+import { PageHeader } from "@/components/page-header";
 import { PeriodicMasteryHeatmap } from "@/components/periodic-mastery-heatmap";
-import { ProgressReset } from "@/components/progress-reset";
 import { ProgressionPanel } from "@/components/progression-panel";
 import { useSync } from "@/components/sync-provider";
+import { WeakElements } from "@/components/weak-elements";
 import { getMyAttemptStats, getMyProgression } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -40,30 +40,31 @@ export default function ProgressPage() {
   }, [running, account, isGuest, isTester, queryClient]);
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-4xl px-5 py-8 sm:px-8">
-      <PageNavigation />
-      <p className="text-sm font-semibold tracking-[0.16em] text-emerald-800 uppercase">
-        Osobní přehled
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-        Statistika
-      </h1>
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 lg:py-10">
+      <PageHeader title="Pokrok" />
       {isGuest ? (
-        <p className="mt-5 rounded-2xl border bg-white p-5 text-slate-700">
+        <p className="rounded-2xl border border-line bg-surface p-5 text-ink-2">
           Hostovský přístup nezaznamenává osobní pokusy. Pro zobrazení vlastního pokroku se
           přihlaste k účtu.
         </p>
       ) : isTester ? (
-        <p className="mt-5 rounded-2xl border bg-white p-5 text-slate-700">
+        <p className="rounded-2xl border border-line bg-surface p-5 text-ink-2">
           Testovací účet nemá osobní statistiky pokroku.
         </p>
       ) : (
-        <>
+        <div className="grid grid-cols-1 gap-6">
           <ProgressionPanel progression={progression.data} isLoading={progression.isPending} />
-          <ModeStatsPanel stats={attemptStats.data} isLoading={attemptStats.isPending} />
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+            <ModeStatsPanel stats={attemptStats.data} isLoading={attemptStats.isPending} />
+            {account ? (
+              <WeakElements
+                emptyText="Zatím žádný prvek nepotřebuje opakování. Hodnocení začíná po třech pokusech o prvek."
+                userId={account.id}
+              />
+            ) : null}
+          </div>
           {account ? <PeriodicMasteryHeatmap userId={account.id} /> : null}
-          <ProgressReset />
-        </>
+        </div>
       )}
     </main>
   );
