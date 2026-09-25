@@ -120,11 +120,9 @@ export function ElementFlashcardPractice({
   return (
     <section aria-labelledby="flashcard-practice-heading" className="mx-auto w-full max-w-5xl">
       <header>
-        <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">
-          Pětiminutový kvíz
-        </p>
+        <p className="text-sm font-semibold text-ink-3">Pětiminutový kvíz</p>
         <h1
-          className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-5xl"
+          className="mt-1 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
           id="flashcard-practice-heading"
         >
           Značky prvků
@@ -204,7 +202,7 @@ export function ElementFlashcardPractice({
                     <p className="text-sm font-semibold tracking-wide text-ink-2 uppercase">
                       Jaká je chemická značka?
                     </p>
-                    <h2 className="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+                    <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
                       {current.nameCs}
                     </h2>
                     <form

@@ -13,7 +13,11 @@ import {
 } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
-import { type PeriodicTableCellResult, PeriodicTableGrid } from "@/components/periodic-table-grid";
+import {
+  type PeriodicTableCellResult,
+  PeriodicTableGrid,
+  PeriodicTableLegend,
+} from "@/components/periodic-table-grid";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
@@ -299,6 +303,7 @@ export function PeriodicTableNamePractice({
         incorrect={session.incorrect}
         onFinish={finish}
         onReset={start}
+        progress={{ done: session.solvedIds.size, total: session.total }}
         running={session.status === "running"}
       />
 
@@ -325,12 +330,18 @@ export function PeriodicTableNamePractice({
       </fieldset>
 
       {prompt ? (
-        <>
-          <h2 className="mt-6 text-4xl font-semibold tracking-tight text-ink sm:text-6xl">
+        <section
+          aria-label="Otázka"
+          className="mt-4 max-w-2xl rounded-2xl border border-line bg-surface p-5 sm:p-7"
+        >
+          <p className="text-sm font-semibold text-ink-3">
+            {mode === "name-to-symbol" ? "Napište značku prvku" : "Napište český název prvku"}
+          </p>
+          <h2 className="mt-2 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
             <span className="sr-only">Zadání:</span> {promptOf(prompt, mode)}
           </h2>
           <form
-            className="mt-4 flex max-w-xl flex-wrap items-end gap-2"
+            className="mt-6 flex flex-wrap items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
               submit();
@@ -342,7 +353,7 @@ export function PeriodicTableNamePractice({
                 autoCapitalize="off"
                 autoComplete="off"
                 autoCorrect="off"
-                className={`min-h-11 rounded-xl border px-3 text-base ${
+                className={`min-h-12 rounded-xl border px-3 text-lg text-ink ${
                   inputFlash
                     ? "border-bad bg-bad-soft ring-2 ring-bad"
                     : "border-line-strong bg-surface"
@@ -359,7 +370,7 @@ export function PeriodicTableNamePractice({
               />
             </label>
             <button
-              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
+              className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill"
               type="submit"
             >
               Odeslat
@@ -367,7 +378,7 @@ export function PeriodicTableNamePractice({
           </form>
           <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
           <LastAnswerLine answer={lastAnswer} />
-        </>
+        </section>
       ) : (
         <PracticeSummary
           correct={session.correct}
@@ -391,7 +402,12 @@ export function PeriodicTableNamePractice({
         {announcement}
       </p>
 
-      <PeriodicTableGrid cellResult={cellResult} layout={layout} />
+      <PeriodicTableGrid
+        cellResult={cellResult}
+        layout={layout}
+        secondsLeft={wrongMarks.secondsLeft}
+      />
+      <PeriodicTableLegend />
       {notice ? (
         <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}
@@ -407,10 +423,16 @@ export function PeriodicTableNamePractice({
 }
 
 function LastAnswerLine({ answer }: { readonly answer: LastAnswer | null }) {
-  if (!answer) return <p className="min-h-5" />;
+  if (!answer) return null;
 
   return (
-    <p className={`min-h-5 text-sm ${answer.isCorrect ? "text-good" : "text-bad"}`}>
+    <p
+      className={`mt-1 rounded-xl border px-4 py-3 font-semibold ${
+        answer.isCorrect
+          ? "border-good/40 bg-good-soft text-good"
+          : "border-bad/40 bg-bad-soft text-bad"
+      }`}
+    >
       <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
       {describeAnswer(answer.element, answer.isCorrect)}
       {answerHint(answer.match)}

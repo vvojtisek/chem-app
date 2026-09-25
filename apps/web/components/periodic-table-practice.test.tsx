@@ -173,7 +173,7 @@ describe("PeriodicTablePractice", () => {
     fireEvent.click(cell("Perioda 2, skupina 1"));
 
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
-    expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveTextContent("✗");
+    expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveTextContent("✗10");
     expect(sought()).toHaveAccessibleName("Hledaný prvek: Helium");
     expect(appendAttempt).toHaveBeenLastCalledWith(
       expect.objectContaining({ questionId: hydrogen.id, round: "initial", isCorrect: false }),
@@ -183,7 +183,9 @@ describe("PeriodicTablePractice", () => {
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
     expect(sought()).toHaveAccessibleName("Hledaný prvek: Helium");
 
-    act(() => vi.advanceTimersByTime(WRONG_MARK_DURATION_MS - 1));
+    act(() => vi.advanceTimersByTime(9_000));
+    expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveTextContent("✗1");
+    act(() => vi.advanceTimersByTime(WRONG_MARK_DURATION_MS - 9_001));
     expect(cell("Perioda 2, skupina 1: chybná odpověď")).toHaveTextContent("✗");
     act(() => vi.advanceTimersByTime(1));
     expect(cell("Perioda 2, skupina 1")).toHaveTextContent("?");
@@ -263,6 +265,7 @@ describe("PeriodicTablePractice", () => {
     act(() => vi.advanceTimersByTime(12_000));
 
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+    fireEvent.click(screen.getByRole("button", { name: "Začít znovu" }));
 
     expect(screen.getByText("Správně: 0")).toBeInTheDocument();
     expect(screen.getByText("Špatně: 0")).toBeInTheDocument();

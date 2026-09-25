@@ -165,15 +165,16 @@ test("keeps a wrong blind-table mark for 10 seconds and times the exercise", asy
   await table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true }).click();
 
   await expect(page.getByText("Špatně: 1")).toBeVisible();
+  // The ✗ carries a countdown of the seconds left until the cell returns to „?“.
   await expect(
     table.getByRole("button", { name: "Perioda 2, skupina 1: chybná odpověď" }),
-  ).toHaveText("✗");
+  ).toHaveText("✗10");
   await expect(page.getByRole("heading", { name: "Hledaný prvek: Helium" })).toBeVisible();
 
   await page.clock.runFor(9_000);
   await expect(
     table.getByRole("button", { name: "Perioda 2, skupina 1: chybná odpověď" }),
-  ).toHaveText("✗");
+  ).toHaveText("✗1");
   await page.clock.runFor(1_000);
   await expect(table.getByRole("button", { name: "Perioda 2, skupina 1", exact: true })).toHaveText(
     "?",
@@ -187,6 +188,10 @@ test("keeps a wrong blind-table mark for 10 seconds and times the exercise", asy
   await expect(page.getByRole("timer")).toHaveText("00:10");
 
   await page.getByRole("button", { name: "Reset" }).click();
+  await page
+    .getByRole("group", { name: "Potvrzení resetu" })
+    .getByRole("button", { name: "Začít znovu" })
+    .click();
   await expect(page.getByText("Špatně: 0")).toBeVisible();
   await expect(page.getByRole("timer")).toHaveText("00:00");
   await expect(page.getByRole("heading", { name: "Hledaný prvek: Vodík" })).toBeVisible();

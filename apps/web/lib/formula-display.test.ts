@@ -1,21 +1,34 @@
 import { describe, expect, it } from "vitest";
 
-import { formatFormula, plainFormula } from "./formula-display";
+import { type FormulaSegment, formulaSegments, plainFormula } from "./formula-display";
 
-describe("formatFormula", () => {
+/** Compact notation for the expectations: _x_ is a subscript, ^x^ a superscript. */
+function notation(segments: readonly FormulaSegment[]): string {
+  return segments
+    .map(({ kind, text }) => (kind === "sub" ? `_${text}_` : kind === "sup" ? `^${text}^` : text))
+    .join("");
+}
+
+describe("formulaSegments", () => {
   it.each([
-    ["Al2O3", 0, "Al₂O₃"],
-    ["Ca3(PO4)2", 0, "Ca₃(PO₄)₂"],
-    ["CuSO4·5H2O", 0, "CuSO₄·5H₂O"],
-    ["CaSO4·H2O", 0, "CaSO₄·H₂O"],
-    ["SO4", -2, "SO₄²⁻"],
-    ["NH4", 1, "NH₄⁺"],
-    ["Fe", 3, "Fe³⁺"],
-    ["[AlF6]", -3, "[AlF₆]³⁻"],
-    ["N3", -1, "N₃⁻"],
-    ["SiO4", -4, "SiO₄⁴⁻"],
-  ] as const)("renders %s with charge %i as %s", (formula, charge, expected) => {
-    expect(formatFormula(formula, charge)).toBe(expected);
+    ["NaCl", 0, "NaCl"],
+    ["Al2O3", 0, "Al_2_O_3_"],
+    ["Ca3(PO4)2", 0, "Ca_3_(PO_4_)_2_"],
+    ["[Cu(NH3)4]SO4", 0, "[Cu(NH_3_)_4_]SO_4_"],
+    ["CuSO4·5H2O", 0, "CuSO_4_·5H_2_O"],
+    ["CaSO4·H2O", 0, "CaSO_4_·H_2_O"],
+    ["SO4", -2, "SO_4_^2−^"],
+    ["NH4", 1, "NH_4_^+^"],
+    ["Fe", 3, "Fe^3+^"],
+    ["[AlF6]", -3, "[AlF_6_]^3−^"],
+    ["N3", -1, "N_3_^−^"],
+    ["SiO4", -4, "SiO_4_^4−^"],
+  ] as const)("typesets %s with charge %i as %s", (formula, charge, expected) => {
+    expect(notation(formulaSegments(formula, charge))).toBe(expected);
+  });
+
+  it("uses a true minus sign for anions", () => {
+    expect(formulaSegments("Cl", -1).at(-1)).toEqual({ kind: "sup", text: "−" });
   });
 });
 

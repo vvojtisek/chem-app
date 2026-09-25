@@ -1,5 +1,6 @@
 import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
 import Link from "next/link";
+import { Equation, Formula } from "@/components/formula";
 import { PageHeader } from "@/components/page-header";
 
 export default function PreparationProductionLearningPage() {
@@ -26,7 +27,10 @@ export default function PreparationProductionLearningPage() {
           <li className="rounded-2xl border border-line bg-surface p-4 sm:p-5" key={product.id}>
             <details>
               <summary className="min-h-11 cursor-pointer list-none rounded-lg py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                {product.nameCs} <span className="font-mono text-ink-2">({product.formula})</span>
+                {product.nameCs}{" "}
+                <span className="text-ink-2">
+                  (<Formula formula={product.formula} />)
+                </span>
                 <span className="ml-2 text-sm font-normal text-ink-3">
                   {product.routes.length} rovnic
                 </span>
@@ -45,8 +49,8 @@ export default function PreparationProductionLearningPage() {
                         <p className="text-sm font-semibold text-ink-2">
                           {route.kind === "preparation" ? "Příprava" : "Výroba"}
                         </p>
-                        <p className="mt-1 font-mono text-sm leading-6 text-ink">
-                          {formatSide(route.reactants)} → {formatSide(route.products)}
+                        <p className="mt-1 leading-7 text-ink">
+                          <Equation products={route.products} reactants={route.reactants} />
                         </p>
                         {route.conditionsCs ? (
                           <p className="mt-1 text-sm text-ink-2">
@@ -76,10 +80,4 @@ export default function PreparationProductionLearningPage() {
       </a>
     </main>
   );
-}
-
-function formatSide(terms: readonly { readonly coefficient: number; readonly formula: string }[]) {
-  return terms
-    .map(({ coefficient, formula }) => `${coefficient === 1 ? "" : `${coefficient} `}${formula}`)
-    .join(" + ");
 }

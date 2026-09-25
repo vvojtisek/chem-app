@@ -2,6 +2,8 @@
 
 import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 
+import { CheckIcon, ClockIcon, CrossIcon } from "./icons";
+
 const CLOCK_TICK_MS = 250;
 
 export interface Stopwatch {
@@ -59,48 +61,125 @@ interface PracticeDashboardProps {
   readonly incorrect: number;
   readonly elapsedMs: number;
   readonly running: boolean;
+  /** Items finished out of the whole set, shown as „12 z 101“ with a progress bar. */
+  readonly progress?: { readonly done: number; readonly total: number } | undefined;
   readonly onReset: () => void;
   readonly onFinish: () => void;
 }
 
+/**
+ * The bar above every exercise: position in the set, live counts, the stopwatch and the two
+ * quiet exits. Reset asks for confirmation because it throws away the running order and score.
+ */
 export function PracticeDashboard({
   correct,
   incorrect,
   elapsedMs,
   running,
+  progress,
   onReset,
   onFinish,
 }: PracticeDashboardProps) {
+  const [confirmingReset, setConfirmingReset] = useState(false);
+  const confirmationId = useId();
+  const resetButtonRef = useRef<HTMLButtonElement>(null);
+
+  function closeConfirmation() {
+    setConfirmingReset(false);
+    resetButtonRef.current?.focus();
+  }
+
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-surface p-3">
-      <span className="rounded-full bg-good-soft px-3 py-1 text-sm font-semibold text-good">
-        Správně: {correct}
-      </span>
-      <span className="rounded-full bg-bad-soft px-3 py-1 text-sm font-semibold text-bad">
-        Špatně: {incorrect}
-      </span>
-      <span className="rounded-full bg-surface-3 px-3 py-1 text-sm font-semibold text-ink">
-        Čas{" "}
-        <span className="font-mono tabular-nums" role="timer">
-          {formatElapsed(elapsedMs)}
+    <div className="rounded-2xl border border-line bg-surface p-3 sm:p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        {progress ? <PracticeProgress done={progress.done} total={progress.total} /> : null}
+        <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-good-soft px-3 text-sm font-semibold text-good">
+          <CheckIcon />
+          <span>Správně: {correct}</span>
         </span>
+        <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-bad-soft px-3 text-sm font-semibold text-bad">
+          <CrossIcon />
+          <span>Špatně: {incorrect}</span>
+        </span>
+        <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-surface-2 px-3 text-sm font-semibold text-ink-2">
+          <ClockIcon />
+          <span className="sr-only">Čas</span>
+          <span className="font-mono tabular-nums" role="timer">
+            {formatElapsed(elapsedMs)}
+          </span>
+        </span>
+        <div className="ml-auto flex gap-1">
+          <button
+            aria-controls={confirmingReset ? confirmationId : undefined}
+            aria-expanded={confirmingReset}
+            className="min-h-11 rounded-xl px-3 font-semibold text-ink-2 hover:bg-surface-2 hover:text-ink"
+            onClick={() => setConfirmingReset((open) => !open)}
+            ref={resetButtonRef}
+            type="button"
+          >
+            Reset
+          </button>
+          <button
+            className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink hover:bg-surface-2 disabled:cursor-not-allowed disabled:border-line disabled:text-ink-3"
+            disabled={!running}
+            onClick={onFinish}
+            type="button"
+          >
+            Ukončit
+          </button>
+        </div>
+      </div>
+      {confirmingReset ? (
+        <fieldset
+          className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-bad/40 bg-bad-soft p-3"
+          id={confirmationId}
+        >
+          <legend className="sr-only">Potvrzení resetu</legend>
+          <p className="mr-auto text-sm text-ink">
+            Začít znovu se stejným výběrem? Pořadí a skóre tohoto cvičení se vynulují, uložené
+            pokusy zůstanou.
+          </p>
+          <button
+            className="min-h-11 rounded-xl bg-bad px-4 font-semibold text-on-fill"
+            onClick={() => {
+              setConfirmingReset(false);
+              onReset();
+            }}
+            type="button"
+          >
+            Začít znovu
+          </button>
+          <button
+            className="min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
+            onClick={closeConfirmation}
+            type="button"
+          >
+            Zrušit
+          </button>
+        </fieldset>
+      ) : null}
+    </div>
+  );
+}
+
+function PracticeProgress({ done, total }: Readonly<{ done: number; total: number }>) {
+  const label = `${done} z ${total}`;
+  const percent = total === 0 ? 0 : Math.min(100, (100 * done) / total);
+  return (
+    <div className="flex min-w-40 flex-1 basis-full items-center gap-3 sm:basis-auto">
+      <span className="font-mono text-sm font-semibold whitespace-nowrap text-ink tabular-nums">
+        {label}
       </span>
-      <div className="ml-auto flex gap-2">
-        <button
-          className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink"
-          onClick={onReset}
-          type="button"
-        >
-          Reset
-        </button>
-        <button
-          className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
-          disabled={!running}
-          onClick={onFinish}
-          type="button"
-        >
-          Ukončit
-        </button>
+      <div
+        aria-label="Postup cvičením"
+        aria-valuemax={total}
+        aria-valuemin={0}
+        aria-valuenow={done}
+        aria-valuetext={label}
+        className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3"
+        role="progressbar"
+      >
+        <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
       </div>
     </div>
   );
@@ -139,17 +218,17 @@ export function PracticeSummary({
   return (
     <section
       aria-labelledby={headingId}
-      className="mt-6 rounded-2xl border border-good/15 bg-good-soft p-5"
+      className="mt-6 rounded-2xl border border-line bg-surface p-5 sm:p-6"
     >
       <h2
-        className="text-2xl font-semibold text-ink"
+        className="font-display text-2xl font-bold text-ink"
         id={headingId}
         ref={headingRef}
         tabIndex={focusOnMount ? -1 : undefined}
       >
         Vyhodnocení cvičení
       </h2>
-      <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
         <SummaryFact label="Čas" value={formatElapsed(elapsedMs)} />
         <SummaryFact label="Správně" value={String(correct)} />
         <SummaryFact label="Špatně" value={String(incorrect)} />
@@ -165,7 +244,7 @@ function SummaryFact({ label, value }: { readonly label: string; readonly value:
   return (
     <div>
       <dt className="text-sm text-ink-2">{label}</dt>
-      <dd className="mt-1 text-xl font-semibold text-ink">{value}</dd>
+      <dd className="mt-1 text-xl font-semibold text-ink tabular-nums">{value}</dd>
     </div>
   );
 }

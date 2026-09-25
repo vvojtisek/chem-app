@@ -433,6 +433,7 @@ describe("PeriodicTableNamePractice exercise", () => {
     act(() => vi.advanceTimersByTime(12_000));
 
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+    fireEvent.click(screen.getByRole("button", { name: "Začít znovu" }));
 
     expect(screen.getByText("Správně: 0")).toBeInTheDocument();
     expect(screen.getByText("Špatně: 0")).toBeInTheDocument();

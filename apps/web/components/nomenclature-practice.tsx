@@ -11,7 +11,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { AnswerFeedback } from "@/components/answer-feedback";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { Formula } from "@/components/formula";
 import { NomenclatureFilterStep } from "@/components/nomenclature-filters";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import {
@@ -21,7 +23,7 @@ import {
 } from "@/lib/browser-nomenclature-store";
 import type { NomenclatureAttemptEvent } from "@/lib/browser-progress-store";
 import { createClientId } from "@/lib/client-id";
-import { formatFormula, plainFormula } from "@/lib/formula-display";
+import { plainFormula } from "@/lib/formula-display";
 import {
   loadNomenclatureDirection,
   loadNomenclatureFilters,
@@ -366,10 +368,11 @@ export function NomenclaturePractice({
       direction: asked,
       isCorrect: evaluation.isCorrect,
       hint:
-        evaluation.isCorrect &&
-        (evaluation.match === "normalized" || evaluation.match === "missing-diacritics")
-          ? ` Přesný zápis: ${record.nameCs}.`
-          : "",
+        evaluation.isCorrect && evaluation.match === "missing-diacritics"
+          ? `Uznáno bez diakritiky. Přesný zápis: ${record.nameCs}.`
+          : evaluation.isCorrect && evaluation.match === "normalized"
+            ? `Uznáno. Přesný zápis: ${record.nameCs}.`
+            : "",
     });
     if (result.state.status === "finished") stopwatch.stop();
     const nextRecord = result.state.current;
@@ -435,13 +438,14 @@ export function NomenclaturePractice({
   const asked = record ? directionFor(record, direction) : direction;
 
   return (
-    <div>
+    <div className="w-full">
       <PracticeDashboard
         correct={session.correct}
         elapsedMs={stopwatch.elapsedMs}
         incorrect={session.incorrect}
         onFinish={finish}
         onReset={start}
+        progress={{ done: session.solvedIds.size, total: session.total }}
         running={session.status === "running"}
       />
 
@@ -469,52 +473,61 @@ export function NomenclaturePractice({
 
       {record ? (
         <>
-          <h2 className="mt-6 text-4xl font-semibold tracking-tight break-words text-ink sm:text-6xl">
-            <span className="sr-only">Zadání:</span>{" "}
-            {asked === "formula-to-name" ? (
-              <span aria-label={plainFormula(record.formula, record.charge)} role="img">
-                {formatFormula(record.formula, record.charge)}
-              </span>
-            ) : (
-              record.nameCs
-            )}
-          </h2>
-          <form
-            className="mt-4 flex max-w-xl flex-wrap items-end gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              submit();
-            }}
+          <section
+            aria-label="Otázka"
+            className="mt-4 rounded-2xl border border-line bg-surface p-5 sm:p-7"
           >
-            <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-ink-2">
-              {asked === "formula-to-name" ? "Český název" : "Chemický vzorec"}
-              <input
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 text-base"
-                onChange={(event) => {
-                  updateAnswer(event.target.value);
-                  setInputHint("");
-                }}
-                onKeyDown={preventRepeatedEnter}
-                ref={inputRef}
-                spellCheck={false}
-                value={answer}
-              />
-            </label>
-            <button
-              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill"
-              type="submit"
+            <p className="text-sm font-semibold text-ink-3">
+              {asked === "formula-to-name" ? "Pojmenujte sloučeninu" : "Napište vzorec"}
+            </p>
+            <h2 className="mt-2 font-display text-4xl font-bold tracking-tight break-words text-ink sm:text-5xl">
+              <span className="sr-only">Zadání:</span>{" "}
+              {asked === "formula-to-name" ? (
+                <Formula charge={record.charge} formula={record.formula} />
+              ) : (
+                record.nameCs
+              )}
+            </h2>
+            <form
+              className="mt-6 flex flex-wrap items-end gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                submit();
+              }}
             >
-              Odeslat
-            </button>
-          </form>
-          {asked === "name-to-formula" && answer.trim() ? (
-            <FormulaPreview input={answer} symbols={symbols} />
-          ) : null}
-          <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
-          <FeedbackLine feedback={feedback} />
+              <label className="grid min-w-48 flex-1 gap-1 text-sm font-medium text-ink-2">
+                {asked === "formula-to-name" ? "Český název" : "Chemický vzorec"}
+                <input
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  className="min-h-12 rounded-xl border border-line-strong bg-surface px-3 text-lg text-ink"
+                  onChange={(event) => {
+                    updateAnswer(event.target.value);
+                    setInputHint("");
+                  }}
+                  onKeyDown={preventRepeatedEnter}
+                  ref={inputRef}
+                  spellCheck={false}
+                  value={answer}
+                />
+              </label>
+              <button
+                className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill"
+                type="submit"
+              >
+                Odeslat
+              </button>
+            </form>
+            {asked === "name-to-formula" && answer.trim() ? (
+              <FormulaPreview input={answer} symbols={symbols} />
+            ) : null}
+            <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
+            <p className="text-xs text-ink-3">
+              Enter odešle odpověď. Chybně zodpovězené položky se vrátí na konec.
+            </p>
+          </section>
+          {feedback ? <FeedbackCard feedback={feedback} /> : null}
         </>
       ) : (
         <PracticeSummary
@@ -555,9 +568,7 @@ function FormulaPreview({
     <p className="mt-2 text-sm text-ink-2">
       Náhled:{" "}
       {parsed.ok ? (
-        <span aria-label={parsed.canonical} role="img">
-          {formatFormula(parsed.canonical)}
-        </span>
+        <Formula className="text-base text-ink" formula={parsed.canonical} />
       ) : (
         "vzorec zatím nelze přečíst"
       )}
@@ -565,22 +576,23 @@ function FormulaPreview({
   );
 }
 
-function FeedbackLine({ feedback }: { readonly feedback: Feedback | null }) {
-  if (!feedback) return <p className="min-h-5" />;
+function FeedbackCard({ feedback }: { readonly feedback: Feedback }) {
   const { record, isCorrect } = feedback;
   return (
-    <div className={`text-sm ${isCorrect ? "text-good" : "text-bad"}`}>
-      <p>
-        <span aria-hidden="true">{isCorrect ? "✓ " : "✗ "}</span>
-        {isCorrect ? "Správně" : "Špatně"}: {describeRecord(record)}.{feedback.hint}
+    <AnswerFeedback isCorrect={isCorrect}>
+      <p className="text-lg">
+        <Formula charge={record.charge} className="font-semibold" formula={record.formula} /> ={" "}
+        <span className="font-semibold">{record.nameCs}</span>
       </p>
-      {isCorrect ? null : <p className="mt-1 text-ink-2">{record.explanationCs}</p>}
-    </div>
+      {feedback.hint ? <p className="text-sm text-ink-2">{feedback.hint}</p> : null}
+      {isCorrect ? null : <p className="text-sm text-ink-2">{record.explanationCs}</p>}
+    </AnswerFeedback>
   );
 }
 
+/** Plain text for the live announcement, so screen readers do not spell out scripts. */
 function describeRecord(record: NomenclatureRuntimeRecord): string {
-  return `${formatFormula(record.formula, record.charge)} = ${record.nameCs}`;
+  return `${plainFormula(record.formula, record.charge)} = ${record.nameCs}`;
 }
 
 function promptText(record: NomenclatureRuntimeRecord, direction: NomenclatureDirection): string {

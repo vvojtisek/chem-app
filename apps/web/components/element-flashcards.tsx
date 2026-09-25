@@ -116,10 +116,10 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
     <section aria-labelledby="flashcard-heading" className="mx-auto w-full max-w-4xl">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold tracking-[0.16em] text-good uppercase">Flashcards</p>
+          <p className="text-sm font-semibold text-ink-3">Karty prvků</p>
           <h2
             id="flashcard-heading"
-            className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-5xl"
+            className="mt-1 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
           >
             Prvky
           </h2>

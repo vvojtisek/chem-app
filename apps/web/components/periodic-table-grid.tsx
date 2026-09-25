@@ -3,6 +3,7 @@
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { Fragment, type ReactNode } from "react";
 
+import { WRONG_MARK_DURATION_MS } from "@/components/use-wrong-marks";
 import {
   describePeriodicTablePosition,
   type PeriodicTablePosition,
@@ -18,7 +19,11 @@ interface PeriodicTableGridProps {
   readonly layout: readonly PositionedElement[];
   readonly onSelect?: ((position: PeriodicTablePosition) => void) | undefined;
   readonly cellResult?: ((elementId: string) => PeriodicTableCellResult | null) | undefined;
+  /** Seconds until a wrong mark clears, shown as a small countdown beside the ✗. */
+  readonly secondsLeft?: ((elementId: string) => number | null) | undefined;
 }
+
+const WRONG_MARK_SECONDS = WRONG_MARK_DURATION_MS / 1000;
 
 const SERIES_LABELS: Readonly<Record<PeriodicTableSeriesSection, string>> = {
   lanthanides: "Lanthanidy",
@@ -29,7 +34,12 @@ const SERIES_LABELS: Readonly<Record<PeriodicTableSeriesSection, string>> = {
  * The blind table used during exercises. Every unanswered cell looks the same („?“) so the
  * table never hints where the sought element is; only answered cells differ.
  */
-export function PeriodicTableGrid({ layout, onSelect, cellResult }: PeriodicTableGridProps) {
+export function PeriodicTableGrid({
+  layout,
+  onSelect,
+  cellResult,
+  secondsLeft,
+}: PeriodicTableGridProps) {
   return (
     <PeriodicTableFrame
       layout={layout}
@@ -40,9 +50,48 @@ export function PeriodicTableGrid({ layout, onSelect, cellResult }: PeriodicTabl
           onSelect={onSelect}
           position={position}
           result={cellResult?.(element.id) ?? null}
+          secondsLeft={secondsLeft?.(element.id) ?? null}
         />
       )}
     />
+  );
+}
+
+/** Explains the three cell states of the blind table; it never reveals the sought element. */
+export function PeriodicTableLegend() {
+  return (
+    <ul
+      aria-label="Legenda tabulky"
+      className="mt-1 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 text-sm text-ink-2"
+    >
+      <li className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`grid h-7 w-8 place-items-center rounded-md text-xs font-semibold ${CELL_STYLES.solved}`}
+        >
+          Fe
+        </span>
+        zodpovězeno
+      </li>
+      <li className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`grid h-7 w-8 place-items-center rounded-md text-xs font-semibold ${CELL_STYLES.incorrect}`}
+        >
+          ✗
+        </span>
+        chyba, políčko se za {WRONG_MARK_SECONDS} s vrátí na „?“
+      </li>
+      <li className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`grid h-7 w-8 place-items-center rounded-md text-xs font-semibold ${CELL_STYLES.blank}`}
+        >
+          ?
+        </span>
+        zatím bez odpovědi
+      </li>
+    </ul>
   );
 }
 
@@ -116,11 +165,13 @@ function PositionCell({
   onSelect,
   position,
   result,
+  secondsLeft,
 }: {
   readonly element: ElementFlashcardData;
   readonly onSelect: ((position: PeriodicTablePosition) => void) | undefined;
   readonly position: PeriodicTablePosition;
   readonly result: PeriodicTableCellResult | null;
+  readonly secondsLeft: number | null;
 }) {
   return (
     <button
@@ -137,6 +188,11 @@ function PositionCell({
       type="button"
     >
       <span aria-hidden="true">{cellMark(element.symbol, result)}</span>
+      {result === "incorrect" && secondsLeft !== null ? (
+        <span aria-hidden="true" className="ml-0.5 align-top text-[10px] font-medium tabular-nums">
+          {secondsLeft}
+        </span>
+      ) : null}
     </button>
   );
 }
