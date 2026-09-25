@@ -30,6 +30,14 @@ the Docker Compose plugin.
    the example values. The example hostname is `chemie.vvojtisek.eu`.
 5. Keep this file out of Git and backups accessible to other users. The
    committed `.env.production.example` is only a placeholder template.
+6. Before opening public registration, complete the [privacy notice release
+   checklist](privacy-notice-release-checklist.md), publish the operator's
+   identity and contact on `/soukromi`, and review the
+   [known limitations](known-limitations.md). The in-app notice is explicitly
+   incomplete until then.
+7. Confirm that `pnpm content:release-check` passes before publishing the
+   curriculum. Automated balance and parser checks are not a substitute for
+   the required chemistry-SME review.
 
 The example uses separate PostgreSQL owner and runtime roles. The database
 initialization script creates the runtime role with application DML rights;
@@ -81,6 +89,9 @@ docker compose --env-file .env.production -f docker-compose.prod.yml ps
 Review release notes for migration recovery instructions. Prefer forward fixes
 for applied migrations. Do not downgrade a database unless the migration
 explicitly supports it and a tested backup is available.
+Migration `0005_progress_generation` establishes the progress-reset boundary.
+Do not downgrade past it after any account has reset progress: old immutable
+events remain archived and the downgrade would remove the generation barrier.
 
 ## Backups and recovery
 

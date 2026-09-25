@@ -11,6 +11,8 @@ const APP_SHELL = [
   "/uceni/prvky",
   "/uceni/priprava-vyroba",
   "/pokrok",
+  "/napoveda",
+  "/soukromi",
   "/flashcards/prvky",
   "/manifest.webmanifest",
 ];
