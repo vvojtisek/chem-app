@@ -1,6 +1,7 @@
 export interface EquationTerm {
   readonly coefficient: number;
   readonly formula: string;
+  readonly acceptedAliases?: readonly string[] | undefined;
 }
 
 export interface ParsedEquation {
@@ -105,33 +106,37 @@ export function parseEquationAnswer(input: string): ParsedEquation | null {
     .trim();
   const arrow = normalized.indexOf("->");
   if (arrow < 0 || normalized.indexOf("->", arrow + 2) >= 0) return null;
-  const reactants = parseEquationSide(normalized.slice(0, arrow));
-  const products = parseEquationSide(normalized.slice(arrow + 2));
+  const reactants = parseEquationTerms(normalized.slice(0, arrow));
+  const products = parseEquationTerms(normalized.slice(arrow + 2));
   return reactants && products ? { reactants, products } : null;
 }
 
-function parseEquationSide(input: string): readonly EquationTerm[] | null {
+export function parseEquationTerms(input: string): readonly EquationTerm[] | null {
+  const source = input
+    .normalize("NFC")
+    .replace(/[₀-₉]/gu, (digit) => SUBSCRIPT_DIGITS[digit] ?? digit);
   const pieces: string[] = [];
   let depth = 0;
   let start = 0;
-  for (let index = 0; index < input.length; index += 1) {
-    const character = input[index];
+  for (let index = 0; index < source.length; index += 1) {
+    const character = source[index];
     if (character === "(" || character === "[") depth += 1;
     if (character === ")" || character === "]") depth -= 1;
     if (depth < 0) return null;
     if (character === "+" && depth === 0) {
-      pieces.push(input.slice(start, index));
+      pieces.push(source.slice(start, index));
       start = index + 1;
     }
   }
   if (depth !== 0) return null;
-  pieces.push(input.slice(start));
+  pieces.push(source.slice(start));
   if (pieces.length === 0) return null;
 
   const terms: EquationTerm[] = [];
   for (const piece of pieces) {
     const match = /^\s*(\d*)\s*([A-Za-z0-9()[\]]+)\s*$/u.exec(piece);
     if (!match) return null;
+    if (match[1]?.startsWith("0")) return null;
     const coefficient = match[1] ? Number(match[1]) : 1;
     if (!Number.isSafeInteger(coefficient) || coefficient < 1 || coefficient > 999) return null;
     terms.push({ coefficient, formula: normalizeFormula(match[2] ?? "") });

@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "contentVersion": "preparation-production-2026-09-24",
   "products": [
     {
       "id": "preparation-production.product.vodik",
@@ -721,7 +722,8 @@
           "products": [
             {
               "coefficient": 1,
-              "formula": "Na2SO3S"
+              "formula": "Na2SO3S",
+              "acceptedAliases": ["Na2S2O3"]
             }
           ],
           "conditionsCs": "t",
@@ -3936,7 +3938,8 @@
           "products": [
             {
               "coefficient": 2,
-              "formula": "Pb2PbO4"
+              "formula": "Pb2PbO4",
+              "acceptedAliases": ["Pb3O4"]
             }
           ],
           "conditionsCs": "t",
@@ -4411,7 +4414,8 @@
           "reactants": [
             {
               "coefficient": 1,
-              "formula": "[Ni(CO)4]"
+              "formula": "[Ni(CO)4]",
+              "acceptedAliases": ["Ni(CO)4"]
             }
           ],
           "products": [

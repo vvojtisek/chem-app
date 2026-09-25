@@ -1,4 +1,5 @@
 import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
+import { curatedElements } from "@inorganic/content/runtime";
 import { PracticeNavigation } from "@/components/practice-navigation";
 import { ReactionEquationPractice } from "@/components/reaction-equation-practice";
 
@@ -14,7 +15,10 @@ export default function EquationPracticePage() {
           Chemické rovnice
         </h1>
       </header>
-      <ReactionEquationPractice products={curatedPreparationProduction} />
+      <ReactionEquationPractice
+        products={curatedPreparationProduction}
+        allowedSymbols={curatedElements.map((element) => element.symbol)}
+      />
     </main>
   );
 }

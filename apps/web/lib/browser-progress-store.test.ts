@@ -95,6 +95,22 @@ const symbolToNameAttempt: AttemptEvent = {
   matchPolicy: "diacritics-tolerant",
 };
 
+const equationAttempt: AttemptEvent = {
+  id: "attempt.equation",
+  questionId: "preparation-production.route.vodik-id-20-1-preparation",
+  contentVersion: "preparation-production-2026-09-24",
+  occurredAt: "2026-09-24T10:00:00.000Z",
+  isCorrect: true,
+  round: "initial",
+  mode: "equation",
+  eventSchemaVersion: 1,
+  sessionId: "equation-session",
+  sequence: 0,
+  level: "beginner",
+  direction: "coefficients",
+  matchPolicy: "approved-balanced",
+};
+
 beforeEach(async () => {
   await new Promise<void>((resolve, reject) => {
     const request = indexedDB.deleteDatabase(PROGRESS_DATABASE_NAME);
@@ -153,6 +169,19 @@ describe("BrowserProgressStore", () => {
       store.appendAttempt({ ...periodicTableAttempt, matchPolicy: "diacritics-tolerant" }),
     ).rejects.toThrow("Pokus má neplatný kontext procvičování.");
     await expect(store.listAttempts()).resolves.toEqual([]);
+  });
+
+  it("persists equation attempts and rejects mismatched level and direction", async () => {
+    const store = createBrowserProgressStore();
+    await store.appendAttempt(equationAttempt);
+    await expect(store.listAttempts()).resolves.toEqual([equationAttempt]);
+    await expect(
+      store.appendAttempt({
+        ...equationAttempt,
+        id: "attempt.bad-equation",
+        direction: "complete-equation",
+      }),
+    ).rejects.toThrow("Pokus má neplatný kontext procvičování.");
   });
 
   it("keeps name-or-symbol attempts distinct from earlier name-only attempts", async () => {

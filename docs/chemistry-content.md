@@ -15,8 +15,11 @@ User-created or locally edited cards are browser-local learning notes. They are 
 ## Preparation and production by product
 
 `content/data/preparation-production.json` stores the product-indexed material from the VŠCHT e-learning page identified in each record's `sources`. Equations keep reactants, products, integer coefficients, preparation/manufacture classification, source equation ID, and arrow conditions as structured fields. Prose notes remain separate from equations.
+Its `contentVersion` is attached to equation practice attempts and must change when the practice source changes.
 
 Owner-approved equations must parse with known element symbols, conserve every element, and use the lowest positive-integer coefficients. An equation that does not pass these checks remains `in-review` with a reason and is excluded from the runtime learning and quiz set. The current VŠCHT page's equation `id-20-91` for azoxide is unbalanced and is held out until its source is corrected or the intended formula is confirmed. Owner approval records source attribution and release permission; it is not a chemistry-SME review.
+
+An equation term may list owner-approved `acceptedAliases` for learner answers. Each alias must parse using known symbols and have the same atom counts as that term; approval remains explicit because equal atom counts alone do not establish chemical equivalence. The currently approved notation variants are `Na2S2O3` for `Na2SO3S`, `Pb3O4` for `Pb2PbO4`, and `Ni(CO)4` for `[Ni(CO)4]`. These variants await chemistry-SME review with the source equations.
 
 Every non-null `(period, group)` pair identifies exactly one element. Records with `group: null` are f-block entries and do not occupy a main 18-group grid cell.
 

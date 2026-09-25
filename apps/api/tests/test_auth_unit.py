@@ -6,6 +6,7 @@ from inorganic_api.cli import _validate_new_password
 from inorganic_api.config import DEFAULT_DATABASE_URL, DEFAULT_SECRET_KEY, Settings
 from inorganic_api.errors import AppError
 from inorganic_api.models import AuthSession, User
+from inorganic_api.services import passwords
 from inorganic_api.services.auth import AuthenticatedSession
 from inorganic_api.services.passwords import (
     hash_password,
@@ -24,6 +25,27 @@ def test_password_hash_uses_argon2id_and_checks_input_size() -> None:
     assert not needs_rehash(password_hash)
     with pytest.raises(ValueError, match="1024 bytes"):
         validate_password_length("é" * 513)
+
+
+def test_password_hash_waits_for_a_slot_before_returning_busy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class UnavailableSlots:
+        timeout: float | None = None
+
+        def acquire(self, *, timeout: float) -> bool:
+            self.timeout = timeout
+            return False
+
+    slots = UnavailableSlots()
+    monkeypatch.setattr(passwords, "_hash_slots", slots)
+
+    with pytest.raises(AppError) as error:
+        passwords.hash_password("a sufficiently long unique phrase")
+
+    assert slots.timeout == 2
+    assert error.value.status_code == 503
+    assert error.value.headers == {"Retry-After": "2"}
 
 
 @pytest.mark.parametrize(

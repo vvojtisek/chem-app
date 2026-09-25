@@ -42,7 +42,9 @@ def delete_expired_unverified_users(db: Session, now: datetime) -> int:
         delete(User).where(
             User.role == "user",
             User.is_active.is_(False),
+            User.email.is_not(None),
             User.email_verified_at.is_(None),
+            User.password_hash == "!pending-email-verification",
             User.created_at <= now - timedelta(days=7),
         )
     )

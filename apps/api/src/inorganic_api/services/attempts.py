@@ -32,7 +32,7 @@ RANKS = (
     ("advanced", "Pokročilý", 250),
     ("master", "Mistr anorganické chemie", 1000),
 )
-MAX_DAILY_ATTEMPTS_PER_USER = 500
+MAX_DAILY_ATTEMPTS_PER_USER = 5_000
 
 
 def _require_owner(actor: User, owner_id: UUID) -> None:

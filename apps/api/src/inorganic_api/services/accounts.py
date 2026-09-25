@@ -55,7 +55,9 @@ def register(db: Session, settings: Settings, address: str, ip: str) -> None:
             User.email == address,
             User.role == "user",
             User.is_active.is_(False),
+            User.email.is_not(None),
             User.email_verified_at.is_(None),
+            User.password_hash == "!pending-email-verification",
             User.created_at <= now - UNVERIFIED_TTL,
         )
     )

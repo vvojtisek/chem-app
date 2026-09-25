@@ -1,8 +1,19 @@
 "use client";
 
-import type { PreparationProductionRuntimeProduct } from "@inorganic/content/preparation-production";
-import { matchesEquation } from "@inorganic/chemistry";
-import { useMemo, useState } from "react";
+import {
+  countEquationAtoms,
+  type EquationAtomBalance,
+  gradeApprovedEquations,
+  gradeEquationCoefficients,
+  gradeEquationProducts,
+} from "@inorganic/chemistry";
+import {
+  type PreparationProductionRuntimeProduct,
+  preparationProductionContentVersion,
+} from "@inorganic/content/preparation-production";
+import { useMemo, useRef, useState } from "react";
+import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { createBrowserProgressStore } from "@/lib/browser-progress-store";
 
 type Level = "beginner" | "advanced" | "pro";
 type Route = PreparationProductionRuntimeProduct["routes"][number];
@@ -19,7 +30,17 @@ const levelLabels: Readonly<Record<Level, string>> = {
 
 export function ReactionEquationPractice({
   products,
-}: Readonly<{ products: readonly PreparationProductionRuntimeProduct[] }>) {
+  allowedSymbols,
+}: Readonly<{
+  products: readonly PreparationProductionRuntimeProduct[];
+  allowedSymbols: readonly string[];
+}>) {
+  const account = useAccount();
+  const { canSave } = useCapabilities();
+  const symbols = useMemo(() => new Set(allowedSymbols), [allowedSymbols]);
+  const sessionId = useRef<string | null>(null);
+  const sequence = useRef(0);
+  const submissionLocked = useRef(false);
   const questionsByLevel = useMemo(
     () => ({
       beginner: products.flatMap((product) => product.routes.map((route) => ({ product, route }))),
@@ -46,6 +67,10 @@ export function ReactionEquationPractice({
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | "">("");
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  const [retrying, setRetrying] = useState(false);
+  const [atomBalance, setAtomBalance] = useState<EquationAtomBalance | null>(null);
+  const [balanceFromAnswer, setBalanceFromAnswer] = useState(false);
+  const [saveNotice, setSaveNotice] = useState("");
 
   const questions = questionsByLevel[level];
   const question = questions[questionIndex];
@@ -70,18 +95,65 @@ export function ReactionEquationPractice({
     setFeedback("");
     setCorrectCount(0);
     setIncorrectCount(0);
+    setRetrying(false);
+    setAtomBalance(null);
+    setSaveNotice("");
+    sessionId.current = null;
+    sequence.current = 0;
+    submissionLocked.current = false;
+  }
+
+  function recordAttempt(isCorrect: boolean) {
+    if (!canSave || !account || !question) return;
+    sessionId.current ??= crypto.randomUUID();
+    const direction = {
+      beginner: "coefficients",
+      advanced: "products-and-coefficients",
+      pro: "complete-equation",
+    } as const;
+    const attempt = {
+      id: crypto.randomUUID(),
+      questionId: level === "pro" ? question.product.id : question.route.id,
+      contentVersion: preparationProductionContentVersion,
+      occurredAt: new Date().toISOString(),
+      isCorrect,
+      round: retrying ? ("retry" as const) : ("initial" as const),
+      mode: "equation" as const,
+      eventSchemaVersion: 1 as const,
+      sessionId: sessionId.current,
+      sequence: sequence.current++,
+      level,
+      direction: direction[level],
+      matchPolicy: "approved-balanced" as const,
+    };
+    void createBrowserProgressStore(indexedDB, account.id)
+      .appendAttempt(attempt)
+      .catch(() => setSaveNotice("Pokus se nepodařilo uložit. Zkuste odpověď znovu."));
+  }
+
+  function finishAnswer(correct: boolean, enteredBalance: EquationAtomBalance | null) {
+    if (!question || submissionLocked.current) return;
+    submissionLocked.current = true;
+    recordAttempt(correct);
+    if (correct) {
+      setCorrectCount((count) => count + 1);
+      setFeedback("correct");
+      setAtomBalance(null);
+    } else {
+      setIncorrectCount((count) => count + 1);
+      setFeedback("incorrect");
+      setBalanceFromAnswer(enteredBalance !== null);
+      setAtomBalance(
+        enteredBalance ??
+          countEquationAtoms(question.route.reactants, question.route.products, symbols),
+      );
+    }
   }
 
   function checkProducts() {
     if (!question) return;
-    if (
-      !sameFormulaTerms(
-        productAnswer,
-        question.route.products.map((term) => term.formula),
-      )
-    ) {
-      setFeedback("incorrect");
-      setIncorrectCount((count) => count + 1);
+    if (!gradeEquationProducts(productAnswer, question.route.products, symbols)) {
+      finishAnswer(false, null);
       return;
     }
     setFeedback("");
@@ -90,48 +162,31 @@ export function ReactionEquationPractice({
 
   function checkCoefficients() {
     if (!question) return;
-    const terms = [
-      ...question.route.reactants.map((term, index) => ({ ...term, side: "reactant", index })),
-      ...question.route.products.map((term, index) => ({ ...term, side: "product", index })),
-    ];
-    const isCorrect = terms.every(({ coefficient, side, index }) => {
-      const value = coefficients[`${side}-${index}`] ?? "";
-      if (value === "") return coefficient === 1;
-      if (!/^[1-9][0-9]{0,2}$/u.test(value)) return false;
-      return Number(value) === coefficient;
-    });
-    if (isCorrect) {
-      setCorrectCount((count) => count + 1);
-      setFeedback("correct");
-    } else {
-      setIncorrectCount((count) => count + 1);
-      setFeedback("incorrect");
-    }
+    const result = gradeEquationCoefficients(coefficients, question.route, symbols);
+    finishAnswer(result.correct, result.atomBalance);
   }
 
   function checkProAnswer() {
     if (!question) return;
-    const answers = equationAnswer.split(";").map((answer) => answer.trim());
-    const isCorrect =
-      answers.length > 0 &&
-      answers.every((answer) => answer.length > 0) &&
-      answers.every((answer) => proQuestions.some((route) => matchesEquation(answer, route)));
-    if (isCorrect) {
-      setCorrectCount((count) => count + 1);
-      setFeedback("correct");
-    } else {
-      setIncorrectCount((count) => count + 1);
-      setFeedback("incorrect");
-    }
+    const result = gradeApprovedEquations(equationAnswer, proQuestions, symbols);
+    finishAnswer(result.correct, result.atomBalance);
   }
 
   function advance() {
-    setQuestionIndex((index) => index + 1);
+    if (feedback === "correct") {
+      setQuestionIndex((index) => index + 1);
+      setRetrying(false);
+    } else {
+      setRetrying(true);
+    }
     setProductAnswer("");
     setCoefficients({});
     setEquationAnswer("");
     setPhase("products");
     setFeedback("");
+    setAtomBalance(null);
+    setSaveNotice("");
+    submissionLocked.current = false;
   }
 
   if (questions.length === 0) {
@@ -305,10 +360,21 @@ export function ReactionEquationPractice({
                 {feedback === "correct" ? "Správně." : "To není správné řešení."}
               </p>
               {feedback === "incorrect" ? (
-                <p className="mt-2 font-mono text-sm">
-                  Správně: {formatSide(question.route.reactants)} →{" "}
-                  {formatSide(question.route.products)}
-                </p>
+                <>
+                  <p className="mt-2 font-mono text-sm">
+                    Správně: {formatSide(question.route.reactants)} →{" "}
+                    {formatSide(question.route.products)}
+                  </p>
+                  {atomBalance ? (
+                    <div className="mt-3 text-sm">
+                      <p className="font-semibold">
+                        Počty atomů {balanceFromAnswer ? "ve vaší odpovědi" : "ve správné rovnici"}
+                      </p>
+                      <p>Vlevo: {formatAtomCounts(atomBalance.reactants)}</p>
+                      <p>Vpravo: {formatAtomCounts(atomBalance.products)}</p>
+                    </div>
+                  ) : null}
+                </>
               ) : null}
               {level === "pro" && feedback === "incorrect" ? (
                 <ul className="mt-2 grid gap-1 font-mono text-sm">
@@ -324,9 +390,14 @@ export function ReactionEquationPractice({
                 onClick={advance}
                 type="button"
               >
-                Další úloha
+                {feedback === "correct" ? "Další úloha" : "Zkusit znovu"}
               </button>
             </div>
+          ) : null}
+          {saveNotice ? (
+            <p className="mt-3 text-sm text-rose-800" role="alert">
+              {saveNotice}
+            </p>
           ) : null}
         </section>
       )}
@@ -416,23 +487,6 @@ function SubmitButton({ children }: Readonly<{ children: string }>) {
   );
 }
 
-function sameFormulaTerms(input: string, expected: readonly string[]) {
-  const formulas = input
-    .trim()
-    .replace(/[₀-₉]/gu, (digit) => String("₀₁₂₃₄₅₆₇₈₉".indexOf(digit)))
-    .split("+")
-    .map((formula) => formula.replace(/\s+/gu, ""));
-  if (
-    formulas.some((formula) => formula.length === 0) ||
-    formulas.length !== expected.length ||
-    formulas.length === 0
-  ) {
-    return false;
-  }
-  const sortedExpected = [...expected].sort();
-  return [...formulas].sort().every((formula, index) => formula === sortedExpected[index]);
-}
-
 function formatSide(terms: readonly { readonly coefficient: number; readonly formula: string }[]) {
   return terms
     .map(({ coefficient, formula }) => `${coefficient === 1 ? "" : `${coefficient} `}${formula}`)
@@ -441,4 +495,11 @@ function formatSide(terms: readonly { readonly coefficient: number; readonly for
 
 function formatFormulaSide(terms: readonly { readonly formula: string }[]) {
   return terms.map(({ formula }) => formula).join(" + ");
+}
+
+function formatAtomCounts(counts: Readonly<Record<string, number>>) {
+  return Object.entries(counts)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([symbol, count]) => `${symbol}: ${count}`)
+    .join(" · ");
 }

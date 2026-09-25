@@ -13,6 +13,7 @@ export interface PreparationProductionProblem {
     | "missing_source"
     | "unreviewed_route_without_note"
     | "invalid_equation_formula"
+    | "invalid_equation_alias"
     | "unbalanced_approved_equation"
     | "unreduced_approved_equation";
   readonly recordId: string;
@@ -48,6 +49,24 @@ export function findPreparationProductionProblems(
       if (terms.some((term) => !parseEquationFormula(term.formula, allowedSymbols))) {
         problems.push({ code: "invalid_equation_formula", recordId: route.id });
         continue;
+      }
+      for (const term of terms) {
+        const canonical = parseEquationFormula(term.formula, allowedSymbols);
+        if (!canonical) continue;
+        const seen = new Set([canonical.canonical]);
+        for (const alias of term.acceptedAliases ?? []) {
+          const parsed = parseEquationFormula(alias, allowedSymbols);
+          const sameAtoms =
+            parsed !== null &&
+            Object.keys(canonical.atomCounts).length === Object.keys(parsed.atomCounts).length &&
+            Object.entries(canonical.atomCounts).every(
+              ([symbol, count]) => parsed.atomCounts[symbol] === count,
+            );
+          if (!parsed || !sameAtoms || seen.has(parsed.canonical)) {
+            problems.push({ code: "invalid_equation_alias", recordId: route.id });
+          }
+          if (parsed) seen.add(parsed.canonical);
+        }
       }
       if (route.status !== "owner-approved") continue;
       if (!isBalancedEquation(route.reactants, route.products, allowedSymbols)) {

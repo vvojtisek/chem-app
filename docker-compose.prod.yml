@@ -141,7 +141,7 @@ services:
     mem_limit: 256m
     pids_limit: 50
     logging: *default-logging
-    networks: [internal-net]
+    networks: [public-net, internal-net]
     depends_on:
       migrate:
         condition: service_completed_successfully

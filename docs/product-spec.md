@@ -55,6 +55,7 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - `/procvicovani/rovnice` offers three levels from the same structured VŠCHT source: Beginner sees every formula and fills stoichiometric coefficients on both sides; Advanced sees reactants, enters product formulas, then fills coefficients; Profík is prompted with a target product and enters one or more complete manufacturing equations accepted for that product.
 - Typed product sides accept exact formula terms in either order. Profi equations accept complete, balanced source-approved alternatives with `->` or `→`; they do not use fuzzy chemical matching.
 - Source equations must pass formula, atom-balance, and lowest-coefficient validation before they enter the study set or practice pool.
+- Equation practice records each completed answer, including incorrect answers and retries, as a local attempt that synchronizes to the account's progress. Incorrect answers show reactant and product atom counts.
 
 ## Shared behavior
 

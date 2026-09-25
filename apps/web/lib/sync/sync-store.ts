@@ -9,6 +9,97 @@ import {
 } from "../browser-learning-database";
 import { type AttemptEvent, attemptEventSchema } from "../browser-progress-store";
 
+const UPLOAD_RETRY_AT_KEY = "attempt-upload-retry-at";
+const QUOTA_QUARANTINE_MIGRATED_KEY = "quota-quarantine-migrated-v1";
+const LEGACY_QUOTA_REASON = "Server odmítl pokus po překročení denního limitu uploadů.";
+
+export async function restoreLegacyQuotaAttempts(
+  indexedDb: IDBFactory,
+  userId: string,
+): Promise<void> {
+  const database = await openLearningDatabase(indexedDb, userId);
+  try {
+    const transaction = database.transaction(
+      [ACCOUNT_META_STORE, ATTEMPT_EVENT_STORE, SYNC_OUTBOX_STORE, SYNC_QUARANTINE_STORE],
+      "readwrite",
+    );
+    const meta = transaction.objectStore(ACCOUNT_META_STORE);
+    const quarantine = transaction.objectStore(SYNC_QUARANTINE_STORE);
+    const attempts = transaction.objectStore(ATTEMPT_EVENT_STORE);
+    const outbox = transaction.objectStore(SYNC_OUTBOX_STORE);
+    const completed = transactionCompleted(transaction);
+    const migrated = await requestCompleted(meta.get(QUOTA_QUARANTINE_MIGRATED_KEY));
+    if (migrated === undefined) {
+      await new Promise<void>((resolve, reject) => {
+        const cursorRequest = quarantine.openCursor();
+        cursorRequest.onsuccess = () => {
+          const cursor = cursorRequest.result;
+          if (!cursor) {
+            meta.put({ key: QUOTA_QUARANTINE_MIGRATED_KEY, value: true });
+            resolve();
+            return;
+          }
+          const record: unknown = cursor.value;
+          if (
+            typeof record === "object" &&
+            record !== null &&
+            "reason" in record &&
+            record.reason === LEGACY_QUOTA_REASON &&
+            "source" in record &&
+            record.source === "server" &&
+            "raw" in record
+          ) {
+            const parsed = attemptEventSchema.safeParse(record.raw);
+            if (parsed.success && "eventId" in record && record.eventId === parsed.data.id) {
+              attempts.put(parsed.data);
+              outbox.put({ id: parsed.data.id });
+              cursor.delete();
+            }
+          }
+          cursor.continue();
+        };
+        cursorRequest.onerror = () =>
+          reject(cursorRequest.error ?? new Error("Unable to restore quota-limited attempts."));
+      });
+    }
+    await completed;
+  } finally {
+    database.close();
+  }
+}
+
+export async function uploadRetryAt(indexedDb: IDBFactory, userId: string): Promise<number | null> {
+  const database = await openLearningDatabase(indexedDb, userId);
+  try {
+    const transaction = database.transaction(ACCOUNT_META_STORE, "readonly");
+    const record: unknown = await requestCompleted(
+      transaction.objectStore(ACCOUNT_META_STORE).get(UPLOAD_RETRY_AT_KEY),
+    );
+    await transactionCompleted(transaction);
+    if (typeof record !== "object" || record === null || !("value" in record)) return null;
+    return typeof record.value === "number" && Number.isFinite(record.value) ? record.value : null;
+  } finally {
+    database.close();
+  }
+}
+
+export async function setUploadRetryAt(
+  indexedDb: IDBFactory,
+  userId: string,
+  retryAt: number | null,
+): Promise<void> {
+  const database = await openLearningDatabase(indexedDb, userId);
+  try {
+    const transaction = database.transaction(ACCOUNT_META_STORE, "readwrite");
+    const store = transaction.objectStore(ACCOUNT_META_STORE);
+    if (retryAt === null) store.delete(UPLOAD_RETRY_AT_KEY);
+    else store.put({ key: UPLOAD_RETRY_AT_KEY, value: retryAt });
+    await transactionCompleted(transaction);
+  } finally {
+    database.close();
+  }
+}
+
 export async function pendingCount(indexedDb: IDBFactory, userId: string): Promise<number> {
   const database = await openLearningDatabase(indexedDb, userId);
   try {

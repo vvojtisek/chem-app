@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -77,14 +77,43 @@ class NomenclatureAttempt(AttemptBase):
         return self
 
 
+class EquationAttempt(AttemptBase):
+    mode: Literal["equation"]
+    event_schema_version: Literal[1]
+    session_id: str = Field(min_length=1, max_length=128)
+    sequence: int = Field(ge=0, le=1_000_000)
+    level: Literal["beginner", "advanced", "pro"]
+    direction: Literal["coefficients", "products-and-coefficients", "complete-equation"]
+    match_policy: Literal["approved-balanced"]
+
+    @model_validator(mode="after")
+    def validate_direction(self) -> "EquationAttempt":
+        directions = {
+            "beginner": "coefficients",
+            "advanced": "products-and-coefficients",
+            "pro": "complete-equation",
+        }
+        if self.direction != directions[self.level]:
+            raise ValueError("invalid equation level and direction")
+        return self
+
+
 AttemptInput = Annotated[
-    ElementNameAttempt | PeriodicTableAttempt | NomenclatureAttempt,
+    ElementNameAttempt | PeriodicTableAttempt | NomenclatureAttempt | EquationAttempt,
     Field(discriminator="mode"),
 ]
 
 
+def _document_attempt_items(schema: dict) -> None:
+    """Publish the typed union while request processing validates each raw item separately."""
+    typed = TypeAdapter(AttemptInput).json_schema(ref_template="#/components/schemas/{model}")
+    schema["items"] = {key: value for key, value in typed.items() if key != "$defs"}
+
+
 class BatchRequest(ApiModel):
-    events: list[object] = Field(min_length=1, max_length=200)
+    events: list[object] = Field(
+        min_length=1, max_length=200, json_schema_extra=_document_attempt_items
+    )
 
 
 class RejectedAttempt(ApiModel):
@@ -112,7 +141,7 @@ class AttemptPage(ApiModel):
 
 
 class ModeStats(ApiModel):
-    mode: Literal["element-name", "periodic-table", "nomenclature"]
+    mode: Literal["element-name", "periodic-table", "nomenclature", "equation"]
     total_attempts: int
     correct_attempts: int
 

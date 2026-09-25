@@ -40,6 +40,26 @@ export function findAlternateGroupMnemonicProblems(
     ) {
       problems.push(`${record.id}: element symbols do not match group ${record.groupNumber}`);
     }
+
+    const initials = [...record.mnemonicCs.matchAll(/[\p{L}]+/gu)].map(([word]) =>
+      (word ?? "").slice(0, 1).toLocaleLowerCase("cs-CZ"),
+    );
+    let nextInitial = 0;
+    for (const symbol of record.elementSymbols) {
+      const initial = symbol.slice(0, 1).toLocaleLowerCase("cs-CZ");
+      while (initials[nextInitial] !== undefined && initials[nextInitial] !== initial) {
+        nextInitial += 1;
+      }
+      if (initials[nextInitial] === undefined) {
+        problems.push(`${record.id}: mnemonic words do not follow the element-symbol initials`);
+        break;
+      }
+      nextInitial += 1;
+    }
+
+    if (/[*_`]/u.test(record.mnemonicCs)) {
+      problems.push(`${record.id}: mnemonic contains unrendered Markdown formatting`);
+    }
   }
 
   return problems;

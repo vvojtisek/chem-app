@@ -80,11 +80,33 @@ const nomenclatureFormulaAttemptSchema = baseAttemptSchema.extend({
   matchPolicy: z.literal("formula-canonical"),
 });
 
+const equationAttemptSchema = baseAttemptSchema
+  .extend({
+    mode: z.literal("equation"),
+    eventSchemaVersion: z.literal(1),
+    sessionId: z.string().min(1).max(128),
+    sequence: z.number().int().min(0).max(1_000_000),
+    level: z.enum(["beginner", "advanced", "pro"]),
+    direction: z.enum(["coefficients", "products-and-coefficients", "complete-equation"]),
+    matchPolicy: z.literal("approved-balanced"),
+  })
+  .superRefine((event, context) => {
+    const directions = {
+      beginner: "coefficients",
+      advanced: "products-and-coefficients",
+      pro: "complete-equation",
+    } as const;
+    if (event.direction !== directions[event.level]) {
+      context.addIssue({ code: "custom", message: "Invalid equation level and direction." });
+    }
+  });
+
 export const attemptEventSchema = z.union([
   elementAttemptSchema,
   periodicAttemptSchema,
   nomenclatureNameAttemptSchema,
   nomenclatureFormulaAttemptSchema,
+  equationAttemptSchema,
 ]);
 
 export type AttemptEvent = z.infer<typeof attemptEventSchema>;

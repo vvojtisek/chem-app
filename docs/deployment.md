@@ -104,7 +104,9 @@ is the authoritative account and synchronized-attempt store.
   Keep its credentials in `.env.production` with owner-only permissions or
   inject them through the host's secret manager.
 - Registration and recovery requests queue messages in PostgreSQL and return
-  immediately. The `mail-worker` service retries SMTP failures. Watch its logs
+  immediately. The `mail-worker` service reaches the external SMTP relay through
+  `public-net` and PostgreSQL through `internal-net`; confirm relay connectivity
+  when deploying. It retries SMTP failures. Watch its logs
   and the age of pending `mail_outbox` rows; an accepted `202` response confirms
   queueing rather than delivery. Missing SMTP configuration returns `503` for
   every address. Keep `SECRET_KEY` stable while mail is pending: rotating it
@@ -116,8 +118,9 @@ is the authoritative account and synchronized-attempt store.
 - Schedule the combined expired-state purge daily from the host (for example,
   at 03:17) with this cron command:
   `17 3 * * * cd /srv/chem-app && docker compose --env-file .env.production -f docker-compose.prod.yml exec -T api python -m inorganic_api.cli purge-expired >> /var/log/chem-app-purge.log 2>&1`.
-  It removes expired sessions and mail tokens, old throttle rows, unverified
-  accounts older than seven days, and stale guest accounts/outbox rows.
+  It removes expired sessions and mail tokens, old throttle rows, pending
+  email-verification accounts older than seven days, and stale guest
+  accounts/outbox rows.
 - If `SECRET_KEY` is exposed, replace it and revoke all active sessions with
   `docker compose --env-file .env.production -f docker-compose.prod.yml exec api python -m inorganic_api.cli purge-sessions --all`; rotate account passwords as needed. Session records are server-side; changing this key alone is not a substitute for session revocation.
 - Remove seed passwords from the environment file after initial setup. Keep
