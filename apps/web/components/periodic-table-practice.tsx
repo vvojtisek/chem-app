@@ -14,6 +14,7 @@ import {
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import styles from "@/components/periodic-practice.module.css";
 import { usePeriodicSession } from "@/components/use-periodic-session";
 import { useWrongMarks } from "@/components/use-wrong-marks";
 import {
@@ -164,17 +165,19 @@ export function PeriodicTablePractice({
 
   if (persisted.storageBroken && !session) {
     return (
-      <PeriodicSessionNotice
-        notice={persisted.notice}
-        onRecover={persisted.recover}
-        storageBroken
-      />
+      <div className={styles.practice}>
+        <PeriodicSessionNotice
+          notice={persisted.notice}
+          onRecover={persisted.recover}
+          storageBroken
+        />
+      </div>
     );
   }
 
   if (!session) {
     return (
-      <>
+      <div className={styles.practice}>
         <PeriodicTableSelectionStep
           layout={layout}
           onChange={changeSelection}
@@ -186,7 +189,7 @@ export function PeriodicTablePractice({
           onRecover={persisted.recover}
           storageBroken={false}
         />
-      </>
+      </div>
     );
   }
 
@@ -198,8 +201,9 @@ export function PeriodicTablePractice({
   const finished = session.status === "finished";
 
   return (
-    <div>
+    <div className={styles.practice}>
       <PracticeDashboard
+        className={styles.dashboard}
         correct={session.correct}
         elapsedMs={stopwatch.elapsedMs}
         incorrect={session.incorrect}
@@ -211,6 +215,7 @@ export function PeriodicTablePractice({
 
       {finished ? (
         <PracticeSummary
+          className={styles.summary}
           correct={session.correct}
           elapsedMs={stopwatch.elapsedMs}
           incorrect={session.incorrect}
@@ -228,11 +233,11 @@ export function PeriodicTablePractice({
         </PracticeSummary>
       ) : (
         // Pinned under the top bar, so the sought element stays in view while the table scrolls.
-        <div className="sticky top-14 z-10 -mx-4 mt-4 border-y border-line bg-surface/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:px-5">
-          <p aria-hidden="true" className="text-sm font-semibold text-ink-3">
+        <div className={styles.prompt}>
+          <p aria-hidden="true" className={styles.promptEyebrow}>
             Najděte
           </p>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-5xl">
+          <h2 className={styles.promptTitle}>
             <span className="sr-only">Hledaný prvek:</span> {session.current?.nameCs ?? "…"}
           </h2>
         </div>
@@ -242,12 +247,13 @@ export function PeriodicTablePractice({
       </p>
 
       <PeriodicTableGrid
+        appearance="practice"
         cellResult={cellResult}
         layout={layout}
         onSelect={finished ? undefined : select}
         secondsLeft={wrongMarks.secondsLeft}
       />
-      <PeriodicTableLegend />
+      <PeriodicTableLegend className={styles.legend} />
       {notice ? (
         <p className="mt-4 text-sm text-ink-2" role="status">
           {notice}

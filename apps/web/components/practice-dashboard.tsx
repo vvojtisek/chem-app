@@ -57,6 +57,7 @@ export function useStopwatch(): Stopwatch {
 }
 
 interface PracticeDashboardProps {
+  readonly className?: string | undefined;
   readonly correct: number;
   readonly incorrect: number;
   readonly elapsedMs: number;
@@ -72,6 +73,7 @@ interface PracticeDashboardProps {
  * quiet exits. Reset asks for confirmation because it throws away the running order and score.
  */
 export function PracticeDashboard({
+  className = "",
   correct,
   incorrect,
   elapsedMs,
@@ -90,7 +92,7 @@ export function PracticeDashboard({
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-surface p-3 sm:p-4">
+    <div className={className || "rounded-2xl border border-line bg-surface p-3 sm:p-4"}>
       <div className="flex flex-wrap items-center gap-2">
         {progress ? <PracticeProgress done={progress.done} total={progress.total} /> : null}
         <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-good-soft px-3 text-sm font-semibold text-good">
@@ -186,6 +188,7 @@ function PracticeProgress({ done, total }: Readonly<{ done: number; total: numbe
 }
 
 interface PracticeSummaryProps {
+  readonly className?: string | undefined;
   readonly elapsedMs: number;
   readonly correct: number;
   readonly incorrect: number;
@@ -197,6 +200,7 @@ interface PracticeSummaryProps {
 }
 
 export function PracticeSummary({
+  className = "",
   elapsedMs,
   correct,
   incorrect,
@@ -218,7 +222,7 @@ export function PracticeSummary({
   return (
     <section
       aria-labelledby={headingId}
-      className="mt-6 rounded-2xl border border-line bg-surface p-5 sm:p-6"
+      className={className || "mt-6 rounded-2xl border border-line bg-surface p-5 sm:p-6"}
     >
       <h2
         className="font-display text-2xl font-bold text-ink"
