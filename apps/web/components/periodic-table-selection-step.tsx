@@ -4,6 +4,7 @@ import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { useCallback, useEffect, useState } from "react";
 
 import { PeriodicTableSelectionMatrix } from "@/components/periodic-table-selection-matrix";
+import styles from "@/components/periodic-practice.module.css";
 import type { PositionedPeriodicTableElement } from "@/lib/periodic-table-layout";
 import { loadElementSelection, saveElementSelection } from "@/lib/periodic-table-preferences";
 import { defaultSelection, selectElements } from "@/lib/periodic-table-scope";
@@ -53,24 +54,21 @@ export function PeriodicTableSelectionStep({
   const selectedCount = selectElements(layout, selection).length;
 
   return (
-    <section
-      aria-labelledby="periodic-table-selection"
-      className="rounded-3xl border border-line bg-surface p-6"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="periodic-table-selection" className="text-2xl font-semibold text-ink">
+    <section aria-labelledby="periodic-table-selection" className={styles.selection}>
+      <div className={styles.selectionHeader}>
+        <h2 id="periodic-table-selection" className={styles.selectionTitle}>
           Výběr prvků
         </h2>
-        <div className="flex flex-wrap gap-2">
+        <div className={styles.selectionActions}>
           <button
-            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
+            className={styles.selectionButton}
             onClick={() => onChange(new Set(layout.map(({ element }) => element.id)))}
             type="button"
           >
             Vybrat vše
           </button>
           <button
-            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
+            className={styles.selectionButton}
             onClick={() => onChange(new Set())}
             type="button"
           >
@@ -79,14 +77,16 @@ export function PeriodicTableSelectionStep({
         </div>
       </div>
       <PeriodicTableSelectionMatrix layout={layout} onChange={onChange} selection={selection} />
-      <button
-        className="mt-4 min-h-11 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
-        disabled={selectedCount === 0}
-        onClick={onStart}
-        type="button"
-      >
-        Přejít na cvičení ({czechCount(selectedCount, ELEMENT_FORMS)})
-      </button>
+      <div className={styles.selectionFooter}>
+        <button
+          className={styles.startButton}
+          disabled={selectedCount === 0}
+          onClick={onStart}
+          type="button"
+        >
+          Přejít na cvičení ({czechCount(selectedCount, ELEMENT_FORMS)})
+        </button>
+      </div>
       {selectedCount === 0 ? (
         <p className="mt-2 text-sm text-ink-2">Vyberte alespoň jeden prvek.</p>
       ) : null}
