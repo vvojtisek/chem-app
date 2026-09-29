@@ -94,7 +94,7 @@ Resources:
           #!/bin/bash
           set -euo pipefail
           exec > >(tee -a /var/log/chem-app-bootstrap.log) 2>&1
-          dnf install -y git curl nftables docker python3 iproute
+          dnf install -y git curl-minimal nftables docker python3 iproute
           install -d -m 755 /usr/local/lib/docker/cli-plugins /srv
           curl -fsSL https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-aarch64 -o /usr/local/lib/docker/cli-plugins/docker-compose
           echo '49082844b87f03cdcd5f5bbef1ba8c9c897b7a2dfb80cea18d61ec8ca6117e0c  /usr/local/lib/docker/cli-plugins/docker-compose' | sha256sum -c -
