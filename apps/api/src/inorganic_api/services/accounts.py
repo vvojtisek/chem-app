@@ -24,6 +24,9 @@ EMAIL_PATTERN = re.compile(
 VERIFY_TTL = timedelta(hours=24)
 RESET_TTL = timedelta(minutes=30)
 UNVERIFIED_TTL = timedelta(days=7)
+# Open registration sends mail to arbitrary addresses; allow one request per client IP per hour.
+REGISTER_IP_LIMIT = 1
+REGISTER_IP_WINDOW = timedelta(hours=1)
 
 
 def normalize_email(value: str) -> str:
@@ -45,7 +48,9 @@ def _new_token() -> tuple[str, str]:
 
 def register(db: Session, settings: Settings, address: str, ip: str) -> None:
     email.require_delivery_config(settings)
-    if not auth.consume_rate_limit(db, settings, "register-ip", ip, limit=10):
+    if not auth.consume_rate_limit(
+        db, settings, "register-ip", ip, limit=REGISTER_IP_LIMIT, window=REGISTER_IP_WINDOW
+    ):
         raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
     if not auth.consume_rate_limit(db, settings, "register-email", address, limit=3):
         return

@@ -179,7 +179,13 @@ def guest_login(
 
 
 def consume_rate_limit(
-    db: Session, settings: Settings, kind: str, value: str, *, limit: int
+    db: Session,
+    settings: Settings,
+    kind: str,
+    value: str,
+    *,
+    limit: int,
+    window: timedelta = THROTTLE_WINDOW,
 ) -> bool:
     """Consume a request quota. Return False after the per-key window is full."""
     now = datetime.now(UTC)
@@ -192,7 +198,7 @@ def consume_rate_limit(
     row = db.scalar(select(LoginThrottle).where(LoginThrottle.key_hash == key).with_for_update())
     if row is None:
         raise RuntimeError("Rate limit row was not available after insert.")
-    if now - row.window_start >= THROTTLE_WINDOW:
+    if now - row.window_start >= window:
         row.window_start = now
         row.failures = 0
     if row.failures >= limit:

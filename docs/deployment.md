@@ -12,9 +12,11 @@ the Docker Compose plugin.
    repository; replace it if another subdomain is preferred.
 2. Create an `A` DNS record for that name pointing at the server's public IPv4
    address. Add an `AAAA` record only if the host and firewall support public
-   IPv6. Allow inbound TCP ports 80 and 443 and UDP 443; keep SSH restricted
-   to the operator's management addresses. Caddy obtains and renews TLS
-   certificates automatically.
+   IPv6. Allow inbound TCP 443; keep SSH restricted to the operator's
+   management addresses. Caddy obtains and renews TLS certificates
+   automatically; with only TCP 443 open it uses the TLS-ALPN challenge.
+   Opening TCP 80 additionally enables the HTTP-to-HTTPS redirect, and UDP 443
+   enables HTTP/3.
 3. Clone the repository on the server and create a private environment file:
 
    ```sh

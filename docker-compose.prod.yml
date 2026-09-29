@@ -26,6 +26,12 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     networks:
       public-net:
         ipv4_address: 172.30.0.2
@@ -141,6 +147,18 @@ services:
     mem_limit: 256m
     pids_limit: 50
     logging: *default-logging
+    # The image's default HTTP healthcheck targets the API; the worker instead
+    # touches a heartbeat file after every outbox poll.
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import os,sys,time; sys.exit(time.time() - os.path.getmtime('/tmp/mail-worker-heartbeat') > 120)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks: [public-net, internal-net]
     depends_on:
       migrate:
@@ -151,6 +169,9 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    healthcheck:
+      disable: true
     environment:
       APP_ENV: production
       DATABASE_URL: ${MIGRATION_DATABASE_URL:?Set owner MIGRATION_DATABASE_URL in .env.production}
@@ -202,10 +223,13 @@ services:
     pids_limit: 150
     logging: *default-logging
     healthcheck:
-      test: [CMD-SHELL, "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      # TCP probe: during first-time init the bootstrap server listens only on
+      # the Unix socket, so a socket probe would report ready too early.
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 6
+      start_period: 30s
     networks: [internal-net]
 
   seed:
@@ -214,6 +238,9 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     command: ["python", "-m", "inorganic_api.cli", "seed-accounts"]
+    restart: "no"
+    healthcheck:
+      disable: true
     environment:
       APP_ENV: production
       DATABASE_URL: ${MIGRATION_DATABASE_URL:?Set owner MIGRATION_DATABASE_URL in .env.production}
@@ -253,6 +280,10 @@ networks:
     ipam:
       config:
         - subnet: 172.30.0.0/24
+          # Dynamic addresses come only from the upper half, so Caddy's fixed
+          # 172.30.0.2 (trusted by FORWARDED_ALLOW_IPS) is never taken by a
+          # container that starts before it.
+          ip_range: 172.30.0.128/25
   internal-net:
     internal: true
 

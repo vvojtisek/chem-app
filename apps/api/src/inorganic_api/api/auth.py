@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from inorganic_api.api.dependencies import get_current_user, require_csrf
 from inorganic_api.config import get_settings
 from inorganic_api.database import session_dependency
-from inorganic_api.errors import ErrorEnvelope
+from inorganic_api.errors import AppError, ErrorEnvelope
 from inorganic_api.services import accounts, auth
 from inorganic_api.services.passwords import MAX_PASSWORD_BYTES
 
@@ -285,7 +285,11 @@ def confirm_password_reset(
     "/guest",
     operation_id="guestLogin",
     response_model=MeResponse,
-    responses={403: {"model": ErrorEnvelope}, 429: {"model": ErrorEnvelope}},
+    responses={
+        403: {"model": ErrorEnvelope},
+        404: {"model": ErrorEnvelope},
+        429: {"model": ErrorEnvelope},
+    },
 )
 def guest_login(
     request: Request,
@@ -293,6 +297,8 @@ def guest_login(
     db: Annotated[Session, Depends(session_dependency)],
 ) -> MeResponse:
     settings = get_settings()
+    if not settings.guest_login_enabled:
+        raise AppError(404, "not_found", "Not found.")
     auth.require_origin(settings, request.headers.get("origin"))
     result = auth.guest_login(
         db,
