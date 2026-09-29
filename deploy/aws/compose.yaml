@@ -1,0 +1,12 @@
+services:
+  caddy:
+    image: chem-app-caddy-route53:2.10.2
+    build:
+      context: .
+      dockerfile: deploy/aws/Caddy.Dockerfile
+    ports: !override
+      - "443:443"
+    volumes: !override
+      - ./deploy/aws/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config

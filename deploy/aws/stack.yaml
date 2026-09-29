@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Czech-only chem-app host in Frankfurt, managed by SSM.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  PublicSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public subnet with an internet-gateway route in eu-central-1.
+  HostedZoneId:
+    Type: String
+    Default: Z0249271YTBB81ZE9N1U
+  BootstrapRef:
+    Type: String
+    Default: main
+    AllowedPattern: '[A-Za-z0-9._/-]+'
+    Description: Repository branch or tag containing deploy/aws/bootstrap.sh.
+
+Resources:
+  HostRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ec2.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: CaddyDnsChallenge
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: route53:ListResourceRecordSets
+                Resource: !Sub 'arn:${AWS::Partition}:route53:::hostedzone/${HostedZoneId}'
+              - Effect: Allow
+                Action: route53:GetChange
+                Resource: !Sub 'arn:${AWS::Partition}:route53:::change/*'
+              - Effect: Allow
+                Action: route53:ChangeResourceRecordSets
+                Resource: !Sub 'arn:${AWS::Partition}:route53:::hostedzone/${HostedZoneId}'
+                Condition:
+                  ForAllValues:StringEquals:
+                    route53:ChangeResourceRecordSetsRecordTypes: TXT
+                    route53:ChangeResourceRecordSetsNormalizedRecordNames: _acme-challenge.vscht.vvojtisek.eu
+                    route53:ChangeResourceRecordSetsActions: [CREATE, UPSERT, DELETE]
+
+  HostProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref HostRole]
+
+  HostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: HTTPS only; nftables applies Czech source filtering.
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+
+  Host:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64}}'
+      InstanceType: t4g.small
+      IamInstanceProfile: !Ref HostProfile
+      SubnetId: !Ref PublicSubnetId
+      SecurityGroupIds: [!Ref HostSecurityGroup]
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+        HttpPutResponseHopLimit: 2
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 30
+            VolumeType: gp3
+            Encrypted: true
+            DeleteOnTermination: false
+      Tags:
+        - Key: Name
+          Value: chem-app-vscht
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+          exec > >(tee -a /var/log/chem-app-bootstrap.log) 2>&1
+          dnf install -y git curl nftables docker python3 iproute
+          install -d -m 755 /usr/local/lib/docker/cli-plugins /srv
+          curl -fsSL https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-aarch64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+          echo '49082844b87f03cdcd5f5bbef1ba8c9c897b7a2dfb80cea18d61ec8ca6117e0c  /usr/local/lib/docker/cli-plugins/docker-compose' | sha256sum -c -
+          chmod 755 /usr/local/lib/docker/cli-plugins/docker-compose
+          git clone --depth 1 --branch '${BootstrapRef}' https://github.com/vvojtisek/chem-app.git /srv/chem-app
+          /srv/chem-app/deploy/aws/bootstrap.sh
+
+  PublicAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: chem-app-vscht
+
+  AddressAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt PublicAddress.AllocationId
+      InstanceId: !Ref Host
+
+  DnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: vscht.vvojtisek.eu.
+      Type: A
+      TTL: '300'
+      ResourceRecords: [!Ref PublicAddress]
+
+Outputs:
+  InstanceId:
+    Value: !Ref Host
+  PublicIPv4:
+    Value: !Ref PublicAddress
+  Url:
+    Value: https://vscht.vvojtisek.eu
