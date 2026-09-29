@@ -1,3 +1,4 @@
+// biome-ignore-all lint/a11y/noNoninteractiveTabindex: The labeled horizontal scroll region needs keyboard focus when every table cell is disabled.
 "use client";
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
@@ -142,7 +143,6 @@ export function PeriodicTableFrame({
   return (
     <div className={frameClassName}>
       {/* Keyboard focus lets Safari users scroll the table when its cells are not interactive. */}
-      {/* biome-ignore lint/a11y/noNoninteractiveTabindex: A scrollable region needs keyboard access even without enabled cells. */}
       <section
         aria-label="Periodická tabulka"
         className={`${styles.tableScroll} pb-3`}

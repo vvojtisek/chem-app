@@ -36,7 +36,9 @@ test("starts and hydrates learning modes offline after one home visit", async ({
   await expect(page.getByRole("button", { name: "Vyhodnotit koeficienty" })).toBeVisible();
 
   await page.goto("/flashcards/prvky", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { level: 1, name: "Prvky" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Značky prvků" })).toBeVisible();
+  await page.getByText("Prohlížet karty prvků").click();
+  await expect(page.getByRole("heading", { level: 2, name: "Prvky" })).toBeVisible();
   await page.getByRole("button", { name: "Otočit kartu" }).click();
   await expect(page.getByRole("heading", { level: 2, name: "Vodík" })).toBeVisible();
 });

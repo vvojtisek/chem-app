@@ -82,7 +82,9 @@ test("practices a shuffled element symbol and keeps the editable card library", 
   await expect(card.getByRole("button", { name: "Další" })).toBeVisible();
 
   await page.getByText("Prohlížet karty prvků").click();
-  await expect(page.getByText("H", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Prvky" }).getByText("H", { exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Otočit kartu" }).click();
   await expect(page.getByRole("heading", { level: 2, name: "Vodík" })).toBeVisible();
   await expect(page.getByText("Valenční konfigurace")).toBeVisible();
@@ -96,7 +98,9 @@ test("practices a shuffled element symbol and keeps the editable card library", 
   await page.getByRole("button", { name: "Uložit lokálně" }).click();
 
   await expect(page.getByRole("heading", { name: "Vodík — moje poznámka" })).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("Lokální úprava byla uložena");
+  await expect(page.getByRole("region", { name: "Prvky" }).getByRole("status")).toContainText(
+    "Lokální úprava byla uložena",
+  );
 });
 
 test("places a blind periodic-table element inline and moves straight on", async ({ page }) => {
