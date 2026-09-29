@@ -129,7 +129,8 @@ test("syncs an offline attempt and pulls it into another browser context", async
   }
 });
 
-test("guest can browse learning modes without controls that change saved data", async ({
+// Guest login is disabled (API GUEST_LOGIN_ENABLED=false, no login button) until invite tokens ship.
+test.skip("guest can browse learning modes without controls that change saved data", async ({
   page,
 }) => {
   await page.context().clearCookies();

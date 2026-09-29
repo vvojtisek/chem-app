@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, Suspense, useEffect, useState } from "react";
 
-import { ApiError, getCurrentUser, guestLogin, login } from "@/lib/api/client";
+import { ApiError, getCurrentUser, login } from "@/lib/api/client";
 import { saveAccountMarker } from "@/lib/auth/account-marker";
 import { safeNext } from "@/lib/auth/safe-next";
 import { queryKeys } from "@/lib/query-keys";
@@ -62,22 +62,10 @@ function LoginForm() {
     }
   }
 
-  async function enterGuest() {
-    setError("");
-    setBusy(true);
-    try {
-      enterAccount(await guestLogin());
-    } catch {
-      setError("Hostovský přístup se nepodařilo otevřít. Zkuste to znovu.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-5 py-10">
       <h1 className="text-3xl font-semibold text-ink">Přihlášení</h1>
-      <p className="mt-2 text-ink-2">Přihlaste se e-mailem nebo pokračujte jako host.</p>
+      <p className="mt-2 text-ink-2">Přihlaste se e-mailem a heslem.</p>
       {params.get("passwordChanged") === "1" ? (
         <p className="mt-3 text-sm text-good" role="status">
           Heslo bylo změněno. Přihlaste se novým heslem.
@@ -128,14 +116,6 @@ function LoginForm() {
           Znovu poslat potvrzení e-mailu
         </Link>
       </div>
-      <button
-        className="mt-6 min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink disabled:opacity-50"
-        disabled={busy}
-        onClick={() => void enterGuest()}
-        type="button"
-      >
-        Pokračovat jako host
-      </button>
     </main>
   );
 }

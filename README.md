@@ -176,6 +176,11 @@ Edit `.env.production`:
 The API validates this configuration at startup and exits with an explanatory
 error if a secret is missing, a placeholder, or too short.
 
+Public registration is open but limited to one request per client IP per hour
+(`REGISTER_IP_LIMIT` in `apps/api/src/inorganic_api/services/accounts.py`).
+Guest login is disabled: `POST /api/v1/auth/guest` returns `404` unless the API
+runs with `GUEST_LOGIN_ENABLED=true`, and the login page has no guest button.
+
 To keep commands short, define an alias for the rest of the session:
 
 ```bash

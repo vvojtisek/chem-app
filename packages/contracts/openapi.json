@@ -2071,6 +2071,16 @@
             },
             "description": "Forbidden"
           },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
           "429": {
             "content": {
               "application/json": {

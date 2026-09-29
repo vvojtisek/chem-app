@@ -11,6 +11,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 
+from inorganic_api.config import get_settings
 from inorganic_api.database import session_dependency
 from inorganic_api.main import app
 from inorganic_api.models import AttemptEvent, User
@@ -221,8 +222,9 @@ async def test_progress_reset_archives_history_rejects_stale_events_and_preserve
 
 @pytest.mark.anyio
 async def test_progress_reset_requires_session_role_origin_and_csrf(
-    db: Session, accounts: dict[str, User]
+    db: Session, accounts: dict[str, User], monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr(get_settings(), "guest_login_enabled", True)
     async with client() as anonymous, client() as tester, client() as guest, client() as admin:
         assert (await anonymous.get("/api/v1/me/progress-generation")).status_code == 401
         assert (await anonymous.post("/api/v1/me/progress-reset")).status_code == 401

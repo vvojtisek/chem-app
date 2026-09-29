@@ -18,6 +18,7 @@ from inorganic_api.main import app
 from inorganic_api.models import (
     AttemptEvent,
     EmailVerificationToken,
+    LoginThrottle,
     MailOutbox,
     PasswordResetToken,
     User,
@@ -173,6 +174,8 @@ async def test_registration_verification_password_change_and_reset(
     db: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     db.autoflush = False
+    # This flow registers the same address twice from one test client IP.
+    monkeypatch.setattr(accounts, "REGISTER_IP_LIMIT", 10)
     address = f"learner-{uuid4().hex[:10]}@example.test"
     async with client() as http:
         denied = await http.post("/api/v1/auth/register", json={"email": address})
@@ -374,8 +377,37 @@ async def test_email_configuration_failure_and_expired_reset_are_safe(
         assert expired.status_code == 400
 
 
+def test_registration_allows_one_request_per_ip_per_hour(db: Session) -> None:
+    settings = get_settings()
+    ip = f"test-{uuid4()}"
+    accounts.register(db, settings, f"first-{uuid4().hex[:8]}@example.test", ip)
+    with pytest.raises(AppError) as limited:
+        accounts.register(db, settings, f"second-{uuid4().hex[:8]}@example.test", ip)
+    assert limited.value.status_code == 429
+    accounts.register(db, settings, f"other-{uuid4().hex[:8]}@example.test", f"test-{uuid4()}")
+
+    key = auth._throttle_hash(settings.secret_key, "register-ip", ip)
+    throttle = db.query(LoginThrottle).filter_by(key_hash=key).one()
+    throttle.window_start -= accounts.REGISTER_IP_WINDOW - timedelta(minutes=1)
+    db.flush()
+    with pytest.raises(AppError):
+        accounts.register(db, settings, f"third-{uuid4().hex[:8]}@example.test", ip)
+    throttle.window_start -= timedelta(minutes=1)
+    db.flush()
+    accounts.register(db, settings, f"fourth-{uuid4().hex[:8]}@example.test", ip)
+
+
 @pytest.mark.anyio
-async def test_guest_session_is_read_only(db: Session) -> None:
+async def test_guest_login_is_disabled_by_default(db: Session) -> None:
+    async with client() as http:
+        guest = await http.post("/api/v1/auth/guest", headers={"Origin": ORIGIN})
+        assert guest.status_code == 404
+        assert http.cookies.get(get_settings().session_cookie_name) is None
+
+
+@pytest.mark.anyio
+async def test_guest_session_is_read_only(db: Session, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(get_settings(), "guest_login_enabled", True)
     async with client() as http:
         guest = await http.post("/api/v1/auth/guest", headers={"Origin": ORIGIN})
         assert guest.status_code == 200 and guest.json()["role"] == "guest"

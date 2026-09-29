@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     session_idle_ttl: int = Field(default=7 * 24 * 60 * 60, gt=0)
     session_absolute_ttl: int = Field(default=30 * 24 * 60 * 60, gt=0)
     forwarded_allow_ips: str = "127.0.0.1"
+    guest_login_enabled: bool = False
     smtp_host: str | None = "localhost"
     smtp_port: int = Field(default=1025, ge=1, le=65535)
     smtp_from: str | None = "noreply@example.invalid"
