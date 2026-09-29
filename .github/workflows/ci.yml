@@ -142,6 +142,36 @@ jobs:
       - name: Browser tests
         run: pnpm test:e2e
 
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.12.9"
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
+
+      - name: Audit JavaScript dependencies
+        run: pnpm audit --prod --audit-level moderate
+
+      - name: Install Python runtime dependencies
+        run: uv --directory apps/api sync --frozen --no-dev
+
+      - name: Audit Python dependencies
+        run: uv --directory apps/api run --with pip-audit pip-audit
+
   docker:
     runs-on: ubuntu-latest
     timeout-minutes: 30
