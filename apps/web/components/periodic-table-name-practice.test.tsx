@@ -136,9 +136,8 @@ describe("PeriodicTableNamePractice selection", () => {
   it("toggles a whole group column from its header and reports a partial column as mixed", () => {
     renderPractice();
 
-    expect(cell("Skupina 1")).toHaveClass("bg-good-soft");
+    expect(cell("Skupina 1")).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(cell("Skupina 1"));
-    expect(cell("Skupina 1")).toHaveClass("bg-bad-soft", "line-through");
     expect(cell("Vodík (H)")).toHaveAttribute("aria-pressed", "false");
     expect(cell("Lithium (Li)")).toHaveAttribute("aria-pressed", "false");
     expect(cell("Skupina 1")).toHaveAttribute("aria-pressed", "false");
@@ -146,7 +145,6 @@ describe("PeriodicTableNamePractice selection", () => {
 
     fireEvent.click(cell("Lithium (Li)"));
     expect(cell("Skupina 1")).toHaveAttribute("aria-pressed", "mixed");
-    expect(cell("Skupina 1")).toHaveClass("bg-warn-soft");
     expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");
 
     fireEvent.click(cell("Skupina 1"));
@@ -157,13 +155,14 @@ describe("PeriodicTableNamePractice selection", () => {
   it("toggles the lanthanide row as a whole", () => {
     renderPractice([hydrogen, lanthanum]);
 
-    expect(cell("Lanthanidy (La–La)")).toHaveClass("bg-bad-soft");
+    expect(cell("Lanthanidy (La–La)")).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(cell("Lanthanidy (La–La)"));
-    expect(cell("Lanthanidy (La–La)")).toHaveClass("bg-good-soft");
+    expect(cell("Lanthanidy (La–La)")).toHaveAttribute("aria-pressed", "true");
     expect(cell("Lanthan (La)")).toHaveAttribute("aria-pressed", "true");
     expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");
 
     fireEvent.click(cell("Lanthanidy (La–La)"));
+    expect(cell("Lanthanidy (La–La)")).toHaveAttribute("aria-pressed", "false");
     expect(cell("Lanthan (La)")).toHaveAttribute("aria-pressed", "false");
   });
 
