@@ -2,6 +2,7 @@
 
 import logging
 import time
+from pathlib import Path
 
 from cryptography.fernet import InvalidToken
 
@@ -12,6 +13,8 @@ from inorganic_api.repositories import mail_outbox
 from inorganic_api.services import email
 
 logger = logging.getLogger(__name__)
+# Touched after every poll; the container healthcheck treats a stale file as a hung worker.
+HEARTBEAT_PATH = Path("/tmp/mail-worker-heartbeat")
 
 
 def run_once() -> bool:
@@ -44,7 +47,9 @@ def main() -> None:
     email.require_delivery_config(get_settings())
     logger.info("Mail delivery worker started")
     while True:
-        if not run_once():
+        delivered = run_once()
+        HEARTBEAT_PATH.touch()
+        if not delivered:
             time.sleep(2)
 
 
