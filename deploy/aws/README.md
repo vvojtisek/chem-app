@@ -64,6 +64,15 @@ sudo nft list table inet chem_cz
 docker compose version
 ```
 
+The instance role includes `AmazonSSMManagedInstanceCore` so the SSM agent can
+register and communicate with Systems Manager. It also has narrowly scoped
+`ssm:StartSession` permission for the default shell document and EC2 instances
+tagged with this stack's name. This supports starting a session from a VS Code
+terminal using the instance role; normal CloudShell or workstation credentials
+still need their own permission to start a session on the target instance.
+When applying this change to an existing stack, update it with the new template
+and `CAPABILITY_IAM` so CloudFormation updates the instance role policy.
+
 The CloudFormation stack may report complete before cloud-init finishes. The
 instance ID and Elastic IP are stack outputs. Check that the DNS A record points
 to that address and that there is no AAAA record for this name.

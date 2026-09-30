@@ -219,9 +219,41 @@ INSTANCE_ID=$(aws cloudformation describe-stacks \
 aws ssm start-session --region "$AWS_REGION" --target "$INSTANCE_ID"
 ```
 
+Run this command from CloudShell or another terminal using AWS credentials
+that can start a session. The instance role also allows a process using its
+credentials (such as the VS Code terminal on the instance) to start a shell
+session to an EC2 instance tagged for this CloudFormation stack. For an
+existing stack, upload the updated `deploy/aws/stack.yaml` and update the stack
+with `CAPABILITY_IAM` before retrying; this adds the scoped session permission
+to the instance role.
+
 The host already contains `/srv/chem-app` at the selected `BOOTSTRAP_REF`,
 Docker, Compose, swap, and the nftables filter. Do not install Docker or create
 another DNS record manually. Plain HTTP on port 80 is not exposed; use HTTPS.
+
+To update an existing stack with the session-role fix, upload the new
+`deploy/aws/stack.yaml` to CloudShell as `stack.yaml`, then run this with an
+AWS identity that can update the stack and its IAM role:
+
+```bash
+aws cloudformation update-stack \
+  --region eu-central-1 \
+  --stack-name chem-app-vscht \
+  --template-body "file://$HOME/stack.yaml" \
+  --capabilities CAPABILITY_IAM \
+  --parameters \
+    ParameterKey=NetworkMode,UsePreviousValue=true \
+    ParameterKey=ExistingVpcId,UsePreviousValue=true \
+    ParameterKey=ExistingPublicSubnetId,UsePreviousValue=true \
+    ParameterKey=HostedZoneId,UsePreviousValue=true \
+    ParameterKey=BootstrapRef,UsePreviousValue=true
+
+aws cloudformation wait stack-update-complete \
+  --region eu-central-1 --stack-name chem-app-vscht
+```
+
+The update preserves the stack's current network and bootstrap parameters. It
+does not rebuild or restart the application.
 
 ### 2. Configure the deployment
 

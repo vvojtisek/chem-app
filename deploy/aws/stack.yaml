@@ -118,6 +118,28 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
+        - PolicyName: StartSessionOnStackHost
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: StartSessionOnTaggedStackHost
+                Effect: Allow
+                Action: ssm:StartSession
+                Resource: !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/*'
+                Condition:
+                  StringEquals:
+                    ssm:resourceTag/chem-app-stack: !Ref AWS::StackName
+              - Sid: StartDefaultShellSession
+                Effect: Allow
+                Action: ssm:StartSession
+                Resource: !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:document/SSM-SessionManagerRunShell'
+              - Sid: ManageOwnSessions
+                Effect: Allow
+                Action:
+                  - ssm:ResumeSession
+                  - ssm:TerminateSession
+                  - ssmmessages:OpenDataChannel
+                Resource: !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:session/${!aws:userid}-*'
         - PolicyName: CaddyDnsChallenge
           PolicyDocument:
             Version: '2012-10-17'
@@ -194,6 +216,8 @@ Resources:
       Tags:
         - Key: Name
           Value: chem-app-vscht
+        - Key: chem-app-stack
+          Value: !Ref AWS::StackName
         - !If
           - CreateNetwork
           - Key: NetworkRouteAssociation
