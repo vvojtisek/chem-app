@@ -116,43 +116,120 @@ but reports `unhealthy`; the status is for startup ordering (`depends_on`) and
 monitoring. The API and mail worker leave that state by themselves once the
 database is reachable again.
 
-### 1. Prepare the EC2 instance
+### 1. Create the EC2 infrastructure from AWS CloudShell
 
-1. Launch Ubuntu 24.04 LTS with at least 2 GB RAM (`t3.small` or larger) and a
-   20 GB or larger gp3 volume. The stack's memory limits add up to about 2.3 GB,
-   and the Next.js image build needs extra memory, so add swap on 2 GB hosts.
-2. Attach an Elastic IP so the address survives a stop/start.
-3. Security group: inbound TCP 443 from `0.0.0.0/0` (and `::/0` if you use
-   IPv6); nothing else. Outbound must allow HTTPS (image pulls, Let's Encrypt)
-   and your SMTP relay port, normally 587. AWS blocks outbound port 25 by default.
-4. Because port 22 is closed, connect with AWS Systems Manager Session Manager
-   (instance role with `AmazonSSMManagedInstanceCore`) or temporarily allow
-   SSH from your own IP only.
-5. Create a DNS `A` record for your hostname, for example `chemie.vvojtisek.eu`,
-   pointing at the Elastic IP. Wait until `dig +short <hostname>` returns it.
-   Caddy obtains the certificate with the TLS-ALPN challenge on port 443, so
-   port 80 can stay closed. Plain `http://` requests will not connect; always
-   use `https://`.
+The CloudFormation template creates the EC2 host, installs Docker and the
+Compose plugin, configures SSM and the Czech IPv4 firewall, creates an Elastic
+IP and DNS record, and builds Caddy with Route 53 DNS-01 support. Choose one of
+the two network options below. Do not run both for the same hostname.
 
-On the instance, install Docker Engine with the Compose plugin, make it start
-at boot, and add swap:
+1. In the AWS console, select **Europe (Frankfurt) `eu-central-1`** and open
+   CloudShell.
+2. On your computer, locate `deploy/aws/stack.yaml`. In CloudShell choose
+   **Actions → Upload file**, select that template, and upload it to the
+   CloudShell home directory ([AWS upload guide](https://docs.aws.amazon.com/cloudshell/latest/userguide/getting-started.html)).
+   Confirm it is present:
+
+   ```bash
+   ls -l ~/stack.yaml
+   ```
+
+   The template fetches the bootstrap scripts from the public GitHub
+   repository. After this change merges, use `main`. While the PR is still
+   open, set `BOOTSTRAP_REF=feat/deploy-aws-vscht-frankfurt` below.
+3. Set the stack name and bootstrap revision, then validate the uploaded file:
+
+   ```bash
+   export AWS_REGION=eu-central-1
+   export STACK_NAME=chem-app-vscht
+   export BOOTSTRAP_REF=main
+   aws cloudformation validate-template \
+     --region "$AWS_REGION" \
+     --template-body file://$HOME/stack.yaml
+   ```
+
+   The CloudShell identity needs permission to create CloudFormation, EC2/VPC,
+   IAM roles, Elastic IPs, and the Route 53 record. CloudFormation requires
+   `CAPABILITY_IAM` because the template creates an instance role.
+
+These commands create a new stack named `chem-app-vscht` and write the
+`vscht.vvojtisek.eu` DNS record. Do not run them again if that stack already
+exists; use a reviewed CloudFormation update for an existing deployment.
+
+#### Option A: create a dedicated VPC and the EC2 host
+
+This option creates a VPC, public subnet, internet gateway and route, along
+with the EC2 instance and its supporting resources:
 
 ```bash
-curl -fsSL https://get.docker.com | sudo sh
-sudo systemctl enable --now docker
-sudo usermod -aG docker "$USER"   # log out and back in afterwards
-docker compose version            # Compose v2 plugin
+aws cloudformation create-stack \
+  --region "$AWS_REGION" \
+  --stack-name "$STACK_NAME" \
+  --template-body "file://$HOME/stack.yaml" \
+  --capabilities CAPABILITY_IAM \
+  --parameters \
+    ParameterKey=NetworkMode,ParameterValue=CreateVpc \
+    ParameterKey=BootstrapRef,ParameterValue="$BOOTSTRAP_REF"
 
-sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
-sudo mkswap /swapfile && sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+aws cloudformation wait stack-create-complete \
+  --region "$AWS_REGION" --stack-name "$STACK_NAME"
+aws cloudformation describe-stacks \
+  --region "$AWS_REGION" --stack-name "$STACK_NAME" \
+  --query 'Stacks[0].Outputs' --output table
 ```
+
+#### Option B: use an existing VPC and public subnet
+
+Use a subnet with a route to an internet gateway, DNS enabled for its VPC, and
+outbound HTTPS. The stack adds its own security group and instance without
+changing the VPC or subnet. Enter the IDs when prompted; the commands are
+otherwise ready to paste:
+
+```bash
+read -r -p 'Existing VPC ID (vpc-...): ' EXISTING_VPC_ID
+read -r -p 'Public subnet ID (subnet-...): ' EXISTING_PUBLIC_SUBNET_ID
+
+aws cloudformation create-stack \
+  --region "$AWS_REGION" \
+  --stack-name "$STACK_NAME" \
+  --template-body "file://$HOME/stack.yaml" \
+  --capabilities CAPABILITY_IAM \
+  --parameters \
+    ParameterKey=NetworkMode,ParameterValue=ExistingVpc \
+    ParameterKey=ExistingVpcId,ParameterValue="$EXISTING_VPC_ID" \
+    ParameterKey=ExistingPublicSubnetId,ParameterValue="$EXISTING_PUBLIC_SUBNET_ID" \
+    ParameterKey=BootstrapRef,ParameterValue="$BOOTSTRAP_REF"
+
+aws cloudformation wait stack-create-complete \
+  --region "$AWS_REGION" --stack-name "$STACK_NAME"
+aws cloudformation describe-stacks \
+  --region "$AWS_REGION" --stack-name "$STACK_NAME" \
+  --query 'Stacks[0].Outputs' --output table
+```
+
+Both options use an Amazon Linux 2023 ARM64 `t4g.small`, allow only HTTPS
+ingress, and do not open SSH. Once the stack completes, connect through SSM
+using the `InstanceId` output:
+
+```bash
+INSTANCE_ID=$(aws cloudformation describe-stacks \
+  --region "$AWS_REGION" --stack-name "$STACK_NAME" \
+  --query 'Stacks[0].Outputs[?OutputKey==`InstanceId`].OutputValue' \
+  --output text)
+aws ssm start-session --region "$AWS_REGION" --target "$INSTANCE_ID"
+```
+
+The host already contains `/srv/chem-app` at the selected `BOOTSTRAP_REF`,
+Docker, Compose, swap, and the nftables filter. Do not install Docker or create
+another DNS record manually. Plain HTTP on port 80 is not exposed; use HTTPS.
 
 ### 2. Configure the deployment
 
+In the SSM session, become root and create the private production file in the
+existing checkout:
+
 ```bash
-sudo mkdir -p /srv/chem-app && sudo chown "$USER" /srv/chem-app
-git clone <repository-url> /srv/chem-app
+sudo -i
 cd /srv/chem-app
 cp .env.production.example .env.production
 chmod 600 .env.production

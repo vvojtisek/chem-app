@@ -2,10 +2,12 @@
 
 `stack.yaml` creates an Amazon Linux 2023 ARM64 `t4g.small`, a 30 GB encrypted
 gp3 root volume, an Elastic IP, `vscht.vvojtisek.eu` A record, an SSM instance
-role, and an HTTPS-only security group in `eu-central-1`. It uses an existing
-public subnet and the existing Route 53 zone `Z0249271YTBB81ZE9N1U`.
-There is no SSH rule or IPv6 address. The EBS volume is retained when the
-instance is deleted; inspect and delete it separately when decommissioning.
+role, and an HTTPS-only security group in `eu-central-1`. Choose either
+`CreateVpc` to have the stack create a VPC, public subnet, internet gateway,
+and route, or `ExistingVpc` to attach the host to a supplied public subnet.
+Both modes use the existing Route 53 zone `Z0249271YTBB81ZE9N1U`. There is no
+SSH rule or IPv6 address. The EBS volume is retained when the instance is
+deleted; inspect and delete it separately when decommissioning.
 
 The bootstrap installs Docker and the pinned Compose v2.39.4 plugin, adds 2 GB
 swap, and starts an nftables source filter before Docker. RIPE NCC's extended
@@ -19,10 +21,13 @@ fails. A new host fails closed if it has never obtained a valid set.
 
 ## Create the stack
 
-Choose a subnet with a route to an internet gateway in Frankfurt. Its VPC must
-have DNS and outbound HTTPS available. The template expects the public GitHub
-repository and `BootstrapRef` to contain `deploy/aws/bootstrap.sh` at boot.
-After this change reaches `main`, the default `BootstrapRef=main` works.
+For the two AWS CloudShell upload paths, see the
+[CloudShell deployment instructions in the root README](../../README.md#1-create-the-ec2-infrastructure-from-aws-cloudshell).
+The CloudFormation template and bootstrap scripts must be from the same
+revision. After this change reaches `main`, use `BootstrapRef=main`; before
+then use `BootstrapRef=feat/deploy-aws-vscht-frankfurt`.
+
+For a local AWS CLI checkout, deploy with a new VPC:
 
 ```sh
 aws cloudformation deploy \
@@ -30,7 +35,23 @@ aws cloudformation deploy \
   --stack-name chem-app-vscht \
   --template-file deploy/aws/stack.yaml \
   --capabilities CAPABILITY_IAM \
-  --parameter-overrides VpcId=vpc-REPLACE PublicSubnetId=subnet-REPLACE
+  --parameter-overrides NetworkMode=CreateVpc BootstrapRef=main
+```
+
+To use an existing VPC, pass a public subnet with a route to an internet
+gateway, VPC DNS support, and outbound HTTPS:
+
+```sh
+aws cloudformation deploy \
+  --region eu-central-1 \
+  --stack-name chem-app-vscht \
+  --template-file deploy/aws/stack.yaml \
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides \
+    NetworkMode=ExistingVpc \
+    ExistingVpcId=vpc-REPLACE \
+    ExistingPublicSubnetId=subnet-REPLACE \
+    BootstrapRef=main
 ```
 
 Check cloud-init and the firewall over SSM before app deployment:

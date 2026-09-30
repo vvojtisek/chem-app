@@ -2,11 +2,21 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Czech-only chem-app host in Frankfurt, managed by SSM.
 
 Parameters:
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-  PublicSubnetId:
-    Type: AWS::EC2::Subnet::Id
-    Description: Public subnet with an internet-gateway route in eu-central-1.
+  NetworkMode:
+    Type: String
+    Default: CreateVpc
+    AllowedValues: [CreateVpc, ExistingVpc]
+    Description: Create a dedicated public VPC or use an existing VPC and public subnet.
+  ExistingVpcId:
+    Type: String
+    Default: ''
+    AllowedPattern: '^(|vpc-[0-9a-f]+)$'
+    Description: Required for ExistingVpc; the VPC containing ExistingPublicSubnetId.
+  ExistingPublicSubnetId:
+    Type: String
+    Default: ''
+    AllowedPattern: '^(|subnet-[0-9a-f]+)$'
+    Description: Required for ExistingVpc; must have an internet-gateway route and available IPv4 addresses in eu-central-1.
   HostedZoneId:
     Type: String
     Default: Z0249271YTBB81ZE9N1U
@@ -16,7 +26,86 @@ Parameters:
     AllowedPattern: '[A-Za-z0-9._/-]+'
     Description: Repository branch or tag containing deploy/aws/bootstrap.sh.
 
+Rules:
+  RequireExistingNetworkIds:
+    RuleCondition: !Equals [!Ref NetworkMode, ExistingVpc]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref ExistingVpcId, '']]
+        AssertDescription: ExistingVpcId is required when NetworkMode is ExistingVpc.
+      - Assert: !Not [!Equals [!Ref ExistingPublicSubnetId, '']]
+        AssertDescription: ExistingPublicSubnetId is required when NetworkMode is ExistingVpc.
+  OmitExistingNetworkIdsForNewVpc:
+    RuleCondition: !Equals [!Ref NetworkMode, CreateVpc]
+    Assertions:
+      - Assert: !Equals [!Ref ExistingVpcId, '']
+        AssertDescription: Leave ExistingVpcId empty when creating a VPC.
+      - Assert: !Equals [!Ref ExistingPublicSubnetId, '']
+        AssertDescription: Leave ExistingPublicSubnetId empty when creating a VPC.
+
+Conditions:
+  CreateNetwork: !Equals [!Ref NetworkMode, CreateVpc]
+
 Resources:
+  DedicatedVpc:
+    Type: AWS::EC2::VPC
+    Condition: CreateNetwork
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: chem-app-vscht
+
+  DedicatedInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Condition: CreateNetwork
+    Properties:
+      Tags:
+        - Key: Name
+          Value: chem-app-vscht
+
+  DedicatedGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Condition: CreateNetwork
+    Properties:
+      VpcId: !Ref DedicatedVpc
+      InternetGatewayId: !Ref DedicatedInternetGateway
+
+  DedicatedPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Condition: CreateNetwork
+    Properties:
+      VpcId: !Ref DedicatedVpc
+      CidrBlock: 10.42.0.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: chem-app-vscht-public
+
+  DedicatedPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Condition: CreateNetwork
+    Properties:
+      VpcId: !Ref DedicatedVpc
+
+  DedicatedPublicRoute:
+    Type: AWS::EC2::Route
+    Condition: CreateNetwork
+    DependsOn: DedicatedGatewayAttachment
+    Properties:
+      RouteTableId: !Ref DedicatedPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref DedicatedInternetGateway
+
+  DedicatedPublicRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateNetwork
+    DependsOn: DedicatedPublicRoute
+    Properties:
+      SubnetId: !Ref DedicatedPublicSubnet
+      RouteTableId: !Ref DedicatedPublicRouteTable
+
   HostRole:
     Type: AWS::IAM::Role
     Properties:
@@ -55,9 +144,15 @@ Resources:
 
   HostSecurityGroup:
     Type: AWS::EC2::SecurityGroup
+    # ExistingVpcId is intentionally an optional string selected by NetworkMode;
+    # CloudFormation Rules validate its presence for ExistingVpc deployments.
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks: [W1030]
     Properties:
       GroupDescription: HTTPS only; nftables applies Czech source filtering.
-      VpcId: !Ref VpcId
+      VpcId: !If [CreateNetwork, !Ref DedicatedVpc, !Ref ExistingVpcId]
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 443
@@ -69,12 +164,22 @@ Resources:
 
   Host:
     Type: AWS::EC2::Instance
+    # ExistingPublicSubnetId is intentionally conditional; the Rules block
+    # validates the ID format and presence when ExistingVpc is selected.
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks: [W1030]
     Properties:
       ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64}}'
       InstanceType: t4g.small
       IamInstanceProfile: !Ref HostProfile
-      SubnetId: !Ref PublicSubnetId
-      SecurityGroupIds: [!Ref HostSecurityGroup]
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          AssociatePublicIpAddress: true
+          DeleteOnTermination: true
+          SubnetId: !If [CreateNetwork, !Ref DedicatedPublicSubnet, !Ref ExistingPublicSubnetId]
+          GroupSet: [!Ref HostSecurityGroup]
       MetadataOptions:
         HttpEndpoint: enabled
         HttpTokens: required
@@ -89,6 +194,11 @@ Resources:
       Tags:
         - Key: Name
           Value: chem-app-vscht
+        - !If
+          - CreateNetwork
+          - Key: NetworkRouteAssociation
+            Value: !Ref DedicatedPublicRouteAssociation
+          - !Ref AWS::NoValue
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -126,6 +236,12 @@ Resources:
       ResourceRecords: [!Ref PublicAddress]
 
 Outputs:
+  NetworkMode:
+    Value: !Ref NetworkMode
+  VpcId:
+    Value: !If [CreateNetwork, !Ref DedicatedVpc, !Ref ExistingVpcId]
+  PublicSubnetId:
+    Value: !If [CreateNetwork, !Ref DedicatedPublicSubnet, !Ref ExistingPublicSubnetId]
   InstanceId:
     Value: !Ref Host
   PublicIPv4:
