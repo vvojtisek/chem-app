@@ -55,13 +55,22 @@ describe("periodic-table checkpoint store", () => {
     const { checkpoint } = initialCheckpoint();
     await store.write(PERIODIC_NAME_SESSION_ID, checkpoint, 0);
     await copyLegacyPeriodicCheckpoints(indexedDB, userId, INITIAL_PROGRESS_GENERATION);
-    expect(await accountStore.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
-    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await accountStore.load(PERIODIC_NAME_SESSION_ID)).toEqual({
+      ...checkpoint,
+      updatedAt: expect.any(String),
+    });
+    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual({
+      ...checkpoint,
+      updatedAt: expect.any(String),
+    });
     const rotated = "99999999-9999-4999-8999-999999999999";
     await reconcileProgressGeneration(indexedDB, userId, rotated);
     await copyLegacyPeriodicCheckpoints(indexedDB, userId, rotated);
     expect(await accountStore.load(PERIODIC_NAME_SESSION_ID)).toBeNull();
-    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual({
+      ...checkpoint,
+      updatedAt: expect.any(String),
+    });
   });
 
   it("restores order, retry queue, score, and elapsed time without a new attempt", async () => {
@@ -84,7 +93,8 @@ describe("periodic-table checkpoint store", () => {
     if (!updated) return;
     await store.write(PERIODIC_NAME_SESSION_ID, updated, 1);
     const loaded = await store.load(PERIODIC_NAME_SESSION_ID);
-    expect(loaded).toEqual(updated);
+    expect(loaded).toEqual({ ...updated, updatedAt: expect.any(String) });
+    expect(loaded?.updatedAt).toBeTruthy();
     const resumed = restorePeriodicSession(updated, byId, curriculumContentVersion);
     expect(resumed.current?.id).toBe(wrong.state.current?.id);
     expect(resumed.queue.map((element) => element.id)).toEqual(
@@ -102,7 +112,10 @@ describe("periodic-table checkpoint store", () => {
     await expect(
       store.write(PERIODIC_NAME_SESSION_ID, { ...checkpoint, revision: 1 }, 0),
     ).rejects.toThrow("jiném okně");
-    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await store.load(PERIODIC_NAME_SESSION_ID)).toEqual({
+      ...checkpoint,
+      updatedAt: expect.any(String),
+    });
   });
 
   it("rejects corrupt and unsupported records and clears only the checkpoint", async () => {

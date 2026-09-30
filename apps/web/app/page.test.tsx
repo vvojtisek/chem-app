@@ -20,11 +20,11 @@ function renderHome() {
 }
 
 describe("HomePage", () => {
-  it("presents the three practice areas", () => {
+  it("presents the four dashboard areas", () => {
     renderHome();
 
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Anorganická chemie");
-    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Dobrý den");
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
     expect(screen.getByText("Periodická tabulka")).toBeInTheDocument();
     expect(screen.getByText("Chemické rovnice, výskyt a výroba")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Procvičit rovnice" })).toHaveAttribute(

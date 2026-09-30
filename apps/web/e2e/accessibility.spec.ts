@@ -29,7 +29,7 @@ test("account entry screens meet automated WCAG 2.2 AA checks", async ({ browser
 
 test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Anorganická chemie" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
   await expectWcag22Aa(page);
 
   await page.goto("/procvicovani/prvky");

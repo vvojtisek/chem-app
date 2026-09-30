@@ -155,6 +155,10 @@ export async function getMyProfile(): Promise<UserProfile> {
   return unwrapApiResponse(await apiClient.GET("/api/v1/me/profile", { cache: "no-store" }));
 }
 
+export async function updateMyDailyGoal(dailyGoal: number | null): Promise<UserProfile> {
+  return unwrapApiResponse(await apiClient.PATCH("/api/v1/me/daily-goal", { body: { dailyGoal } }));
+}
+
 export async function getAdminProfile(userId: string): Promise<UserProfile> {
   return unwrapApiResponse(
     await apiClient.GET("/api/v1/admin/users/{user_id}/profile", {

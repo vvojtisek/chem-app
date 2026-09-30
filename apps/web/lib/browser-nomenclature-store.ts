@@ -69,7 +69,13 @@ export function createBrowserNomenclatureStore(
     },
 
     async write(checkpoint, expectedRevision, attempts = []) {
-      const valid = checkpoint === null ? null : nomenclatureCheckpointSchema.parse(checkpoint);
+      const valid =
+        checkpoint === null
+          ? null
+          : nomenclatureCheckpointSchema.parse({
+              ...checkpoint,
+              updatedAt: new Date().toISOString(),
+            });
       if (valid && valid.revision !== expectedRevision + 1) {
         throw new Error("Nesouhlasí revize uložené série.");
       }

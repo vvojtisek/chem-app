@@ -7,15 +7,23 @@ import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PageHeader } from "@/components/page-header";
 import { ProgressReset } from "@/components/progress-reset";
 import { useSync } from "@/components/sync-provider";
-import { ApiError, changePassword, getMyProfile, logout, updateMyProfile } from "@/lib/api/client";
+import {
+  ApiError,
+  changePassword,
+  getMyProfile,
+  logout,
+  updateMyDailyGoal,
+  updateMyProfile,
+} from "@/lib/api/client";
 import { clearAccountMarker } from "@/lib/auth/account-marker";
 import { resetLearningDatabase } from "@/lib/browser-learning-database";
+import { cacheDailyGoal } from "@/lib/daily-goal";
 import { queryKeys } from "@/lib/query-keys";
 import { pendingCount } from "@/lib/sync/sync-store";
 
 export default function AccountPage() {
   const account = useAccount();
-  const { canManageProfile } = useCapabilities();
+  const { canManageProfile, canViewProgress } = useCapabilities();
   const sync = useSync();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -26,6 +34,7 @@ export default function AccountPage() {
     enabled: Boolean(account && !isGuest),
   });
   const [displayName, setDisplayName] = useState("");
+  const [dailyGoal, setDailyGoal] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -36,6 +45,10 @@ export default function AccountPage() {
   useEffect(() => {
     setDisplayName(profile.data?.displayName ?? "");
   }, [profile.data?.displayName]);
+
+  useEffect(() => {
+    setDailyGoal(profile.data?.dailyGoal?.toString() ?? "");
+  }, [profile.data?.dailyGoal]);
 
   if (!account) return null;
 
@@ -102,6 +115,29 @@ export default function AccountPage() {
           ? "Současné heslo není správné."
           : "Heslo se nepodařilo změnit.",
       );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveDailyGoal(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!account) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const value = dailyGoal.trim() === "" ? null : Number(dailyGoal);
+      if (value !== null && (!Number.isInteger(value) || value < 1 || value > 500)) {
+        setError("Denní cíl musí být celé číslo od 1 do 500.");
+        return;
+      }
+      const saved = await updateMyDailyGoal(value);
+      cacheDailyGoal(account.id, saved.dailyGoal);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.me.profile });
+      setMessage("Denní cíl byl uložen.");
+    } catch {
+      setError("Denní cíl se nepodařilo uložit. Připojte se k síti a zkuste to znovu.");
     } finally {
       setBusy(false);
     }
@@ -191,6 +227,45 @@ export default function AccountPage() {
       ) : (
         <p role="status">{profile.isError ? "Profil se nepodařilo načíst." : "Načítám profil…"}</p>
       )}
+
+      {canViewProgress ? (
+        <section
+          aria-labelledby="daily-goal-heading"
+          className="mt-6 rounded-2xl border border-line bg-surface p-5"
+        >
+          <h2 className="text-xl font-semibold" id="daily-goal-heading">
+            Denní cíl
+          </h2>
+          <p className="mt-1 text-sm text-ink-2">
+            Počítá všechny dnešní odpovědi včetně chybných. Nastavení se uloží k vašemu účtu a
+            zobrazí i na jiném zařízení.
+          </p>
+          <form
+            className="mt-4 flex flex-wrap items-end gap-3"
+            onSubmit={(event) => void saveDailyGoal(event)}
+          >
+            <label className="grid gap-1 font-medium">
+              Počet odpovědí za den (nepovinné)
+              <input
+                className="min-h-11 w-40 rounded-xl border border-line-strong px-3"
+                max={500}
+                min={1}
+                onChange={(event) => setDailyGoal(event.target.value)}
+                placeholder="Bez cíle"
+                type="number"
+                value={dailyGoal}
+              />
+            </label>
+            <button
+              className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold"
+              disabled={busy}
+              type="submit"
+            >
+              Uložit cíl
+            </button>
+          </form>
+        </section>
+      ) : null}
 
       <section
         aria-labelledby="password-heading"

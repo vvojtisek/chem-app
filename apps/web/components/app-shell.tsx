@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 import { useAccount, useCapabilities } from "./auth-gate";
+import { APP_VERSION } from "@/lib/app-version";
 import { BookIcon, ChartIcon, FlaskIcon, HelpIcon, HomeIcon, ShieldIcon, UserIcon } from "./icons";
 import { SyncStatusChip, useSync } from "./sync-provider";
 
@@ -182,6 +183,9 @@ export function AppShell({
             <span className="max-[24rem]:sr-only">Anorganika</span>
           </Link>
           <div className="ml-auto flex min-w-0 items-center gap-2">
+            <span className="text-xs text-ink-3" title="Verze aplikace">
+              v{APP_VERSION}
+            </span>
             <AccountBadge />
             {canSync ? <SyncStatusChip /> : null}
             <Link

@@ -95,6 +95,12 @@ profile through `/api/v1/me/profile`. Admin account operations are under
 30-day daily trend. Guests cannot mutate progress or profile data; authorization
 is enforced by the API even when a client omits a control.
 
+`GET /api/v1/me/profile` includes nullable `dailyGoal`. `PATCH
+/api/v1/me/daily-goal` accepts a required `dailyGoal` field of `null` or an
+integer from 1 to 500, requires the account session and CSRF/Origin checks,
+and returns the updated profile. A null value disables the goal. The setting
+does not affect grades, quotas, or rank.
+
 The session cookie is HttpOnly; the separate CSRF cookie is readable by the
 same-origin web client. Mutating requests send its value in `X-CSRF-Token` and
 must include the configured public `Origin`. No session or CSRF token appears

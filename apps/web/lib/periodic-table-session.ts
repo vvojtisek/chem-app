@@ -27,6 +27,8 @@ export const periodicCheckpointSchema = z
     incorrect: count,
     total: z.number().int().positive().max(118),
     elapsedMs: count,
+    /** Last saved transition. Older checkpoints without this field remain readable. */
+    updatedAt: z.iso.datetime({ offset: true }).optional(),
   })
   .superRefine((checkpoint, context) => {
     const selected = new Set(checkpoint.selectedIds);

@@ -12,6 +12,9 @@ class User(Base):
     __table_args__ = (
         CheckConstraint("role IN ('admin', 'user', 'tester', 'guest')", name="ck_users_role"),
         CheckConstraint("username = lower(btrim(username))", name="ck_users_username_normalized"),
+        CheckConstraint(
+            "daily_goal IS NULL OR daily_goal BETWEEN 1 AND 500", name="ck_users_daily_goal"
+        ),
     )
 
     id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
@@ -19,6 +22,7 @@ class User(Base):
     email: Mapped[str | None] = mapped_column(String(254), unique=True)
     email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     display_name: Mapped[str | None] = mapped_column(String(80))
+    daily_goal: Mapped[int | None] = mapped_column(Integer)
     password_hash: Mapped[str] = mapped_column(String(512), nullable=False)
     role: Mapped[str] = mapped_column(String(16), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

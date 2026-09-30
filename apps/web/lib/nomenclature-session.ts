@@ -120,6 +120,8 @@ export const nomenclatureCheckpointSchema = z
     total: z.number().int().positive(),
     sequence: counterSchema,
     elapsedMs: counterSchema,
+    /** Last saved transition. Older checkpoints without this field remain readable. */
+    updatedAt: z.iso.datetime({ offset: true }).optional(),
   })
   .superRefine((checkpoint, context) => {
     const asked = [checkpoint.currentId, ...checkpoint.queueIds];

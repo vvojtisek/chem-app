@@ -1069,6 +1069,17 @@
             "title": "Createdat",
             "type": "string"
           },
+          "dailyGoal": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dailygoal"
+          },
           "displayName": {
             "anyOf": [
               {
@@ -1137,6 +1148,7 @@
           "email",
           "emailVerified",
           "displayName",
+          "dailyGoal",
           "role",
           "isActive",
           "createdAt",
@@ -1278,6 +1290,29 @@
           "message"
         ],
         "title": "RejectedAttempt",
+        "type": "object"
+      },
+      "UpdateDailyGoalRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dailyGoal": {
+            "anyOf": [
+              {
+                "maximum": 500.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dailygoal"
+          }
+        },
+        "required": [
+          "dailyGoal"
+        ],
+        "title": "UpdateDailyGoalRequest",
         "type": "object"
       },
       "UpdateProfileRequest": {
@@ -2992,6 +3027,110 @@
         "summary": "Upload Attempt Events",
         "tags": [
           "attempts"
+        ]
+      }
+    },
+    "/api/v1/me/daily-goal": {
+      "patch": {
+        "operationId": "updateMyDailyGoal",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDailyGoalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Update My Daily Goal",
+        "tags": [
+          "profiles"
         ]
       }
     },

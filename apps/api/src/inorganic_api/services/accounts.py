@@ -233,6 +233,14 @@ def update_profile(db: Session, actor: User, display_name: str | None) -> User:
     return actor
 
 
+def update_daily_goal(db: Session, actor: User, daily_goal: int | None) -> User:
+    if actor.role not in ("user", "admin"):
+        raise AppError(403, "forbidden", "Access denied.")
+    actor.daily_goal = daily_goal
+    db.commit()
+    return actor
+
+
 def admin_update_profile(db: Session, actor: User, user_id: UUID, changes: dict) -> User:
     if actor.role != "admin":
         raise AppError(403, "forbidden", "Access denied.")
