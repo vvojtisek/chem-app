@@ -1,0 +1,242 @@
+"use client";
+
+import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
+import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import styles from "@/components/periodic-table-explorer.module.css";
+import { PeriodicTableFrame } from "@/components/periodic-table-grid";
+import { cn } from "@/lib/class-names";
+import {
+  createPeriodicTableLayout,
+  describePeriodicTablePosition,
+} from "@/lib/periodic-table-layout";
+
+const atomicWeightFormatter = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 6 });
+
+const ELEMENT_FAMILIES = [
+  { id: "alkali", label: "Alkalické kovy" },
+  { id: "alkaline-earth", label: "Kovy alkalických zemin" },
+  { id: "transition", label: "Přechodné kovy" },
+  { id: "other-metal", label: "Kovy" },
+  { id: "metalloid", label: "Polokovy" },
+  { id: "nonmetal", label: "Nekovy" },
+  { id: "halogen", label: "Halogeny" },
+  { id: "noble-gas", label: "Vzácné plyny" },
+  { id: "f-block", label: "Lanthanoidy a aktinoidy" },
+] as const;
+
+interface PeriodicTableExplorerProps {
+  readonly elements: readonly ElementFlashcardData[];
+  readonly groups: readonly ElementGroupData[];
+}
+
+export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplorerProps) {
+  const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
+  const groupsByNumber = useMemo(
+    () => new Map(groups.map((group) => [group.groupNumber, group])),
+    [groups],
+  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLButtonElement>(null);
+  const selected = elements.find((element) => element.id === selectedId) ?? null;
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (selected && !dialog.open) {
+      dialog.showModal();
+      closeButtonRef.current?.focus();
+      return;
+    }
+
+    if (!selected && dialog.open) dialog.close();
+    if (!selected) openerRef.current?.focus();
+  }, [selected]);
+
+  if (elements.length === 0) {
+    return <p role="status">K dispozici nejsou žádné prvky k prozkoumání.</p>;
+  }
+
+  return (
+    <>
+      <p className="mb-3 text-sm text-ink-2">
+        Tabulka má 18 skupin a 7 period. Na menších obrazovkách ji posuňte vodorovně.
+      </p>
+      <ul aria-label="Legenda skupin prvků" className={styles.key}>
+        {ELEMENT_FAMILIES.map((family) => (
+          <li className={styles.keyItem} key={family.id}>
+            <span aria-hidden="true" className={styles.keySwatch} data-family={family.id} />
+            {family.label}
+          </li>
+        ))}
+      </ul>
+      <PeriodicTableFrame
+        layout={layout}
+        legend="Slepá periodická tabulka pro prozkoumání prvků"
+        renderCell={({ element, position }) => (
+          <button
+            aria-label={`${element.atomicNumber}. protonové číslo; ${describePeriodicTablePosition(position)}`}
+            className={cn(
+              "grid min-h-11 min-w-11 place-items-center rounded-md border font-mono text-xs font-semibold transition-colors focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:text-sm",
+              styles.elementCell,
+            )}
+            data-family={elementFamily(element)}
+            key={element.id}
+            onClick={(event) => {
+              openerRef.current = event.currentTarget;
+              setSelectedId(element.id);
+            }}
+            style={{
+              gridColumn: position.column,
+              gridRow: position.section === "main" ? position.row : 1,
+            }}
+            type="button"
+          >
+            {element.atomicNumber}
+          </button>
+        )}
+        seriesHeading={(_section, label) => (
+          <h2 className="mb-2 text-sm font-semibold text-ink-2">{label}</h2>
+        )}
+      />
+
+      <dialog
+        aria-labelledby="periodic-table-element-heading"
+        className={cn(
+          "m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border p-0 text-ink shadow-2xl backdrop:bg-black/60",
+          styles.modal,
+        )}
+        data-family={selected ? elementFamily(selected) : undefined}
+        onCancel={(event) => {
+          event.preventDefault();
+          setSelectedId(null);
+        }}
+        onClose={() => {
+          setSelectedId(null);
+          openerRef.current?.focus();
+        }}
+        onPointerDown={(event) => {
+          if (event.target === event.currentTarget) setSelectedId(null);
+        }}
+        ref={dialogRef}
+      >
+        {selected ? (
+          <article className="p-5 sm:p-6">
+            <header className="flex items-start gap-4">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "grid h-16 w-16 shrink-0 place-items-center rounded-xl font-display text-3xl font-bold",
+                  styles.symbolBadge,
+                )}
+              >
+                {selected.symbol}
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2
+                  className="font-display text-2xl font-bold text-ink"
+                  id="periodic-table-element-heading"
+                >
+                  {selected.nameCs} ({selected.symbol})
+                </h2>
+                <p className="mt-1 text-sm text-ink-2">{selected.nameLat}</p>
+              </div>
+              <button
+                aria-label="Zavřít údaje o prvku"
+                className={cn(
+                  "grid h-11 w-11 shrink-0 place-items-center rounded-xl border text-xl font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                  styles.closeButton,
+                )}
+                onClick={() => setSelectedId(null)}
+                ref={closeButtonRef}
+                type="button"
+              >
+                ×
+              </button>
+            </header>
+
+            <dl className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Fact label="Značka / Symbol" value={selected.symbol} />
+              <Fact label="Název (CZ)" value={selected.nameCs} />
+              <Fact label="Latinský název" value={selected.nameLat} />
+              <Fact label="Protonové číslo (Z)" value={String(selected.atomicNumber)} />
+              <Fact
+                label="Relativní atomová hmotnost"
+                value={atomicWeightFormatter.format(selected.atomicWeight)}
+              />
+              <Fact
+                label="Skupina"
+                value={groupLabel(
+                  selected,
+                  selected.group === null ? undefined : groupsByNumber.get(selected.group),
+                )}
+              />
+              <div className={cn("rounded-xl border p-3 sm:col-span-2", styles.fact)}>
+                <dt className="text-sm text-ink-2">Valenční elektronová konfigurace</dt>
+                <dd className="mt-1 font-mono text-lg font-medium text-ink">
+                  <FormattedConfiguration value={selected.valenceConfiguration} />
+                </dd>
+              </div>
+            </dl>
+          </article>
+        ) : null}
+      </dialog>
+    </>
+  );
+}
+
+function elementFamily(element: ElementFlashcardData): (typeof ELEMENT_FAMILIES)[number]["id"] {
+  const atomicNumber = element.atomicNumber;
+  if ((atomicNumber >= 57 && atomicNumber <= 71) || (atomicNumber >= 89 && atomicNumber <= 103)) {
+    return "f-block";
+  }
+  if (element.group === 1 && atomicNumber !== 1) return "alkali";
+  if (element.group === 2) return "alkaline-earth";
+  if (element.group === 18) return "noble-gas";
+  if (element.group === 17) return "halogen";
+  if (element.group !== null && element.group >= 3 && element.group <= 12) return "transition";
+  if ([5, 14, 32, 33, 51, 52, 84].includes(atomicNumber)) return "metalloid";
+  if ([1, 6, 7, 8, 15, 16, 34].includes(atomicNumber)) return "nonmetal";
+  return "other-metal";
+}
+
+function Fact({ label, value }: Readonly<{ label: string; value: string }>) {
+  return (
+    <div className={cn("rounded-xl border p-3", styles.fact)}>
+      <dt className="text-sm text-ink-2">{label}</dt>
+      <dd className="mt-1 font-medium text-ink">{value}</dd>
+    </div>
+  );
+}
+
+function groupLabel(element: ElementFlashcardData, group: ElementGroupData | undefined): string {
+  if (element.group === null) {
+    return element.period === 6 ? "f-blok – Lanthanoidy" : "f-blok – Aktinoidy";
+  }
+  return group ? `${element.group}. skupina – ${group.nameCs}` : `${element.group}. skupina`;
+}
+
+function FormattedConfiguration({ value }: Readonly<{ value: string }>) {
+  const formatted: ReactNode[] = [];
+  let lastIndex = 0;
+  for (const match of value.matchAll(/([spdf])(\d+)/gu)) {
+    const matchIndex = match.index ?? 0;
+    if (matchIndex > lastIndex) formatted.push(value.slice(lastIndex, matchIndex));
+    formatted.push(
+      <Fragment key={match[0]}>
+        {match[1]}
+        <sup>{match[2]}</sup>
+      </Fragment>,
+    );
+    lastIndex = matchIndex + match[0].length;
+  }
+  if (lastIndex < value.length) formatted.push(value.slice(lastIndex));
+  return (
+    <span>
+      <span className="sr-only">{value}</span>
+      <span aria-hidden="true">{formatted}</span>
+    </span>
+  );
+}
