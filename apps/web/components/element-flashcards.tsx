@@ -162,7 +162,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
             >
               {visibleCards.map((card) => (
                 <option key={card.id} value={card.id}>
-                  {card.symbol} — {card.nameCs}
+                  {card.symbol}
                 </option>
               ))}
             </select>

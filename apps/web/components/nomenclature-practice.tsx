@@ -59,6 +59,7 @@ interface Feedback {
   readonly record: NomenclatureRuntimeRecord;
   readonly direction: NomenclatureDirection;
   readonly isCorrect: boolean;
+  readonly submittedAnswer: string;
   readonly hint: string;
 }
 
@@ -305,14 +306,14 @@ export function NomenclaturePractice({
     setAnnouncement("");
   }
 
-  function submit() {
+  function submit(unknown = false) {
     const current = sessionRef.current;
     const record = current?.current;
     if (current?.status !== "running" || !record) return;
 
     const submitted = answerRef.current;
     const asked = directionFor(record, direction);
-    if (!submitted.trim()) {
+    if (!submitted.trim() && !unknown) {
       setInputHint(
         asked === "formula-to-name" ? "Napište český název." : "Napište chemický vzorec.",
       );
@@ -328,7 +329,7 @@ export function NomenclaturePractice({
         nameAliases: record.nameAliases,
         formulaAliases: record.formulaAliases,
       },
-      submitted,
+      unknown ? "" : submitted,
       "lenient",
       symbols,
     );
@@ -367,6 +368,7 @@ export function NomenclaturePractice({
       record,
       direction: asked,
       isCorrect: evaluation.isCorrect,
+      submittedAnswer: unknown ? "Nevím" : submitted,
       hint:
         evaluation.isCorrect && evaluation.match === "missing-diacritics"
           ? `Uznáno bez diakritiky. Přesný zápis: ${record.nameCs}.`
@@ -477,10 +479,10 @@ export function NomenclaturePractice({
             aria-label="Otázka"
             className="mt-4 rounded-2xl border border-line bg-surface p-5 sm:p-7"
           >
-            <p className="text-sm font-semibold text-ink-3">
+            <p className="text-center text-sm font-semibold text-ink-3">
               {asked === "formula-to-name" ? "Pojmenujte sloučeninu" : "Napište vzorec"}
             </p>
-            <h2 className="mt-2 font-display text-4xl font-bold tracking-tight break-words text-ink sm:text-5xl">
+            <h2 className="mt-2 text-center font-display text-4xl font-bold tracking-tight break-words text-ink sm:text-5xl">
               <span className="sr-only">Zadání:</span>{" "}
               {asked === "formula-to-name" ? (
                 <Formula charge={record.charge} formula={record.formula} />
@@ -489,7 +491,7 @@ export function NomenclaturePractice({
               )}
             </h2>
             <form
-              className="mt-6 flex flex-wrap items-end gap-2"
+              className="mt-6 flex flex-wrap items-end justify-center gap-2"
               onSubmit={(event) => {
                 event.preventDefault();
                 submit();
@@ -517,6 +519,13 @@ export function NomenclaturePractice({
                 type="submit"
               >
                 Odeslat
+              </button>
+              <button
+                className="min-h-12 rounded-xl border border-line-strong bg-surface px-5 font-semibold text-ink"
+                onClick={() => submit(true)}
+                type="button"
+              >
+                Nevím
               </button>
             </form>
             {asked === "name-to-formula" && answer.trim() ? (
@@ -585,7 +594,14 @@ function FeedbackCard({ feedback }: { readonly feedback: Feedback }) {
         <span className="font-semibold">{record.nameCs}</span>
       </p>
       {feedback.hint ? <p className="text-sm text-ink-2">{feedback.hint}</p> : null}
-      {isCorrect ? null : <p className="text-sm text-ink-2">{record.explanationCs}</p>}
+      {isCorrect ? null : (
+        <>
+          <p className="text-sm text-ink-2">
+            Vaše odpověď: <span className="font-semibold">{feedback.submittedAnswer}</span>
+          </p>
+          <p className="text-sm text-ink-2">{record.explanationCs}</p>
+        </>
+      )}
     </AnswerFeedback>
   );
 }

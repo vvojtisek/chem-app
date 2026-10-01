@@ -48,6 +48,10 @@ describe("ElementFlashcards", () => {
     render(<ElementFlashcards curatedElements={[hydrogen]} groups={[groupOne]} />);
     fireEvent.click(screen.getByText("Prohlížet karty prvků"));
 
+    const cardPicker = screen.getByRole("combobox", { name: "Vybraná karta" });
+    expect(cardPicker).toHaveDisplayValue("H");
+    expect(screen.queryByRole("heading", { level: 2, name: "Vodík" })).toBeNull();
+
     fireEvent.click(screen.getByRole("button", { name: "Otočit kartu" }));
 
     expect(screen.getByRole("heading", { level: 2, name: "Vodík" })).toBeInTheDocument();
