@@ -239,7 +239,9 @@ describe("PeriodicTableNamePractice exercise", () => {
 
     answer(" H ");
 
-    expect(screen.getByText("Správně: Vodík (H).")).toHaveTextContent("Kategorie: Nekovy");
+    expect(screen.getByText("Správně: Vodík (H).").parentElement).toHaveTextContent(
+      "Kategorie: Nekovy",
+    );
     expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveTextContent("H");
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
     expect(prompt()).toHaveAccessibleName("Zadání: Helium");
