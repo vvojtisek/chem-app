@@ -216,6 +216,9 @@ describe("NomenclaturePractice exercise", () => {
 
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
     expect(screen.getByText("Špatně", { exact: true })).toBeInTheDocument();
+    expect(screen.getByText("Vaše odpověď:").parentElement).toHaveTextContent(
+      "Vaše odpověď: chlorid sodný",
+    );
     expect(screen.getByRole("img", { name: "AgCl" })).toBeInTheDocument();
     expect(screen.getByText("chlorid stříbrný")).toBeInTheDocument();
     expect(screen.getByText("Fixture explanation.")).toBeInTheDocument();
@@ -235,6 +238,27 @@ describe("NomenclaturePractice exercise", () => {
       }),
     );
     expect(await createBrowserNomenclatureStore().load()).toBeNull();
+  });
+
+  it("records Nevím as incorrect, shows the comparison, and centers the prompt", async () => {
+    renderPractice();
+    fireEvent.click(await startButton());
+
+    expect(prompt()).toHaveClass("text-center");
+    fireEvent.click(screen.getByRole("button", { name: "Nevím" }));
+
+    expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
+    expect(screen.getByText("Vaše odpověď:").parentElement).toHaveTextContent(
+      "Vaše odpověď: Nevím",
+    );
+    expect(screen.getByRole("img", { name: "AgCl" })).toBeInTheDocument();
+    await waitFor(async () =>
+      expect((await createBrowserProgressStore().listAttempts()).at(-1)).toMatchObject({
+        compoundId: silverChloride.id,
+        isCorrect: false,
+        outcome: "incorrect",
+      }),
+    );
   });
 
   it("asks for formulas in the name-to-formula direction but keeps ions formula-to-name", async () => {

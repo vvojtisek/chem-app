@@ -26,6 +26,7 @@ class ProfileResponse(ApiModel):
     email: str | None
     email_verified: bool
     display_name: str | None
+    daily_goal: int | None
     role: Literal["admin", "user", "tester", "guest"]
     is_active: bool
     created_at: datetime
@@ -44,6 +45,10 @@ class UpdateProfileRequest(ApiModel):
         if not result:
             raise ValueError("display name cannot be blank")
         return result
+
+
+class UpdateDailyGoalRequest(ApiModel):
+    daily_goal: int | None = Field(ge=1, le=500)
 
 
 class AdminUpdateProfileRequest(UpdateProfileRequest):
@@ -94,6 +99,7 @@ def _profile(user: User) -> ProfileResponse:
         email=user.email,
         email_verified=user.email_verified_at is not None,
         display_name=user.display_name,
+        daily_goal=user.daily_goal,
         role=user.role,
         is_active=user.is_active,
         created_at=user.created_at,
@@ -137,6 +143,20 @@ def update_my_profile(
     if "display_name" in body.model_fields_set:
         return _profile(accounts.update_profile(db, current.user, body.display_name))
     return _profile(accounts.profile(db, current.user))
+
+
+@router.patch(
+    "/me/daily-goal",
+    operation_id="updateMyDailyGoal",
+    response_model=ProfileResponse,
+    responses=WRITE_ERRORS,
+)
+def update_my_daily_goal(
+    body: UpdateDailyGoalRequest,
+    current: Annotated[AuthenticatedSession, Depends(require_csrf)],
+    db: Annotated[Session, Depends(session_dependency)],
+) -> ProfileResponse:
+    return _profile(accounts.update_daily_goal(db, current.user, body.daily_goal))
 
 
 @router.post(

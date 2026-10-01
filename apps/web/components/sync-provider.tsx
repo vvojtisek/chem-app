@@ -128,6 +128,7 @@ export function SyncProvider({
       setQuarantineMessage(formatQuarantineMessage(previousQuarantine));
       const initial = await pendingCount(indexedDB, userId);
       setPending(initial);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.me.periodicMastery(userId) });
       if (!navigator.onLine) {
         setState("offline");
         return;
@@ -138,6 +139,7 @@ export function SyncProvider({
         window.location.reload();
         return;
       }
+      await queryClient.invalidateQueries({ queryKey: queryKeys.me.periodicMastery(userId) });
       const remaining = await pendingCount(indexedDB, userId);
       const quarantine = await quarantineSummary(indexedDB, userId);
       setPending(remaining);

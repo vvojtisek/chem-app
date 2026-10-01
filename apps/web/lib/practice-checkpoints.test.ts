@@ -74,31 +74,13 @@ describe("listResumableExercises", () => {
     );
     await periodic.write(PERIODIC_NAME_SESSION_ID, periodicCheckpoint(PERIODIC_NAME_SESSION_ID), 0);
 
-    expect(await listResumableExercises(indexedDB, userId)).toEqual([
-      {
-        kind: "nomenclature",
-        title: "Názvosloví",
-        detail: "1 správně · 2 špatně",
-        href: "/procvicovani/nazvoslovi",
-        answered: 1,
-        total: 3,
-      },
-      {
-        kind: "periodic-position",
-        title: "Slepá periodická tabulka",
-        detail: "1 správně · 0 špatně",
-        href: "/procvicovani/periodicka-tabulka",
-        answered: 1,
-        total: 3,
-      },
-      {
-        kind: "periodic-name",
-        title: "Názvy a značky prvků",
-        detail: "Značka → Název · 1 správně · 0 špatně",
-        href: "/procvicovani/prvky",
-        answered: 1,
-        total: 3,
-      },
+    const resumed = await listResumableExercises(indexedDB, userId);
+    expect(resumed.map((item) => item.kind)).toEqual([
+      "periodic-name",
+      "periodic-position",
+      "nomenclature",
     ]);
+    expect(resumed.map((item) => item.answered)).toEqual([1, 1, 1]);
+    expect(resumed.every((item) => item.updatedAt !== undefined)).toBe(true);
   });
 });

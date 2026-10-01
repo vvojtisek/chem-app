@@ -16,9 +16,15 @@ test("help and privacy pages are linked and available from the installed offline
     await navigator.serviceWorker.ready;
   });
   await expect
-    .poll(() => page.evaluate(() => caches.keys()))
-    .toEqual(expect.arrayContaining(["inorganic-shell-v6", "learner-data-cache"]));
-  expect(await page.evaluate(() => caches.keys())).not.toContain("inorganic-shell-v5");
+    .poll(() =>
+      page.evaluate(async () =>
+        (await caches.keys()).filter((name) => /^inorganic-shell-v\d+$/u.test(name)),
+      ),
+    )
+    .toHaveLength(1);
+  const cacheNames = await page.evaluate(() => caches.keys());
+  expect(cacheNames).toContain("learner-data-cache");
+  expect(cacheNames).not.toContain("inorganic-shell-v5");
   await page.getByRole("link", { name: "Nápověda" }).click();
   await expect(page.getByRole("heading", { name: "Nápověda" })).toBeVisible();
   await expect(page.getByText(/Příprava a výroba látek vychází/)).toBeVisible();

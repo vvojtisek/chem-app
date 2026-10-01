@@ -17,49 +17,58 @@ export function ResumePractice({ userId }: Readonly<{ userId: string }>) {
   const items = exercises.data ?? [];
   if (items.length === 0) return null;
 
+  const [latest, ...others] = items;
+  if (!latest) return null;
+
   return (
     <section
       aria-labelledby="resume-heading"
-      className="mb-6 rounded-2xl border border-accent/30 bg-accent-soft p-5 sm:p-6"
+      className="rounded-2xl border border-accent/30 bg-accent-soft p-5 sm:p-6"
     >
       <h2 className="font-display text-xl font-bold text-ink" id="resume-heading">
-        {items.length === 1 ? "Rozpracované cvičení" : "Rozpracovaná cvičení"}
+        Rozpracované cvičení
       </h2>
-      <ul className="mt-3 grid list-none gap-3 p-0">
-        {items.map((item, index) => (
-          <li className="flex flex-wrap items-center gap-x-4 gap-y-2" key={item.kind}>
-            <div className="min-w-48 flex-1">
-              <p className="font-semibold text-ink">{item.title}</p>
-              <p className="text-sm text-ink-2">
-                <span className="font-semibold tabular-nums">
-                  {item.answered} z {item.total}
-                </span>{" "}
-                · {item.detail}
-              </p>
-              <div
-                aria-hidden="true"
-                className="mt-2 h-1.5 max-w-sm overflow-hidden rounded-full bg-surface"
-              >
-                <div
-                  className="h-full rounded-full bg-accent"
-                  style={{ width: `${(100 * item.answered) / item.total}%` }}
-                />
-              </div>
-            </div>
-            <Link
-              className={cn(
-                "inline-flex min-h-11 items-center rounded-xl px-4 font-semibold",
-                index === 0
-                  ? "bg-accent text-on-fill"
-                  : "border border-line-strong bg-surface text-ink",
-              )}
-              href={item.href}
-            >
-              Pokračovat<span className="sr-only">: {item.title}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3">
+        <div className="min-w-48 flex-1">
+          <p className="font-semibold text-ink">{latest.title}</p>
+          <p className="text-sm text-ink-2">
+            <span className="font-semibold tabular-nums">
+              {latest.answered} z {latest.total}
+            </span>{" "}
+            · {latest.detail}
+          </p>
+          <div
+            aria-hidden="true"
+            className="mt-2 h-1.5 max-w-sm overflow-hidden rounded-full bg-surface"
+          >
+            <div
+              className="h-full rounded-full bg-accent"
+              style={{ width: `${(100 * latest.answered) / latest.total}%` }}
+            />
+          </div>
+        </div>
+        <Link
+          className={cn(
+            "inline-flex min-h-11 items-center rounded-xl bg-accent px-4 font-semibold text-on-fill",
+          )}
+          href={latest.href}
+        >
+          Pokračovat<span className="sr-only">: {latest.title}</span>
+        </Link>
+      </div>
+      {others.length > 0 ? (
+        <p className="mt-4 text-sm text-ink-2">
+          Další rozpracovaná cvičení:{" "}
+          {others.map((item, index) => (
+            <span key={item.kind}>
+              {index > 0 ? " · " : null}
+              <Link className="font-semibold text-accent-strong underline" href={item.href}>
+                {item.title}
+              </Link>
+            </span>
+          ))}
+        </p>
+      ) : null}
     </section>
   );
 }

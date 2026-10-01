@@ -111,7 +111,10 @@ export function createBrowserPeriodicSessionStore(
     },
 
     async write(id, checkpoint, expectedRevision) {
-      const valid = checkpoint === null ? null : periodicCheckpointSchema.parse(checkpoint);
+      const valid =
+        checkpoint === null
+          ? null
+          : periodicCheckpointSchema.parse({ ...checkpoint, updatedAt: new Date().toISOString() });
       if (valid && (valid.id !== id || valid.revision !== expectedRevision + 1)) {
         throw new Error("Nesouhlasí revize uložené série.");
       }

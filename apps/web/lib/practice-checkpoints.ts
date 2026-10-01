@@ -14,6 +14,7 @@ export interface ResumableExercise {
   readonly href: string;
   readonly answered: number;
   readonly total: number;
+  readonly updatedAt: string | undefined;
 }
 
 const NAME_MODE_LABELS: Readonly<
@@ -52,6 +53,7 @@ export async function listResumableExercises(
       href: "/procvicovani/nazvoslovi",
       answered: nomenclature.solvedIds.length,
       total: nomenclature.total,
+      updatedAt: nomenclature.updatedAt,
     });
   }
   if (position) {
@@ -62,6 +64,7 @@ export async function listResumableExercises(
       href: "/procvicovani/periodicka-tabulka",
       answered: position.solvedIds.length,
       total: position.total,
+      updatedAt: position.updatedAt,
     });
   }
   if (names) {
@@ -72,7 +75,10 @@ export async function listResumableExercises(
       href: "/procvicovani/prvky",
       answered: names.solvedIds.length,
       total: names.total,
+      updatedAt: names.updatedAt,
     });
   }
-  return exercises;
+  return exercises.sort((left, right) =>
+    (right.updatedAt ?? "").localeCompare(left.updatedAt ?? ""),
+  );
 }

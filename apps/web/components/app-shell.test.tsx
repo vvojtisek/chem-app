@@ -61,6 +61,7 @@ describe("AppShell", () => {
     ["/procvicovani/nazvoslovi", "Procvičovat"],
     ["/flashcards/prvky", "Procvičovat"],
     ["/uceni/priprava-vyroba", "Učivo"],
+    ["/uceni/karty-prvku", "Učivo"],
     ["/pokrok", "Pokrok"],
   ])("marks the destination owning %s as the current page", (pathname, label) => {
     hooks.pathname = pathname;

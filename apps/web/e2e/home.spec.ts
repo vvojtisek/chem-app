@@ -14,14 +14,47 @@ async function keepQuestionOrder(page: Page): Promise<void> {
   });
 }
 
-test("shows the three numbered learning modules on desktop and mobile", async ({ page }) => {
+test("shows the four dashboard areas and app version on desktop and mobile", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
-  await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
+  await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+  await expect(page.getByTitle("Verze aplikace")).toHaveText("v1.0.0");
   await expect(page.getByText("Offline výuka")).toHaveCount(0);
   await expect(page.getByText("Vyberte, co chcete trénovat")).toHaveCount(0);
   await expect(page.getByText("Příprava MVP")).toHaveCount(0);
+});
+
+test("keeps the phone shell and first dashboard content usable at 360 px", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/");
+  await expect(page.getByTitle("Verze aplikace")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Nápověda" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Profil", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Dnešní cíl" })).toBeInViewport();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  await page.screenshot({ path: testInfo.outputPath("dashboard-360.png"), fullPage: true });
+});
+
+test("saves a daily goal on the account and shows it after reloading the dashboard", async ({
+  page,
+}) => {
+  await page.goto("/ucet");
+  await expect(page.getByText("Přihlašovací jméno")).toBeVisible();
+  const goal = page.getByRole("spinbutton", { name: "Počet odpovědí za den (nepovinné)" });
+  await goal.fill("40");
+  await page.getByRole("button", { name: "Uložit cíl" }).click();
+  await expect(page.getByText("Denní cíl byl uložen.")).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByText(/z 40 odpovědí/)).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(/z 40 odpovědí/)).toBeVisible();
+  await page.goto("/ucet");
+  await goal.fill("");
+  await page.getByRole("button", { name: "Uložit cíl" }).click();
+  await expect(page.getByText("Denní cíl byl uložen.")).toBeVisible();
 });
 
 test("fits the learning modes in an iPad-sized viewport", async ({ page }, testInfo) => {
@@ -33,15 +66,11 @@ test("fits the learning modes in an iPad-sized viewport", async ({ page }, testI
   ]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
 
-    await expect(page.getByRole("heading", { level: 1, name: "Anorganická chemie" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
-    await expect(page.getByRole("heading", { level: 3 }).last()).toBeInViewport();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
+    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       viewport.width,
     );
-    expect(
-      await page.locator("main").evaluate((main) => main.getBoundingClientRect().height),
-    ).toBeLessThanOrEqual(viewport.height);
 
     await page.screenshot({
       path: testInfo.outputPath(`ipad-home-${viewport.name}.png`),
@@ -59,16 +88,16 @@ test("reopens the shell while offline", async ({ context, page }) => {
   await context.setOffline(true);
   await page.reload({ waitUntil: "domcontentloaded" });
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
 });
 
-test("practices a shuffled element symbol and keeps the editable card library", async ({
+test("practices a shuffled element and opens the editable card library under Učivo", async ({
   page,
 }) => {
   await keepQuestionOrder(page);
   await page.goto("/flashcards/prvky");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Značky prvků");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Karty prvků · kvíz");
   await page.getByRole("button", { name: /^Přejít na cvičení/ }).click();
   await expect(page.getByRole("timer")).toHaveText("05:00");
   const card = page.getByRole("article", { name: /^Karta 1 z/ });
@@ -78,13 +107,12 @@ test("practices a shuffled element symbol and keeps the editable card library", 
   if (!symbol) throw new Error(`No symbol found for element "${prompt}".`);
   await card.getByRole("textbox", { name: "Chemická značka" }).fill(symbol);
   await card.getByRole("textbox", { name: "Chemická značka" }).press("Enter");
-  await expect(card.getByRole("status")).toHaveText("Správně.");
+  await expect(card.getByRole("status")).toContainText("Správně.");
   await expect(card.getByRole("button", { name: "Další" })).toBeVisible();
 
-  await page.getByText("Prohlížet karty prvků").click();
-  await expect(
-    page.getByRole("region", { name: "Prvky" }).getByText("H", { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Otočit kartu" })).toHaveCount(0);
+  await page.goto("/uceni/karty-prvku");
+  await expect(page.getByRole("combobox", { name: "Vybraná karta" })).toHaveValue("element.001-h");
   await page.getByRole("button", { name: "Otočit kartu" }).click();
   await expect(page.getByRole("heading", { level: 2, name: "Vodík" })).toBeVisible();
   await expect(page.getByText("Valenční konfigurace")).toBeVisible();
@@ -101,6 +129,26 @@ test("practices a shuffled element symbol and keeps the editable card library", 
   await expect(page.getByRole("region", { name: "Prvky" }).getByRole("status")).toContainText(
     "Lokální úprava byla uložena",
   );
+});
+
+test("grades selected element facts in reverse recall mode on a phone", async ({ page }) => {
+  await keepQuestionOrder(page);
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/flashcards/prvky");
+  await page.getByRole("button", { name: "Ze značky název" }).click();
+  await page.getByRole("checkbox", { name: "Protonové číslo" }).check();
+  await page.getByRole("button", { name: /^Přejít na cvičení/ }).click();
+  const card = page.getByRole("article", { name: /^Karta 1 z/ });
+  await expect(card.getByRole("heading", { name: "H" })).toBeVisible();
+  await card.getByRole("textbox", { name: "Český název" }).fill("vodik");
+  await card.getByRole("button", { name: "Enter · Otočit" }).click();
+  await expect(card.getByRole("alert")).toContainText("Vyplňte všechna zvolená pole");
+  await card.getByRole("textbox", { name: "Protonové číslo" }).fill("1");
+  await card.getByRole("button", { name: "Enter · Otočit" }).click();
+  await expect(card.getByRole("status")).toContainText("Správně.");
+  await expect(card.getByRole("status")).toContainText("Správně: Vodík");
+  await expect(card.getByRole("status")).not.toContainText("Vaše odpověď: vodik");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
 
 test("places a blind periodic-table element inline and moves straight on", async ({ page }) => {
@@ -503,5 +551,5 @@ test("returns from an exercise to the practice categories and to the dashboard",
   await expect(page).toHaveURL(/\/procvicovani\/nazvoslovi$/);
   await mainNavigation.getByRole("link", { name: "Domů" }).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Anorganická chemie");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
 });

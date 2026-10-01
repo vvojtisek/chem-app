@@ -124,6 +124,41 @@ def test_abuse_request_quota(db: Session) -> None:
     assert not auth.consume_rate_limit(db, settings, "test-quota", key, limit=2)
 
 
+@pytest.mark.anyio
+async def test_daily_goal_is_per_account_and_requires_authentication_and_csrf(db: Session) -> None:
+    first = account(db)
+    second = account(db)
+    tester = account(db, "tester")
+    async with client() as http:
+        denied = await http.patch("/api/v1/me/daily-goal", json={"dailyGoal": 40})
+        assert denied.status_code == 401
+        await login(http, first)
+        denied = await http.patch("/api/v1/me/daily-goal", json={"dailyGoal": 40})
+        assert denied.status_code == 403
+        invalid = await http.patch(
+            "/api/v1/me/daily-goal", headers=csrf(http), json={"dailyGoal": 0}
+        )
+        assert invalid.status_code == 422
+        saved = await http.patch(
+            "/api/v1/me/daily-goal", headers=csrf(http), json={"dailyGoal": 40}
+        )
+        assert saved.status_code == 200, saved.text
+        assert saved.json()["dailyGoal"] == 40
+        assert db.get(User, second.id).daily_goal is None
+        cleared = await http.patch(
+            "/api/v1/me/daily-goal", headers=csrf(http), json={"dailyGoal": None}
+        )
+        assert cleared.status_code == 200, cleared.text
+        assert cleared.json()["dailyGoal"] is None
+    async with client() as http:
+        await login(http, tester)
+        denied = await http.patch(
+            "/api/v1/me/daily-goal", headers=csrf(http), json={"dailyGoal": 40}
+        )
+        assert denied.status_code == 403
+        assert db.get(User, tester.id).daily_goal is None
+
+
 def test_purge_preserves_inactive_accounts_with_real_passwords_and_attempts(db: Session) -> None:
     old = datetime.now(UTC) - timedelta(days=8)
     seeded = account(db)

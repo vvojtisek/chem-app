@@ -1,9 +1,9 @@
+import { parseEquationFormula } from "@inorganic/chemistry";
 import {
   curatedPreparationProduction,
   type PreparationProductionRuntimeProduct,
 } from "@inorganic/content/preparation-production";
 import { curatedElements, curatedGroups } from "@inorganic/content/runtime";
-import { parseEquationFormula } from "@inorganic/chemistry";
 import Link from "next/link";
 import { ElementBrowser } from "@/components/element-browser";
 import { GroupMnemonics } from "@/components/group-mnemonics";
@@ -34,12 +34,26 @@ export default function ElementLearningPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
         actions={
-          <Link
-            className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-            href="/uceni/priprava-vyroba"
-          >
-            Příprava a výroba látek
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 font-semibold text-on-fill hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              href="/uceni/prvky/tabulka"
+            >
+              Prozkoumat periodickou tabulku
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
+              href="/uceni/karty-prvku"
+            >
+              Karty prvků
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
+              href="/uceni/priprava-vyroba"
+            >
+              Příprava a výroba látek
+            </Link>
+          </div>
         }
         description="Najděte prvek podle názvu, značky nebo protonového čísla, nebo zužte výběr podle skupiny a periody. Tato sada slouží k učení: neobsahuje otázky ani nezaznamenává pokusy."
         title="Prvky a jejich skupiny"

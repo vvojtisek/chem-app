@@ -59,7 +59,7 @@ describe("nomenclature checkpoint and attempts", () => {
   it("commits an attempt and pinned session together, then replays an identical event once", async () => {
     const store = createBrowserNomenclatureStore();
     await store.write(checkpoint, 0, [attempt]);
-    expect(await store.load()).toEqual(checkpoint);
+    expect(await store.load()).toEqual({ ...checkpoint, updatedAt: expect.any(String) });
     expect(await createBrowserProgressStore().listAttempts()).toEqual([attempt]);
 
     await store.write({ ...checkpoint, revision: 2 }, 1, [attempt]);

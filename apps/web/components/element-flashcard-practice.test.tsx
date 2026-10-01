@@ -1,7 +1,6 @@
+import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { ElementFlashcardPractice } from "./element-flashcard-practice";
 
 const elements: readonly ElementFlashcardData[] = [
@@ -62,7 +61,7 @@ describe("ElementFlashcardPractice", () => {
     fireEvent.submit(form);
 
     expect(screen.getByRole("status")).toHaveTextContent("Správně.");
-    expect(screen.getByText("He", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Správně: He");
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
     expect(screen.getByText("Zbývá: 1")).toBeInTheDocument();
   });
@@ -80,6 +79,60 @@ describe("ElementFlashcardPractice", () => {
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(summary).toHaveTextContent("Špatně");
     expect(summary).toHaveTextContent("1 z 1");
+  });
+
+  it("shows incorrect selected facts without repeating correct answers", () => {
+    render(<ElementFlashcardPractice elements={elements.slice(0, 1)} />);
+    fireEvent.click(screen.getByRole("button", { name: "Ze značky název" }));
+    expect(screen.getByRole("button", { name: "Ze značky název" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    for (const label of ["Protonové číslo", "Relativní atomová hmotnost", "Valenční konfigurace"]) {
+      fireEvent.click(screen.getByRole("checkbox", { name: label }));
+    }
+    fireEvent.click(screen.getByRole("button", { name: "Přejít na cvičení (1 prvek)" }));
+    expect(screen.getByRole("heading", { name: "H" })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("textbox", { name: "Český název" }), {
+      target: { value: "vodik" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enter · Otočit" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("Vyplňte všechna zvolená pole");
+    expect(screen.getByText("Špatně: 0")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Protonové číslo" }), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "Relativní atomová hmotnost" }), {
+      target: { value: "1,008" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "Valenční konfigurace" }), {
+      target: { value: "1s2" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enter · Otočit" }));
+    const result = screen.getByRole("status");
+    expect(result).toHaveTextContent("Správně: Vodík");
+    expect(result).not.toHaveTextContent("Vaše odpověď: vodik");
+    expect(result).toHaveTextContent("Správně: 1.008");
+    expect(result).not.toHaveTextContent("Vaše odpověď: 1,008");
+    expect(result).toHaveTextContent("Vaše odpověď: 1s2");
+    expect(result).toHaveTextContent("Správně: 1s1");
+    expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
+  });
+
+  it("counts a card correct only when every selected field is correct", () => {
+    render(<ElementFlashcardPractice elements={elements.slice(0, 1)} />);
+    fireEvent.click(screen.getByRole("checkbox", { name: "Protonové číslo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Přejít na cvičení (1 prvek)" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Chemická značka" }), {
+      target: { value: "H" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "Protonové číslo" }), {
+      target: { value: "1" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enter · Otočit" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Správně.");
+    expect(screen.getByRole("region", { name: "Průběh kvízu" })).toHaveTextContent("Správně: 1");
   });
 
   it("restarts the same selection and stops after five minutes", () => {

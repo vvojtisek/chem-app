@@ -95,7 +95,10 @@ describe("legacy import", () => {
     await periodicStore.write(PERIODIC_NAME_SESSION_ID, checkpoint, 0);
 
     expect(await legacyAttemptCount(indexedDB, user)).toBeNull();
-    expect(await periodicStore.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await periodicStore.load(PERIODIC_NAME_SESSION_ID)).toEqual({
+      ...checkpoint,
+      updatedAt: expect.any(String),
+    });
   });
 
   it("keeps an active periodic checkpoint on the device when old attempts are imported", async () => {
@@ -116,7 +119,10 @@ describe("legacy import", () => {
 
     expect(await legacyAttemptCount(indexedDB, user)).toBe(1);
     await importLegacyData(indexedDB, user);
-    expect(await periodicStore.load(PERIODIC_NAME_SESSION_ID)).toEqual(checkpoint);
+    expect(await periodicStore.load(PERIODIC_NAME_SESSION_ID)).toEqual({
+      ...checkpoint,
+      updatedAt: expect.any(String),
+    });
     expect(await createBrowserProgressStore(indexedDB, user).listAttempts()).toEqual([attempt]);
     expect(await createBrowserProgressStore(indexedDB).listAttempts()).toEqual([]);
     expect(await legacyAttemptCount(indexedDB, user)).toBeNull();
