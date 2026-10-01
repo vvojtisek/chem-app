@@ -17,10 +17,11 @@
     var(--element-category-color, var(--surface-2)) 27%,
     var(--surface-2)
   );
-  color: var(--ink-2);
 }
 
+/* Full-strength ink: secondary ink falls below 4.5:1 on some tints in the dark theme. */
 .tile {
+  color: var(--ink);
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
