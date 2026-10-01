@@ -1,6 +1,7 @@
 "use client";
 
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
+import { evaluateElementAnswer } from "@inorganic/chemistry";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -13,8 +14,26 @@ import { drawSeries, selectElements } from "@/lib/periodic-table-scope";
 
 const SESSION_DURATION_MS = 5 * 60 * 1000;
 
+type RecallDirection = "symbol" | "name";
+type ExtraField = "atomicNumber" | "atomicWeight" | "valenceConfiguration";
+type Answers = Record<RecallDirection | ExtraField, string>;
+
+const emptyAnswers: Answers = {
+  symbol: "",
+  name: "",
+  atomicNumber: "",
+  atomicWeight: "",
+  valenceConfiguration: "",
+};
+const extraFields: readonly { readonly key: ExtraField; readonly label: string }[] = [
+  { key: "atomicNumber", label: "Protonové číslo" },
+  { key: "atomicWeight", label: "Relativní atomová hmotnost" },
+  { key: "valenceConfiguration", label: "Valenční konfigurace" },
+];
+
 interface AnswerFeedback {
-  readonly answer: string;
+  readonly answers: Answers;
+  readonly results: Readonly<Record<RecallDirection | ExtraField, boolean>>;
   readonly isCorrect: boolean;
 }
 
@@ -31,7 +50,11 @@ export function ElementFlashcardPractice({
   const [phase, setPhase] = useState<"selection" | "running" | "summary">("selection");
   const [questions, setQuestions] = useState<readonly ElementFlashcardData[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [answer, setAnswer] = useState("");
+  const [direction, setDirection] = useState<RecallDirection>("symbol");
+  const [extraSelection, setExtraSelection] = useState<readonly ExtraField[]>([]);
+  const [roundDirection, setRoundDirection] = useState<RecallDirection>("symbol");
+  const [roundExtras, setRoundExtras] = useState<readonly ExtraField[]>([]);
+  const [answers, setAnswers] = useState<Answers>(emptyAnswers);
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [correct, setCorrect] = useState(0);
   const [incorrect, setIncorrect] = useState(0);
@@ -46,8 +69,10 @@ export function ElementFlashcardPractice({
   function startRound() {
     if (selectedElements.length === 0) return;
     setQuestions(drawSeries(selectedElements, selectedElements.length, random));
+    setRoundDirection(direction);
+    setRoundExtras(extraSelection);
     setQuestionIndex(0);
-    setAnswer("");
+    setAnswers(emptyAnswers);
     setFeedback(null);
     setCorrect(0);
     setIncorrect(0);
@@ -73,19 +98,42 @@ export function ElementFlashcardPractice({
     if (phase === "running" && !feedback) inputRef.current?.focus();
   }, [phase, feedback]);
 
-  function reveal(answerText: string, knewIt: boolean) {
+  function reveal(knewIt: boolean) {
     if (phase !== "running" || feedback || !current) return;
-    if (knewIt && !answerText.trim()) {
-      setNotice("Napište značku prvku, nebo zvolte „Nevím“.");
+    const requiredFields = [roundDirection, ...roundExtras];
+    if (knewIt && requiredFields.some((field) => !answers[field].trim())) {
+      setNotice("Vyplňte všechna zvolená pole, nebo zvolte „Nevím“.");
       inputRef.current?.focus();
       return;
     }
+    const results: Record<RecallDirection | ExtraField, boolean> = {
+      symbol: false,
+      name: false,
+      atomicNumber: false,
+      atomicWeight: false,
+      valenceConfiguration: false,
+    };
+    if (knewIt) {
+      results[roundDirection] = evaluateElementAnswer(
+        answers[roundDirection],
+        current,
+        roundDirection,
+      ).isCorrect;
+      results.atomicNumber = Number(answers.atomicNumber) === current.atomicNumber;
+      results.atomicWeight =
+        Number(answers.atomicWeight.replace(",", ".")) === current.atomicWeight;
+      results.valenceConfiguration =
+        answers.valenceConfiguration.normalize("NFKC").replace(/\s+/gu, "").toLowerCase() ===
+        current.valenceConfiguration.normalize("NFKC").replace(/\s+/gu, "").toLowerCase();
+    }
+    const isCorrect = knewIt && requiredFields.every((field) => results[field]);
     setNotice("");
     setFeedback({
-      answer: answerText.trim(),
-      isCorrect: knewIt && answerText.trim() === current.symbol,
+      answers,
+      results,
+      isCorrect,
     });
-    if (knewIt && answerText.trim() === current.symbol) {
+    if (isCorrect) {
       setCorrect((count) => count + 1);
     } else {
       setIncorrect((count) => count + 1);
@@ -99,7 +147,7 @@ export function ElementFlashcardPractice({
       return;
     }
     setQuestionIndex((index) => index + 1);
-    setAnswer("");
+    setAnswers(emptyAnswers);
     setFeedback(null);
     setNotice("");
   }
@@ -108,7 +156,7 @@ export function ElementFlashcardPractice({
     stopStopwatch();
     setQuestions([]);
     setQuestionIndex(0);
-    setAnswer("");
+    setAnswers(emptyAnswers);
     setFeedback(null);
     setPhase("selection");
   }
@@ -125,15 +173,65 @@ export function ElementFlashcardPractice({
           className="mt-1 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
           id="flashcard-practice-heading"
         >
-          Značky prvků
+          Karty prvků · kvíz
         </h1>
         <p className="mt-3 max-w-2xl leading-7 text-ink-2">
-          Podle českého názvu si vybavte značku prvku. Vyberte prvky a spusťte časovaný kvíz.
+          Vyberte prvky a údaje, které si chcete vybavit. Na každou kartu máte jeden pokus.
         </p>
       </header>
 
       {phase === "selection" ? (
         <div className="mt-7">
+          <fieldset className="mb-5 rounded-2xl border border-line bg-surface p-4">
+            <legend className="px-1 font-semibold text-ink">Co chcete určit?</legend>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  ["symbol", "Z názvu značku"],
+                  ["name", "Ze značky název"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  aria-pressed={direction === value}
+                  className={`min-h-11 rounded-xl border px-4 font-semibold ${
+                    direction === value
+                      ? "border-accent bg-accent text-on-fill"
+                      : "border-line-strong text-ink"
+                  }`}
+                  key={value}
+                  onClick={() => setDirection(value)}
+                  type="button"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <fieldset className="mb-5 rounded-2xl border border-line bg-surface p-4">
+            <legend className="px-1 font-semibold text-ink">Další údaje k otestování</legend>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {extraFields.map(({ key, label }) => (
+                <label
+                  className="flex min-h-11 items-center gap-3 rounded-xl border border-line-strong px-3 text-sm font-medium text-ink"
+                  key={key}
+                >
+                  <input
+                    checked={extraSelection.includes(key)}
+                    className="h-5 w-5 accent-accent"
+                    onChange={(event) =>
+                      setExtraSelection((previous) =>
+                        event.target.checked
+                          ? [...previous, key]
+                          : previous.filter((field) => field !== key),
+                      )
+                    }
+                    type="checkbox"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <PeriodicTableSelectionStep
             layout={layout}
             onChange={setSelection}
@@ -192,38 +290,70 @@ export function ElementFlashcardPractice({
               </p>
               <div className="mt-4 [perspective:1000px]">
                 <div
-                  className="relative min-h-64 transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d]"
-                  style={{ transform: feedback ? "rotateY(180deg)" : "rotateY(0deg)" }}
+                  className="relative transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d]"
+                  style={{
+                    minHeight: `${21 + roundExtras.length * 5}rem`,
+                    transform: feedback ? "rotateY(180deg)" : "rotateY(0deg)",
+                  }}
                 >
                   <div
                     aria-hidden={feedback !== null}
                     className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-surface-2 p-5 text-center [backface-visibility:hidden]"
                   >
                     <p className="text-sm font-semibold tracking-wide text-ink-2 uppercase">
-                      Jaká je chemická značka?
+                      {roundDirection === "symbol"
+                        ? "Jaká je chemická značka?"
+                        : "Jaký je český název?"}
                     </p>
                     <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-                      {current.nameCs}
+                      {roundDirection === "symbol" ? current.nameCs : current.symbol}
                     </h2>
                     <form
-                      className="mt-6 flex w-full max-w-md flex-wrap justify-center gap-2"
+                      className="mt-6 grid w-full max-w-md gap-3"
                       onSubmit={(event) => {
                         event.preventDefault();
-                        reveal(answer, true);
+                        reveal(true);
                       }}
                     >
-                      <label className="sr-only" htmlFor="element-symbol-answer">
-                        Chemická značka
+                      <label className="grid gap-1 text-left text-sm font-medium text-ink-2">
+                        {roundDirection === "symbol" ? "Chemická značka" : "Český název"}
+                        <input
+                          autoComplete="off"
+                          className="min-h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-center text-lg font-semibold"
+                          disabled={feedback !== null}
+                          onChange={(event) =>
+                            setAnswers((previous) => ({
+                              ...previous,
+                              [roundDirection]: event.target.value,
+                            }))
+                          }
+                          ref={inputRef}
+                          value={answers[roundDirection]}
+                        />
                       </label>
-                      <input
-                        autoComplete="off"
-                        className="min-h-12 min-w-40 flex-1 rounded-xl border border-line-strong bg-surface px-4 text-center text-xl font-semibold"
-                        disabled={feedback !== null}
-                        id="element-symbol-answer"
-                        onChange={(event) => setAnswer(event.target.value)}
-                        ref={inputRef}
-                        value={answer}
-                      />
+                      {extraFields
+                        .filter(({ key }) => roundExtras.includes(key))
+                        .map(({ key, label }) => (
+                          <label
+                            className="grid gap-1 text-left text-sm font-medium text-ink-2"
+                            key={key}
+                          >
+                            {label}
+                            <input
+                              autoComplete="off"
+                              className="min-h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-center text-lg font-semibold"
+                              disabled={feedback !== null}
+                              inputMode={key === "valenceConfiguration" ? "text" : "decimal"}
+                              onChange={(event) =>
+                                setAnswers((previous) => ({
+                                  ...previous,
+                                  [key]: event.target.value,
+                                }))
+                              }
+                              value={answers[key]}
+                            />
+                          </label>
+                        ))}
                       <button
                         className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:opacity-50"
                         disabled={feedback !== null}
@@ -235,7 +365,7 @@ export function ElementFlashcardPractice({
                     <button
                       className="mt-3 min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-50"
                       disabled={feedback !== null}
-                      onClick={() => reveal("", false)}
+                      onClick={() => reveal(false)}
                       type="button"
                     >
                       Nevím
@@ -246,25 +376,47 @@ export function ElementFlashcardPractice({
                     className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-surface-2 p-5 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]"
                   >
                     <p className="text-sm font-semibold tracking-wide text-ink-2 uppercase">
-                      {current.nameCs}
+                      {roundDirection === "symbol" ? current.nameCs : current.symbol}
                     </p>
-                    <p className="mt-3 text-7xl font-bold tracking-tight text-ink sm:text-8xl">
-                      {current.symbol}
+                    <p className="mt-3 text-5xl font-bold tracking-tight text-ink sm:text-7xl">
+                      {roundDirection === "symbol" ? current.symbol : current.nameCs}
                     </p>
                     {feedback ? (
-                      <p
+                      <div
                         aria-live="polite"
-                        className={`mt-4 rounded-full px-4 py-2 font-semibold ${
+                        className={`mt-4 w-full max-w-lg rounded-xl px-4 py-3 text-left ${
                           feedback.isCorrect ? "bg-good-soft text-good" : "bg-bad-soft text-bad"
                         }`}
                         role="status"
                       >
-                        {feedback.isCorrect
-                          ? "Správně."
-                          : feedback.answer
-                            ? `Špatně. Vaše odpověď: ${feedback.answer}.`
-                            : "Nevadí, příště to vyjde."}
-                      </p>
+                        <p className="font-semibold">
+                          {feedback.isCorrect ? "Správně." : "Nevadí, příště to vyjde."}
+                        </p>
+                        <dl className="mt-2 grid gap-1 text-sm">
+                          {([roundDirection, ...roundExtras] as const).map((field) => {
+                            const label =
+                              field === "symbol"
+                                ? "Chemická značka"
+                                : field === "name"
+                                  ? "Český název"
+                                  : extraFields.find((item) => item.key === field)?.label;
+                            const expected =
+                              field === "name" ? current.nameCs : String(current[field]);
+                            return (
+                              <div key={field}>
+                                <dt className="font-semibold">
+                                  {label}
+                                  {feedback.results[field] ? " ✓" : " ✗"}
+                                </dt>
+                                <dd>
+                                  Vaše odpověď: {feedback.answers[field].trim() || "Nevím"} ·
+                                  Správně: {expected}
+                                </dd>
+                              </div>
+                            );
+                          })}
+                        </dl>
+                      </div>
                     ) : null}
                   </div>
                 </div>

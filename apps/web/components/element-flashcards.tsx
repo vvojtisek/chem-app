@@ -4,7 +4,6 @@ import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { GroupMnemonics } from "@/components/group-mnemonics";
-import { ElementFlashcardPractice } from "@/components/element-flashcard-practice";
 
 import {
   createBrowserElementCardStore,
@@ -19,19 +18,7 @@ interface ElementFlashcardsProps {
 }
 
 export function ElementFlashcards({ curatedElements, groups }: ElementFlashcardsProps) {
-  return (
-    <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-8">
-      <ElementFlashcardPractice elements={curatedElements} />
-      <details className="rounded-2xl border border-line bg-surface p-5">
-        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-ink">
-          Prohlížet karty prvků
-        </summary>
-        <div className="mt-4">
-          <ElementCardLibrary curatedElements={curatedElements} groups={groups} />
-        </div>
-      </details>
-    </div>
-  );
+  return <ElementCardLibrary curatedElements={curatedElements} groups={groups} />;
 }
 
 function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps) {

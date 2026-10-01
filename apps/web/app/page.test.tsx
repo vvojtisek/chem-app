@@ -47,7 +47,11 @@ describe("HomePage", () => {
     );
     expect(screen.queryByRole("link", { name: "Procvičit názvy" })).toBeNull();
     expect(screen.getByRole("link", { name: "Procvičit pozice" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Otevřít karty prvků" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Pětiminutový kvíz prvků" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Karty prvků" })).toHaveAttribute(
+      "href",
+      "/uceni/karty-prvku",
+    );
     expect(screen.queryByText("Připravujeme obsah")).toBeNull();
   });
 });

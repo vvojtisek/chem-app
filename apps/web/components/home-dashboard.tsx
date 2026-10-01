@@ -186,6 +186,14 @@ export function HomeDashboard() {
               <li>
                 <Link
                   className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
+                  href="/uceni/karty-prvku"
+                >
+                  Karty prvků <span aria-hidden="true">→</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
                   href="/uceni/prvky"
                 >
                   Prvky a skupiny <span aria-hidden="true">→</span>

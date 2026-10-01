@@ -53,8 +53,8 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 - Cover mineral-to-element matching and the principles, conditions, and equations of important production processes.
 - Provide two-sided element cards with occurrence, important ores, preparation, production, and equations where applicable.
 - “Knew it / Didn’t know it” grading drives a deterministic spaced-repetition schedule.
-- Element flashcards also offer a timed five-minute symbol-recall exercise. Learners choose elements using the same shared periodic-table selection as the name/symbol and blind-table exercises. Cards are shuffled at start; each shows a Czech name and symbol input, Enter or „Nevím“ reveals the back with correctness feedback, and „Další“ advances. The HUD shows correct, incorrect, remaining, and time; Reset restarts the same selection, while Ukončit shows current results.
-- In the browsable two-sided element cards, the card picker shows only the prompt symbol. The Czech name is not exposed until the learner flips the card.
+- `/flashcards/prvky` is a timed five-minute recall exercise. Learners choose elements using the shared periodic-table selection and toggle between recalling symbols from Czech names and names from symbols. They may also select proton number, relative atomic weight, and valence configuration as additional required answers. All selected fields must be filled before submission; „Nevím“ reveals them without requiring input. The result compares each submitted field with the reviewed value. A card scores correct only when every selected field is correct. Cards are shuffled at start; the HUD shows correct, incorrect, remaining, and time; Reset restarts the same selection, while Ukončit shows current results.
+- `/uceni/karty-prvku` contains the browsable two-sided element cards and device-local edits. The card picker shows only the prompt symbol. The Czech name is not exposed until the learner flips the card.
 
 ### Preparation and production equation practice
 

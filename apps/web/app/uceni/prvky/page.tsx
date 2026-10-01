@@ -34,12 +34,20 @@ export default function ElementLearningPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
         actions={
-          <Link
-            className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-            href="/uceni/priprava-vyroba"
-          >
-            Příprava a výroba látek
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
+              href="/uceni/karty-prvku"
+            >
+              Karty prvků
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
+              href="/uceni/priprava-vyroba"
+            >
+              Příprava a výroba látek
+            </Link>
+          </div>
         }
         description="Najděte prvek podle názvu, značky nebo protonového čísla, nebo zužte výběr podle skupiny a periody. Tato sada slouží k učení: neobsahuje otázky ani nezaznamenává pokusy."
         title="Prvky a jejich skupiny"

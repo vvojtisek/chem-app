@@ -1,6 +1,6 @@
-import { curatedElements, curatedGroups } from "@inorganic/content/runtime";
+import { curatedElements } from "@inorganic/content/runtime";
 
-import { ElementFlashcards } from "@/components/element-flashcards";
+import { ElementFlashcardPractice } from "@/components/element-flashcard-practice";
 import { Breadcrumbs } from "@/components/page-header";
 import { PRACTICE_BREADCRUMB } from "@/components/practice-breadcrumb";
 
@@ -10,7 +10,7 @@ export default function ElementFlashcardsPage() {
       <div className="mx-auto mb-4 w-full max-w-5xl">
         <Breadcrumbs items={[PRACTICE_BREADCRUMB, { label: "Karty prvků" }]} />
       </div>
-      <ElementFlashcards curatedElements={curatedElements} groups={curatedGroups} />
+      <ElementFlashcardPractice elements={curatedElements} />
     </main>
   );
 }

@@ -141,9 +141,7 @@ test.skip("guest can browse learning modes without controls that change saved da
   await expect(page).toHaveURL("/");
   await expect(page.getByText("Host · jen pro čtení")).toBeVisible();
 
-  await page.goto("/flashcards/prvky");
-  await expect(page.getByRole("heading", { level: 1, name: "Značky prvků" })).toBeVisible();
-  await page.getByText("Prohlížet karty prvků").click();
+  await page.goto("/uceni/karty-prvku");
   await expect(page.getByRole("heading", { level: 2, name: "Prvky" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Upravit kartu" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Obnovit výchozí" })).toHaveCount(0);
