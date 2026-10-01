@@ -50,6 +50,7 @@ export function ElementFlashcardPractice({
   const selectedElements = useMemo(() => selectElements(layout, selection), [layout, selection]);
   const [phase, setPhase] = useState<"selection" | "running" | "summary">("selection");
   const [questions, setQuestions] = useState<readonly ElementFlashcardData[]>([]);
+  const [roundId, setRoundId] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [direction, setDirection] = useState<RecallDirection>("symbol");
   const [extraSelection, setExtraSelection] = useState<readonly ExtraField[]>([]);
@@ -91,6 +92,7 @@ export function ElementFlashcardPractice({
 
   function startRound() {
     if (selectedElements.length === 0) return;
+    setRoundId((id) => id + 1);
     setQuestions(drawSeries(selectedElements, selectedElements.length, random));
     setRoundDirection(direction);
     setRoundExtras(extraSelection);
@@ -317,7 +319,9 @@ export function ElementFlashcardPractice({
                 Karta {questionIndex + 1} z {questions.length}
               </p>
               <div className="mt-4 [perspective:1000px]">
+                {/* Remount each prompt so it never animates back from the previous answer face. */}
                 <div
+                  key={`${roundId}-${questionIndex}`}
                   className="relative min-h-[29rem] transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d] sm:min-h-[22rem]"
                   style={{
                     transform: feedback ? "rotateY(180deg)" : "rotateY(0deg)",
