@@ -146,7 +146,8 @@ test("grades selected element facts in reverse recall mode on a phone", async ({
   await card.getByRole("textbox", { name: "Protonové číslo" }).fill("1");
   await card.getByRole("button", { name: "Enter · Otočit" }).click();
   await expect(card.getByRole("status")).toContainText("Správně.");
-  await expect(card.getByRole("status")).toContainText("Vaše odpověď: vodik · Správně: Vodík");
+  await expect(card.getByRole("status")).toContainText("Správně: Vodík");
+  await expect(card.getByRole("status")).not.toContainText("Vaše odpověď: vodik");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
 
