@@ -153,6 +153,11 @@ No visible change; extraction only.
 Acceptance: the explorer looks and behaves the same; `elementFamily` and the hard-coded hex
 values exist nowhere else.
 
+Note: the internal id `f-block` becomes `lanthanoid-actinoid`. The reviewed data places Lu and
+Lr in group 3 (d-block), and the classifier already counts them with the lanthanoids and
+actinoids (IUPAC: La–Lu, Ac–Lr). „f-block“ was therefore an inaccurate id. The label and
+behaviour are unchanged.
+
 ### M2 – v1.1.2 `feat(web): replace study link on practice page with production quiz`
 
 - New route `/procvicovani/priprava-vyroba`, „Kvíz: Příprava a výroba látek“.

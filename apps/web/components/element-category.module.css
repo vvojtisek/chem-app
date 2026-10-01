@@ -1,0 +1,111 @@
+/*
+ * Shared category-tinted surfaces for element tiles, swatches, badges and panels. The colour
+ * comes from --element-category-color, which globals.css sets from a data-element-category
+ * attribute on the element or one of its ancestors. Without a category every class falls
+ * back to the neutral theme surface.
+ */
+
+.tile,
+.swatch {
+  border-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--line-strong)) 48%,
+    var(--line-strong)
+  );
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--surface-2)) 27%,
+    var(--surface-2)
+  );
+  color: var(--ink-2);
+}
+
+.tile {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.tile:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--accent)) 72%,
+    var(--line-strong)
+  );
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--accent-soft)) 39%,
+    var(--surface-2)
+  );
+  color: var(--ink);
+}
+
+.tile:active,
+.tile[aria-pressed="true"] {
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--accent-soft)) 48%,
+    var(--surface-2)
+  );
+}
+
+.swatch {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  border: 1px solid;
+  border-radius: 0.25rem;
+}
+
+.panel {
+  border-color: color-mix(in srgb, var(--element-category-color, var(--line)) 40%, var(--line));
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--surface)) 20%,
+    var(--surface)
+  );
+}
+
+.badge {
+  background-color: var(--element-category-color, var(--surface-3));
+  color: var(--element-category-badge-ink, var(--ink));
+}
+
+.fact {
+  border-color: color-mix(in srgb, var(--element-category-color, var(--line)) 28%, var(--line));
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--surface-2)) 16%,
+    var(--surface-2)
+  );
+}
+
+.button {
+  border-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--line-strong)) 42%,
+    var(--line-strong)
+  );
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--surface-2)) 17%,
+    var(--surface-2)
+  );
+  color: var(--ink);
+}
+
+.button:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--element-category-color, var(--surface-3)) 32%,
+    var(--surface-2)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+  }
+}

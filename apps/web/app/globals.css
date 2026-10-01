@@ -34,6 +34,20 @@
   --mastery-low: #f8dcd8;
   --mastery-developing: #fbeac2;
   --mastery-mastered: #d3eddc;
+  /*
+   * Element category colours. One value per category serves both themes: components mix it
+   * with the theme surface tokens (see components/element-category.module.css). Lanthanoids
+   * and actinoids have no colour of their own and use the neutral surface.
+   */
+  --category-alkali-metal: #e77e70;
+  --category-alkaline-earth-metal: #e2a52f;
+  --category-transition-metal: #a889c9;
+  --category-other-metal: #4f83bd;
+  --category-metalloid: #62aaa1;
+  --category-nonmetal: #69ad79;
+  --category-halogen: #43b2d2;
+  --category-noble-gas: #e3bf4c;
+  --category-badge-ink: #07111b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -100,6 +114,49 @@
     "Bricolage Grotesque Variable", "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui,
     sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* Sets the colour of an element's category for the element and everything inside it. */
+[data-element-category="alkali-metal"] {
+  --element-category-color: var(--category-alkali-metal);
+}
+
+[data-element-category="alkaline-earth-metal"] {
+  --element-category-color: var(--category-alkaline-earth-metal);
+}
+
+[data-element-category="transition-metal"] {
+  --element-category-color: var(--category-transition-metal);
+}
+
+[data-element-category="other-metal"] {
+  --element-category-color: var(--category-other-metal);
+}
+
+[data-element-category="metalloid"] {
+  --element-category-color: var(--category-metalloid);
+}
+
+[data-element-category="nonmetal"] {
+  --element-category-color: var(--category-nonmetal);
+}
+
+[data-element-category="halogen"] {
+  --element-category-color: var(--category-halogen);
+}
+
+[data-element-category="noble-gas"] {
+  --element-category-color: var(--category-noble-gas);
+}
+
+/* Lanthanoids and actinoids stay neutral even inside a coloured container. */
+[data-element-category="lanthanoid-actinoid"] {
+  --element-category-color: initial;
+  --element-category-badge-ink: initial;
+}
+
+[data-element-category]:not([data-element-category="lanthanoid-actinoid"]) {
+  --element-category-badge-ink: var(--category-badge-ink);
 }
 
 * {
