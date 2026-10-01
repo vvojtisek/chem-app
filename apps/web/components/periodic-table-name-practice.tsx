@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
 import {
@@ -435,7 +436,8 @@ function LastAnswerLine({ answer }: { readonly answer: LastAnswer | null }) {
     >
       <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
       {describeAnswer(answer.element, answer.isCorrect)}
-      {answerHint(answer.match)}
+      {answerHint(answer.match)}{" "}
+      <ElementCategoryBadge className="ml-1 align-middle" element={answer.element} />
     </p>
   );
 }

@@ -50,10 +50,12 @@ describe("ElementFlashcards", () => {
     const cardPicker = screen.getByRole("combobox", { name: "Vybraná karta" });
     expect(cardPicker).toHaveDisplayValue("H");
     expect(screen.queryByRole("heading", { level: 2, name: "Vodík" })).toBeNull();
+    expect(screen.queryByText("Nekovy")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Otočit kartu" }));
 
     expect(screen.getByRole("heading", { level: 2, name: "Vodík" })).toBeInTheDocument();
+    expect(screen.getByText("Nekovy")).toBeInTheDocument();
     expect(screen.getByText("Testovací mnemotechnika skupiny 1")).toBeInTheDocument();
   });
 

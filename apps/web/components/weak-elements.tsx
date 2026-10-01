@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
 import { cn } from "@/lib/class-names";
 import { czechCount } from "@/lib/czech-plural";
@@ -136,7 +137,10 @@ export function WeakElements({
                     <span className="block font-semibold text-ink">
                       {element.nameCs} <span className="sr-only">({element.symbol})</span>
                     </span>
-                    <span className="block text-sm text-ink-2">{record}</span>
+                    <span className="flex flex-wrap items-center gap-x-3 text-sm text-ink-2">
+                      <span>{record}</span>
+                      <ElementCategoryBadge element={element} />
+                    </span>
                   </span>
                 </li>
               );

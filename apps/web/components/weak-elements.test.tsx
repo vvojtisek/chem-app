@@ -63,6 +63,7 @@ describe("WeakElements", () => {
     const card = await screen.findByRole("region", { name: "K zopakování" });
     expect(within(card).getByText(/Mangan/)).toBeInTheDocument();
     expect(card).toHaveTextContent("3 pokusy, 1 správně");
+    expect(within(card).getByText("Přechodné kovy")).toBeInTheDocument();
     expect(within(card).queryByText(/Železo/)).toBeNull();
 
     fireEvent.click(

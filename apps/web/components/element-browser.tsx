@@ -5,6 +5,7 @@ import type { PreparationProductionRuntimeProduct } from "@inorganic/content/pre
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { type Ref, useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import categoryStyles from "@/components/element-category.module.css";
 import { Equation, Formula } from "@/components/formula";
 import { GroupMnemonics } from "@/components/group-mnemonics";
@@ -436,13 +437,7 @@ function ElementDetail({
             {element.nameCs} <span className="sr-only">({element.symbol})</span>
           </h2>
           <p className="text-sm text-ink-2">{element.nameLat}</p>
-          <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-2">
-            <span aria-hidden="true" className={categoryStyles.swatch} />
-            <span>
-              <span className="sr-only">Kategorie: </span>
-              {ELEMENT_CATEGORY_LABELS[category]}
-            </span>
-          </p>
+          <ElementCategoryBadge className="mt-1" element={element} />
         </div>
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">

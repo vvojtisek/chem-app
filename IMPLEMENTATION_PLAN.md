@@ -237,7 +237,11 @@ Applies the rule in 3.5. Per surface:
 | Blind table during practice | `/procvicovani/periodicka-tabulka` | **none** (spec: fully blind) |
 | Name/symbol prompt | `/procvicovani/prvky` | **none** before answering; category badge in the post-answer feedback line |
 | Five-minute quiz card | `/flashcards/prvky` | **none** on the front; category badge on the revealed result |
-| Weak elements („K zopakování“) list | `/`, `/pokrok` | category swatch and label per item |
+| Weak elements („K zopakování“) list | `/pokrok` | category swatch and label per item |
+| Weak elements as compact chips | `/` | none; the chips are already red „needs review“ markers and too small for a second label |
+
+All of these use one `ElementCategoryBadge` (swatch plus visible label, „Kategorie:“ for screen
+readers), which the `/uceni/prvky` detail also uses.
 
 Tests: each changed component asserts the category label is present after an answer and
 absent before it (regression guard for the no-hint rule).
