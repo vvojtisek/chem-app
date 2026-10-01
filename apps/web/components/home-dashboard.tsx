@@ -180,7 +180,7 @@ export function HomeDashboard() {
           <li className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
             <h3 className="font-display text-lg font-bold text-ink">Učivo</h3>
             <p className="mt-3 min-h-14 text-sm leading-6 text-ink-2">
-              Bez otázek a bez hodnocení. Procházejte prvky, výskyt, přípravu a výrobu.
+              Bez otázek a bez hodnocení. Procházejte prvky, jejich přípravu a výrobu.
             </p>
             <ul className="list-none p-0">
               <li>

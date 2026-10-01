@@ -47,6 +47,19 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await expect(page.getByRole("heading", { name: "Chemické rovnice" })).toBeVisible();
   await expectWcag22Aa(page);
 
+  await page.goto("/procvicovani/priprava-vyroba");
+  await expect(page.getByRole("region", { name: "Nastavení kvízu" })).toBeVisible();
+  await expectWcag22Aa(page);
+  await page.getByRole("button", { name: /^Spustit kvíz/ }).click();
+  await expect(page.getByRole("region", { name: /^Kterou látku lze takto/ })).toBeVisible();
+  await page
+    .getByRole("region", { name: /^Kterou látku lze takto/ })
+    .getByRole("button")
+    .first()
+    .click();
+  await expect(page.getByText(/^(Správně|Špatně)$/)).toBeVisible();
+  await expectWcag22Aa(page);
+
   await page.goto("/flashcards/prvky");
   await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();
   await expectWcag22Aa(page);

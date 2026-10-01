@@ -28,11 +28,11 @@ export const practiceCategories: readonly PracticeCategory[] = [
   },
   {
     area: "equations",
-    title: "Chemické rovnice, výskyt a výroba",
-    description: "Vyčíslování reakcí, minerály a postupy přípravy či průmyslové výroby látek.",
+    title: "Chemické rovnice, příprava a výroba",
+    description: "Vyčíslování reakcí a kvíz o přípravě a průmyslové výrobě látek.",
     links: [
       { href: "/procvicovani/rovnice", label: "Procvičit rovnice", primary: true },
-      { href: "/uceni/priprava-vyroba", label: "Procházet výskyt a výrobu" },
+      { href: "/procvicovani/priprava-vyroba", label: "Kvíz: Příprava a výroba látek" },
     ],
   },
   {
