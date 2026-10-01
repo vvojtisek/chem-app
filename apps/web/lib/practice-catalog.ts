@@ -24,7 +24,6 @@ export const practiceCategories: readonly PracticeCategory[] = [
       { href: "/procvicovani/periodicka-tabulka", label: "Procvičit pozice", primary: true },
       { href: "/procvicovani/prvky", label: "Procvičit názvy a značky" },
       { href: "/flashcards/prvky", label: "Pětiminutový kvíz prvků" },
-      { href: "/uceni/prvky", label: "Procházet učivo", target: "_blank" },
     ],
   },
   {
