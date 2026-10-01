@@ -35,6 +35,10 @@ test("starts and hydrates learning modes offline after one home visit", async ({
   await page.getByRole("button", { name: "Zkusit znovu" }).click();
   await expect(page.getByRole("button", { name: "Vyhodnotit koeficienty" })).toBeVisible();
 
+  await page.goto("/procvicovani/priprava-vyroba", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: /^Spustit kvíz/ }).click();
+  await expect(page.getByRole("region", { name: /^Kterou látku lze takto/ })).toBeVisible();
+
   await page.goto("/flashcards/prvky", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();
   await page.goto("/uceni/karty-prvku", { waitUntil: "domcontentloaded" });

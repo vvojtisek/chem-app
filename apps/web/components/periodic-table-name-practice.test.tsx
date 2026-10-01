@@ -234,9 +234,14 @@ describe("PeriodicTableNamePractice exercise", () => {
   it("fills a correct symbol green, clears and refocuses the input, and moves on", () => {
     renderPractice();
     fireEvent.click(startButton());
+    // The category would hint at the answer, so it appears only once the element is answered.
+    expect(screen.queryByText("Kategorie:")).toBeNull();
 
     answer(" H ");
 
+    expect(screen.getByText("Správně: Vodík (H).").parentElement).toHaveTextContent(
+      "Kategorie: Nekovy",
+    );
     expect(cell("Perioda 1, skupina 1: H, vyřešeno")).toHaveTextContent("H");
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
     expect(prompt()).toHaveAccessibleName("Zadání: Helium");

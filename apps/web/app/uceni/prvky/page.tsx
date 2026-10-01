@@ -7,6 +7,7 @@ import { curatedElements, curatedGroups } from "@inorganic/content/runtime";
 import Link from "next/link";
 import { ElementBrowser } from "@/components/element-browser";
 import { GroupMnemonics } from "@/components/group-mnemonics";
+import { ChevronRightIcon } from "@/components/icons";
 import { PageHeader } from "@/components/page-header";
 
 const elementSymbols = new Set(curatedElements.map((element) => element.symbol));
@@ -19,6 +20,24 @@ for (const product of curatedPreparationProduction) {
     elementProduction[symbol] = [...(elementProduction[symbol] ?? []), product];
   }
 }
+
+const STUDY_MATERIALS = [
+  {
+    href: "/uceni/prvky/tabulka",
+    title: "Periodická tabulka",
+    description: "Slepá tabulka barevně podle kategorií, údaje po výběru prvku.",
+  },
+  {
+    href: "/uceni/karty-prvku",
+    title: "Karty prvků",
+    description: "Oboustranné karty k samostatnému opakování.",
+  },
+  {
+    href: "/uceni/priprava-vyroba",
+    title: "Příprava a výroba látek",
+    description: "Rovnice přípravy a průmyslové výroby podle produktu.",
+  },
+] as const;
 
 export default function ElementLearningPage() {
   const groups = Array.from({ length: 18 }, (_, index) => {
@@ -33,31 +52,29 @@ export default function ElementLearningPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Link
-              className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 font-semibold text-on-fill hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              href="/uceni/prvky/tabulka"
-            >
-              Prozkoumat periodickou tabulku
-            </Link>
-            <Link
-              className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-              href="/uceni/karty-prvku"
-            >
-              Karty prvků
-            </Link>
-            <Link
-              className="inline-flex min-h-11 items-center rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-              href="/uceni/priprava-vyroba"
-            >
-              Příprava a výroba látek
-            </Link>
-          </div>
-        }
-        description="Najděte prvek podle názvu, značky nebo protonového čísla, nebo zužte výběr podle skupiny a periody. Tato sada slouží k učení: neobsahuje otázky ani nezaznamenává pokusy."
+        description="Vyhledejte prvek nebo ho vyberte z přehledu podle kategorie. Učivo je bez otázek a nezaznamenává pokusy."
         title="Prvky a jejich skupiny"
       />
+      <nav aria-label="Studijní materiály" className="mb-8">
+        <ul className="grid list-none gap-2 p-0 sm:grid-cols-3">
+          {STUDY_MATERIALS.map((material) => (
+            <li key={material.href}>
+              <Link
+                className="flex h-full min-h-11 items-start justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3 sm:py-4 hover:border-line-strong hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                href={material.href}
+              >
+                <span>
+                  <span className="block font-semibold text-ink">{material.title}</span>
+                  <span className="mt-0.5 hidden text-sm leading-5 text-ink-2 sm:block">
+                    {material.description}
+                  </span>
+                </span>
+                <ChevronRightIcon className="mt-0.5 shrink-0 text-ink-3" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
       <ElementBrowser
         elements={curatedElements}
         groups={curatedGroups}

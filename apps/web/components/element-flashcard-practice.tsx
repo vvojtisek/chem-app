@@ -8,6 +8,7 @@ import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import { createPeriodicTableLayout } from "@/lib/periodic-table-layout";
 import { drawSeries, selectElements } from "@/lib/periodic-table-scope";
@@ -322,7 +323,7 @@ export function ElementFlashcardPractice({
                 {/* Remount each prompt so it never animates back from the previous answer face. */}
                 <div
                   key={`${roundId}-${questionIndex}`}
-                  className="relative min-h-[29rem] transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d] sm:min-h-[22rem]"
+                  className="relative min-h-[29rem] transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d] sm:min-h-[24rem]"
                   style={{
                     transform: feedback ? "rotateY(180deg)" : "rotateY(0deg)",
                   }}
@@ -412,6 +413,7 @@ export function ElementFlashcardPractice({
                     <p className="mt-3 text-5xl font-bold tracking-tight text-ink sm:text-7xl">
                       {roundDirection === "symbol" ? current.symbol : current.nameCs}
                     </p>
+                    {feedback ? <ElementCategoryBadge className="mt-2" element={current} /> : null}
                     {feedback ? (
                       <div
                         aria-live="polite"

@@ -25,9 +25,9 @@ describe("PracticeHubPage", () => {
       "href",
       "/procvicovani/rovnice",
     );
-    expect(screen.getByRole("link", { name: "Procházet výskyt a výrobu" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Kvíz: Příprava a výroba látek" })).toHaveAttribute(
       "href",
-      "/uceni/priprava-vyroba",
+      "/procvicovani/priprava-vyroba",
     );
     expect(screen.queryByRole("navigation", { name: "Drobečková navigace" })).toBeNull();
   });

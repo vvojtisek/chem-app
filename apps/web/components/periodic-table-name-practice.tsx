@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
 import {
@@ -426,17 +427,18 @@ function LastAnswerLine({ answer }: { readonly answer: LastAnswer | null }) {
   if (!answer) return null;
 
   return (
-    <p
-      className={`mt-1 rounded-xl border px-4 py-3 font-semibold ${
-        answer.isCorrect
-          ? "border-good/40 bg-good-soft text-good"
-          : "border-bad/40 bg-bad-soft text-bad"
+    <div
+      className={`mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-4 py-3 ${
+        answer.isCorrect ? "border-good/40 bg-good-soft" : "border-bad/40 bg-bad-soft"
       }`}
     >
-      <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
-      {describeAnswer(answer.element, answer.isCorrect)}
-      {answerHint(answer.match)}
-    </p>
+      <p className={`font-semibold ${answer.isCorrect ? "text-good" : "text-bad"}`}>
+        <span aria-hidden="true">{answer.isCorrect ? "✓ " : "✗ "}</span>
+        {describeAnswer(answer.element, answer.isCorrect)}
+        {answerHint(answer.match)}
+      </p>
+      <ElementCategoryBadge element={answer.element} />
+    </div>
   );
 }
 

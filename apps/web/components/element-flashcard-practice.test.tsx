@@ -54,6 +54,8 @@ describe("ElementFlashcardPractice", () => {
 
     expect(screen.getByRole("timer")).toHaveTextContent("05:00");
     expect(screen.getByRole("heading", { name: "Helium" })).toBeInTheDocument();
+    // The category would hint at the answer, so it appears only on the revealed side.
+    expect(screen.queryByText("Vzácné plyny")).toBeNull();
     const answer = screen.getByRole("textbox", { name: "Chemická značka" });
     fireEvent.change(answer, { target: { value: "He" } });
     const form = answer.closest("form");
@@ -62,6 +64,7 @@ describe("ElementFlashcardPractice", () => {
 
     expect(screen.getByRole("status")).toHaveTextContent("Správně.");
     expect(screen.getByRole("status")).toHaveTextContent("Správně: He");
+    expect(screen.getByText("Vzácné plyny")).toBeInTheDocument();
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
     expect(screen.getByText("Zbývá: 1")).toBeInTheDocument();
   });

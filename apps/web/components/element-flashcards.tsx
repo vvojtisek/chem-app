@@ -2,6 +2,7 @@
 
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useState } from "react";
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { GroupMnemonics } from "@/components/group-mnemonics";
 
@@ -161,6 +162,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
             <>
               <h2 className="text-3xl font-semibold text-ink">{selectedCard.nameCs}</h2>
               <p className="mt-2 text-lg text-ink-2">{selectedCard.nameLat}</p>
+              <ElementCategoryBadge className="mt-3" element={selectedCard} />
               <dl className="mx-auto mt-8 grid max-w-xl gap-4 text-left sm:grid-cols-2">
                 <Fact label="Perioda" value={String(selectedCard.period)} />
                 <Fact

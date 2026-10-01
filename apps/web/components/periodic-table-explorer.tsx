@@ -1,28 +1,19 @@
 "use client";
 
+import { classifyElementCategory } from "@inorganic/chemistry";
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import categoryStyles from "@/components/element-category.module.css";
 import styles from "@/components/periodic-table-explorer.module.css";
 import { PeriodicTableFrame } from "@/components/periodic-table-grid";
 import { cn } from "@/lib/class-names";
+import { ELEMENT_CATEGORY_OPTIONS } from "@/lib/element-categories";
 import {
   createPeriodicTableLayout,
   describePeriodicTablePosition,
 } from "@/lib/periodic-table-layout";
 
 const atomicWeightFormatter = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 6 });
-
-const ELEMENT_FAMILIES = [
-  { id: "alkali", label: "Alkalické kovy" },
-  { id: "alkaline-earth", label: "Kovy alkalických zemin" },
-  { id: "transition", label: "Přechodné kovy" },
-  { id: "other-metal", label: "Kovy" },
-  { id: "metalloid", label: "Polokovy" },
-  { id: "nonmetal", label: "Nekovy" },
-  { id: "halogen", label: "Halogeny" },
-  { id: "noble-gas", label: "Vzácné plyny" },
-  { id: "f-block", label: "Lanthanoidy a aktinoidy" },
-] as const;
 
 interface PeriodicTableExplorerProps {
   readonly elements: readonly ElementFlashcardData[];
@@ -65,10 +56,14 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
         Tabulka má 18 skupin a 7 period. Na menších obrazovkách ji posuňte vodorovně.
       </p>
       <ul aria-label="Legenda skupin prvků" className={styles.key}>
-        {ELEMENT_FAMILIES.map((family) => (
-          <li className={styles.keyItem} key={family.id}>
-            <span aria-hidden="true" className={styles.keySwatch} data-family={family.id} />
-            {family.label}
+        {ELEMENT_CATEGORY_OPTIONS.map((category) => (
+          <li className={styles.keyItem} key={category.id}>
+            <span
+              aria-hidden="true"
+              className={categoryStyles.swatch}
+              data-element-category={category.id}
+            />
+            {category.label}
           </li>
         ))}
       </ul>
@@ -80,9 +75,9 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
             aria-label={`${element.atomicNumber}. protonové číslo; ${describePeriodicTablePosition(position)}`}
             className={cn(
               "grid min-h-11 min-w-11 place-items-center rounded-md border font-mono text-xs font-semibold transition-colors focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:text-sm",
-              styles.elementCell,
+              categoryStyles.tile,
             )}
-            data-family={elementFamily(element)}
+            data-element-category={classifyElementCategory(element)}
             key={element.id}
             onClick={(event) => {
               openerRef.current = event.currentTarget;
@@ -106,9 +101,10 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
         aria-labelledby="periodic-table-element-heading"
         className={cn(
           "m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border p-0 text-ink shadow-2xl backdrop:bg-black/60",
+          categoryStyles.panel,
           styles.modal,
         )}
-        data-family={selected ? elementFamily(selected) : undefined}
+        data-element-category={selected ? classifyElementCategory(selected) : undefined}
         onCancel={(event) => {
           event.preventDefault();
           setSelectedId(null);
@@ -129,7 +125,7 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
                 aria-hidden="true"
                 className={cn(
                   "grid h-16 w-16 shrink-0 place-items-center rounded-xl font-display text-3xl font-bold",
-                  styles.symbolBadge,
+                  categoryStyles.badge,
                 )}
               >
                 {selected.symbol}
@@ -147,7 +143,7 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
                 aria-label="Zavřít údaje o prvku"
                 className={cn(
                   "grid h-11 w-11 shrink-0 place-items-center rounded-xl border text-xl font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-                  styles.closeButton,
+                  categoryStyles.button,
                 )}
                 onClick={() => setSelectedId(null)}
                 ref={closeButtonRef}
@@ -173,7 +169,7 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
                   selected.group === null ? undefined : groupsByNumber.get(selected.group),
                 )}
               />
-              <div className={cn("rounded-xl border p-3 sm:col-span-2", styles.fact)}>
+              <div className={cn("rounded-xl border p-3 sm:col-span-2", categoryStyles.fact)}>
                 <dt className="text-sm text-ink-2">Valenční elektronová konfigurace</dt>
                 <dd className="mt-1 font-mono text-lg font-medium text-ink">
                   <FormattedConfiguration value={selected.valenceConfiguration} />
@@ -187,24 +183,9 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
   );
 }
 
-function elementFamily(element: ElementFlashcardData): (typeof ELEMENT_FAMILIES)[number]["id"] {
-  const atomicNumber = element.atomicNumber;
-  if ((atomicNumber >= 57 && atomicNumber <= 71) || (atomicNumber >= 89 && atomicNumber <= 103)) {
-    return "f-block";
-  }
-  if (element.group === 1 && atomicNumber !== 1) return "alkali";
-  if (element.group === 2) return "alkaline-earth";
-  if (element.group === 18) return "noble-gas";
-  if (element.group === 17) return "halogen";
-  if (element.group !== null && element.group >= 3 && element.group <= 12) return "transition";
-  if ([5, 14, 32, 33, 51, 52, 84].includes(atomicNumber)) return "metalloid";
-  if ([1, 6, 7, 8, 15, 16, 34].includes(atomicNumber)) return "nonmetal";
-  return "other-metal";
-}
-
 function Fact({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
-    <div className={cn("rounded-xl border p-3", styles.fact)}>
+    <div className={cn("rounded-xl border p-3", categoryStyles.fact)}>
       <dt className="text-sm text-ink-2">{label}</dt>
       <dd className="mt-1 font-medium text-ink">{value}</dd>
     </div>

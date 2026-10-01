@@ -1,14 +1,18 @@
 "use client";
 
+import { classifyElementCategory, type ElementCategory } from "@inorganic/chemistry";
 import type { PreparationProductionRuntimeProduct } from "@inorganic/content/preparation-production";
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
-import { type Ref, useId, useMemo, useRef, useState } from "react";
+import { type Ref, useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { ElementCategoryBadge } from "@/components/element-category-badge";
+import categoryStyles from "@/components/element-category.module.css";
 import { Equation, Formula } from "@/components/formula";
 import { GroupMnemonics } from "@/components/group-mnemonics";
 import { SearchIcon } from "@/components/icons";
 import { cn } from "@/lib/class-names";
 import { czechCount } from "@/lib/czech-plural";
+import { ELEMENT_CATEGORY_LABELS, ELEMENT_CATEGORY_OPTIONS } from "@/lib/element-categories";
 import {
   EMPTY_ELEMENT_FILTERS,
   type ElementFilters,
@@ -18,6 +22,7 @@ import {
 
 const ELEMENT_FORMS = ["prvek", "prvky", "prvků"] as const;
 const PERIODS = [1, 2, 3, 4, 5, 6, 7] as const;
+const HASH_PREFIX = "#prvek-";
 const numberFormatter = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 6 });
 
 interface ElementBrowserProps {
@@ -31,14 +36,29 @@ function groupLabel(groupNumber: number, group: ElementGroupData | undefined): s
   return group ? `${groupNumber}. skupina – ${group.nameCs}` : `${groupNumber}. skupina`;
 }
 
+function elementHash(element: ElementFlashcardData): string {
+  return `${HASH_PREFIX}${element.symbol.toLowerCase()}`;
+}
+
+function elementFromHash(
+  elements: readonly ElementFlashcardData[],
+  hash: string,
+): ElementFlashcardData | undefined {
+  if (!hash.startsWith(HASH_PREFIX)) return undefined;
+  const symbol = hash.slice(HASH_PREFIX.length);
+  return elements.find((element) => element.symbol.toLowerCase() === symbol);
+}
+
 /**
- * Finds one element in one step: search and filters on the left, the chosen element's facts,
- * group mnemonic and production routes on the right (below the results on phones).
+ * The element index of the study section: search and category tabs on top, results grouped by
+ * category, and the chosen element's detail beside them (below them on phones). The chosen
+ * element is mirrored in the URL hash so a detail can be linked, also offline.
  */
 export function ElementBrowser({ elements, groups, production }: ElementBrowserProps) {
   const [filters, setFilters] = useState<ElementFilters>(EMPTY_ELEMENT_FILTERS);
   const [selectedId, setSelectedId] = useState(elements[0]?.id ?? "");
   const detailRef = useRef<HTMLElement>(null);
+  const tileRefs = useRef(new Map<string, HTMLButtonElement>());
   const searchId = useId();
   const groupsByNumber = useMemo(
     () => new Map(groups.map((group) => [group.groupNumber, group])),
@@ -52,12 +72,34 @@ export function ElementBrowser({ elements, groups, production }: ElementBrowserP
     [elements],
   );
   const results = useMemo(() => filterElements(elements, filters), [elements, filters]);
+  const resultsByCategory = useMemo(() => groupByCategory(results), [results]);
+  const categoryCounts = useMemo(
+    () => countByCategory(filterElements(elements, { ...filters, category: null })),
+    [elements, filters],
+  );
   const selected = elements.find((element) => element.id === selectedId) ?? elements[0];
   const filteredGroup =
     typeof filters.group === "number" ? groupsByNumber.get(filters.group) : undefined;
+  const hasFilters =
+    filters.query !== "" ||
+    filters.group !== null ||
+    filters.period !== null ||
+    filters.category !== null;
+  const totalWithoutCategory = [...categoryCounts.values()].reduce((sum, count) => sum + count, 0);
+
+  useEffect(() => {
+    function selectFromHash() {
+      const element = elementFromHash(elements, window.location.hash);
+      if (element) setSelectedId(element.id);
+    }
+    selectFromHash();
+    window.addEventListener("hashchange", selectFromHash);
+    return () => window.removeEventListener("hashchange", selectFromHash);
+  }, [elements]);
 
   function select(element: ElementFlashcardData) {
     setSelectedId(element.id);
+    window.history.replaceState(null, "", elementHash(element));
     // On phones the detail sits below the results; bring it into view.
     if (window.matchMedia?.("(max-width: 63.99rem)").matches) {
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -65,14 +107,17 @@ export function ElementBrowser({ elements, groups, production }: ElementBrowserP
     }
   }
 
+  function returnToIndex() {
+    const tile = selected ? tileRefs.current.get(selected.id) : undefined;
+    // Focusing scrolls the tile into view.
+    tile?.focus();
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
-      <div>
-        <search className="grid gap-3 rounded-2xl border border-line bg-surface p-4 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          <label
-            className="grid gap-1 text-sm font-semibold text-ink-2 sm:col-span-2"
-            htmlFor={searchId}
-          >
+      <div className="min-w-0">
+        <search className="grid gap-3">
+          <label className="grid gap-1 text-sm font-semibold text-ink-2" htmlFor={searchId}>
             Hledat prvek
             <span className="relative">
               <SearchIcon className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-lg text-ink-3" />
@@ -88,54 +133,95 @@ export function ElementBrowser({ elements, groups, production }: ElementBrowserP
               />
             </span>
           </label>
-          <label className="grid gap-1 text-sm font-semibold text-ink-2">
-            Skupina
-            <select
-              className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 text-base font-normal text-ink"
-              onChange={(event) => {
-                const value = event.target.value;
-                const group: ElementGroupFilter =
-                  value === "" ? null : value === "f" ? "f" : Number(value);
-                setFilters({ ...filters, group });
-              }}
-              value={filters.group === null ? "" : String(filters.group)}
-            >
-              <option value="">Všechny skupiny</option>
-              {groupNumbers.map((groupNumber) => (
-                <option key={groupNumber} value={groupNumber}>
-                  {groupLabel(groupNumber, groupsByNumber.get(groupNumber))}
-                </option>
+
+          <fieldset>
+            <legend className="mb-1 text-sm font-semibold text-ink-2">Kategorie</legend>
+            <div className="flex flex-wrap gap-1.5">
+              <CategoryTab
+                count={totalWithoutCategory}
+                label="Vše"
+                onSelect={() => setFilters({ ...filters, category: null })}
+                pressed={filters.category === null}
+              />
+              {ELEMENT_CATEGORY_OPTIONS.map((category) => (
+                <CategoryTab
+                  category={category.id}
+                  count={categoryCounts.get(category.id) ?? 0}
+                  key={category.id}
+                  label={category.label}
+                  onSelect={() =>
+                    setFilters({
+                      ...filters,
+                      category: filters.category === category.id ? null : category.id,
+                    })
+                  }
+                  pressed={filters.category === category.id}
+                />
               ))}
-              <option value="f">f-blok (lanthanoidy a aktinoidy)</option>
-            </select>
-          </label>
-          <label className="grid gap-1 text-sm font-semibold text-ink-2">
-            Perioda
-            <select
-              className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 text-base font-normal text-ink"
-              onChange={(event) =>
-                setFilters({
-                  ...filters,
-                  period: event.target.value === "" ? null : Number(event.target.value),
-                })
-              }
-              value={filters.period === null ? "" : String(filters.period)}
-            >
-              <option value="">Všechny periody</option>
-              {PERIODS.map((period) => (
-                <option key={period} value={period}>
-                  {period}. perioda
-                </option>
-              ))}
-            </select>
-          </label>
+            </div>
+          </fieldset>
+
+          <details
+            className="group rounded-xl border border-line bg-surface"
+            open={filters.group !== null || filters.period !== null ? true : undefined}
+          >
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 text-sm font-semibold text-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+              Skupina a perioda
+              <span aria-hidden="true" className="text-ink-3 group-open:rotate-180">
+                ⌄
+              </span>
+            </summary>
+            <div className="grid gap-3 border-t border-line p-3 sm:grid-cols-2">
+              <label className="grid gap-1 text-sm font-semibold text-ink-2">
+                Skupina
+                <select
+                  className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 text-base font-normal text-ink"
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    const group: ElementGroupFilter =
+                      value === "" ? null : value === "f" ? "f" : Number(value);
+                    setFilters({ ...filters, group });
+                  }}
+                  value={filters.group === null ? "" : String(filters.group)}
+                >
+                  <option value="">Všechny skupiny</option>
+                  {groupNumbers.map((groupNumber) => (
+                    <option key={groupNumber} value={groupNumber}>
+                      {groupLabel(groupNumber, groupsByNumber.get(groupNumber))}
+                    </option>
+                  ))}
+                  <option value="f">f-blok (lanthanoidy a aktinoidy)</option>
+                </select>
+              </label>
+              <label className="grid gap-1 text-sm font-semibold text-ink-2">
+                Perioda
+                <select
+                  className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 text-base font-normal text-ink"
+                  onChange={(event) =>
+                    setFilters({
+                      ...filters,
+                      period: event.target.value === "" ? null : Number(event.target.value),
+                    })
+                  }
+                  value={filters.period === null ? "" : String(filters.period)}
+                >
+                  <option value="">Všechny periody</option>
+                  {PERIODS.map((period) => (
+                    <option key={period} value={period}>
+                      {period}. perioda
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </details>
         </search>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <p aria-live="polite" className="text-sm text-ink-2">
             Nalezeno: {czechCount(results.length, ELEMENT_FORMS)}
           </p>
-          {filters.query || filters.group !== null || filters.period !== null ? (
+          {hasFilters ? (
             <button
               className="min-h-10 rounded-lg px-2 text-sm font-semibold text-accent-strong hover:underline"
               onClick={() => setFilters(EMPTY_ELEMENT_FILTERS)}
@@ -168,38 +254,18 @@ export function ElementBrowser({ elements, groups, production }: ElementBrowserP
             Žádný prvek neodpovídá hledání. Zkuste jiný název, značku nebo zrušte filtry.
           </p>
         ) : (
-          <ul
-            aria-label="Výsledky hledání"
-            className="mt-3 grid list-none grid-cols-3 gap-2 p-0 sm:grid-cols-4 xl:grid-cols-6"
-          >
-            {results.map((element) => {
-              const active = element.id === selected?.id;
-              return (
-                <li key={element.id}>
-                  <button
-                    aria-controls="element-detail"
-                    aria-pressed={active}
-                    className={cn(
-                      "grid min-h-20 w-full content-start gap-0.5 rounded-xl border p-2 text-left",
-                      active
-                        ? "border-accent bg-accent-soft"
-                        : "border-line bg-surface hover:border-line-strong hover:bg-surface-2",
-                    )}
-                    onClick={() => select(element)}
-                    type="button"
-                  >
-                    <span className="text-xs text-ink-3 tabular-nums">{element.atomicNumber}</span>
-                    <span className="font-display text-2xl leading-none font-bold text-ink">
-                      {element.symbol}
-                    </span>
-                    <span className="truncate text-xs font-semibold text-ink-2">
-                      {element.nameCs}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          <section aria-label="Výsledky hledání" className="mt-3 grid gap-5">
+            {resultsByCategory.map(([category, categoryElements]) => (
+              <CategorySection
+                category={category}
+                elements={categoryElements}
+                key={category}
+                onSelect={select}
+                selectedId={selected?.id}
+                tileRefs={tileRefs.current}
+              />
+            ))}
+          </section>
         )}
       </div>
 
@@ -207,6 +273,7 @@ export function ElementBrowser({ elements, groups, production }: ElementBrowserP
         <ElementDetail
           element={selected}
           group={selected.group === null ? undefined : groupsByNumber.get(selected.group)}
+          onReturn={returnToIndex}
           products={production[selected.symbol] ?? []}
           ref={detailRef}
         />
@@ -215,28 +282,153 @@ export function ElementBrowser({ elements, groups, production }: ElementBrowserP
   );
 }
 
+function groupByCategory(
+  elements: readonly ElementFlashcardData[],
+): readonly (readonly [ElementCategory, readonly ElementFlashcardData[]])[] {
+  const grouped = new Map<ElementCategory, ElementFlashcardData[]>();
+  for (const element of elements) {
+    const category = classifyElementCategory(element);
+    grouped.set(category, [...(grouped.get(category) ?? []), element]);
+  }
+  return ELEMENT_CATEGORY_OPTIONS.flatMap(({ id }) => {
+    const items = grouped.get(id);
+    return items ? [[id, items] as const] : [];
+  });
+}
+
+function countByCategory(
+  elements: readonly ElementFlashcardData[],
+): ReadonlyMap<ElementCategory, number> {
+  const counts = new Map<ElementCategory, number>();
+  for (const element of elements) {
+    const category = classifyElementCategory(element);
+    counts.set(category, (counts.get(category) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function CategoryTab({
+  category,
+  label,
+  count,
+  pressed,
+  onSelect,
+}: Readonly<{
+  category?: ElementCategory;
+  label: string;
+  count: number;
+  pressed: boolean;
+  onSelect: () => void;
+}>) {
+  return (
+    <button
+      aria-pressed={pressed}
+      className={cn(
+        "inline-flex min-h-11 items-center gap-2 rounded-full border px-3 text-sm font-semibold",
+        pressed
+          ? "border-ink bg-ink text-ground"
+          : "border-line-strong bg-surface text-ink-2 hover:bg-surface-2 hover:text-ink",
+      )}
+      data-element-category={category}
+      onClick={onSelect}
+      type="button"
+    >
+      {category ? <span aria-hidden="true" className={categoryStyles.swatch} /> : null}
+      {label}{" "}
+      <span className={cn("tabular-nums", pressed ? "text-ground" : "text-ink-3")}>{count}</span>
+    </button>
+  );
+}
+
+function CategorySection({
+  category,
+  elements,
+  selectedId,
+  onSelect,
+  tileRefs,
+}: Readonly<{
+  category: ElementCategory;
+  elements: readonly ElementFlashcardData[];
+  selectedId: string | undefined;
+  onSelect: (element: ElementFlashcardData) => void;
+  tileRefs: Map<string, HTMLButtonElement>;
+}>) {
+  const headingId = useId();
+  return (
+    <section aria-labelledby={headingId} data-element-category={category}>
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-ink-2" id={headingId}>
+        <span aria-hidden="true" className={categoryStyles.swatch} />
+        {ELEMENT_CATEGORY_LABELS[category]}{" "}
+        <span className="font-normal text-ink-3 tabular-nums">({elements.length})</span>
+      </h2>
+      <ul className="mt-2 grid list-none grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-1.5 p-0">
+        {elements.map((element) => {
+          const active = element.id === selectedId;
+          return (
+            <li key={element.id}>
+              <button
+                aria-controls="element-detail"
+                aria-pressed={active}
+                className={cn(
+                  "grid min-h-16 w-full content-start gap-0.5 rounded-lg border p-1.5 text-left",
+                  categoryStyles.tile,
+                  active && "ring-2 ring-ink ring-offset-2 ring-offset-ground",
+                )}
+                onClick={() => onSelect(element)}
+                ref={(node) => {
+                  if (node) tileRefs.set(element.id, node);
+                  else tileRefs.delete(element.id);
+                }}
+                type="button"
+              >
+                <span className="text-[0.7rem] leading-none tabular-nums">
+                  {element.atomicNumber}
+                </span>
+                <span className="font-display text-xl leading-none font-bold">
+                  {element.symbol}
+                </span>
+                <span className="truncate text-[0.7rem] font-semibold">{element.nameCs}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 function ElementDetail({
   element,
   group,
   products,
+  onReturn,
   ref,
 }: Readonly<{
   element: ElementFlashcardData;
   group: ElementGroupData | undefined;
   products: readonly PreparationProductionRuntimeProduct[];
+  onReturn: () => void;
   ref: Ref<HTMLElement>;
 }>) {
+  const category = classifyElementCategory(element);
   return (
     <section
       aria-labelledby="element-detail-heading"
-      className="scroll-mt-20 rounded-2xl border border-line bg-surface p-5 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto"
+      className={cn(
+        "scroll-mt-20 rounded-2xl border p-5 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto",
+        categoryStyles.panel,
+      )}
+      data-element-category={category}
       id="element-detail"
       ref={ref}
     >
       <div className="flex items-center gap-4">
         <span
           aria-hidden="true"
-          className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-accent font-display text-3xl font-bold text-on-fill"
+          className={cn(
+            "grid h-16 w-16 shrink-0 place-items-center rounded-xl font-display text-3xl font-bold",
+            categoryStyles.badge,
+          )}
         >
           {element.symbol}
         </span>
@@ -245,6 +437,7 @@ function ElementDetail({
             {element.nameCs} <span className="sr-only">({element.symbol})</span>
           </h2>
           <p className="text-sm text-ink-2">{element.nameLat}</p>
+          <ElementCategoryBadge className="mt-1" element={element} />
         </div>
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
@@ -313,6 +506,13 @@ function ElementDetail({
           ))
         )}
       </div>
+      <button
+        className="mt-4 min-h-11 w-full rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink lg:hidden"
+        onClick={onReturn}
+        type="button"
+      >
+        Zpět na přehled prvků
+      </button>
     </section>
   );
 }

@@ -6,6 +6,12 @@ export {
   evaluateAnswer,
 } from "./evaluate-answer";
 export {
+  classifyElementCategory,
+  ELEMENT_CATEGORIES,
+  type ElementCategory,
+  type ElementCategoryInput,
+} from "./element-category";
+export {
   type ElementAnswerEvaluation,
   type ElementAnswerKey,
   type ElementAnswerKind,

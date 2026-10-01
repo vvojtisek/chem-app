@@ -7,6 +7,9 @@ const elements = JSON.parse(
 ) as readonly { readonly id: string; readonly nameCs: string; readonly symbol: string }[];
 const elementIdByName = new Map(elements.map(({ id, nameCs }) => [nameCs, id]));
 const elementSymbolByName = new Map(elements.map(({ nameCs, symbol }) => [nameCs, symbol]));
+const { version: APP_VERSION } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+) as { readonly version: string };
 
 async function keepQuestionOrder(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -19,7 +22,7 @@ test("shows the four dashboard areas and app version on desktop and mobile", asy
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
   await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
-  await expect(page.getByTitle("Verze aplikace")).toHaveText("v1.0.0");
+  await expect(page.getByTitle("Verze aplikace")).toHaveText(`v${APP_VERSION}`);
   await expect(page.getByText("Offline výuka")).toHaveCount(0);
   await expect(page.getByText("Vyberte, co chcete trénovat")).toHaveCount(0);
   await expect(page.getByText("Příprava MVP")).toHaveCount(0);

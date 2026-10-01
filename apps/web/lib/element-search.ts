@@ -1,4 +1,8 @@
-import { normalizeAnswerWithoutDiacritics } from "@inorganic/chemistry";
+import {
+  classifyElementCategory,
+  type ElementCategory,
+  normalizeAnswerWithoutDiacritics,
+} from "@inorganic/chemistry";
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 
 /** "f" stands for the lanthanoid and actinoid rows, which have no group number in the data. */
@@ -8,9 +12,15 @@ export interface ElementFilters {
   readonly query: string;
   readonly group: ElementGroupFilter;
   readonly period: number | null;
+  readonly category: ElementCategory | null;
 }
 
-export const EMPTY_ELEMENT_FILTERS: ElementFilters = { query: "", group: null, period: null };
+export const EMPTY_ELEMENT_FILTERS: ElementFilters = {
+  query: "",
+  group: null,
+  period: null,
+  category: null,
+};
 
 function matchesGroup(element: ElementFlashcardData, group: ElementGroupFilter): boolean {
   if (group === null) return true;
@@ -19,7 +29,7 @@ function matchesGroup(element: ElementFlashcardData, group: ElementGroupFilter):
 
 /**
  * Elements matching a Czech or Latin name (case and diacritics ignored), a symbol or an atomic
- * number, within the chosen group and period. Exact symbol or number hits come first, then names
+ * number, within the chosen group, period and category. Exact symbol or number hits come first, then names
  * that start with the query, then the rest, each by atomic number.
  */
 export function filterElements(
@@ -30,7 +40,8 @@ export function filterElements(
   const scoped = elements.filter(
     (element) =>
       matchesGroup(element, filters.group) &&
-      (filters.period === null || element.period === filters.period),
+      (filters.period === null || element.period === filters.period) &&
+      (filters.category === null || classifyElementCategory(element) === filters.category),
   );
   if (!query) return [...scoped].sort((left, right) => left.atomicNumber - right.atomicNumber);
 

@@ -95,7 +95,7 @@ describe("HomeDashboard", () => {
     expect(
       await within(areaCard("Názvosloví")).findByText("Úspěšnost 75 % · 4 odpovědi"),
     ).toBeInTheDocument();
-    expect(areaCard("Chemické rovnice, výskyt a výroba")).toHaveTextContent("Zatím bez odpovědí");
+    expect(areaCard("Chemické rovnice, příprava a výroba")).toHaveTextContent("Zatím bez odpovědí");
     expect(areaCard("Učivo")).toHaveTextContent("Bez otázek a bez hodnocení");
   });
 
