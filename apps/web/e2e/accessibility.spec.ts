@@ -63,6 +63,14 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await page.goto("/flashcards/prvky");
   await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();
   await expectWcag22Aa(page);
+  await page.goto("/uceni/prvky");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Prvky a jejich skupiny" }),
+  ).toBeVisible();
+  await expectWcag22Aa(page);
+  await page.goto("/uceni/prvky/tabulka");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expectWcag22Aa(page);
   await page.goto("/uceni/karty-prvku");
   await expect(page.getByRole("heading", { level: 2, name: "Prvky" })).toBeVisible();
   await expectWcag22Aa(page);

@@ -1,3 +1,4 @@
+import type { ElementCategory } from "@inorganic/chemistry";
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { describe, expect, it } from "vitest";
 
@@ -34,7 +35,7 @@ const elements = [
 ];
 
 const symbols = (query: string, group: number | "f" | null = null, period: number | null = null) =>
-  filterElements(elements, { query, group, period }).map((item) => item.symbol);
+  filterElements(elements, { query, group, period, category: null }).map((item) => item.symbol);
 
 describe("filterElements", () => {
   it("lists every element by atomic number without filters", () => {
@@ -66,6 +67,19 @@ describe("filterElements", () => {
     expect(symbols("", "f")).toEqual(["La"]);
     expect(symbols("", null, 4)).toEqual(["Mn", "Fe"]);
     expect(symbols("m", null, 4)).toEqual(["Mn", "Fe"]);
+  });
+
+  it("narrows by element category together with the other filters", () => {
+    const byCategory = (category: ElementCategory, query = "") =>
+      filterElements(elements, { ...EMPTY_ELEMENT_FILTERS, query, category }).map(
+        (item) => item.symbol,
+      );
+
+    expect(byCategory("transition-metal")).toEqual(["Mn", "Fe"]);
+    expect(byCategory("transition-metal", "fe")).toEqual(["Fe"]);
+    expect(byCategory("alkaline-earth-metal")).toEqual(["Mg"]);
+    expect(byCategory("lanthanoid-actinoid")).toEqual(["La"]);
+    expect(byCategory("halogen")).toEqual([]);
   });
 
   it("returns nothing when no element matches", () => {

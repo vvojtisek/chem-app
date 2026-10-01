@@ -214,9 +214,10 @@ New structure for `/uceni/prvky`:
    production) and gains a category badge and category tint. On ≥ 1024 px it stays a sticky
    side panel. Below that, selecting a tile scrolls to the detail, which has „Zpět na přehled
    prvků“. That button returns focus to the selected tile.
-   The selected element is mirrored in the URL hash (`#prvek-fe`), so a detail can be linked
-   and the back button works. A hash is used instead of a query string because the service
-   worker caches pages by pathname; the hash keeps deep links working offline.
+   The selected element is mirrored in the URL hash (`#prvek-fe`) with `replaceState`, so a
+   detail can be linked and survives a reload without adding a history entry per click. A hash
+   is used instead of a query string because the service worker caches pages by pathname; the
+   hash keeps deep links working offline.
 5. **Group overview and mnemonics**: stays a collapsed section at the end, unchanged.
 
 Tests: `filterElements` gains a category criterion (unit); the component tests cover the

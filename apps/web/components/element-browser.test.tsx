@@ -60,18 +60,21 @@ const hydrogen: PreparationProductionRuntimeProduct = {
   sources: [{ title: "Fixture", locator: "https://example.test/source" }],
 };
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState(null, "", "/");
+});
 
 function renderBrowser() {
   render(<ElementBrowser elements={elements} groups={groups} production={{ H: [hydrogen] }} />);
 }
 
 function results() {
-  return screen.getByRole("list", { name: "Výsledky hledání" });
+  return screen.getByRole("region", { name: "Výsledky hledání" });
 }
 
 function detail() {
-  return screen.getByRole("region", { name: /^Vodík|^Lithium|^Helium|^Lanthan/ });
+  return screen.getByRole("region", { name: /^(?:Vodík|Lithium|Helium|Lanthan) \(/u });
 }
 
 describe("ElementBrowser", () => {
@@ -132,5 +135,63 @@ describe("ElementBrowser", () => {
 
     expect(within(results()).getAllByRole("button")).toHaveLength(4);
     expect(screen.queryByRole("button", { name: "Zrušit filtry" })).toBeNull();
+  });
+
+  it("groups the index by category and filters by a category tab", () => {
+    renderBrowser();
+
+    const index = results();
+    expect(within(index).getByRole("heading", { name: "Nekovy (1)" })).toBeInTheDocument();
+    expect(within(index).getByRole("heading", { name: "Alkalické kovy (1)" })).toBeInTheDocument();
+    expect(
+      within(index).getByRole("heading", { name: "Lanthanoidy a aktinoidy (1)" }),
+    ).toBeInTheDocument();
+    expect(
+      within(index)
+        .getByRole("button", { name: /Lithium/ })
+        .closest("section"),
+    ).toHaveAttribute("data-element-category", "alkali-metal");
+
+    const tabs = screen.getByRole("group", { name: "Kategorie" });
+    expect(within(tabs).getByRole("button", { name: "Vše 4" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    fireEvent.click(within(tabs).getByRole("button", { name: "Vzácné plyny 1" }));
+
+    expect(within(tabs).getByRole("button", { name: "Vzácné plyny 1" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(within(results()).getAllByRole("button")).toHaveLength(1);
+    expect(within(results()).getByRole("button", { name: /Helium/ })).toBeInTheDocument();
+    expect(within(tabs).getByRole("button", { name: "Halogeny 0" })).toBeInTheDocument();
+  });
+
+  it("names the category in the detail and links the element in the URL hash", () => {
+    renderBrowser();
+
+    fireEvent.click(within(results()).getByRole("button", { name: /Helium/ }));
+
+    expect(window.location.hash).toBe("#prvek-he");
+    expect(detail()).toHaveAttribute("data-element-category", "noble-gas");
+    expect(within(detail()).getByText("Vzácné plyny")).toBeInTheDocument();
+  });
+
+  it("opens the element named in the URL hash", () => {
+    window.history.replaceState(null, "", "/uceni/prvky#prvek-li");
+    renderBrowser();
+
+    expect(within(detail()).getByRole("heading", { level: 2 })).toHaveTextContent("Lithium");
+  });
+
+  it("returns keyboard focus from the detail to the chosen tile", () => {
+    renderBrowser();
+    const lithium = within(results()).getByRole("button", { name: /Lithium/ });
+    fireEvent.click(lithium);
+
+    fireEvent.click(within(detail()).getByRole("button", { name: "Zpět na přehled prvků" }));
+
+    expect(lithium).toHaveFocus();
   });
 });
