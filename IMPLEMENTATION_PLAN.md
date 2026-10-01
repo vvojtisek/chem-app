@@ -1,7 +1,8 @@
 # Implementation plan: v1.1 – practice/learning refactor and element category colours
 
-Status: active. This plan is committed before any code change, as requested. Each milestone
-below is one atomic, independently reviewable commit carrying its own patch version.
+Status: complete on the branch, awaiting review and merge (see section 10). This plan was
+committed before any code change, as requested. Each milestone below is one atomic,
+independently reviewable commit carrying its own patch version.
 
 ## 1. Goal
 
@@ -318,3 +319,52 @@ Each milestone is one commit with no data migration. The service-worker cache bu
 replaces the shell cache on the next visit. Reverting a milestone commit restores the
 previous behaviour; reverting M2 needs another cache-name bump so clients drop the cached
 quiz route.
+
+## 10. Completion evidence
+
+| Version | Commit | Content |
+|---|---|---|
+| v1.1.0 | `docs(plan)` | this plan |
+| v1.1.1 | `refactor(web,chemistry)` | shared category classifier and tokens |
+| – | `test(web)` | e2e reads the app version from `package.json` (the hard-coded `v1.0.0` broke on the first bump) |
+| v1.1.2 | `feat(web)` | production quiz replaces the study link on `/procvicovani` |
+| – | `fix(web)` | full ink on category tiles (axe: 4.36:1 in the dark theme on the existing explorer) |
+| v1.1.3 | `feat(web)` | `/uceni/prvky` restructure |
+| v1.1.4 | `feat(web)` | category badge on post-answer and study surfaces |
+| – | `fix(web)` | verdict line kept self-contained (e2e regression from v1.1.4) |
+| v1.1.5 | `docs` | product spec, help page, known limitations, README |
+
+Discoveries while implementing:
+
+- Two reviewed HF routes are written identically (two source citations); the quiz asks a
+  product's identical routes once.
+- Eight reactant sets have more than one reviewed product (e.g. Cu + HNO3 → NO or NO2,
+  C + SiO2 → Si or SiC, Cl2 + NaOH → NaClO or NaClO3); the distractor rule excludes them.
+- Coefficients are joined to formulas with a no-break space on the page; the e2e spec
+  normalises whitespace before matching.
+
+Full gate on the branch head (local; PostgreSQL 16 instead of CI's 17, Chromium 1194 via a
+local Playwright config override because the pinned browser build is not installed here):
+
+| Command | Result |
+|---|---|
+| `pnpm format:check` | pass |
+| `pnpm lint` | pass |
+| `pnpm typecheck` | pass |
+| `pnpm test` | pass: chemistry 159, content 64, web 297 tests |
+| `pnpm content:validate` | pass |
+| `pnpm contracts:check` | pass |
+| `uv --directory apps/api run ruff format --check .` | pass |
+| `uv --directory apps/api run ruff check .` | pass |
+| `uv --directory apps/api run pytest -q` | pass: 44 tests |
+| `pnpm build` | pass |
+| `pnpm test:e2e` | pass: 90 passed, 2 skipped (the existing `test.skip` guest test) |
+
+Additional checks: axe (WCAG 2.2 AA tags) in light and dark themes at 1280 and 360 px on
+`/uceni/prvky`, `/uceni/prvky/tabulka` (with the modal open), the quiz after an answer,
+`/flashcards/prvky` after an answer and `/procvicovani/prvky` after an answer: no
+violations. No horizontal overflow at 360 px on `/uceni/prvky` or the quiz.
+
+Not done: `pnpm content:release-check` was not run because no curriculum content changed.
+The category conventions in section 6 still need chemistry-SME confirmation.
+

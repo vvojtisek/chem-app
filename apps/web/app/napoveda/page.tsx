@@ -20,6 +20,11 @@ export default function HelpPage() {
             vyhodnocují odpovědi a mohou nabídnout opakování chyby.
           </p>
           <p className="mt-2 leading-7 text-ink-2">
+            Barva prvku označuje jeho kategorii, například alkalické kovy nebo halogeny, a vždy je u
+            ní i název kategorie. V Učivu je vidět stále, při procvičování až po odpovědi, aby
+            neprozradila řešení.
+          </p>
+          <p className="mt-2 leading-7 text-ink-2">
             Tabulka prvků podporuje výběr jednotlivých prvků i celých skupin. Vzorec zapisujte
             běžnými číslicemi; rovnice lze zadat také se znakem šipky →.
           </p>

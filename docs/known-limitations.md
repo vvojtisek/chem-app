@@ -15,6 +15,12 @@
 - The equation parser intentionally supports a documented subset of chemical
   notation. Unsupported charges, phases, coordination, nested groups, and
   structural formulas are not inferred.
+- There is no occurrence, mineral or ore content yet, so no occurrence quiz
+  exists. Adding one needs a new reviewed content collection.
+- Element categories (and their colours) follow a curriculum convention that
+  still needs chemistry-SME confirmation: Be and Mg count as alkaline-earth
+  metals, group 12 as transition metals, La–Lu and Ac–Lr as lanthanoids and
+  actinoids, Po as a metalloid, and Nh–Og by group alone.
 
 ## Accounts and progress
 
@@ -23,6 +29,9 @@
 - Resetting progress starts a new active generation but retains old immutable
   server events for daily upload quota accounting. It does not erase account
   data; self-service account deletion is not available in this version.
+- The preparation and production quiz (`/procvicovani/priprava-vyroba`) keeps
+  results for the session only; its answers are not recorded as attempts and
+  do not count towards progress or the daily goal.
 - Progress export/import is not implemented. Browser storage loss can remove
   unsynchronized attempts and local custom cards.
 - Offline account access uses the last verified browser marker. It cannot

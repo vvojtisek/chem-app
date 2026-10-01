@@ -1,6 +1,6 @@
 # Inorganic chemistry learning application
 
-Offline-capable Czech learning application for periodic-table practice, chemical equations, inorganic nomenclature, and occurrence/production review.
+Offline-capable Czech learning application for periodic-table practice, chemical equations, inorganic nomenclature, and preparation/production review.
 
 ## Repository
 
