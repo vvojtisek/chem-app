@@ -1,7 +1,7 @@
 "use client";
 
-import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { evaluateElementAnswer } from "@inorganic/chemistry";
+import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -16,6 +16,7 @@ const SESSION_DURATION_MS = 5 * 60 * 1000;
 
 type RecallDirection = "symbol" | "name";
 type ExtraField = "atomicNumber" | "atomicWeight" | "valenceConfiguration";
+type FactField = RecallDirection | ExtraField;
 type Answers = Record<RecallDirection | ExtraField, string>;
 
 const emptyAnswers: Answers = {
@@ -60,11 +61,33 @@ export function ElementFlashcardPractice({
   const [incorrect, setIncorrect] = useState(0);
   const [notice, setNotice] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
   const { elapsedMs, start: startStopwatch, stop: stopStopwatch } = useStopwatch();
   const remainingTimeMs = Math.max(0, SESSION_DURATION_MS - elapsedMs);
   const current = questions[questionIndex];
   const answered = correct + incorrect;
   const remainingCards = Math.max(0, questions.length - questionIndex - (feedback ? 1 : 0));
+  const cardFacts: readonly {
+    readonly key: FactField;
+    readonly label: string;
+    readonly value: string;
+  }[] = current
+    ? [
+        { key: "name", label: "Český název", value: current.nameCs },
+        { key: "symbol", label: "Značka", value: current.symbol },
+        { key: "atomicNumber", label: "Protonové číslo", value: String(current.atomicNumber) },
+        {
+          key: "atomicWeight",
+          label: "Relativní atomová hmotnost",
+          value: String(current.atomicWeight),
+        },
+        {
+          key: "valenceConfiguration",
+          label: "Valenční konfigurace",
+          value: current.valenceConfiguration,
+        },
+      ]
+    : [];
 
   function startRound() {
     if (selectedElements.length === 0) return;
@@ -95,7 +118,12 @@ export function ElementFlashcardPractice({
   }, [phase, remainingTimeMs, stopStopwatch]);
 
   useEffect(() => {
-    if (phase === "running" && !feedback) inputRef.current?.focus();
+    if (phase !== "running") return;
+    if (feedback) {
+      nextButtonRef.current?.focus();
+    } else {
+      inputRef.current?.focus();
+    }
   }, [phase, feedback]);
 
   function reveal(knewIt: boolean) {
@@ -290,9 +318,8 @@ export function ElementFlashcardPractice({
               </p>
               <div className="mt-4 [perspective:1000px]">
                 <div
-                  className="relative transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d]"
+                  className="relative min-h-[29rem] transition-transform duration-500 motion-reduce:transition-none [transform-style:preserve-3d] sm:min-h-[22rem]"
                   style={{
-                    minHeight: `${21 + roundExtras.length * 5}rem`,
                     transform: feedback ? "rotateY(180deg)" : "rotateY(0deg)",
                   }}
                 >
@@ -384,38 +411,48 @@ export function ElementFlashcardPractice({
                     {feedback ? (
                       <div
                         aria-live="polite"
-                        className={`mt-4 w-full max-w-lg rounded-xl px-4 py-3 text-left ${
-                          feedback.isCorrect ? "bg-good-soft text-good" : "bg-bad-soft text-bad"
-                        }`}
+                        className="mt-4 w-full max-w-lg text-left"
                         role="status"
                       >
-                        <p className="font-semibold">
+                        <p
+                          className={`mb-2 rounded-xl px-4 py-2 font-semibold ${
+                            feedback.isCorrect ? "bg-good-soft text-good" : "bg-bad-soft text-bad"
+                          }`}
+                        >
                           {feedback.isCorrect ? "Správně." : "Nevadí, příště to vyjde."}
                         </p>
-                        <dl className="mt-2 grid gap-1 text-sm">
-                          {([roundDirection, ...roundExtras] as const).map((field) => {
-                            const label =
-                              field === "symbol"
-                                ? "Chemická značka"
-                                : field === "name"
-                                  ? "Český název"
-                                  : extraFields.find((item) => item.key === field)?.label;
-                            const expected =
-                              field === "name" ? current.nameCs : String(current[field]);
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                          {cardFacts.map(({ key, label, value }) => {
+                            const isTested =
+                              key === roundDirection || roundExtras.includes(key as ExtraField);
+                            const isCorrect = isTested && feedback.results[key];
+                            const className = !isTested
+                              ? "border-accent/40 bg-accent-soft text-ink"
+                              : isCorrect
+                                ? "border-good/40 bg-good-soft text-good"
+                                : "border-bad/40 bg-bad-soft text-bad";
+                            const answer = feedback.answers[key];
                             return (
-                              <div key={field}>
-                                <dt className="font-semibold">
-                                  {label}
-                                  {feedback.results[field] ? " ✓" : " ✗"}
-                                </dt>
-                                <dd>
-                                  Vaše odpověď: {feedback.answers[field].trim() || "Nevím"} ·
-                                  Správně: {expected}
-                                </dd>
+                              <div
+                                className={`min-w-0 rounded-xl border px-3 py-2 ${className}`}
+                                key={key}
+                              >
+                                <p className="text-xs font-semibold leading-4">{label}</p>
+                                {isTested && !isCorrect ? (
+                                  <p className="mt-1 break-words text-sm leading-5">
+                                    Vaše odpověď: {answer.trim() || "Nevím"}
+                                    <br />
+                                    Správně: {value}
+                                  </p>
+                                ) : (
+                                  <p className="mt-1 break-words text-sm font-semibold leading-5">
+                                    {isTested ? `Správně: ${value}` : value}
+                                  </p>
+                                )}
                               </div>
                             );
                           })}
-                        </dl>
+                        </div>
                       </div>
                     ) : null}
                   </div>
@@ -430,6 +467,7 @@ export function ElementFlashcardPractice({
                 <button
                   className="mt-5 min-h-12 w-full rounded-xl bg-accent px-5 font-semibold text-on-fill sm:w-auto"
                   onClick={nextCard}
+                  ref={nextButtonRef}
                   type="button"
                 >
                   Další
