@@ -37,6 +37,13 @@ export default function RegisterPage() {
       <p className="mt-2 text-ink-2">
         Zadejte e-mail. Heslo si nastavíte po otevření potvrzovacího odkazu.
       </p>
+      <p className="mt-2 text-sm text-ink-2">
+        Před registrací si přečtěte{" "}
+        <Link className="underline" href="/soukromi">
+          informace o ochraně soukromí
+        </Link>
+        .
+      </p>
       <form className="mt-8 grid gap-4" onSubmit={(event) => void submit(event)}>
         <label className="grid gap-1 font-medium">
           E-mail

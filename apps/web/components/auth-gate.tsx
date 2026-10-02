@@ -20,6 +20,9 @@ import { SyncProvider } from "./sync-provider";
 export type ActiveAccount = Pick<CurrentUser, "id" | "username" | "role" | "progressGeneration">;
 const AccountContext = createContext<ActiveAccount | null>(null);
 const publicAuthPaths = new Set(["/login", "/register", "/reset-password", "/verify-email"]);
+// Readable before sign-in (the privacy notice must be available before registration),
+// but rendered inside the signed-in shell when a session exists.
+const anonymousReadablePaths = new Set(["/soukromi"]);
 
 function AuthenticatedShell({
   account,
@@ -139,6 +142,7 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
   }, []);
 
   const isPublicAuthPath = publicAuthPaths.has(pathname);
+  const isAnonymousReadable = anonymousReadablePaths.has(pathname);
   const me = useQuery({
     queryKey: queryKeys.auth.me,
     queryFn: getCurrentUser,
@@ -154,9 +158,9 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
     } else if (me.error instanceof ApiError && me.error.status === 401) {
       clearAccountMarker();
       setMarker(null);
-      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+      if (!isAnonymousReadable) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
     }
-  }, [me.data, me.error, pathname, router]);
+  }, [me.data, me.error, pathname, router, isAnonymousReadable]);
 
   if (isPublicAuthPath) return <>{children}</>;
   if (!mounted)
@@ -182,6 +186,7 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
       </ProgressBootstrap>
     );
   }
+  if (isAnonymousReadable && (me.error || !online)) return <>{children}</>;
   if (me.error instanceof ApiError && me.error.status === 401) return null;
   if (me.error) {
     return (

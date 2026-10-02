@@ -6,6 +6,7 @@ const publicPaths = new Set([
   "/register",
   "/reset-password",
   "/verify-email",
+  "/soukromi",
   "/sw.js",
   "/manifest.webmanifest",
   "/icon.svg",
