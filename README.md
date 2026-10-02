@@ -219,13 +219,14 @@ INSTANCE_ID=$(aws cloudformation describe-stacks \
 aws ssm start-session --region "$AWS_REGION" --target "$INSTANCE_ID"
 ```
 
-Run this command from CloudShell or another terminal using AWS credentials
-that can start a session. The instance role also allows a process using its
-credentials (such as the VS Code terminal on the instance) to start a shell
-session to an EC2 instance tagged for this CloudFormation stack. For an
-existing stack, upload the updated `deploy/aws/stack.yaml` and update the stack
-with `CAPABILITY_IAM` before retrying; this adds the scoped session permission
-to the instance role.
+Run this command from CloudShell or another terminal using your own AWS
+credentials that can start a session. The instance role intentionally cannot
+start sessions, because the internet-facing Caddy container can read its
+credentials for the Route 53 DNS challenge; see
+[`deploy/aws/README.md`](deploy/aws/README.md). For an existing stack created
+before this change, upload the updated `deploy/aws/stack.yaml` and update the
+stack with `CAPABILITY_IAM` to remove the session permission from the instance
+role.
 
 The host already contains `/srv/chem-app` at the selected `BOOTSTRAP_REF`,
 Docker, Compose, swap, and the nftables filter. Do not install Docker or create

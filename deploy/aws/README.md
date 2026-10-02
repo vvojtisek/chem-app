@@ -65,13 +65,15 @@ docker compose version
 ```
 
 The instance role includes `AmazonSSMManagedInstanceCore` so the SSM agent can
-register and communicate with Systems Manager. It also has narrowly scoped
-`ssm:StartSession` permission for the default shell document and EC2 instances
-tagged with this stack's name. This supports starting a session from a VS Code
-terminal using the instance role; normal CloudShell or workstation credentials
-still need their own permission to start a session on the target instance.
-When applying this change to an existing stack, update it with the new template
-and `CAPABILITY_IAM` so CloudFormation updates the instance role policy.
+register and communicate with Systems Manager. It deliberately has no
+`ssm:StartSession` permission: Caddy can read the instance role credentials
+from EC2 metadata for its Route 53 DNS challenge, so a session permission on
+the role would let a compromised Caddy container open a root-capable shell on
+this host. Start sessions from CloudShell or a workstation whose own AWS
+credentials allow `ssm:StartSession` on the instance, not from a process on the
+instance. When updating an existing stack that still has the
+`StartSessionOnStackHost` policy, deploy the new template with
+`CAPABILITY_IAM` so CloudFormation removes it.
 
 The CloudFormation stack may report complete before cloud-init finishes. The
 instance ID and Elastic IP are stack outputs. Check that the DNS A record points
