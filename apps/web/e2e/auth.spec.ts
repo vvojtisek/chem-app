@@ -18,6 +18,16 @@ test("redirects without a session and shows an accessible invalid-login error", 
   await expect(page.locator("p[role='alert']")).toContainText("e-mail nebo heslo");
 });
 
+test("links registration to a privacy notice that is readable without a session", async ({
+  page,
+}) => {
+  await page.goto("/register");
+  await page.getByRole("link", { name: "informace o ochraně soukromí" }).click();
+  await expect(page).toHaveURL(/\/soukromi$/);
+  await expect(page.getByRole("heading", { name: "Ochrana soukromí", level: 1 })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Hlavní navigace" })).toHaveCount(0);
+});
+
 test("logs in, reaches the requested route, and logs out", async ({ page }) => {
   await page.goto("/procvicovani");
   await page.getByRole("textbox", { name: "E-mail nebo uživatelské jméno" }).fill(username);
