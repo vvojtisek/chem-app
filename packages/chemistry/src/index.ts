@@ -1,16 +1,24 @@
 export {
-  type AnswerEvaluation,
-  type AnswerMatch,
-  type AnswerPolicy,
-  type EvaluateAnswerOptions,
-  evaluateAnswer,
-} from "./evaluate-answer";
+  type BalancingConstraint,
+  type BalancingDerivation,
+  type BalancingOperation,
+  type BalancingSpecies,
+  balancingConstraintEquation,
+  deriveBalancing,
+} from "./derive-balancing";
 export {
   classifyElementCategory,
   ELEMENT_CATEGORIES,
   type ElementCategory,
   type ElementCategoryInput,
 } from "./element-category";
+export {
+  type AnswerEvaluation,
+  type AnswerMatch,
+  type AnswerPolicy,
+  type EvaluateAnswerOptions,
+  evaluateAnswer,
+} from "./evaluate-answer";
 export {
   type ElementAnswerEvaluation,
   type ElementAnswerKey,

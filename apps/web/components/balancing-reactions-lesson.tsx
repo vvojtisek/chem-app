@@ -7,7 +7,11 @@ import {
   type BalancingReactionRuntimeSpecies,
 } from "@inorganic/content/balancing-reactions";
 import { useEffect, useMemo, useState } from "react";
+import { ChemicalText } from "@/components/chemical-text";
 import { Formula } from "@/components/formula";
+import { cn } from "@/lib/class-names";
+import { getElementColor } from "@/lib/element-display-colors";
+import styles from "./balancing-reactions-lesson.module.css";
 
 function speciesKey(species: BalancingReactionRuntimeSpecies): string {
   if (species.charge === 0) return species.formula;
@@ -29,76 +33,109 @@ function describeEquation(
 function ReactionTerm({
   term,
   focused,
-  coefficientChanged,
+  coefficientState,
+  finalized,
+  variable,
 }: Readonly<{
   term: BalancingReactionRuntimeSpecies;
   focused: boolean;
-  coefficientChanged: boolean;
+  coefficientState: "unresolved" | "active" | "resolved";
+  finalized: boolean;
+  variable: string | undefined;
 }>) {
-  const highlighted = focused || coefficientChanged;
   return (
     <span
-      className={`inline-flex items-baseline rounded-lg px-1 py-1 transition-colors ${
-        highlighted ? "bg-flame-soft text-ink" : ""
-      }`}
-      data-active={highlighted ? "true" : undefined}
+      className={cn(styles.reactionTerm, focused && styles.reactionTermActive)}
+      data-active={focused || coefficientState === "active" ? "true" : undefined}
     >
-      {term.coefficient !== 1 ? (
-        <span
-          className={`mr-1 font-bold tabular-nums ${
-            coefficientChanged ? "reaction-coefficient-active text-accent-strong" : ""
-          }`}
-        >
-          {term.coefficient}
-        </span>
-      ) : null}
-      <Formula charge={term.charge} formula={term.formula} />
+      <span
+        className={cn(
+          styles.reactionCoefficient,
+          (coefficientState === "active" || finalized) && styles.coefficientFilled,
+          coefficientState === "resolved" && !finalized && styles.coefficientResolved,
+        )}
+        data-coefficient={term.coefficient}
+        data-coefficient-state={coefficientState}
+        data-coefficient-final={finalized ? "true" : undefined}
+      >
+        {term.coefficient}
+      </span>
+      {variable ? <small className={styles.coefficientVariable}>{variable}</small> : null}
+      <Formula charge={term.charge} formula={term.formula} colorElements />
     </span>
   );
 }
 
 function ReactionEquation({
   current,
-  previous,
+  history,
   focusedSpecies,
+  coefficientChanges,
+  isSummary,
+  showVariables,
 }: Readonly<{
   current: BalancingReactionRuntimeLesson["steps"][number]["equation"];
-  previous: BalancingReactionRuntimeLesson["steps"][number]["equation"] | undefined;
+  history: readonly BalancingReactionRuntimeLesson["steps"][number][];
   focusedSpecies: readonly string[];
+  coefficientChanges: readonly string[] | undefined;
+  isSummary: boolean;
+  showVariables: boolean;
 }>) {
-  const changed = (term: BalancingReactionRuntimeSpecies, side: "reactant" | "product") => {
+  const state = (
+    term: BalancingReactionRuntimeSpecies,
+    side: "reactant" | "product",
+  ): "unresolved" | "active" | "resolved" => {
+    if (isSummary) return "resolved";
+    const previous = history.at(-1)?.equation;
     const previousTerms = side === "reactant" ? previous?.reactants : previous?.products;
     const previousTerm = previousTerms?.find(
       (candidate) => candidate.formula === term.formula && candidate.charge === term.charge,
     );
-    return previousTerm ? previousTerm.coefficient !== term.coefficient : term.coefficient !== 1;
+    const active = coefficientChanges
+      ? coefficientChanges.includes(speciesKey(term))
+      : previousTerm
+        ? previousTerm.coefficient !== term.coefficient
+        : term.coefficient !== 1;
+    if (active) return "active";
+    const determined = history.some(
+      (frame) =>
+        frame.coefficientChanges?.includes(speciesKey(term)) ||
+        (side === "reactant" ? frame.equation.reactants : frame.equation.products).some(
+          (candidate) => speciesKey(candidate) === speciesKey(term) && candidate.coefficient !== 1,
+        ),
+    );
+    return determined || term.coefficient !== 1 ? "resolved" : "unresolved";
   };
 
   return (
     <div
       aria-label={describeEquation(current.reactants, current.products)}
-      className="overflow-x-auto rounded-2xl border border-line bg-surface-2 px-3 py-5 text-center font-mono text-xl leading-loose sm:px-6 sm:text-2xl"
+      className={styles.equationFrame}
       role="img"
     >
-      <div className="min-w-max">
+      <div className={styles.equation}>
         {current.reactants.map((term, index) => (
           <span key={`${term.formula}-${term.charge}`}>
-            {index > 0 ? <span className="px-1 text-ink-3">+</span> : null}
+            {index > 0 ? <span className={styles.equationOperator}>+</span> : null}
             <ReactionTerm
-              coefficientChanged={changed(term, "reactant")}
+              coefficientState={state(term, "reactant")}
+              finalized={isSummary}
               focused={focusedSpecies.includes(speciesKey(term))}
               term={term}
+              variable={showVariables ? `c${index + 1}` : undefined}
             />
           </span>
         ))}
-        <span className="px-3 text-ink-2">→</span>
+        <span className={styles.equationOperator}>→</span>
         {current.products.map((term, index) => (
           <span key={`${term.formula}-${term.charge}`}>
-            {index > 0 ? <span className="px-1 text-ink-3">+</span> : null}
+            {index > 0 ? <span className={styles.equationOperator}>+</span> : null}
             <ReactionTerm
-              coefficientChanged={changed(term, "product")}
+              coefficientState={state(term, "product")}
+              finalized={isSummary}
               focused={focusedSpecies.includes(speciesKey(term))}
               term={term}
+              variable={showVariables ? `c${current.reactants.length + index + 1}` : undefined}
             />
           </span>
         ))}
@@ -107,110 +144,72 @@ function ReactionEquation({
   );
 }
 
-function BalanceLedger({
+function BalanceCards({
   step,
 }: Readonly<{ step: BalancingReactionRuntimeLesson["steps"][number] }>) {
-  const atoms = step.balanceLedger?.atoms ?? [];
-  const charge = step.balanceLedger?.charge;
-  const redoxPairs = step.balanceLedger?.redoxPairs ?? [];
-
+  const ledger = step.balanceLedger;
+  const signed = (value: number) => (value > 0 ? `+${value}` : String(value));
+  const entries = [
+    ...(ledger?.atoms ?? []).map((atom) => ({
+      label: atom.element,
+      left: atom.reactants,
+      right: atom.products,
+      charge: false,
+    })),
+    ...(ledger?.charge
+      ? [
+          {
+            label: "Náboj",
+            left: ledger.charge.reactants,
+            right: ledger.charge.products,
+            charge: true,
+          },
+        ]
+      : []),
+  ];
   return (
-    <aside className="grid gap-4 rounded-2xl border border-line bg-surface p-4 sm:p-5">
-      <div>
-        <h3 className="font-display text-lg font-bold text-ink">Kontrolní bilance</h3>
-        <p className="mt-1 text-sm text-ink-2">Počty atomů v aktuálním kroku.</p>
+    <>
+      <ul aria-label="Kontrolní bilance" className={styles.balanceCards}>
+        {entries.map((entry) => {
+          const balanced = entry.left === entry.right;
+          return (
+            <li
+              key={entry.label}
+              aria-label={entry.label}
+              className={cn(styles.balanceCard, balanced ? styles.statusGood : styles.statusBad)}
+            >
+              <span
+                className={styles.elementSymbol}
+                data-element={entry.charge ? undefined : entry.label}
+                style={entry.charge ? undefined : { color: getElementColor(entry.label) }}
+              >
+                {entry.label}
+              </span>
+              <span className={styles.countRelation}>
+                {entry.charge ? signed(entry.left) : entry.left}
+                {balanced ? " = " : " vs "}
+                {entry.charge ? signed(entry.right) : entry.right}
+              </span>
+              <span className={styles.status}>{balanced ? "✓ Vyčísleno" : "≠ Nevyčísleno"}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <div className={styles.electronChecks}>
+        {(step.notes ?? []).map((note) => (
+          <span key={note.label}>
+            <strong>{note.label}:</strong> <ChemicalText text={note.value} />
+          </span>
+        ))}
+        {(ledger?.redoxPairs ?? []).map((pair) => (
+          <span key={pair.species}>
+            {pair.species}: {signed(pair.fromOx)} → {signed(pair.toOx)}
+            {" · "}
+            {pair.deltaE > 0 ? "přijímá" : "odevzdává"} {Math.abs(pair.deltaE)} e⁻
+          </span>
+        ))}
       </div>
-      <div className="overflow-x-auto">
-        <table
-          className="w-full min-w-[25rem] border-collapse text-left text-sm"
-          aria-label="Kontrola atomů"
-        >
-          <thead>
-            <tr className="border-b border-line text-ink-2">
-              <th className="px-2 py-2 font-semibold" scope="col">
-                Prvek
-              </th>
-              <th className="px-2 py-2 font-semibold" scope="col">
-                Reaktanty
-              </th>
-              <th className="px-2 py-2 font-semibold" scope="col">
-                Produkty
-              </th>
-              <th className="px-2 py-2 font-semibold" scope="col">
-                Stav
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {atoms.map((atom) => {
-              const balanced = atom.reactants === atom.products;
-              return (
-                <tr className="border-b border-line last:border-0" key={atom.element}>
-                  <th className="px-2 py-2 font-semibold text-ink" scope="row">
-                    {atom.element}
-                  </th>
-                  <td className="px-2 py-2 tabular-nums text-ink">{atom.reactants}</td>
-                  <td className="px-2 py-2 tabular-nums text-ink">{atom.products}</td>
-                  <td className={`px-2 py-2 font-semibold ${balanced ? "text-good" : "text-warn"}`}>
-                    {balanced ? "✓ souhlasí" : "≠ doplnit"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      {charge ? (
-        <div className="rounded-xl bg-surface-2 p-3 text-sm">
-          <p className="font-semibold text-ink">Celkový iontový náboj</p>
-          <p className="mt-1 text-ink-2">
-            ΣQ reaktantů = <strong className="text-ink">{charge.reactants}</strong>; ΣQ produktů ={" "}
-            <strong className="text-ink">{charge.products}</strong>{" "}
-            <span className="font-semibold text-good">
-              {charge.reactants === charge.products ? "✓ souhlasí" : "≠ vyrovnat"}
-            </span>
-          </p>
-        </div>
-      ) : null}
-      {redoxPairs.length > 0 ? (
-        <div className="overflow-x-auto">
-          <h4 className="mb-2 font-semibold text-ink">Oxidační čísla a elektrony</h4>
-          <table
-            className="w-full min-w-[25rem] border-collapse text-left text-sm"
-            aria-label="Oxidační čísla"
-          >
-            <thead>
-              <tr className="border-b border-line text-ink-2">
-                <th className="px-2 py-2 font-semibold" scope="col">
-                  Částice
-                </th>
-                <th className="px-2 py-2 font-semibold" scope="col">
-                  Z
-                </th>
-                <th className="px-2 py-2 font-semibold" scope="col">
-                  Na
-                </th>
-                <th className="px-2 py-2 font-semibold" scope="col">
-                  Δe⁻
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {redoxPairs.map((pair) => (
-                <tr className="border-b border-line last:border-0" key={pair.species}>
-                  <th className="px-2 py-2 font-medium text-ink" scope="row">
-                    {pair.species}
-                  </th>
-                  <td className="px-2 py-2 tabular-nums text-ink">{pair.fromOx}</td>
-                  <td className="px-2 py-2 tabular-nums text-ink">{pair.toOx}</td>
-                  <td className="px-2 py-2 tabular-nums text-ink">{pair.deltaE}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-    </aside>
+    </>
   );
 }
 
@@ -233,6 +232,12 @@ export function BalancingReactionsLesson({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
       if (!lesson) return;
+      if (
+        event.target instanceof HTMLElement &&
+        (event.target.closest("select, input, textarea") || event.target.isContentEditable)
+      )
+        return;
+      event.preventDefault();
       setStepIndex((current) =>
         Math.max(
           0,
@@ -257,26 +262,31 @@ export function BalancingReactionsLesson({
   }
 
   return (
-    <section className="grid gap-5" aria-label="Výukový průvodce vyčíslováním reakcí">
-      <nav aria-label="Kategorie reakcí">
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <section
+      className={cn(
+        styles.lesson,
+        lesson?.steps.some((frame) => frame.title === "Odvozený celočíselný poměr") &&
+          styles.algebraLesson,
+      )}
+      aria-label="Výukový průvodce vyčíslováním reakcí"
+    >
+      <nav aria-label="Kategorie reakcí" className={styles.categoryNav}>
+        <div className={styles.categoryList}>
           {BALANCING_REACTION_CATEGORIES.map((option) => {
             const count = lessons.filter((candidate) => candidate.category === option).length;
             return (
               <button
                 aria-pressed={category === option}
-                className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition-colors ${
-                  category === option
-                    ? "border-accent bg-accent-soft text-accent-strong"
-                    : "border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink"
+                className={`${styles.categoryButton} ${
+                  category === option ? styles.categoryButtonActive : ""
                 }`}
                 key={option}
                 onClick={() => changeCategory(option)}
                 type="button"
               >
-                <span className="mr-1 tabular-nums">{option}.</span>{" "}
+                <span className={styles.categoryNumber}>{option}.</span>{" "}
                 {BALANCING_REACTION_CATEGORY_LABELS[option]}{" "}
-                <span className="ml-1 font-normal">({count})</span>
+                <span className={styles.categoryCount}>({count})</span>
               </button>
             );
           })}
@@ -284,104 +294,95 @@ export function BalancingReactionsLesson({
       </nav>
 
       {!lesson || !step ? (
-        <p className="rounded-2xl border border-line bg-surface p-5 text-ink-2" role="status">
+        <p className={styles.emptyState} role="status">
           Tato kategorie zatím nemá připravenou interaktivní lekci.
         </p>
       ) : (
-        <article className="grid gap-5 rounded-2xl border border-line bg-surface p-4 sm:p-6">
-          <header className="grid gap-2">
-            <span className="w-fit rounded-full bg-accent-soft px-3 py-1 text-sm font-semibold text-accent-strong">
-              Kategorie {lesson.category} · {BALANCING_REACTION_CATEGORY_LABELS[lesson.category]}
-            </span>
-            <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">{lesson.title}</h2>
-            <p className="rounded-xl border-l-4 border-flame bg-flame-soft px-4 py-3 leading-7 text-ink">
-              {lesson.theoryContext}
-            </p>
-            {lesson.condition || lesson.phase || lesson.note ? (
-              <dl className="grid gap-2 text-sm text-ink-2 sm:grid-cols-3">
-                {lesson.condition ? (
-                  <div>
-                    <dt className="font-semibold text-ink">Podmínka</dt>
-                    <dd>{lesson.condition}</dd>
-                  </div>
-                ) : null}
-                {lesson.phase ? (
-                  <div>
-                    <dt className="font-semibold text-ink">Skupenství</dt>
-                    <dd>{lesson.phase}</dd>
-                  </div>
-                ) : null}
+        <div className={styles.lessonLayout}>
+          <div className={styles.leftColumn}>
+            <header className={styles.lessonHeader}>
+              <span className={styles.eyebrow}>
+                Kategorie {lesson.category} · {BALANCING_REACTION_CATEGORY_LABELS[lesson.category]}
+              </span>
+              <h2 className={styles.lessonTitle}>
+                <ChemicalText text={lesson.title} />
+              </h2>
+              <details className={styles.lessonDetails}>
+                <summary>O reakci</summary>
+                <p className={styles.theoryContext}>
+                  <ChemicalText text={lesson.theoryContext} />
+                </p>
+                {lesson.condition ? <p>Podmínka: {lesson.condition}</p> : null}
+                {lesson.phase ? <p>Skupenství: {lesson.phase}</p> : null}
                 {lesson.note ? (
-                  <div>
-                    <dt className="font-semibold text-ink">Poznámka</dt>
-                    <dd>{lesson.note}</dd>
-                  </div>
+                  <p>
+                    Poznámka: <ChemicalText text={lesson.note} />
+                  </p>
                 ) : null}
-              </dl>
+              </details>
+            </header>
+            {categoryLessons.length > 1 ? (
+              <label className={styles.lessonSelector}>
+                Reakce v této kategorii
+                <select onChange={(event) => changeLesson(event.target.value)} value={lesson.id}>
+                  {categoryLessons.map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {candidate.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
             ) : null}
-          </header>
 
-          {categoryLessons.length > 1 ? (
-            <label className="grid max-w-xl gap-2 font-semibold text-ink">
-              Reakce v této kategorii
-              <select
-                className="min-h-11 rounded-xl border border-line-strong bg-surface px-3 font-normal"
-                onChange={(event) => changeLesson(event.target.value)}
-                value={lesson.id}
-              >
-                {categoryLessons.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-
-          <div aria-live="polite">
-            <p className="text-sm font-semibold text-ink-2">Aktuální krok: {step.title}</p>
-            <div className="mt-3">
+            <div aria-live="polite" className={styles.stepPanel}>
+              <p className={styles.stepTitle}>Aktuální krok: {step.title}</p>
+              <p className={styles.stepExplanation}>
+                <ChemicalText text={step.explanation} />
+              </p>
               <ReactionEquation
                 current={step.equation}
+                showVariables={lesson.steps.some(
+                  (frame) => frame.title === "Odvozený celočíselný poměr",
+                )}
+                isSummary={step.kind === "summary"}
                 focusedSpecies={step.focusedSpecies}
-                previous={lesson.steps[actualStepIndex - 1]?.equation}
+                coefficientChanges={step.coefficientChanges}
+                history={lesson.steps.slice(0, actualStepIndex)}
               />
+              <BalanceCards step={step} />
+              <div className={styles.stepBody}>
+                {step.ruleHighlight ? (
+                  <p className={styles.ruleHighlight}>
+                    <strong>Pravidlo:</strong> <ChemicalText text={step.ruleHighlight} />
+                  </p>
+                ) : null}
+              </div>
             </div>
-            <p className="mt-4 max-w-3xl leading-7 text-ink">{step.explanation}</p>
-            {step.ruleHighlight ? (
-              <p className="mt-3 rounded-xl bg-accent-soft px-4 py-3 text-sm leading-6 text-accent-strong">
-                <strong>Pravidlo:</strong> {step.ruleHighlight}
-              </p>
-            ) : null}
-          </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-y border-line py-4">
-            <button
-              className="min-h-11 rounded-xl border border-line-strong px-4 font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-45"
-              disabled={actualStepIndex === 0}
-              onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
-              type="button"
-            >
-              ← Zpět
-            </button>
-            <span className="text-sm font-semibold tabular-nums text-ink-2">
-              Krok {actualStepIndex + 1} z {lesson.steps.length}
-              <span className="sr-only">. Použijte šipky vlevo a vpravo pro změnu kroku.</span>
-            </span>
-            <button
-              className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:cursor-not-allowed disabled:opacity-45"
-              disabled={actualStepIndex === lesson.steps.length - 1}
-              onClick={() =>
-                setStepIndex((current) => Math.min(lesson.steps.length - 1, current + 1))
-              }
-              type="button"
-            >
-              Další krok →
-            </button>
+            <div className={styles.stepNavigation}>
+              <button
+                disabled={actualStepIndex === 0}
+                onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
+                type="button"
+              >
+                ← Zpět
+              </button>
+              <span className={styles.stepCounter}>
+                Krok {actualStepIndex + 1} z {lesson.steps.length}
+                <span className="sr-only">. Použijte šipky vlevo a vpravo pro změnu kroku.</span>
+              </span>
+              <button
+                disabled={actualStepIndex === lesson.steps.length - 1}
+                onClick={() =>
+                  setStepIndex((current) => Math.min(lesson.steps.length - 1, current + 1))
+                }
+                type="button"
+              >
+                Další krok →
+              </button>
+            </div>
           </div>
-
-          <BalanceLedger step={step} />
-        </article>
+        </div>
       )}
     </section>
   );

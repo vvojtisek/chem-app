@@ -1,8 +1,9 @@
 import {
+  deriveBalancing,
+  type EquationTerm,
   hasReducedEquationCoefficients,
   isBalancedEquation,
   parseEquationFormula,
-  type EquationTerm,
 } from "@inorganic/chemistry";
 
 import type { BalancingReactionLesson, ReactionSpecies } from "./balancing-reactions-schema";
@@ -15,7 +16,10 @@ export interface BalancingReactionProblem {
     | "unreduced_lesson"
     | "unbalanced_charge"
     | "invalid_step_formula"
-    | "invalid_step_ledger";
+    | "invalid_step_ledger"
+    | "missing_final_summary"
+    | "placeholder_derivation"
+    | "invalid_derivation_constraint";
   readonly recordId: string;
 }
 
@@ -63,6 +67,8 @@ export function findBalancingReactionProblems(
     ids.add(lesson.id);
 
     for (const step of lesson.steps) {
+      if (/Tím přiblížíme bilanci|nejmenšímu celočíselnému poměru/u.test(step.explanation))
+        problems.push({ code: "placeholder_derivation", recordId: lesson.id });
       const stepTerms = [...step.equation.reactants, ...step.equation.products];
       if (stepTerms.some((term) => !parseEquationFormula(term.formula, allowedSymbols))) {
         problems.push({ code: "invalid_step_formula", recordId: lesson.id });
@@ -103,6 +109,30 @@ export function findBalancingReactionProblems(
 
     const finalStep = lesson.steps.at(-1);
     if (!finalStep) continue;
+    if (lesson.derivationConstraints?.length) {
+      const derived = deriveBalancing(
+        finalStep.equation.reactants,
+        finalStep.equation.products,
+        allowedSymbols,
+        lesson.derivationConstraints,
+      );
+      const saved = [...finalStep.equation.reactants, ...finalStep.equation.products];
+      if (
+        !derived.ok ||
+        derived.coefficients.some((value, index) => value !== saved[index]?.coefficient)
+      )
+        problems.push({ code: "invalid_derivation_constraint", recordId: lesson.id });
+    }
+    const ionic = [...finalStep.equation.reactants, ...finalStep.equation.products].some(
+      (term) => term.charge !== 0,
+    );
+    if (
+      finalStep.kind !== "summary" ||
+      !finalStep.balanceLedger?.atoms?.length ||
+      (ionic && !finalStep.balanceLedger.charge)
+    ) {
+      problems.push({ code: "missing_final_summary", recordId: lesson.id });
+    }
     const reactants = asEquationTerms(finalStep.equation.reactants);
     const products = asEquationTerms(finalStep.equation.products);
     if (
