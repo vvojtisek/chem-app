@@ -6,6 +6,8 @@
   "exports": {
     "./runtime": "./src/runtime.ts",
     "./alternate-group-mnemonics": "./src/alternate-group-mnemonic-runtime.ts",
+    "./balancing-reactions": "./src/balancing-reactions-runtime.ts",
+    "./balancing-reactions-schema": "./src/balancing-reactions-schema.ts",
     "./preparation-production": "./src/preparation-production-runtime.ts",
     "./preparation-production-schema": "./src/preparation-production-schema.ts",
     "./nomenclature-schema": "./src/nomenclature-schema.ts"

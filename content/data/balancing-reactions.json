@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "balancing-reactions-v1-reference-2026-10-05",
+  "lessons": [
+    {
+      "id": "reaction.balancing.boric-acid",
+      "category": 1,
+      "title": "Příprava kyseliny borité z boraxu",
+      "rawEquation": "Na2B4O7 + HCl + H2O -> H3BO3 + NaCl",
+      "finalEquation": "Na2B4O7 + 2 HCl + 5 H2O -> 4 H3BO3 + 2 NaCl",
+      "theoryContext": "Slabou kyselinu připravíme vytěsněním z její soli silnější kyselinou. Z boraxu tak působením kyseliny chlorovodíkové vzniká kyselina boritá.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "title": "Nejprve vyrovnáme bor",
+          "explanation": "Vlevo jsou čtyři atomy boru v Na2B4O7, ale vpravo je jeden atom boru v H3BO3. Proto dáme před kyselinu boritou koeficient 4.",
+          "focusedSpecies": ["Na2B4O7", "H3BO3"],
+          "currentEquationLaTeX": "\\ce{Na2B4O7 + HCl + H2O -> 4 H3BO3 + NaCl}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "Na2B4O7", "charge": 0 },
+              { "coefficient": 1, "formula": "HCl", "charge": 0 },
+              { "coefficient": 1, "formula": "H2O", "charge": 0 }
+            ],
+            "products": [
+              { "coefficient": 4, "formula": "H3BO3", "charge": 0 },
+              { "coefficient": 1, "formula": "NaCl", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "Na", "reactants": 2, "products": 1 },
+              { "element": "B", "reactants": 4, "products": 4 },
+              { "element": "O", "reactants": 8, "products": 12 },
+              { "element": "H", "reactants": 3, "products": 12 },
+              { "element": "Cl", "reactants": 1, "products": 1 }
+            ]
+          },
+          "ruleHighlight": "Vyrovnávejte nejprve prvek, který se vyskytuje v nejméně sloučeninách."
+        },
+        {
+          "stepIndex": 2,
+          "title": "Doplníme sodík",
+          "explanation": "Vlevo zůstávají dva atomy sodíku. Koeficient 2 před NaCl vyrovná sodík na obou stranách.",
+          "focusedSpecies": ["Na2B4O7", "NaCl"],
+          "currentEquationLaTeX": "\\ce{Na2B4O7 + HCl + H2O -> 4 H3BO3 + 2 NaCl}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "Na2B4O7", "charge": 0 },
+              { "coefficient": 1, "formula": "HCl", "charge": 0 },
+              { "coefficient": 1, "formula": "H2O", "charge": 0 }
+            ],
+            "products": [
+              { "coefficient": 4, "formula": "H3BO3", "charge": 0 },
+              { "coefficient": 2, "formula": "NaCl", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "Na", "reactants": 2, "products": 2 },
+              { "element": "B", "reactants": 4, "products": 4 },
+              { "element": "O", "reactants": 8, "products": 12 },
+              { "element": "H", "reactants": 3, "products": 12 },
+              { "element": "Cl", "reactants": 1, "products": 2 }
+            ]
+          }
+        },
+        {
+          "stepIndex": 3,
+          "title": "Vyrovnáme chlor",
+          "explanation": "Dva NaCl obsahují dva atomy chloru, proto potřebujeme dva HCl na levé straně.",
+          "focusedSpecies": ["HCl", "NaCl"],
+          "currentEquationLaTeX": "\\ce{Na2B4O7 + 2 HCl + H2O -> 4 H3BO3 + 2 NaCl}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "Na2B4O7", "charge": 0 },
+              { "coefficient": 2, "formula": "HCl", "charge": 0 },
+              { "coefficient": 1, "formula": "H2O", "charge": 0 }
+            ],
+            "products": [
+              { "coefficient": 4, "formula": "H3BO3", "charge": 0 },
+              { "coefficient": 2, "formula": "NaCl", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "Na", "reactants": 2, "products": 2 },
+              { "element": "B", "reactants": 4, "products": 4 },
+              { "element": "O", "reactants": 8, "products": 12 },
+              { "element": "H", "reactants": 4, "products": 12 },
+              { "element": "Cl", "reactants": 2, "products": 2 }
+            ]
+          }
+        },
+        {
+          "stepIndex": 4,
+          "title": "Doplníme vodík vodou",
+          "explanation": "Čtyři H3BO3 obsahují dvanáct atomů vodíku. Dva dodá 2 HCl, zbývajících deset dodá pět molekul vody.",
+          "focusedSpecies": ["H2O", "H3BO3"],
+          "currentEquationLaTeX": "\\ce{Na2B4O7 + 2 HCl + 5 H2O -> 4 H3BO3 + 2 NaCl}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "Na2B4O7", "charge": 0 },
+              { "coefficient": 2, "formula": "HCl", "charge": 0 },
+              { "coefficient": 5, "formula": "H2O", "charge": 0 }
+            ],
+            "products": [
+              { "coefficient": 4, "formula": "H3BO3", "charge": 0 },
+              { "coefficient": 2, "formula": "NaCl", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "Na", "reactants": 2, "products": 2 },
+              { "element": "B", "reactants": 4, "products": 4 },
+              { "element": "O", "reactants": 12, "products": 12 },
+              { "element": "H", "reactants": 12, "products": 12 },
+              { "element": "Cl", "reactants": 2, "products": 2 }
+            ]
+          },
+          "ruleHighlight": "Vodu doplňujte až po vyrovnání ostatních prvků; nakonec ověřte kyslík."
+        }
+      ],
+      "status": "owner-approved",
+      "author": "project-curriculum",
+      "sources": [
+        {
+          "title": "VŠCHT e-learning: Vyčíslování reakcí",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/vycislovaniReakci/index.html"
+        }
+      ],
+      "ownerApprovedBy": "project owner",
+      "ownerApprovedAt": "2026-10-05"
+    },
+    {
+      "id": "reaction.balancing.iodine-synproportionation",
+      "category": 4,
+      "title": "Vznik jodu synproporcionací",
+      "rawEquation": "IO3^- + I^- + H^+ -> I2 + H2O",
+      "finalEquation": "IO3^- + 5 I^- + 6 H^+ -> 3 I2 + 3 H2O",
+      "theoryContext": "Synproporcionace spojí dvě různé oxidační formy stejného prvku do formy s mezilehlým oxidačním číslem. Jod v IO3^- a I^- přechází na elementární I2.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "title": "Určíme oxidační čísla a elektrony",
+          "explanation": "Jod v IO3^- má oxidační číslo +V a redukuje se na 0. Jod v I^- má −I a oxiduje se na 0. Poměr elektronů je 1 : 5, proto použijeme 1 IO3^- a 5 I^-.",
+          "focusedSpecies": ["IO3^-", "I^-"],
+          "currentEquationLaTeX": "\\ce{IO3^- + 5 I^- + H^+ -> I2 + H2O}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "IO3", "charge": -1 },
+              { "coefficient": 5, "formula": "I", "charge": -1 },
+              { "coefficient": 1, "formula": "H", "charge": 1 }
+            ],
+            "products": [
+              { "coefficient": 1, "formula": "I2", "charge": 0 },
+              { "coefficient": 1, "formula": "H2O", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "I", "reactants": 6, "products": 2 },
+              { "element": "O", "reactants": 3, "products": 1 },
+              { "element": "H", "reactants": 1, "products": 2 }
+            ],
+            "charge": { "reactants": -5, "products": 0 },
+            "redoxPairs": [
+              { "species": "IO3^-", "fromOx": 5, "toOx": 0, "deltaE": 5 },
+              { "species": "I^-", "fromOx": -1, "toOx": 0, "deltaE": -1 }
+            ]
+          },
+          "ruleHighlight": "Při redoxním vyčíslování nejprve vyrovnejte přenesené elektrony."
+        },
+        {
+          "stepIndex": 2,
+          "title": "Vyrovnáme počet atomů jodu",
+          "explanation": "Vlevo je celkem šest atomů jodu. Protože elementární jod je dvouatomová molekula I2, vzniknou tři molekuly I2.",
+          "focusedSpecies": ["I2"],
+          "currentEquationLaTeX": "\\ce{IO3^- + 5 I^- + H^+ -> 3 I2 + H2O}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "IO3", "charge": -1 },
+              { "coefficient": 5, "formula": "I", "charge": -1 },
+              { "coefficient": 1, "formula": "H", "charge": 1 }
+            ],
+            "products": [
+              { "coefficient": 3, "formula": "I2", "charge": 0 },
+              { "coefficient": 1, "formula": "H2O", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "I", "reactants": 6, "products": 6 },
+              { "element": "O", "reactants": 3, "products": 1 },
+              { "element": "H", "reactants": 1, "products": 2 }
+            ],
+            "charge": { "reactants": -5, "products": 0 }
+          }
+        },
+        {
+          "stepIndex": 3,
+          "title": "Vyrovnáme náboj v kyselém prostředí",
+          "explanation": "Vlevo je po započtení IO3^- a 5 I^- náboj −6. Kationty H^+ proto potřebujeme v počtu 6, aby celkový náboj dosáhl nuly.",
+          "focusedSpecies": ["H^+"],
+          "currentEquationLaTeX": "\\ce{IO3^- + 5 I^- + 6 H^+ -> 3 I2 + H2O}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "IO3", "charge": -1 },
+              { "coefficient": 5, "formula": "I", "charge": -1 },
+              { "coefficient": 6, "formula": "H", "charge": 1 }
+            ],
+            "products": [
+              { "coefficient": 3, "formula": "I2", "charge": 0 },
+              { "coefficient": 1, "formula": "H2O", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "I", "reactants": 6, "products": 6 },
+              { "element": "O", "reactants": 3, "products": 1 },
+              { "element": "H", "reactants": 6, "products": 2 }
+            ],
+            "charge": { "reactants": 0, "products": 0 }
+          },
+          "ruleHighlight": "U iontových rovnic kontrolujte vedle atomů vždy i celkový náboj."
+        },
+        {
+          "stepIndex": 4,
+          "title": "Doplníme vodu a zkontrolujeme kyslík",
+          "explanation": "Šest atomů vodíku vytvoří tři H2O. Tím se současně vyrovnají tři atomy kyslíku z IO3^-.",
+          "focusedSpecies": ["H2O", "IO3^-"],
+          "currentEquationLaTeX": "\\ce{IO3^- + 5 I^- + 6 H^+ -> 3 I2 + 3 H2O}",
+          "equation": {
+            "reactants": [
+              { "coefficient": 1, "formula": "IO3", "charge": -1 },
+              { "coefficient": 5, "formula": "I", "charge": -1 },
+              { "coefficient": 6, "formula": "H", "charge": 1 }
+            ],
+            "products": [
+              { "coefficient": 3, "formula": "I2", "charge": 0 },
+              { "coefficient": 3, "formula": "H2O", "charge": 0 }
+            ]
+          },
+          "balanceLedger": {
+            "atoms": [
+              { "element": "I", "reactants": 6, "products": 6 },
+              { "element": "O", "reactants": 3, "products": 3 },
+              { "element": "H", "reactants": 6, "products": 6 }
+            ],
+            "charge": { "reactants": 0, "products": 0 }
+          }
+        }
+      ],
+      "status": "owner-approved",
+      "author": "project-curriculum",
+      "sources": [
+        {
+          "title": "VŠCHT e-learning: Vyčíslování reakcí",
+          "locator": "https://e-learning.vscht.cz/echo/anorganika/vycislovaniReakci/index.html"
+        }
+      ],
+      "ownerApprovedBy": "project owner",
+      "ownerApprovedAt": "2026-10-05"
+    }
+  ]
+}

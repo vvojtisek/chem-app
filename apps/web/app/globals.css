@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@keyframes reaction-coefficient-pop {
+  0% {
+    transform: scale(1.18);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.reaction-coefficient-active {
+  display: inline-block;
+  animation: reaction-coefficient-pop 450ms ease-out;
+}
+
 /*
  * Design tokens. Components use the semantic utilities generated from @theme below
  * (bg-surface, text-ink, border-line, bg-accent, text-good, …) and never raw palette

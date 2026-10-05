@@ -137,6 +137,19 @@ if (
   writtenFiles.push(fileURLToPath(preparationFile));
 }
 
+const balancingFile = new URL("../data/balancing-reactions.json", import.meta.url);
+const balancingRaw = (await readJsonFile(balancingFile)) as {
+  lessons: readonly Readonly<Record<string, unknown>>[];
+};
+const balancingStamped = applyReviewStamp(rawEntriesSchema.parse(balancingRaw.lessons), stamp);
+if (balancingStamped.updatedIds.length > 0) {
+  await writeFile(
+    balancingFile,
+    `${JSON.stringify({ ...balancingRaw, lessons: balancingStamped.entries }, null, 2)}\n`,
+  );
+  writtenFiles.push(fileURLToPath(balancingFile));
+}
+
 execFileSync("pnpm", ["exec", "biome", "format", "--write", ...writtenFiles], {
   cwd: fileURLToPath(new URL("../../", import.meta.url)),
   stdio: "inherit",

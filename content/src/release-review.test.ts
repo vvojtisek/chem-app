@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { balancingReactionLessonSchema } from "./balancing-reactions-schema";
 import { alternateGroupMnemonicRecordSchema } from "./alternate-group-mnemonic-schema";
 import { loadAuthoringContent } from "./authoring-content";
 import { nomenclatureRecordSchema } from "./nomenclature-schema";
@@ -28,47 +29,52 @@ describe("production chemistry review coverage", () => {
     expect(counts.get("nomenclature")).toBe(469);
     expect(counts.get("route")).toBe(116);
     expect(counts.get("product")).toBe(sources.preparationProduction.products.length);
+    expect(counts.get("balancing-reaction")).toBe(sources.balancingReactions.lessons.length);
     expect(targets).not.toContainEqual(expect.objectContaining({ status: "in-review" }));
   });
 
-  it.each(["alternate-mnemonic", "nomenclature", "product", "route"] as const)(
-    "blocks owner approval and accepts current SME approval for %s",
-    (family) => {
-      const target = targets.find((candidate) => candidate.family === family);
-      if (!target) throw new Error(`Missing ${family} target.`);
-      expect(summarizeSmeReviewCoverage([target], content.reviewers).pending).toEqual([target.id]);
+  it.each([
+    "alternate-mnemonic",
+    "nomenclature",
+    "product",
+    "route",
+    "balancing-reaction",
+  ] as const)("blocks owner approval and accepts current SME approval for %s", (family) => {
+    const target = targets.find((candidate) => candidate.family === family);
+    if (!target) throw new Error(`Missing ${family} target.`);
+    expect(summarizeSmeReviewCoverage([target], content.reviewers).pending).toEqual([target.id]);
 
-      const reviewed = {
-        ...target,
-        status: "reviewed",
-        reviewedBy: sme.id,
-        reviewedAt: "2026-09-25",
-        reviewFingerprint: createReviewFingerprint(target.fingerprintInput),
-      };
-      expect(summarizeSmeReviewCoverage([reviewed], content.reviewers).smeReviewed).toEqual([
-        target.id,
-      ]);
-      expect(findReviewFingerprintProblems([reviewed], content.reviewers)).toEqual([]);
-      const schema = {
-        "alternate-mnemonic": alternateGroupMnemonicRecordSchema,
-        nomenclature: nomenclatureRecordSchema,
-        product: preparationProductionProductSchema,
-        route: preparationProductionRouteSchema,
-      }[family];
-      expect(schema.safeParse(reviewed).success).toBe(true);
-      expect(
-        summarizeSmeReviewCoverage(
-          [
-            {
-              ...reviewed,
-              fingerprintInput: { ...target.fingerprintInput, fixtureScientificChange: "changed" },
-            },
-          ],
-          content.reviewers,
-        ).pending,
-      ).toEqual([target.id]);
-    },
-  );
+    const reviewed = {
+      ...target,
+      status: "reviewed",
+      reviewedBy: sme.id,
+      reviewedAt: "2026-09-25",
+      reviewFingerprint: createReviewFingerprint(target.fingerprintInput),
+    };
+    expect(summarizeSmeReviewCoverage([reviewed], content.reviewers).smeReviewed).toEqual([
+      target.id,
+    ]);
+    expect(findReviewFingerprintProblems([reviewed], content.reviewers)).toEqual([]);
+    const schema = {
+      "alternate-mnemonic": alternateGroupMnemonicRecordSchema,
+      nomenclature: nomenclatureRecordSchema,
+      product: preparationProductionProductSchema,
+      route: preparationProductionRouteSchema,
+      "balancing-reaction": balancingReactionLessonSchema,
+    }[family];
+    expect(schema.safeParse(reviewed).success).toBe(true);
+    expect(
+      summarizeSmeReviewCoverage(
+        [
+          {
+            ...reviewed,
+            fingerprintInput: { ...target.fingerprintInput, fixtureScientificChange: "changed" },
+          },
+        ],
+        content.reviewers,
+      ).pending,
+    ).toEqual([target.id]);
+  });
 
   it("invalidates a route review when parent source attribution changes", () => {
     const route = targets.find((candidate) => candidate.family === "route");

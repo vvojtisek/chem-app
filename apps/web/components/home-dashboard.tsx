@@ -207,6 +207,14 @@ export function HomeDashboard() {
                   Příprava a výroba <span aria-hidden="true">→</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
+                  href="/uceni/prvky/vycislovani-rovnic"
+                >
+                  Vyčíslování rovnic <span aria-hidden="true">→</span>
+                </Link>
+              </li>
             </ul>
           </li>
         </ul>
