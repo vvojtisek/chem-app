@@ -77,11 +77,24 @@ describe("ElementFlashcardPractice", () => {
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
     expect(screen.getByText("Zbývá: 0")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Další" }));
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
 
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(summary).toHaveTextContent("Špatně");
     expect(summary).toHaveTextContent("1 z 1");
+  });
+
+  it("does not let timer expiry hide already evaluated feedback", () => {
+    vi.useFakeTimers();
+    render(<ElementFlashcardPractice elements={elements} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Přejít na cvičení/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Nevím" }));
+    act(() => vi.advanceTimersByTime(5 * 60 * 1000));
+    expect(screen.getByRole("status")).toHaveTextContent("Nevadí, příště to vyjde.");
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
+    expect(screen.getByRole("region", { name: "Vyhodnocení cvičení" })).toBeVisible();
   });
 
   it("shows incorrect selected facts without repeating correct answers", () => {

@@ -9,7 +9,11 @@ import {
 } from "@/lib/browser-learning-database";
 import { createBrowserNomenclatureStore } from "@/lib/browser-nomenclature-store";
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
-import { NOMENCLATURE_FILTERS_KEY } from "@/lib/nomenclature-preferences";
+import {
+  NOMENCLATURE_FILTERS_KEY,
+  saveNomenclatureDirection,
+} from "@/lib/nomenclature-preferences";
+import { DEFAULT_NOMENCLATURE_FILTERS } from "@/lib/nomenclature-session";
 import { NomenclaturePractice } from "./nomenclature-practice";
 
 function record(overrides: Partial<NomenclatureRuntimeRecord>): NomenclatureRuntimeRecord {
@@ -164,6 +168,25 @@ describe("NomenclaturePractice filters", () => {
 });
 
 describe("NomenclaturePractice exercise", () => {
+  it("keeps the final incorrect retry and its explanation visible until results are requested", async () => {
+    renderPractice([silverChloride]);
+    fireEvent.click(await startButton());
+    answer("chybná odpověď");
+    answer("znovu chybná odpověď");
+    const review = screen.getByRole("region", { name: "Poslední odpověď" });
+    expect(within(review).getByText("Špatně", { exact: true })).toBeVisible();
+    expect(within(review).getByText("Fixture explanation.")).toBeVisible();
+    expect(within(review).getByRole("img", { name: "AgCl" })).toBeVisible();
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    const button = within(review).getByRole("button", { name: "Zobrazit výsledky" });
+    expect(button).toHaveFocus();
+    await waitFor(async () =>
+      expect(await createBrowserProgressStore().listAttempts()).toHaveLength(2),
+    );
+    fireEvent.click(button);
+    expect(screen.getByRole("region", { name: "Vyhodnocení cvičení" })).toBeVisible();
+    expect(await createBrowserProgressStore().listAttempts()).toHaveLength(2);
+  });
   it("asks directly with a focused input, accepts a lenient name, and records the attempt", async () => {
     renderPractice();
     fireEvent.click(await startButton());
@@ -205,6 +228,8 @@ describe("NomenclaturePractice exercise", () => {
 
     answer("hexahydratchloriduhorecnateho");
 
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeInTheDocument();
   });
 
@@ -228,6 +253,8 @@ describe("NomenclaturePractice exercise", () => {
     expect(prompt()).toHaveAccessibleName("Zadání: AgCl");
     answer("chlorid stříbrný");
 
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(within(summary).getByText("Zodpovězeno").nextElementSibling).toHaveTextContent("2 z 2");
     await waitFor(async () =>
@@ -261,25 +288,94 @@ describe("NomenclaturePractice exercise", () => {
     );
   });
 
-  it("asks for formulas in the name-to-formula direction but keeps ions formula-to-name", async () => {
-    renderPractice([sodiumChloride, sulfate]);
+  it("locks name-to-formula across the full compatible queue, mistakes, retries and reloads", async () => {
+    renderPractice([sodiumChloride, sulfate, silverChloride]);
     fireEvent.click(await startButton());
     fireEvent.click(screen.getByRole("radio", { name: "Název → Vzorec" }));
-
     expect(prompt()).toHaveAccessibleName("Zadání: chlorid sodný");
-    fireEvent.change(screen.getByRole("textbox", { name: "Chemický vzorec" }), {
-      target: { value: "NaCl" },
-    });
-    expect(screen.getByText(/Náhled/)).toHaveTextContent("NaCl");
+    expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuetext", "0 z 2");
     answer("nacl");
-    expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
+    expect(screen.getByText("Špatně: 1")).toBeVisible();
+    expect(prompt()).toHaveAccessibleName("Zadání: chlorid stříbrný");
+    expect(screen.getByRole("textbox", { name: "Chemický vzorec" })).toBeVisible();
+    await waitFor(async () =>
+      expect(await createBrowserNomenclatureStore().load()).toMatchObject({
+        direction: "name-to-formula",
+        currentId: silverChloride.id,
+      }),
+    );
+    cleanup();
+    saveNomenclatureDirection("formula-to-name");
+    renderPractice([sodiumChloride, sulfate, silverChloride]);
+    expect(await screen.findByRole("heading", { name: "Zadání: chlorid stříbrný" })).toBeVisible();
+    expect(screen.getByRole("radio", { name: "Název → Vzorec" })).toBeChecked();
+    answer("AgCl");
+    expect(prompt()).toHaveAccessibleName("Zadání: chlorid sodný");
+    answer("NaCl");
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
+    expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeVisible();
+    await waitFor(async () =>
+      expect(
+        (await createBrowserProgressStore().listAttempts()).map((event) => event.direction),
+      ).toEqual(["name-to-formula", "name-to-formula", "name-to-formula"]),
+    );
+  });
 
+  it("allows choosing the direction before starting and counts only supported compounds", async () => {
+    renderPractice([sodiumChloride, sulfate, silverChloride]);
+    await startButton();
+    fireEvent.click(screen.getByRole("radio", { name: "Název → Vzorec" }));
+    expect(await startButton()).toHaveTextContent("2 sloučeniny");
+    fireEvent.click(await startButton());
+    answer("NaCl");
+    expect(prompt()).toHaveAccessibleName("Zadání: chlorid stříbrný");
+    answer("AgCl");
+    expect(screen.getByText("Správně: 2")).toBeVisible();
+  });
+
+  it("changes direction only on an explicit toggle and handles a direction with no supported questions", async () => {
+    renderPractice([sulfate]);
+    fireEvent.click(await startButton());
     expect(prompt()).toHaveAccessibleName("Zadání: SO4 2-");
-    expect(scripts(prompt(), "sub")).toEqual(["4"]);
-    expect(scripts(prompt(), "sup")).toEqual(["2−"]);
-    expect(screen.getByRole("textbox", { name: "Český název" })).toBeInTheDocument();
-    answer("anion síranový");
-    expect(screen.getByText("Správně: 1")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: "Název → Vzorec" }));
+    expect(await startButton()).toBeDisabled();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: "Vzorec → Název" }));
+    fireEvent.click(await startButton());
+    expect(prompt()).toHaveAccessibleName("Zadání: SO4 2-");
+  });
+
+  it("repairs a v2 checkpoint without direction instead of asking an unsupported question", async () => {
+    saveNomenclatureDirection("name-to-formula");
+    await createBrowserNomenclatureStore().write(
+      {
+        id: "active",
+        checkpointVersion: 2,
+        revision: 1,
+        sessionId: "legacy-direction",
+        contentVersion: "fixture-v1",
+        filters: DEFAULT_NOMENCLATURE_FILTERS,
+        currentId: sulfate.id,
+        queueIds: [sodiumChloride.id],
+        solvedIds: [],
+        missedIds: [],
+        correct: 0,
+        incorrect: 0,
+        total: 2,
+        sequence: 0,
+        elapsedMs: 0,
+      },
+      0,
+    );
+    renderPractice([sulfate, sodiumChloride]);
+    expect(await screen.findByRole("heading", { name: "Zadání: chlorid sodný" })).toBeVisible();
+    expect(screen.getByText(/nepodporující uložený směr/)).toBeVisible();
+    expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuetext", "0 z 1");
+    answer("NaCl");
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
+    expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeVisible();
   });
 
   it("does not count an empty answer", async () => {
@@ -309,6 +405,8 @@ describe("NomenclaturePractice exercise", () => {
     expect(await screen.findByRole("heading", { name: "Zadání: NaCl" })).toBeInTheDocument();
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
     answer("chlorid sodný");
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(within(summary).getByText("Zodpovězeno").nextElementSibling).toHaveTextContent("2 z 2");
   });

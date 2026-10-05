@@ -72,7 +72,7 @@ test("opens the compact nomenclature filters at 360 px", async ({ page }) => {
   await expect(page.getByText(/Chyby se na konci série|zkontroloval orientačně/)).toHaveCount(0);
   await expect(
     page.getByRole("button", {
-      name: `Spustit cvičení (${countLabel(snapshot.compounds.length)})`,
+      name: `Spustit cvičení (${countLabel(snapshot.compounds.filter((compound) => compound.directions.includes("formula-to-name")).length)})`,
     }),
   ).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
@@ -104,6 +104,8 @@ test("completes a filtered formula-to-name practice with direct answers", async 
     await expect(page.getByText(`Správně: ${index + 1}`, { exact: true })).toBeVisible();
   }
 
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
   const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
   await expect(summary.getByText(`${hydroxides.length} z ${hydroxides.length}`)).toBeVisible();
   await expect(summary.getByText("100 %")).toBeVisible();
@@ -141,22 +143,35 @@ test("accepts a hydrate name without diacritics or spaces", async ({ page }) => 
   await expect(page.getByText("Špatně: 0", { exact: true })).toBeVisible();
 });
 
-test("asks a wrongly named compound again at the end of the queue", async ({ page }) => {
-  await page.goto("/procvicovani/nazvoslovi");
-  await chooseOnly(page, /^✓?\s*Hydroxidy/);
-  await page.getByRole("button", { name: /^Spustit cvičení/ }).click();
+for (const correctFinal of [true, false]) {
+  test(`reviews the final ${correctFinal ? "correct" : "incorrect"} nomenclature retry before results`, async ({
+    page,
+  }) => {
+    await page.goto("/procvicovani/nazvoslovi");
+    await chooseOnly(page, /^✓?\s*Hydroxidy/);
+    await page.getByRole("button", { name: /^Spustit cvičení/ }).click();
 
-  const { compound: first } = await currentCompound(page);
-  await page.getByRole("textbox", { name: "Český název" }).fill("zcela chybný název");
-  await page.keyboard.press("Enter");
-  await expect(page.getByText("Špatně: 1", { exact: true })).toBeVisible();
-  await expect(page.getByText(`= ${first.nameCs}.`, { exact: false }).first()).toBeVisible();
+    const { compound: first } = await currentCompound(page);
+    await page.getByRole("textbox", { name: "Český název" }).fill("zcela chybný název");
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Špatně: 1", { exact: true })).toBeVisible();
+    await expect(page.getByText(`= ${first.nameCs}.`, { exact: false }).first()).toBeVisible();
 
-  for (let index = 1; index < hydroxides.length; index += 1) await answerCurrent(page);
-  expect((await currentCompound(page)).compound.id).toBe(first.id);
-  await answerCurrent(page);
-  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toBeVisible();
-});
+    for (let index = 1; index < hydroxides.length; index += 1) await answerCurrent(page);
+    expect((await currentCompound(page)).compound.id).toBe(first.id);
+    if (correctFinal) await answerCurrent(page);
+    else await page.getByRole("button", { name: "Nevím", exact: true }).click();
+    const review = page.getByRole("region", { name: "Poslední odpověď" });
+    await expect(review).toBeVisible();
+    await expect(
+      review.getByText(correctFinal ? "Správně" : "Špatně", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+    expect(await review.locator("sup").count()).toBeGreaterThan(0);
+    await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
+    await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toBeVisible();
+  });
+}
 
 test("answers formulas in the name-to-formula direction with a live preview", async ({ page }) => {
   await page.goto("/procvicovani/nazvoslovi");
@@ -169,6 +184,41 @@ test("answers formulas in the name-to-formula direction with a live preview", as
   await expect(page.getByText(/Náhled/)).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page.getByText("Správně: 1", { exact: true })).toBeVisible();
+  for (
+    let index = 1;
+    index < hydroxides.filter((compound) => compound.directions.includes("name-to-formula")).length;
+    index++
+  ) {
+    expect((await currentCompound(page)).byFormula).toBe(false);
+    await expect(page.getByRole("radio", { name: "Název → Vzorec" })).toBeChecked();
+    await answerCurrent(page);
+  }
+  await expect(page.getByRole("region", { name: "Poslední odpověď" })).toBeVisible();
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toBeVisible();
+});
+
+test("keeps name-to-formula locked through mixed content, mistakes, reload and retry", async ({
+  page,
+}) => {
+  await page.goto("/procvicovani/nazvoslovi");
+  await page.getByText("Název → Vzorec", { exact: true }).click();
+  await page.getByRole("button", { name: /^Spustit cvičení/ }).click();
+  const first = await currentCompound(page);
+  expect(first.byFormula).toBe(false);
+  await page.getByRole("button", { name: "Nevím", exact: true }).click();
+  for (let index = 0; index < 8; index++) {
+    expect((await currentCompound(page)).byFormula).toBe(false);
+    await expect(page.getByRole("textbox", { name: "Chemický vzorec" })).toBeVisible();
+    await answerCurrent(page);
+  }
+  const next = await currentCompound(page);
+  await page.reload();
+  await expect(page.getByRole("radio", { name: "Název → Vzorec" })).toBeChecked();
+  expect((await currentCompound(page)).compound.id).toBe(next.compound.id);
+  expect((await currentCompound(page)).byFormula).toBe(false);
+  await answerCurrent(page);
+  await expect(page.getByText("Správně: 9", { exact: true })).toBeVisible();
 });
 
 test("resumes an unfinished nomenclature practice offline", async ({ context, page }) => {

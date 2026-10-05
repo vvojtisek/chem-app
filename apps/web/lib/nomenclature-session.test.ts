@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   DEFAULT_NOMENCLATURE_FILTERS,
-  directionFor,
   elementCountBucket,
   filterCompounds,
   isLegacyNomenclatureCheckpoint,
@@ -107,17 +106,20 @@ describe("nomenclature filters", () => {
     expect(listQuickFamilies(compounds, "oxoacid-salt")).toEqual([]);
   });
 
-  it("asks ions and coordination entities from formula to name", () => {
-    const [, , , , , , sulfate, silver] = compounds;
-    if (!sulfate || !silver) throw new Error("Missing fixtures.");
-    expect(directionFor(sulfate, "name-to-formula")).toBe("formula-to-name");
-    expect(directionFor(silver, "name-to-formula")).toBe("name-to-formula");
+  it("excludes incompatible questions instead of silently reversing the selected direction", () => {
+    const eligible = filterCompounds(compounds, DEFAULT_NOMENCLATURE_FILTERS, "name-to-formula");
+    expect(ids(eligible)).not.toContain("so4");
+    expect(ids(eligible)).not.toContain("alf6");
+    expect(ids(eligible)).toContain("ag");
+    expect(eligible.every((item) => item.directions.includes("name-to-formula"))).toBe(true);
   });
 
   it("asks a record offered only by name from name to formula", () => {
     const acid = record("h3po3", { directions: ["name-to-formula"] });
-    expect(directionFor(acid, "formula-to-name")).toBe("name-to-formula");
-    expect(directionFor(acid, "name-to-formula")).toBe("name-to-formula");
+    expect(filterCompounds([acid], DEFAULT_NOMENCLATURE_FILTERS, "formula-to-name")).toEqual([]);
+    expect(filterCompounds([acid], DEFAULT_NOMENCLATURE_FILTERS, "name-to-formula")).toEqual([
+      acid,
+    ]);
   });
 });
 
@@ -142,6 +144,12 @@ describe("nomenclature checkpoint", () => {
 
   it("accepts a consistent queue and rejects a repeated or solved question", () => {
     expect(nomenclatureCheckpointSchema.safeParse(valid).success).toBe(true);
+    expect(
+      nomenclatureCheckpointSchema.parse({ ...valid, direction: "name-to-formula" }).direction,
+    ).toBe("name-to-formula");
+    expect(nomenclatureCheckpointSchema.safeParse({ ...valid, direction: "invalid" }).success).toBe(
+      false,
+    );
     expect(nomenclatureCheckpointSchema.safeParse({ ...valid, queueIds: ["nacl"] }).success).toBe(
       false,
     );

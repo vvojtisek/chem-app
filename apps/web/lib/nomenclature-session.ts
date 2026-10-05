@@ -1,7 +1,7 @@
 import {
   type NomenclatureRuntimeRecord,
   nomenclatureCategorySchema,
-  type nomenclatureDirectionSchema,
+  nomenclatureDirectionSchema,
 } from "@inorganic/content/nomenclature-schema";
 import { z } from "zod";
 
@@ -50,11 +50,13 @@ export function matchesElementCount(
 export function filterCompounds(
   compounds: readonly NomenclatureRuntimeRecord[],
   filters: NomenclatureFilters,
+  direction?: NomenclatureDirection,
 ): readonly NomenclatureRuntimeRecord[] {
   const categories = new Set(filters.categories);
   const families = new Set(filters.families);
   const narrowed = new Set(filters.families.map((family) => family.split(":")[0]));
   return compounds.filter((record) => {
+    if (direction && !record.directions.includes(direction)) return false;
     if (!categories.has(record.category) || !matchesElementCount(record, filters.elementCount)) {
       return false;
     }
@@ -86,19 +88,6 @@ export function listQuickFamilies(
     .sort((left, right) => right.count - left.count || left.family.localeCompare(right.family));
 }
 
-/**
- * The preferred direction when the record offers it, otherwise its only one: formulas that
- * cannot be typed (ions, coordination notation) are asked by formula, and names whose accepted
- * variants are still undecided are asked by name.
- */
-export function directionFor(
-  record: NomenclatureRuntimeRecord,
-  preferred: NomenclatureDirection,
-): NomenclatureDirection {
-  if (record.directions.includes(preferred)) return preferred;
-  return record.directions[0] ?? preferred;
-}
-
 const counterSchema = z.number().int().nonnegative();
 
 export const NOMENCLATURE_CHECKPOINT_VERSION = 2;
@@ -111,6 +100,8 @@ export const nomenclatureCheckpointSchema = z
     sessionId: z.string().min(1),
     contentVersion: z.string().min(1),
     filters: nomenclatureFiltersSchema,
+    /** Additive field: older v2 checkpoints use the saved direction preference. */
+    direction: nomenclatureDirectionSchema.optional(),
     currentId: z.string().min(1),
     queueIds: z.array(z.string().min(1)),
     solvedIds: z.array(z.string().min(1)),

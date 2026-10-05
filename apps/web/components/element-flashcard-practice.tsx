@@ -3,12 +3,11 @@
 import { evaluateElementAnswer } from "@inorganic/chemistry";
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useRef, useState } from "react";
-
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
-import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import { createPeriodicTableLayout } from "@/lib/periodic-table-layout";
 import { drawSeries, selectElements } from "@/lib/periodic-table-scope";
@@ -116,9 +115,9 @@ export function ElementFlashcardPractice({
   useEffect(() => {
     if (phase === "running" && remainingTimeMs === 0) {
       stopStopwatch();
-      setPhase("summary");
+      if (!feedback) setPhase("summary");
     }
-  }, [phase, remainingTimeMs, stopStopwatch]);
+  }, [phase, remainingTimeMs, feedback, stopStopwatch]);
 
   useEffect(() => {
     if (phase !== "running") return;
@@ -169,11 +168,12 @@ export function ElementFlashcardPractice({
     } else {
       setIncorrect((count) => count + 1);
     }
+    if (questionIndex + 1 >= questions.length) stopStopwatch();
   }
 
   function nextCard() {
     if (!feedback) return;
-    if (questionIndex + 1 >= questions.length) {
+    if (questionIndex + 1 >= questions.length || remainingTimeMs === 0) {
       finishRound();
       return;
     }
@@ -476,7 +476,9 @@ export function ElementFlashcardPractice({
                   ref={nextButtonRef}
                   type="button"
                 >
-                  Další
+                  {questionIndex + 1 >= questions.length || remainingTimeMs === 0
+                    ? "Zobrazit výsledky"
+                    : "Další"}
                 </button>
               ) : null}
             </article>
