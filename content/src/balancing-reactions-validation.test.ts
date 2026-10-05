@@ -7,7 +7,14 @@ import { findBalancingReactionProblems } from "./balancing-reactions-validation"
 const allowedSymbols = new Set(curatedElements.map((element) => element.symbol));
 
 describe("balancing reaction validation", () => {
-  it("accepts the two reference lessons and their intermediate ledgers", () => {
+  it("accepts all imported lessons and their intermediate ledgers", () => {
+    expect(curatedBalancingReactionLessons).toHaveLength(114);
+    expect(
+      curatedBalancingReactionLessons.reduce<Record<number, number>>((counts, lesson) => {
+        counts[lesson.category] = (counts[lesson.category] ?? 0) + 1;
+        return counts;
+      }, {}),
+    ).toEqual({ 1: 12, 2: 31, 3: 31, 4: 18, 5: 13, 6: 9 });
     expect(findBalancingReactionProblems(curatedBalancingReactionLessons, allowedSymbols)).toEqual(
       [],
     );

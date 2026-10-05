@@ -27,7 +27,7 @@ An equation term may list owner-approved `acceptedAliases` for learner answers. 
 
 `content/data/balancing-reactions.json` stores declarative, step-by-step lessons for the read-only study route `/uceni/prvky/vycislovani-rovnic`. Each lesson keeps canonical species, coefficients, optional ionic charges, the current equation, focused species, explanations, and an atom/charge/redox ledger. The renderer derives subscripts, superscripts, and accessible plain notation from these fields; it does not interpret authored equation markup.
 
-The current development seed contains two owner-approved reference lessons from the VŠCHT e-learning source: boric-acid preparation (category 1) and iodine synproportionation (category 4). Every final step is validated for full atom conservation, charge conservation, and the lowest positive-integer coefficient ratio. Owner approval is not chemistry-SME review, so the content remains a release-gate item until a registered SME reviews it.
+The current development seed contains all 114 reactions from the supplied VŠCHT balancing-reaction JSON sources, distributed across the six categories. The boric-acid preparation and iodine synproportionation lessons retain detailed authored explanations; imported lessons contain generated coefficient steps and preserve source metadata such as conditions, notes, and phases. Every final step is validated for full atom conservation, charge conservation, and the lowest positive-integer coefficient ratio. Owner approval is not chemistry-SME review, so the content remains a release-gate item until a registered SME reviews it.
 
 Every non-null `(period, group)` pair identifies exactly one element. Records with `group: null` are f-block entries and do not occupy a main 18-group grid cell.
 

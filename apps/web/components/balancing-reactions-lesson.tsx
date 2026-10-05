@@ -297,6 +297,28 @@ export function BalancingReactionsLesson({
             <p className="rounded-xl border-l-4 border-flame bg-flame-soft px-4 py-3 leading-7 text-ink">
               {lesson.theoryContext}
             </p>
+            {lesson.condition || lesson.phase || lesson.note ? (
+              <dl className="grid gap-2 text-sm text-ink-2 sm:grid-cols-3">
+                {lesson.condition ? (
+                  <div>
+                    <dt className="font-semibold text-ink">Podmínka</dt>
+                    <dd>{lesson.condition}</dd>
+                  </div>
+                ) : null}
+                {lesson.phase ? (
+                  <div>
+                    <dt className="font-semibold text-ink">Skupenství</dt>
+                    <dd>{lesson.phase}</dd>
+                  </div>
+                ) : null}
+                {lesson.note ? (
+                  <div>
+                    <dt className="font-semibold text-ink">Poznámka</dt>
+                    <dd>{lesson.note}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            ) : null}
           </header>
 
           {categoryLessons.length > 1 ? (
