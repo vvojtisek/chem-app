@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 
+import { balancingReactionCollectionSchema } from "./balancing-reactions-schema";
 import type { AuthoringContent } from "./authoring-content";
 import { nomenclatureCollectionSchema } from "./nomenclature-schema";
 import { preparationProductionCollectionSchema } from "./preparation-production-schema";
@@ -12,20 +13,23 @@ export interface ReleaseReviewTarget extends ReviewableRecord {
     | "alternate-mnemonic"
     | "nomenclature"
     | "product"
-    | "route";
+    | "route"
+    | "balancing-reaction";
   readonly fingerprintInput: object;
 }
 
 export async function loadReleaseReviewSources() {
-  const [nomenclature, preparationProduction] = await Promise.all([
+  const [nomenclature, preparationProduction, balancingReactions] = await Promise.all([
     readFile(new URL("../data/nomenclature.json", import.meta.url), "utf8"),
     readFile(new URL("../data/preparation-production.json", import.meta.url), "utf8"),
+    readFile(new URL("../data/balancing-reactions.json", import.meta.url), "utf8"),
   ]);
   return {
     nomenclature: nomenclatureCollectionSchema.parse(JSON.parse(nomenclature) as unknown),
     preparationProduction: preparationProductionCollectionSchema.parse(
       JSON.parse(preparationProduction) as unknown,
     ),
+    balancingReactions: balancingReactionCollectionSchema.parse(JSON.parse(balancingReactions)),
   };
 }
 
@@ -72,6 +76,14 @@ export function collectReleaseReviewTargets(
         },
       });
     }
+  }
+  for (const lesson of sources.balancingReactions.lessons) {
+    if (lesson.status === "in-review") continue;
+    targets.push({
+      ...lesson,
+      family: "balancing-reaction",
+      fingerprintInput: lesson,
+    });
   }
   return targets;
 }

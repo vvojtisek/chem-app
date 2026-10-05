@@ -34,3 +34,34 @@ test("finds an element by category, links its detail and keeps the 360 px layout
   await page.reload();
   await expect(page.getByRole("region", { name: "Chlor (Cl)" })).toBeVisible();
 });
+
+test("opens the balancing lesson categories and steps through an ionic explanation", async ({
+  page,
+}) => {
+  await page.goto("/uceni/prvky/vycislovani-rovnic");
+  await expect(page.getByRole("heading", { level: 1, name: "Vyčíslování rovnic" })).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Kategorie reakcí" }).getByRole("button"),
+  ).toHaveCount(6);
+  const reactionCategories = page.getByRole("navigation", { name: "Kategorie reakcí" });
+  for (const label of [
+    "1. Bez oxidačně-redukčních změn (12)",
+    "2. Lehčí oxidačně-redukční (31)",
+    "3. Těžší oxidačně-redukční (31)",
+    "4. Disproporcionační a/nebo synproporcionační (18)",
+    "5. Složité oxidačně-redukční (13)",
+    "6. Speciality (9)",
+  ]) {
+    await expect(reactionCategories.getByRole("button", { name: label })).toBeVisible();
+  }
+
+  await page.getByRole("button", { name: /4\. Disproporcionační/ }).click();
+  await expect(page.getByRole("heading", { name: "Vznik jodu synproporcionací" })).toBeVisible();
+  await expect(page.getByText("Celkový iontový náboj")).toBeVisible();
+  await expect(page.getByRole("table", { name: "Oxidační čísla" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Další krok" }).click();
+  await expect(page.getByText("Krok 2 z 4")).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByText("Krok 3 z 4")).toBeVisible();
+});

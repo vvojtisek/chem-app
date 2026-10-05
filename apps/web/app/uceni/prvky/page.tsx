@@ -37,6 +37,11 @@ const STUDY_MATERIALS = [
     title: "Příprava a výroba látek",
     description: "Rovnice přípravy a průmyslové výroby podle produktu.",
   },
+  {
+    href: "/uceni/prvky/vycislovani-rovnic",
+    title: "Vyčíslování rovnic",
+    description: "Krokový výklad bilance atomů, náboje a elektronů.",
+  },
 ] as const;
 
 export default function ElementLearningPage() {
@@ -56,7 +61,7 @@ export default function ElementLearningPage() {
         title="Prvky a jejich skupiny"
       />
       <nav aria-label="Studijní materiály" className="mb-8">
-        <ul className="grid list-none gap-2 p-0 sm:grid-cols-3">
+        <ul className="grid list-none gap-2 p-0 sm:grid-cols-2 lg:grid-cols-4">
           {STUDY_MATERIALS.map((material) => (
             <li key={material.href}>
               <Link

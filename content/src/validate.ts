@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
 
+import { balancingReactionCollectionSchema } from "./balancing-reactions-schema";
+import { findBalancingReactionProblems } from "./balancing-reactions-validation";
 import { findContentProblems, loadAuthoringContent } from "./authoring-content";
 import { createNomenclatureSnapshot, validateNomenclatureRecords } from "./nomenclature-runtime";
 import { nomenclatureCollectionSchema } from "./nomenclature-schema";
@@ -43,7 +45,26 @@ if (preparationProductionProblems.length > 0) {
   );
 }
 
-const reviewTargets = collectReleaseReviewTargets(content, { nomenclature, preparationProduction });
+const balancingReactions = balancingReactionCollectionSchema.parse(
+  JSON.parse(
+    await readFile(new URL("../data/balancing-reactions.json", import.meta.url), "utf8"),
+  ) as unknown,
+);
+const balancingReactionProblems = findBalancingReactionProblems(
+  balancingReactions.lessons,
+  elementSymbols,
+);
+if (balancingReactionProblems.length > 0) {
+  throw new Error(
+    `Balancing reaction validation failed:\n${JSON.stringify(balancingReactionProblems, null, 2)}`,
+  );
+}
+
+const reviewTargets = collectReleaseReviewTargets(content, {
+  nomenclature,
+  preparationProduction,
+  balancingReactions,
+});
 const reviewProblems = [
   ...findReviewerReferenceProblems(reviewTargets, content.reviewers),
   ...findReviewFingerprintProblems(reviewTargets, content.reviewers),
@@ -94,4 +115,7 @@ const unreviewedEquationCount = preparationProduction.products.reduce(
 );
 console.log(
   `Preparation and production: ${preparationProduction.products.length} products, ${equationCount} validated owner-approved equations, ${unreviewedEquationCount} equation(s) held for review.`,
+);
+console.log(
+  `Balancing lessons: ${balancingReactions.lessons.length} authored, ${balancingReactions.lessons.filter((lesson) => lesson.status === "owner-approved" || lesson.status === "reviewed").length} shipped.`,
 );
