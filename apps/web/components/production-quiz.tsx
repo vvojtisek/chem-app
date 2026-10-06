@@ -4,9 +4,15 @@ import type { PreparationProductionRuntimeProduct } from "@inorganic/content/pre
 import { type Ref, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { AnswerFeedback } from "@/components/answer-feedback";
+import { FinalAnswerReview } from "@/components/final-answer-review";
 import { Equation, EquationSide, Formula } from "@/components/formula";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import { czechCount } from "@/lib/czech-plural";
+import {
+  answerPracticeQueue,
+  createPracticeQueue,
+  type PracticeQueueState,
+} from "@/lib/practice-queue";
 import {
   createProductionQuiz,
   isProductionQuizAnswerCorrect,
@@ -16,11 +22,6 @@ import {
   type ProductionQuizQuestion,
   type ProductionQuizSettings,
 } from "@/lib/preparation-production-quiz";
-import {
-  answerPracticeQueue,
-  createPracticeQueue,
-  type PracticeQueueState,
-} from "@/lib/practice-queue";
 
 const QUESTION_FORMS = ["otázka", "otázky", "otázek"] as const;
 const KIND_OPTIONS: readonly { readonly kind: ProductionQuizKind; readonly label: string }[] = [
@@ -56,6 +57,7 @@ export function ProductionQuiz({
   const [settings, setSettings] = useState<ProductionQuizSettings>({ kind: "all", count: 10 });
   const [session, setSession] = useState<PracticeQueueState<ProductionQuizQuestion> | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [showResults, setShowResults] = useState(false);
   const [missed, setMissed] = useState<readonly Feedback[]>([]);
   const [runId, setRunId] = useState(0);
   const stopwatch = useStopwatch();
@@ -78,6 +80,7 @@ export function ProductionQuiz({
   }, [runId]);
 
   function start() {
+    setShowResults(false);
     setSession(createPracticeQueue(createProductionQuiz(products, settings, random), random));
     setFeedback(null);
     setMissed([]);
@@ -86,6 +89,7 @@ export function ProductionQuiz({
   }
 
   function finish() {
+    setShowResults(true);
     stopwatch.stop();
     setSession((current) =>
       current ? { ...current, status: "finished", current: null, queue: [] } : current,
@@ -143,6 +147,12 @@ export function ProductionQuiz({
           onAnswer={answer}
           question={question}
         />
+      ) : feedback && !showResults ? (
+        <FinalAnswerReview onShowResults={() => setShowResults(true)}>
+          <AnswerFeedback isCorrect={feedback.isCorrect}>
+            <FeedbackDetail feedback={feedback} />
+          </AnswerFeedback>
+        </FinalAnswerReview>
       ) : (
         <PracticeSummary
           correct={session.correct}
@@ -177,7 +187,7 @@ export function ProductionQuiz({
       )}
 
       <div aria-live="polite">
-        {feedback ? (
+        {feedback && question ? (
           <AnswerFeedback isCorrect={feedback.isCorrect}>
             <FeedbackDetail feedback={feedback} />
           </AnswerFeedback>

@@ -50,8 +50,11 @@ const balanceLedgerSchema = z.object({
 export const interactiveStepSchema = z.object({
   stepIndex: z.number().int().min(1),
   title: z.string().min(1),
+  kind: z.enum(["explanation", "summary"]).optional(),
   explanation: z.string().min(1),
   focusedSpecies: z.array(z.string().min(1)),
+  /** Explicit coefficient changes; an empty list denotes a conceptual/result slide. */
+  coefficientChanges: z.array(z.string().min(1)).optional(),
   currentEquationLaTeX: z.string().min(1),
   equation: z.object({
     reactants: z.array(reactionSpeciesSchema).min(1),
@@ -59,6 +62,10 @@ export const interactiveStepSchema = z.object({
   }),
   balanceLedger: balanceLedgerSchema.optional(),
   ruleHighlight: z.string().min(1).optional(),
+  notes: z
+    .array(z.object({ label: z.string().min(1), value: z.string().min(1) }))
+    .max(6)
+    .optional(),
 });
 
 export const balancingReactionLessonSchema = z
@@ -72,6 +79,15 @@ export const balancingReactionLessonSchema = z
     condition: z.string().min(1).optional(),
     note: z.string().min(1).optional(),
     phase: z.string().min(1).optional(),
+    derivationConstraints: z
+      .array(
+        z.object({
+          label: z.string().min(1),
+          values: z.array(z.number().int()),
+          explanation: z.string().min(1),
+        }),
+      )
+      .optional(),
     steps: z.array(interactiveStepSchema).min(1),
     status: reviewStatusSchema,
     author: z.string().min(1),

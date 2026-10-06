@@ -1,18 +1,19 @@
 import { Fragment } from "react";
-
+import { getElementColor } from "@/lib/element-display-colors";
 import { formulaSegments, plainFormula } from "@/lib/formula-display";
 
 interface FormulaProps {
   readonly formula: string;
   readonly charge?: number;
   readonly className?: string;
+  readonly colorElements?: boolean;
 }
 
 /**
  * A typeset formula with real subscripts and superscripts. Assistive technology reads the
  * plain notation („SO4 2-“) instead of the individual scripts.
  */
-export function Formula({ formula, charge = 0, className }: FormulaProps) {
+export function Formula({ formula, charge = 0, className, colorElements = false }: FormulaProps) {
   return (
     <span
       aria-label={plainFormula(formula, charge)}
@@ -23,7 +24,26 @@ export function Formula({ formula, charge = 0, className }: FormulaProps) {
         const key = `${index}-${segment.text}`;
         if (segment.kind === "sub") return <sub key={key}>{segment.text}</sub>;
         if (segment.kind === "sup") return <sup key={key}>{segment.text}</sup>;
-        return <Fragment key={key}>{segment.text}</Fragment>;
+        return colorElements ? (
+          <Fragment key={key}>
+            {Array.from(segment.text.matchAll(/[A-Z][a-z]?|[^A-Z]+/gu), (match) => {
+              const part = match[0];
+              return /^[A-Z][a-z]?$/u.test(part) ? (
+                <span
+                  key={`${match.index}-${part}`}
+                  data-element={part}
+                  style={{ color: getElementColor(part) }}
+                >
+                  {part}
+                </span>
+              ) : (
+                <Fragment key={`${match.index}-${part}`}>{part}</Fragment>
+              );
+            })}
+          </Fragment>
+        ) : (
+          <Fragment key={key}>{segment.text}</Fragment>
+        );
       })}
     </span>
   );

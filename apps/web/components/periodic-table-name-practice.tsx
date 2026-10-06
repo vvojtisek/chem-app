@@ -11,8 +11,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { ElementCategoryBadge } from "@/components/element-category-badge";
+import { FinalAnswerReview } from "@/components/final-answer-review";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
 import {
   type PeriodicTableCellResult,
@@ -91,6 +92,7 @@ export function PeriodicTableNamePractice({
   const answerRef = useRef("");
   const [inputHint, setInputHint] = useState("");
   const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null);
+  const [showResults, setShowResults] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [notice, setNotice] = useState("");
   const [inputFlash, setInputFlash] = useState(false);
@@ -152,6 +154,7 @@ export function PeriodicTableNamePractice({
   }
 
   function start() {
+    setShowResults(false);
     if (persisted.storageBroken) return;
     const questions = selectElements(layout, selection);
     if (questions.length === 0) return;
@@ -183,6 +186,7 @@ export function PeriodicTableNamePractice({
   }
 
   function finish() {
+    setShowResults(true);
     const current = sessionRef.current;
     if (current?.status !== "running") return;
 
@@ -380,6 +384,10 @@ export function PeriodicTableNamePractice({
           <p className="mt-2 min-h-5 text-sm text-warn">{inputHint}</p>
           <LastAnswerLine answer={lastAnswer} />
         </section>
+      ) : lastAnswer && !showResults ? (
+        <FinalAnswerReview onShowResults={() => setShowResults(true)}>
+          <LastAnswerLine answer={lastAnswer} />
+        </FinalAnswerReview>
       ) : (
         <PracticeSummary
           correct={session.correct}

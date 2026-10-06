@@ -216,6 +216,17 @@ describe("PeriodicTableNamePractice selection", () => {
 });
 
 describe("PeriodicTableNamePractice exercise", () => {
+  it("keeps the last wrong retry visible before showing results", () => {
+    renderPractice([hydrogen]);
+    fireEvent.click(startButton());
+    answer("He");
+    answer("He");
+    const review = screen.getByRole("region", { name: "Poslední odpověď" });
+    expect(review).toHaveTextContent("Špatně: Vodík (H).");
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(within(review).getByRole("button", { name: "Zobrazit výsledky" }));
+    expect(screen.getByRole("region", { name: "Vyhodnocení cvičení" })).toBeVisible();
+  });
   it("starts with a focused input, the dashboard, the Název → Značka mode, and a blind table", () => {
     renderPractice();
     fireEvent.click(startButton());
@@ -294,6 +305,8 @@ describe("PeriodicTableNamePractice exercise", () => {
     expect(appendAttempt).toHaveBeenLastCalledWith(
       expect.objectContaining({ questionId: hydrogen.id, round: "retry", isCorrect: true }),
     );
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(within(summary).getByText("Určeno").nextElementSibling).toHaveTextContent("3 z 3");
     expect(within(summary).getByText("Úspěšnost").nextElementSibling).toHaveTextContent("75 %");
@@ -402,6 +415,8 @@ describe("PeriodicTableNamePractice exercise", () => {
 
     answer("He");
 
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(within(summary).getByText("Určeno").nextElementSibling).toHaveTextContent("1 z 1");
   });

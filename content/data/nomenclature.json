@@ -11767,7 +11767,7 @@
       "formula": "Na2O2",
       "charge": 0,
       "nameCs": "peroxid sodný",
-      "explanationCs": "Kationty: 2 × Na(+I) = +2 -> sodný. Anion: peroxidová skupina (O2)(-II) s kyslíkem O(-I) -> peroxid sodný.",
+      "explanationCs": "Kationty: 2 × Na^+ (ox. číslo +I) = +2 -> sodný. Anion: peroxidový anion (O2)^2- (ox. číslo kyslíku -I) -> peroxid. Celkový náboj: +2 + (-2) = 0 -> peroxid sodný.",
       "baseCategory": "oxide",
       "tags": [],
       "difficulty": null,

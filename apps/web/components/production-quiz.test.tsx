@@ -26,6 +26,26 @@ function startQuiz() {
 describe("ProductionQuiz", () => {
   afterEach(cleanup);
 
+  it("does not bypass the correction when the final retry is wrong", () => {
+    const choose = (index: number) => {
+      const option = options()[index];
+      if (!option) throw new Error("Missing option");
+      fireEvent.click(option);
+    };
+    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    startQuiz();
+    choose(1);
+    for (let index = 0; index < 9; index++) choose(0);
+    choose(1);
+    const review = screen.getByRole("region", { name: "Poslední odpověď" });
+    expect(within(review).getByText("Špatně", { exact: true })).toBeVisible();
+    expect(within(review).getByText(/^Vaše odpověď:/u)).toBeVisible();
+    expect(within(review).getByText(/^Hledaná látka:/u)).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(within(review).getByRole("button", { name: "Zobrazit výsledky" }));
+    expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeVisible();
+  });
+
   it("starts with a settings step that shows the number of questions", () => {
     render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
 
@@ -65,6 +85,8 @@ describe("ProductionQuiz", () => {
     if (!correct) throw new Error("missing option");
     fireEvent.click(correct);
 
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "K zopakování" })).toBeInTheDocument();
   });

@@ -1,0 +1,353 @@
+.lesson {
+  --muted: #a9bcc4;
+  --amber: #f2b84b;
+  background: #12232b;
+  color: #f1f4f5;
+  border-radius: 1rem;
+  padding: 0.625rem 1rem;
+  min-width: 0;
+}
+.categoryList {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+.categoryButton {
+  border: 1px solid #405761;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.25;
+  color: var(--muted);
+  text-align: left;
+  min-width: 0;
+  min-height: 3rem;
+  overflow-wrap: anywhere;
+}
+.categoryButtonActive {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+.categoryNumber,
+.categoryCount {
+  font-weight: 700;
+}
+.lessonLayout,
+.leftColumn {
+  min-width: 0;
+}
+.lessonHeader {
+  position: relative;
+  padding: 0.6rem 0 0.3rem;
+}
+.eyebrow {
+  display: none;
+}
+.lessonTitle {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  font-weight: 700;
+  padding-right: 5rem;
+}
+.lessonDetails {
+  position: absolute;
+  right: 0;
+  top: 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  z-index: 1;
+}
+.lessonDetails summary {
+  cursor: pointer;
+  padding: 0.4rem;
+}
+.lessonDetails[open] {
+  background: #19323e;
+  border: 1px solid #405761;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  max-width: min(32rem, 100%);
+}
+.lessonDetails p {
+  margin: 0.4rem 0;
+}
+.lessonSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.lessonSelector select {
+  color: #f1f4f5;
+  background: #19303a;
+  border: 1px solid #405761;
+  border-radius: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+.stepPanel {
+  display: grid;
+  margin-top: 0.75rem;
+}
+.stepTitle {
+  color: var(--amber);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.stepExplanation {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  min-height: 3.5rem;
+  padding-top: 0.35rem;
+}
+.equationFrame {
+  min-height: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 0.6rem 0;
+}
+.equation {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  min-width: max-content;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.equation > span {
+  display: inline-flex;
+  align-items: end;
+}
+.reactionTerm {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.25rem;
+}
+.coefficientVariable {
+  position: absolute;
+  top: -0.8rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1;
+}
+.reactionTermActive > span:last-child {
+  text-decoration: underline;
+  text-decoration-color: var(--amber);
+  text-underline-offset: 0.4rem;
+}
+.reactionCoefficient {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border: 2px dotted #a9bcc4;
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.coefficientFilled {
+  background: var(--amber);
+  border: 2px solid var(--amber);
+  color: #12232b;
+}
+.coefficientResolved {
+  border: 2px solid var(--amber);
+  color: var(--amber);
+  background: transparent;
+}
+.equationOperator {
+  color: var(--muted);
+  padding: 0 0.5rem 0.1rem;
+}
+.balanceCards {
+  display: flex;
+  list-style: none;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  min-height: 5rem;
+}
+.balanceCard {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border: 1px solid currentColor;
+  border-radius: 0.65rem;
+  padding: 0.5rem 0.25rem;
+  background: #19303a;
+  line-height: 1.2;
+}
+.elementSymbol {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f1f4f5;
+}
+.countRelation {
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.status {
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.statusGood {
+  color: #84d9ac;
+}
+.statusBad {
+  color: #ff9b92;
+}
+.electronChecks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  min-height: 2.5rem;
+  align-items: center;
+}
+.stepBody {
+  min-height: 4rem;
+}
+.ruleHighlight {
+  border-left: 2px solid var(--amber);
+  padding: 0.4rem 0.6rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.ruleHighlight strong {
+  color: var(--amber);
+}
+.stepNavigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid #405761;
+  padding-top: 0.6rem;
+  margin-top: 0.25rem;
+}
+.stepNavigation button {
+  border: 1px solid #405761;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: #f1f4f5;
+  font-size: 0.8rem;
+  min-height: 2.5rem;
+}
+.stepNavigation button:last-child {
+  background: var(--amber);
+  color: #12232b;
+  border-color: var(--amber);
+  font-weight: 700;
+}
+.stepNavigation button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.stepCounter {
+  color: var(--muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.lesson button:focus-visible,
+.lesson select:focus-visible,
+.lesson summary:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+.emptyState {
+  padding: 1rem 0;
+}
+@media (min-width: 768px) and (max-width: 900px) {
+  .stepExplanation {
+    min-height: 5.25rem;
+    font-size: 0.8125rem;
+  }
+  .stepBody {
+    min-height: 3rem;
+  }
+}
+@media (min-width: 768px) {
+  .algebraLesson .stepExplanation {
+    min-height: 7rem;
+  }
+  .algebraLesson .electronChecks {
+    min-height: 0;
+  }
+  .algebraLesson .stepBody {
+    min-height: 1.5rem;
+  }
+}
+@media (max-width: 767px) {
+  .lesson {
+    padding: 0.75rem;
+  }
+  .categoryList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .categoryButton {
+    font-size: 0.65rem;
+    min-height: 3.25rem;
+  }
+  .eyebrow {
+    display: none;
+  }
+  .lessonTitle {
+    font-size: 1.05rem;
+  }
+  .lessonSelector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.2rem;
+  }
+  .stepExplanation {
+    min-height: 0;
+  }
+  .equation {
+    font-size: 1.25rem;
+  }
+  .equationOperator {
+    padding-inline: 0.2rem;
+  }
+  .reactionTerm {
+    padding-inline: 0.1rem;
+  }
+  .reactionCoefficient {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.85rem;
+  }
+  .balanceCards {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .balanceCard {
+    flex: 1 0 calc(33.333% - 0.35rem);
+    min-height: 5.5rem;
+  }
+  .status {
+    font-size: 0.65rem;
+  }
+  .stepNavigation button {
+    padding-inline: 0.5rem;
+  }
+}

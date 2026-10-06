@@ -121,6 +121,8 @@ describe("periodic-table reload recovery", () => {
     fireEvent.change(restoredInput, { target: { value: "Vodík" } });
     fireEvent.submit(restoredInput.closest("form") ?? restoredInput);
     await waitFor(async () => expect(await store.load(PERIODIC_NAME_SESSION_ID)).toBeNull());
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     expect(screen.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveTextContent("2 z 2");
     expect(appendAttempt).toHaveBeenCalledTimes(3);
   });
@@ -145,6 +147,8 @@ describe("periodic-table reload recovery", () => {
     fireEvent.click(within(restoredTable).getByRole("button", { name: "Perioda 1, skupina 18" }));
     fireEvent.click(within(restoredTable).getByRole("button", { name: "Perioda 1, skupina 1" }));
     await waitFor(async () => expect(await store.load(PERIODIC_POSITION_SESSION_ID)).toBeNull());
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     expect(screen.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveTextContent("2 z 2");
     expect(appendAttempt).toHaveBeenCalledTimes(3);
   });

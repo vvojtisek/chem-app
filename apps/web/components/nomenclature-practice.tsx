@@ -13,6 +13,8 @@ import {
 } from "react";
 import { AnswerFeedback } from "@/components/answer-feedback";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { ChemicalText } from "@/components/chemical-text";
+import { FinalAnswerReview } from "@/components/final-answer-review";
 import { Formula } from "@/components/formula";
 import { NomenclatureFilterStep } from "@/components/nomenclature-filters";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
@@ -32,7 +34,6 @@ import {
 } from "@/lib/nomenclature-preferences";
 import {
   DEFAULT_NOMENCLATURE_FILTERS,
-  directionFor,
   filterCompounds,
   NOMENCLATURE_CHECKPOINT_VERSION,
   type NomenclatureCheckpoint,
@@ -89,6 +90,7 @@ export function NomenclaturePractice({
   const answerRef = useRef("");
   const [inputHint, setInputHint] = useState("");
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [showResults, setShowResults] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [notice, setNotice] = useState("");
   const [storageBroken, setStorageBroken] = useState(false);
@@ -117,9 +119,11 @@ export function NomenclaturePractice({
     if (!saved) return;
     persistedRevisionRef.current = saved.revision;
     const records = [saved.currentId, ...saved.queueIds].map((id) => byId.get(id));
-    const [current, ...queued] = records;
+    const restoredDirection = saved.direction ?? loadNomenclatureDirection() ?? "formula-to-name";
+    const eligible = records.filter((record) => record?.directions.includes(restoredDirection));
+    const [current, ...queued] = eligible;
     const queue = queued.filter((record) => record !== undefined);
-    if (saved.contentVersion !== contentVersion || !current || queue.length !== queued.length) {
+    if (saved.contentVersion !== contentVersion || records.some((record) => !record) || !current) {
       setNotice(
         "Obsah cvičení se od posledního spuštění změnil, rozpracované cvičení bylo ukončeno.",
       );
@@ -137,11 +141,16 @@ export function NomenclaturePractice({
       missedIds: new Set(saved.missedIds),
       correct: saved.correct,
       incorrect: saved.incorrect,
-      total: saved.total,
+      total: saved.total - (records.length - eligible.length),
     };
     sessionRef.current = restored;
     setSession(restored);
     setFilters(saved.filters);
+    setDirection(restoredDirection);
+    if (records.length !== eligible.length)
+      setNotice(
+        "Položky nepodporující uložený směr byly ze série vynechány. Historie pokusů zůstala zachována.",
+      );
     stopwatch.start(saved.elapsedMs);
     setRunId((previous) => previous + 1);
   });
@@ -226,7 +235,12 @@ export function NomenclaturePractice({
     queueWrite();
   }
 
-  function saveProgress(next: Session, sessionId: string, event?: NomenclatureAttemptEvent) {
+  function saveProgress(
+    next: Session,
+    sessionId: string,
+    event?: NomenclatureAttemptEvent,
+    selectedDirection = direction,
+  ) {
     if (!canSave) return;
     if (event) pendingEventsRef.current.push(event);
     checkpointRef.current =
@@ -238,6 +252,7 @@ export function NomenclaturePractice({
             sessionId,
             contentVersion,
             filters,
+            direction: selectedDirection,
             currentId: next.current.id,
             queueIds: next.queue.map((record) => record.id),
             solvedIds: [...next.solvedIds],
@@ -262,6 +277,11 @@ export function NomenclaturePractice({
     if (canSave) saveNomenclatureDirection(next);
     updateAnswer("");
     setInputHint("");
+    if (sessionRef.current?.status === "running") {
+      start(next);
+      if (sessionRef.current?.status === "running")
+        setNotice("Změna směru spustila novou sérii. Dřívější pokusy zůstaly uložené.");
+    }
   }
 
   function updateAnswer(value: string) {
@@ -269,9 +289,16 @@ export function NomenclaturePractice({
     setAnswer(value);
   }
 
-  function start() {
-    const questions = filterCompounds(compounds, filters);
-    if (questions.length === 0) return;
+  function start(selectedDirection = direction) {
+    setShowResults(false);
+    const questions = filterCompounds(compounds, filters, selectedDirection);
+    if (questions.length === 0) {
+      finish();
+      sessionRef.current = null;
+      setSession(null);
+      setNotice("Pro tento směr a filtry nejsou dostupné žádné otázky.");
+      return;
+    }
     const next = createPracticeQueue(questions, random);
     sessionIdRef.current = createClientId();
     sequenceRef.current = 0;
@@ -283,10 +310,11 @@ export function NomenclaturePractice({
     setFeedback(null);
     setAnnouncement("");
     setRunId((previous) => previous + 1);
-    saveProgress(next, sessionIdRef.current);
+    saveProgress(next, sessionIdRef.current, undefined, selectedDirection);
   }
 
   function finish() {
+    setShowResults(true);
     const current = sessionRef.current;
     if (current?.status !== "running") return;
     const next = finishPracticeQueue(current);
@@ -312,7 +340,7 @@ export function NomenclaturePractice({
     if (current?.status !== "running" || !record) return;
 
     const submitted = answerRef.current;
-    const asked = directionFor(record, direction);
+    const asked = direction;
     if (!submitted.trim() && !unknown) {
       setInputHint(
         asked === "formula-to-name" ? "Napište český název." : "Napište chemický vzorec.",
@@ -380,9 +408,7 @@ export function NomenclaturePractice({
     const nextRecord = result.state.current;
     setAnnouncement(
       `${evaluation.isCorrect ? "Správně" : "Špatně"}: ${describeRecord(record)}. ${
-        nextRecord
-          ? `Zadání: ${promptText(nextRecord, directionFor(nextRecord, direction))}.`
-          : "Cvičení dokončeno."
+        nextRecord ? `Zadání: ${promptText(nextRecord, direction)}.` : "Cvičení dokončeno."
       }`,
     );
     saveProgress(result.state, sessionId, event);
@@ -422,14 +448,39 @@ export function NomenclaturePractice({
     </>
   );
 
+  const directionControls = (
+    <fieldset className="my-4">
+      <legend className="sr-only">Směr zkoušení</legend>
+      <div className="inline-flex rounded-xl border border-line-strong bg-surface-3 p-1">
+        {DIRECTION_OPTIONS.map((option) => (
+          <label key={option.direction}>
+            <input
+              checked={direction === option.direction}
+              className="peer sr-only"
+              name={directionGroupName}
+              onChange={() => changeDirection(option.direction)}
+              type="radio"
+              value={option.direction}
+            />
+            <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
+              {direction === option.direction ? <span aria-hidden="true">✓</span> : null}
+              {option.label}
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+
   if (!session) {
     return (
       <>
+        {directionControls}
         <NomenclatureFilterStep
-          compounds={compounds}
+          compounds={compounds.filter((record) => record.directions.includes(direction))}
           filters={filters}
           onChange={changeFilters}
-          onStart={start}
+          onStart={() => start()}
         />
         {notices}
       </>
@@ -437,7 +488,7 @@ export function NomenclaturePractice({
   }
 
   const record = session.current;
-  const asked = record ? directionFor(record, direction) : direction;
+  const asked = direction;
 
   return (
     <div className="w-full">
@@ -446,32 +497,12 @@ export function NomenclaturePractice({
         elapsedMs={stopwatch.elapsedMs}
         incorrect={session.incorrect}
         onFinish={finish}
-        onReset={start}
+        onReset={() => start()}
         progress={{ done: session.solvedIds.size, total: session.total }}
         running={session.status === "running"}
       />
 
-      <fieldset className="mt-4">
-        <legend className="sr-only">Směr zkoušení</legend>
-        <div className="inline-flex rounded-xl border border-line-strong bg-surface-3 p-1">
-          {DIRECTION_OPTIONS.map((option) => (
-            <label key={option.direction}>
-              <input
-                checked={direction === option.direction}
-                className="peer sr-only"
-                name={directionGroupName}
-                onChange={() => changeDirection(option.direction)}
-                type="radio"
-                value={option.direction}
-              />
-              <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
-                {direction === option.direction ? <span aria-hidden="true">✓</span> : null}
-                {option.label}
-              </span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      {directionControls}
 
       {record ? (
         <>
@@ -538,6 +569,10 @@ export function NomenclaturePractice({
           </section>
           {feedback ? <FeedbackCard feedback={feedback} /> : null}
         </>
+      ) : feedback && !showResults ? (
+        <FinalAnswerReview onShowResults={() => setShowResults(true)}>
+          <FeedbackCard feedback={feedback} />
+        </FinalAnswerReview>
       ) : (
         <PracticeSummary
           correct={session.correct}
@@ -595,13 +630,13 @@ function FeedbackCard({ feedback }: { readonly feedback: Feedback }) {
       </p>
       {feedback.hint ? <p className="text-sm text-ink-2">{feedback.hint}</p> : null}
       {isCorrect ? null : (
-        <>
-          <p className="text-sm text-ink-2">
-            Vaše odpověď: <span className="font-semibold">{feedback.submittedAnswer}</span>
-          </p>
-          <p className="text-sm text-ink-2">{record.explanationCs}</p>
-        </>
+        <p className="text-sm text-ink-2">
+          Vaše odpověď: <span className="font-semibold">{feedback.submittedAnswer}</span>
+        </p>
       )}
+      <p className="text-sm text-ink-2">
+        <ChemicalText text={record.explanationCs} />
+      </p>
     </AnswerFeedback>
   );
 }

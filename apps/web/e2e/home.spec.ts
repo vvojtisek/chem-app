@@ -203,6 +203,8 @@ test("completes the whole blind table and asks a missed element again at the end
     await expect(page.getByText(`Správně: ${placed}`, { exact: true })).toBeVisible();
   }
 
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
   const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
   await expect(summary).toBeVisible();
   await expect(summary.getByText("118 z 118")).toBeVisible();
@@ -290,6 +292,8 @@ test("completes a selected group by keyboard in the name-to-symbol mode", async 
     ).toHaveText(symbol);
   }
 
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
   const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
   await expect(summary.getByText("7 z 7")).toBeVisible();
   await expect(summary.getByText("100 %")).toBeVisible();
@@ -333,6 +337,8 @@ test("moves on after a wrong name and asks the element again in the symbol-to-na
     await input.press("Enter");
   }
 
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
   const summary = page.getByRole("region", { name: "Vyhodnocení cvičení" });
   await expect(summary.getByText("4 z 4")).toBeVisible();
   await expect(summary.getByText("80 %")).toBeVisible();
@@ -443,6 +449,8 @@ test("resumes a typed periodic-table retry offline without revealing the earlier
   await expect(page.getByRole("heading", { name: "Zadání: Vodík" })).toBeVisible();
   await restoredInput.fill("H");
   await restoredInput.press("Enter");
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
   await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toContainText("2 z 2");
 });
 
@@ -465,6 +473,8 @@ test("resumes a blind periodic table with solved cells after a reload", async ({
     "H",
   );
   await table.getByRole("button", { name: "Perioda 1, skupina 18", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
   await expect(page.getByRole("region", { name: "Vyhodnocení cvičení" })).toContainText("2 z 2");
 });
 

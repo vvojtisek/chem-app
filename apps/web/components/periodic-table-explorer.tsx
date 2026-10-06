@@ -8,6 +8,7 @@ import styles from "@/components/periodic-table-explorer.module.css";
 import { PeriodicTableFrame } from "@/components/periodic-table-grid";
 import { cn } from "@/lib/class-names";
 import { ELEMENT_CATEGORY_OPTIONS } from "@/lib/element-categories";
+import { elementCategoryColorStyle } from "@/lib/element-display-colors";
 import {
   createPeriodicTableLayout,
   describePeriodicTablePosition,
@@ -84,6 +85,9 @@ export function PeriodicTableExplorer({ elements, groups }: PeriodicTableExplore
               setSelectedId(element.id);
             }}
             style={{
+              ...(classifyElementCategory(element) === "lanthanoid-actinoid"
+                ? {}
+                : elementCategoryColorStyle(element.symbol)),
               gridColumn: position.column,
               gridRow: position.section === "main" ? position.row : 1,
             }}

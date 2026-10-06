@@ -52,28 +52,44 @@ async function currentQuestion(page: Page) {
   return { options, correctIndex };
 }
 
-test("launches the production quiz from the practice page and requeues a wrong answer", async ({
-  page,
-}) => {
-  await page.goto("/procvicovani");
-  await page.getByRole("link", { name: "Kvíz: Příprava a výroba látek" }).click();
-  await expect(page).toHaveURL(/\/procvicovani\/priprava-vyroba$/u);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kvíz: Příprava a výroba látek");
+for (const correctFinal of [true, false]) {
+  test(`reviews the final ${correctFinal ? "correct" : "incorrect"} production retry before results`, async ({
+    page,
+  }) => {
+    await page.goto("/procvicovani");
+    await page.getByRole("link", { name: "Kvíz: Příprava a výroba látek" }).click();
+    await expect(page).toHaveURL(/\/procvicovani\/priprava-vyroba$/u);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Kvíz: Příprava a výroba látek",
+    );
 
-  await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
+    await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
 
-  const first = await currentQuestion(page);
-  await first.options.nth(first.correctIndex === 0 ? 1 : 0).click();
-  await expect(page.getByText(/^Vaše odpověď:/u)).toBeVisible();
-  await expect(page.getByText("Špatně: 1", { exact: true })).toBeVisible();
+    const first = await currentQuestion(page);
+    await first.options.nth(first.correctIndex === 0 ? 1 : 0).click();
+    await expect(page.getByText(/^Vaše odpověď:/u)).toBeVisible();
+    await expect(page.getByText("Špatně: 1", { exact: true })).toBeVisible();
 
-  for (let correct = 1; correct <= 10; correct += 1) {
-    const question = await currentQuestion(page);
-    await question.options.nth(question.correctIndex).click();
-    // The next question replaces the card only after the dashboard has counted this answer.
-    await expect(page.getByText(`Správně: ${correct}`, { exact: true })).toBeVisible();
-  }
+    for (let correct = 1; correct <= 9; correct += 1) {
+      const question = await currentQuestion(page);
+      await question.options.nth(question.correctIndex).click();
+      // The next question replaces the card only after the dashboard has counted this answer.
+      await expect(page.getByText(`Správně: ${correct}`, { exact: true })).toBeVisible();
+    }
 
-  await expect(page.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "K zopakování" })).toBeVisible();
-});
+    const last = await currentQuestion(page);
+    await last.options
+      .nth(correctFinal ? last.correctIndex : last.correctIndex === 0 ? 1 : 0)
+      .click();
+    const review = page.getByRole("region", { name: "Poslední odpověď" });
+    await expect(
+      review.getByText(correctFinal ? "Správně" : "Špatně", { exact: true }),
+    ).toBeVisible();
+
+    await expect(page.getByRole("region", { name: "Poslední odpověď" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Vyhodnocení cvičení" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Zobrazit výsledky" }).click();
+    await expect(page.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "K zopakování" })).toBeVisible();
+  });
+}

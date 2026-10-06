@@ -139,6 +139,8 @@ describe("PeriodicTablePractice", () => {
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
     fireEvent.click(cell("Perioda 1, skupina 1"));
 
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(within(summary).getByText("Umístěno").nextElementSibling).toHaveTextContent("1 z 1");
     fireEvent.click(within(summary).getByRole("button", { name: "Změnit výběr" }));
@@ -198,6 +200,8 @@ describe("PeriodicTablePractice", () => {
     expect(appendAttempt).toHaveBeenLastCalledWith(
       expect.objectContaining({ questionId: hydrogen.id, round: "retry", isCorrect: true }),
     );
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeInTheDocument();
   });
 
@@ -280,6 +284,8 @@ describe("PeriodicTablePractice", () => {
 
     fireEvent.click(cell("Perioda 1, skupina 1"));
 
+    expect(screen.queryByRole("region", { name: "Vyhodnocení cvičení" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     const summary = screen.getByRole("region", { name: "Vyhodnocení cvičení" });
     expect(within(summary).getByText("Umístěno").nextElementSibling).toHaveTextContent("1 z 1");
     expect(within(summary).getByText("Úspěšnost").nextElementSibling).toHaveTextContent("100 %");

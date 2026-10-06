@@ -2,7 +2,10 @@
 
 import { curriculumContentVersion, type ElementFlashcardData } from "@inorganic/content/runtime";
 import { useMemo, useRef, useState } from "react";
+import { AnswerFeedback } from "@/components/answer-feedback";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { FinalAnswerReview } from "@/components/final-answer-review";
+import styles from "@/components/periodic-practice.module.css";
 import { PeriodicSessionNotice } from "@/components/periodic-session-notice";
 import {
   type PeriodicTableCellResult,
@@ -14,7 +17,6 @@ import {
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
-import styles from "@/components/periodic-practice.module.css";
 import { usePeriodicSession } from "@/components/use-periodic-session";
 import { useWrongMarks } from "@/components/use-wrong-marks";
 import {
@@ -71,6 +73,12 @@ export function PeriodicTablePractice({
   const stopwatch = useStopwatch();
   const [announcement, setAnnouncement] = useState("");
   const [notice, setNotice] = useState("");
+  const [lastAnswer, setLastAnswer] = useState<{
+    element: ElementFlashcardData;
+    selected: ElementFlashcardData;
+    isCorrect: boolean;
+  } | null>(null);
+  const [showResults, setShowResults] = useState(false);
   const persisted = usePeriodicSession(
     PERIODIC_POSITION_SESSION_ID,
     curriculumContentVersion,
@@ -86,6 +94,8 @@ export function PeriodicTablePractice({
   );
 
   function start() {
+    setLastAnswer(null);
+    setShowResults(false);
     if (persisted.storageBroken) return;
     const questions = selectElements(layout, selection);
     if (questions.length === 0) return;
@@ -120,6 +130,7 @@ export function PeriodicTablePractice({
 
     sessionRef.current = result.state;
     setSession(result.state);
+    setLastAnswer({ element: result.question, selected, isCorrect: result.isCorrect });
     if (result.isCorrect) {
       wrongMarks.unmark(selected.id);
     } else {
@@ -150,6 +161,7 @@ export function PeriodicTablePractice({
   }
 
   function finish() {
+    setShowResults(true);
     const current = sessionRef.current;
     if (current?.status !== "running") return;
 
@@ -213,7 +225,21 @@ export function PeriodicTablePractice({
         running={session.status === "running"}
       />
 
-      {finished ? (
+      {finished && lastAnswer && !showResults ? (
+        <FinalAnswerReview onShowResults={() => setShowResults(true)}>
+          <AnswerFeedback isCorrect={lastAnswer.isCorrect}>
+            <p>
+              Hledaný prvek: {lastAnswer.element.nameCs} ({lastAnswer.element.symbol}), perioda{" "}
+              {lastAnswer.element.period}, skupina {lastAnswer.element.group ?? "f-blok"}.
+            </p>
+            {!lastAnswer.isCorrect ? (
+              <p>
+                Vybrali jste: {lastAnswer.selected.nameCs} ({lastAnswer.selected.symbol}).
+              </p>
+            ) : null}
+          </AnswerFeedback>
+        </FinalAnswerReview>
+      ) : finished ? (
         <PracticeSummary
           className={styles.summary}
           correct={session.correct}
