@@ -17,6 +17,7 @@ from inorganic_api.database import session_dependency
 from inorganic_api.main import app
 from inorganic_api.models import AuthSession, User
 from inorganic_api.repositories import sessions
+from inorganic_api.services import auth as auth_service
 from inorganic_api.services.passwords import hash_password, verify_password
 
 API_DIR = Path(__file__).resolve().parents[1]
@@ -79,8 +80,10 @@ def anyio_backend() -> str:
     return "asyncio"
 
 
-def _client() -> AsyncClient:
-    return AsyncClient(transport=ASGITransport(app=app), base_url="https://testserver")
+def _client(client_address: tuple[str, int] = ("127.0.0.1", 123)) -> AsyncClient:
+    return AsyncClient(
+        transport=ASGITransport(app=app, client=client_address), base_url="https://testserver"
+    )
 
 
 async def _login(client: AsyncClient, user: User, password: str = "correct-horse-battery-staple"):
@@ -164,6 +167,33 @@ async def test_invalid_credentials_have_same_message_and_throttle(db: Session, u
         limited = await _login(client, user, "incorrect")
         assert limited.status_code == 429
         assert limited.json()["error"]["code"] == "too_many_attempts"
+        assert int(limited.headers["Retry-After"]) > 0
+
+
+@pytest.mark.anyio
+async def test_one_client_cannot_lock_the_account_out_for_other_clients(
+    db: Session, user: User
+) -> None:
+    async with _client(("203.0.113.10", 4000)) as attacker:
+        for _ in range(5):
+            assert (await _login(attacker, user, "incorrect")).status_code == 401
+        assert (await _login(attacker, user, "incorrect")).status_code == 429
+        assert (await _login(attacker, user)).status_code == 429
+    async with _client(("198.51.100.20", 4000)) as owner:
+        assert (await _login(owner, user)).status_code == 200
+
+
+@pytest.mark.anyio
+async def test_distributed_guessing_still_hits_the_account_limit(db: Session, user: User) -> None:
+    for index in range(auth_service.USER_FAILURE_LIMIT):
+        async with _client((f"203.0.113.{index % 250 + 1}", 4000 + index)) as client:
+            response = await _login(client, user, "incorrect")
+            if response.status_code == 429:
+                break
+            assert response.status_code == 401
+    async with _client(("198.51.100.21", 4000)) as owner:
+        limited = await _login(owner, user)
+        assert limited.status_code == 429
         assert int(limited.headers["Retry-After"]) > 0
 
 

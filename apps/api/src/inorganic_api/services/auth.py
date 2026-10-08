@@ -15,8 +15,12 @@ from inorganic_api.repositories import sessions, users
 from inorganic_api.services.passwords import hash_password, needs_rehash, verify_password
 
 THROTTLE_WINDOW = timedelta(minutes=15)
-USER_FAILURE_LIMIT = 5
+# Failures per window. The pair limit stops guessing from one client without
+# letting that client lock the account out for everyone else. The per-account
+# limit must stay above IP_FAILURE_LIMIT so no single IP can trip it alone.
+PAIR_FAILURE_LIMIT = 5
 IP_FAILURE_LIMIT = 30
+USER_FAILURE_LIMIT = 100
 SESSION_TOUCH_INTERVAL = timedelta(minutes=5)
 GUEST_USERNAME = "__guest__"
 
@@ -53,6 +57,10 @@ def _lock_throttle_rows(
 ) -> list[tuple[LoginThrottle, int]]:
     keys = [
         (_throttle_hash(settings.secret_key, "ip", ip_address), IP_FAILURE_LIMIT),
+        (
+            _throttle_hash(settings.secret_key, "username-ip", f"{username}|{ip_address}"),
+            PAIR_FAILURE_LIMIT,
+        ),
         (_throttle_hash(settings.secret_key, "username", username), USER_FAILURE_LIMIT),
     ]
     # Insert first, then lock in a stable order so concurrent workers share counters.
