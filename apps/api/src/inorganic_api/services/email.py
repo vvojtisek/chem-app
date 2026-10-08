@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import smtplib
+import ssl
 from email.message import EmailMessage
 from urllib.parse import quote
 
@@ -54,7 +55,7 @@ def send_account_link(settings: Settings, recipient: str, token: str, purpose: s
             settings.smtp_host, settings.smtp_port, timeout=settings.smtp_timeout
         ) as smtp:
             if settings.smtp_starttls:
-                smtp.starttls()
+                smtp.starttls(context=ssl.create_default_context())
             if settings.smtp_username and settings.smtp_password:
                 smtp.login(settings.smtp_username, settings.smtp_password)
             smtp.send_message(message)
