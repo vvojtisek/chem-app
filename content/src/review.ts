@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 
+import { reviewFingerprintPayload } from "./review-fingerprint";
 import type { ReviewerRecord } from "./schema";
 import type { ValidationProblem } from "./validation";
 
@@ -23,24 +24,8 @@ export interface ReviewStamp {
   readonly fingerprints: ReadonlyMap<string, string>;
 }
 
-const reviewMetadataKeys: ReadonlySet<string> = new Set([
-  "status",
-  "author",
-  "reviewedBy",
-  "reviewedAt",
-  "reviewFingerprint",
-  "ownerApprovedBy",
-  "ownerApprovedAt",
-  "reviewNote",
-  "reviewEvidence",
-  "reviewEvidenceConfirmedBy",
-]);
-
 export function createReviewFingerprint(record: object): string {
-  const reviewedFields = Object.entries(record).filter(([key]) => !reviewMetadataKeys.has(key));
-  const digest = createHash("sha256")
-    .update(toCanonicalJson(Object.fromEntries(reviewedFields)))
-    .digest("hex");
+  const digest = createHash("sha256").update(reviewFingerprintPayload(record)).digest("hex");
 
   return `sha256:${digest}`;
 }
@@ -120,24 +105,4 @@ function isSmeReviewer(
     record.reviewedBy !== undefined &&
     reviewersById.get(record.reviewedBy)?.role === "chemistry-sme"
   );
-}
-
-function toCanonicalJson(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(toCanonicalJson).join(",")}]`;
-  }
-  if (typeof value === "object" && value !== null) {
-    const entries = Object.entries(value)
-      .filter(([, entryValue]) => entryValue !== undefined)
-      .sort(([left], [right]) => compareCodeUnits(left, right));
-    return `{${entries.map(([key, entryValue]) => `${JSON.stringify(key)}:${toCanonicalJson(entryValue)}`).join(",")}}`;
-  }
-
-  return JSON.stringify(value);
-}
-
-function compareCodeUnits(left: string, right: string): number {
-  if (left < right) return -1;
-  if (left > right) return 1;
-  return 0;
 }

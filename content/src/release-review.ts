@@ -5,6 +5,7 @@ import type { AuthoringContent } from "./authoring-content";
 import { nomenclatureCollectionSchema } from "./nomenclature-schema";
 import { preparationProductionCollectionSchema } from "./preparation-production-schema";
 import type { ReviewableRecord } from "./review";
+import { productFingerprintInput, routeFingerprintInput } from "./review-fingerprint";
 
 export interface ReleaseReviewTarget extends ReviewableRecord {
   readonly family:
@@ -57,24 +58,17 @@ export function collectReleaseReviewTargets(
 
   for (const product of sources.preparationProduction.products) {
     if (product.status === "deprecated") continue;
-    const { routes, ...productWithoutRoutes } = product;
-    targets.push({ ...product, family: "product", fingerprintInput: productWithoutRoutes });
-    for (const route of routes) {
+    targets.push({
+      ...product,
+      family: "product",
+      fingerprintInput: productFingerprintInput(product),
+    });
+    for (const route of product.routes) {
       if (route.status === "in-review" || route.status === "deprecated") continue;
-      // The route attestation also covers the product identity and cited source.
-      // Reviewing a sibling route cannot invalidate this route's fingerprint.
       targets.push({
         ...route,
         family: "route",
-        fingerprintInput: {
-          ...route,
-          parent: {
-            id: product.id,
-            nameCs: product.nameCs,
-            formula: product.formula,
-            sources: product.sources,
-          },
-        },
+        fingerprintInput: routeFingerprintInput(product, route),
       });
     }
   }

@@ -10,6 +10,7 @@
     "./balancing-reactions-schema": "./src/balancing-reactions-schema.ts",
     "./preparation-production": "./src/preparation-production-runtime.ts",
     "./preparation-production-schema": "./src/preparation-production-schema.ts",
+    "./review-fingerprint": "./src/review-fingerprint.ts",
     "./nomenclature-schema": "./src/nomenclature-schema.ts"
   },
   "scripts": {
