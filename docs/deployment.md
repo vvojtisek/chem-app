@@ -174,6 +174,18 @@ is the authoritative account and synchronized-attempt store.
   accounts/outbox rows.
 - If `SECRET_KEY` is exposed, replace it and revoke all active sessions with
   `docker compose --env-file .env.production -f docker-compose.prod.yml exec api python -m inorganic_api.cli purge-sessions --all`; rotate account passwords as needed. Session records are server-side; changing this key alone is not a substitute for session revocation.
+- Curriculum editing from the admin console (ADR 0014) stays off, answering
+  `503 curriculum_editing_disabled`, until `CURRICULUM_GITHUB_REPOSITORY` and
+  `CURRICULUM_GITHUB_TOKEN` are set. Every save commits to the
+  `content/curation` branch and keeps one pull request open; nothing reaches
+  learners until that pull request and the following release are merged and
+  applied. Require CI and a human merge on `main` before enabling it, because
+  the token can push other branches and open pull requests. The API logs
+  `Curriculum change: account=<id> action=<create|update> product=<id> ...`
+  for each save. Map SME accounts with
+  `CURRICULUM_SME_REVIEWERS=<account UUID>=reviewer.<id>`; the signed-in
+  account's UUID is the `id` field of `GET /api/v1/auth/me`. Rotate the token
+  in GitHub and `.env.production` if it is exposed.
 - Remove seed passwords from the environment file after initial setup. Keep
   runtime and owner database credentials separate.
 - The offline browser marker is a convenience gate only. Local learning data

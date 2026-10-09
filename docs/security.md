@@ -99,6 +99,7 @@ Authorization and session tests must include missing, expired, malformed, wrong-
 - CI executes untrusted pull-request code without production secrets.
 - Generated clients and curriculum artifacts are reproducible and checked for unexpected diffs.
 - Curriculum sources are untrusted input to the build: validate and escape them even after SME review.
+- Admin console curriculum edits (ADR 0014) reach `main` only through a pull request that CI validates and a person merges. The API holds a repository-scoped GitHub token that can push branches and open pull requests, so branch protection on `main` is a security control. The SME reviewer of a validation is resolved from the signed-in account and `CURRICULUM_SME_REVIEWERS`, never from the request.
 - Do not load remote scripts, fonts, or chemistry content at runtime without a documented availability, privacy, CSP, and integrity decision.
 
 ## MCP and external tools

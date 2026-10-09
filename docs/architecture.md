@@ -57,6 +57,8 @@ Circular dependencies and imports between `apps/web` and `apps/api` are forbidde
 4. The PWA caches that snapshot for offline use.
 5. Exercise selection and answer evaluation execute locally through pure `packages/chemistry` functions.
 
+Administrators can also edit preparation/production records from the admin console. The API commits each change to the `content/curation` branch and keeps one pull request open, so the same validation and review flow applies before the change ships (ADR 0014). The console reads the pending branch while that pull request is open.
+
 The API may distribute the same snapshot and record progress, but it is not the sole source of curriculum. The server does not maintain a separate chemistry implementation.
 
 ### Authentication and accounts
