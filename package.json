@@ -21,6 +21,7 @@
     "local:update": "bash scripts/local-update.sh",
     "test": "pnpm -r --if-present test",
     "test:e2e": "pnpm --filter @inorganic/web test:e2e",
+    "test:scripts": "node --test \"scripts/**/*.test.mjs\"",
     "typecheck": "pnpm -r --if-present typecheck"
   },
   "devDependencies": {

@@ -67,6 +67,7 @@ jobs:
       - name: Unit and integration tests
         run: |
           pnpm test
+          pnpm test:scripts
           uv --directory apps/api run pytest -q
 
       - name: Content and contracts
