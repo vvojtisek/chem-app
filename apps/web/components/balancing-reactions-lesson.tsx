@@ -6,10 +6,17 @@ import {
   type BalancingReactionRuntimeLesson,
   type BalancingReactionRuntimeSpecies,
 } from "@inorganic/content/balancing-reactions";
-import { useEffect, useMemo, useState } from "react";
+import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { ChemicalText } from "@/components/chemical-text";
 import { Formula } from "@/components/formula";
+import {
+  loadBalancingSelection,
+  loadCompletedBalancingLessons,
+  saveBalancingSelection,
+  saveCompletedBalancingLessons,
+} from "@/lib/balancing-preferences";
 import { cn } from "@/lib/class-names";
+import { czechCount } from "@/lib/czech-plural";
 import { getElementColor } from "@/lib/element-display-colors";
 import styles from "./balancing-reactions-lesson.module.css";
 
@@ -213,20 +220,224 @@ function BalanceCards({
   );
 }
 
+type BalancingCategory = (typeof BALANCING_REACTION_CATEGORIES)[number];
+
+function shuffled(ids: readonly string[]): string[] {
+  const result = [...ids];
+  for (let index = result.length - 1; index > 0; index--) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swap]] = [result[swap] as string, result[index] as string];
+  }
+  return result;
+}
+
+function EquationPicker({
+  lessons,
+  category,
+  selectedIds,
+  completedIds,
+  shuffle,
+  headingRef,
+  onCategoryChange,
+  onToggleLesson,
+  onToggleCategory,
+  onClear,
+  onShuffleChange,
+  onStart,
+}: Readonly<{
+  lessons: readonly BalancingReactionRuntimeLesson[];
+  category: BalancingCategory;
+  selectedIds: ReadonlySet<string>;
+  completedIds: ReadonlySet<string>;
+  shuffle: boolean;
+  headingRef: RefObject<HTMLHeadingElement | null>;
+  onCategoryChange: (category: BalancingCategory) => void;
+  onToggleLesson: (lessonId: string) => void;
+  onToggleCategory: () => void;
+  onClear: () => void;
+  onShuffleChange: (shuffle: boolean) => void;
+  onStart: () => void;
+}>) {
+  const categoryLessons = lessons.filter((lesson) => lesson.category === category);
+  const allSelected =
+    categoryLessons.length > 0 && categoryLessons.every((lesson) => selectedIds.has(lesson.id));
+  return (
+    <div className={styles.picker}>
+      <header className={styles.pickerHeader}>
+        <h2 className={styles.pickerTitle} ref={headingRef} tabIndex={-1}>
+          Vyberte rovnice k procvičení
+        </h2>
+        <p className={styles.pickerHint}>Rovnice z různých kategorií lze kombinovat.</p>
+      </header>
+      <nav aria-label="Kategorie reakcí" className={styles.categoryNav}>
+        <div className={styles.categoryList}>
+          {BALANCING_REACTION_CATEGORIES.map((option) => {
+            const optionLessons = lessons.filter((candidate) => candidate.category === option);
+            const selectedCount = optionLessons.filter((lesson) =>
+              selectedIds.has(lesson.id),
+            ).length;
+            return (
+              <button
+                aria-pressed={category === option}
+                className={cn(
+                  styles.categoryButton,
+                  category === option && styles.categoryButtonActive,
+                )}
+                key={option}
+                onClick={() => onCategoryChange(option)}
+                type="button"
+              >
+                <span className={styles.categoryNumber}>{option}.</span>{" "}
+                {BALANCING_REACTION_CATEGORY_LABELS[option]}{" "}
+                <span className={styles.categoryCount}>({optionLessons.length})</span>
+                {selectedCount > 0 ? (
+                  <span className={styles.categorySelected}> vybráno {selectedCount}</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+      {categoryLessons.length === 0 ? (
+        <p className={styles.emptyState} role="status">
+          Tato kategorie zatím nemá připravenou interaktivní lekci.
+        </p>
+      ) : (
+        <fieldset className={styles.lessonPicker}>
+          <legend className="sr-only">
+            Rovnice v kategorii {BALANCING_REACTION_CATEGORY_LABELS[category]}
+          </legend>
+          <div className={styles.pickerToolbar}>
+            <span aria-hidden="true">{BALANCING_REACTION_CATEGORY_LABELS[category]}</span>
+            <button className={styles.secondaryButton} onClick={onToggleCategory} type="button">
+              {allSelected ? "Zrušit výběr kategorie" : `Vybrat všech ${categoryLessons.length}`}
+            </button>
+          </div>
+          <ul className={styles.lessonList}>
+            {categoryLessons.map((lesson) => (
+              <li key={lesson.id}>
+                <label className={styles.lessonOption}>
+                  <input
+                    checked={selectedIds.has(lesson.id)}
+                    onChange={() => onToggleLesson(lesson.id)}
+                    type="checkbox"
+                    value={lesson.id}
+                  />
+                  <span className={styles.lessonOptionTitle}>
+                    <ChemicalText text={lesson.title} />
+                  </span>
+                  {completedIds.has(lesson.id) ? (
+                    <span className={styles.completedMark}>✓ prošlá</span>
+                  ) : null}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </fieldset>
+      )}
+      <div className={styles.startBar}>
+        <span className={styles.selectionCount} role="status">
+          Vybráno: {czechCount(selectedIds.size, ["rovnice", "rovnice", "rovnic"])}
+        </span>
+        {selectedIds.size > 0 ? (
+          <button className={styles.secondaryButton} onClick={onClear} type="button">
+            Zrušit výběr
+          </button>
+        ) : null}
+        <label className={styles.shuffleToggle}>
+          <input
+            checked={shuffle}
+            onChange={(event) => onShuffleChange(event.target.checked)}
+            type="checkbox"
+          />
+          Zamíchat pořadí
+        </label>
+        <button
+          className={styles.primaryButton}
+          disabled={selectedIds.size === 0}
+          onClick={onStart}
+          type="button"
+        >
+          Začít procvičovat
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function BalancingReactionsLesson({
   lessons,
 }: Readonly<{ lessons: readonly BalancingReactionRuntimeLesson[] }>) {
-  const [category, setCategory] = useState<(typeof BALANCING_REACTION_CATEGORIES)[number]>(1);
-  const [lessonId, setLessonId] = useState(lessons[0]?.id ?? "");
+  const lessonIds = useMemo(() => new Set(lessons.map((lesson) => lesson.id)), [lessons]);
+  const [category, setCategory] = useState<BalancingCategory>(1);
+  const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
+  const [completedIds, setCompletedIds] = useState<ReadonlySet<string>>(() => new Set());
+  const [shuffle, setShuffle] = useState(false);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
+  // null while the student is choosing equations; otherwise the ids being walked through.
+  const [queue, setQueue] = useState<readonly string[] | null>(null);
+  const [position, setPosition] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
-  const categoryLessons = useMemo(
-    () => lessons.filter((lesson) => lesson.category === category),
-    [category, lessons],
-  );
-  const lesson =
-    categoryLessons.find((candidate) => candidate.id === lessonId) ?? categoryLessons[0];
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const focusHeadingOnRender = useRef(false);
+
+  const lesson = queue ? lessons.find((candidate) => candidate.id === queue[position]) : undefined;
   const step = lesson?.steps[stepIndex] ?? lesson?.steps[0];
   const actualStepIndex = lesson && step ? lesson.steps.indexOf(step) : 0;
+  const onLastStep = lesson !== undefined && actualStepIndex === lesson.steps.length - 1;
+  const lastInQueue = queue !== null && position === queue.length - 1;
+
+  useEffect(() => {
+    const selection = loadBalancingSelection(lessonIds);
+    if (selection) {
+      setSelectedIds(new Set(selection.lessonIds));
+      setShuffle(selection.shuffle);
+    }
+    setCompletedIds(new Set(loadCompletedBalancingLessons(lessonIds)));
+    setPreferencesLoaded(true);
+  }, [lessonIds]);
+
+  useEffect(() => {
+    if (!preferencesLoaded) return;
+    saveBalancingSelection({
+      lessonIds: lessons.filter((item) => selectedIds.has(item.id)).map((item) => item.id),
+      shuffle,
+    });
+  }, [lessons, preferencesLoaded, selectedIds, shuffle]);
+
+  useEffect(() => {
+    if (!onLastStep || !lesson || completedIds.has(lesson.id)) return;
+    const next = new Set(completedIds).add(lesson.id);
+    setCompletedIds(next);
+    saveCompletedBalancingLessons([...next]);
+  }, [completedIds, lesson, onLastStep]);
+
+  useEffect(() => {
+    if (!focusHeadingOnRender.current) return;
+    focusHeadingOnRender.current = false;
+    headingRef.current?.focus();
+  });
+
+  function showView(nextQueue: readonly string[] | null, nextPosition = 0) {
+    focusHeadingOnRender.current = true;
+    setQueue(nextQueue);
+    setPosition(nextPosition);
+    setStepIndex(0);
+  }
+
+  function advance() {
+    if (!queue || !lesson) return;
+    if (!onLastStep) {
+      setStepIndex(actualStepIndex + 1);
+      return;
+    }
+    if (lastInQueue) {
+      showView(queue, queue.length);
+      return;
+    }
+    setPosition(position + 1);
+    setStepIndex(0);
+  }
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -238,73 +449,103 @@ export function BalancingReactionsLesson({
       )
         return;
       event.preventDefault();
-      setStepIndex((current) =>
-        Math.max(
-          0,
-          Math.min(lesson.steps.length - 1, current + (event.key === "ArrowRight" ? 1 : -1)),
-        ),
-      );
+      if (event.key === "ArrowRight") advance();
+      else setStepIndex(Math.max(0, actualStepIndex - 1));
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [lesson]);
+  });
 
-  function changeCategory(nextCategory: (typeof BALANCING_REACTION_CATEGORIES)[number]) {
-    setCategory(nextCategory);
-    const nextLesson = lessons.find((candidate) => candidate.category === nextCategory);
-    setLessonId(nextLesson?.id ?? "");
-    setStepIndex(0);
+  function toggleLesson(lessonId: string) {
+    const next = new Set(selectedIds);
+    if (!next.delete(lessonId)) next.add(lessonId);
+    setSelectedIds(next);
   }
 
-  function changeLesson(nextLessonId: string) {
-    setLessonId(nextLessonId);
-    setStepIndex(0);
+  function toggleCategory() {
+    const categoryLessons = lessons.filter((item) => item.category === category);
+    const allSelected = categoryLessons.every((item) => selectedIds.has(item.id));
+    const next = new Set(selectedIds);
+    for (const item of categoryLessons) {
+      if (allSelected) next.delete(item.id);
+      else next.add(item.id);
+    }
+    setSelectedIds(next);
   }
+
+  function start() {
+    const ordered = lessons.filter((item) => selectedIds.has(item.id)).map((item) => item.id);
+    if (ordered.length === 0) return;
+    showView(shuffle ? shuffled(ordered) : ordered);
+  }
+
+  const algebraLesson = lesson?.steps.some((frame) => frame.title === "Odvozený celočíselný poměr");
 
   return (
     <section
-      className={cn(
-        styles.lesson,
-        lesson?.steps.some((frame) => frame.title === "Odvozený celočíselný poměr") &&
-          styles.algebraLesson,
-      )}
+      className={cn(styles.lesson, algebraLesson && styles.algebraLesson)}
       aria-label="Výukový průvodce vyčíslováním reakcí"
     >
-      <nav aria-label="Kategorie reakcí" className={styles.categoryNav}>
-        <div className={styles.categoryList}>
-          {BALANCING_REACTION_CATEGORIES.map((option) => {
-            const count = lessons.filter((candidate) => candidate.category === option).length;
-            return (
-              <button
-                aria-pressed={category === option}
-                className={`${styles.categoryButton} ${
-                  category === option ? styles.categoryButtonActive : ""
-                }`}
-                key={option}
-                onClick={() => changeCategory(option)}
-                type="button"
-              >
-                <span className={styles.categoryNumber}>{option}.</span>{" "}
-                {BALANCING_REACTION_CATEGORY_LABELS[option]}{" "}
-                <span className={styles.categoryCount}>({count})</span>
-              </button>
-            );
-          })}
+      {queue === null ? (
+        <EquationPicker
+          category={category}
+          completedIds={completedIds}
+          headingRef={headingRef}
+          lessons={lessons}
+          onCategoryChange={setCategory}
+          onClear={() => setSelectedIds(new Set())}
+          onShuffleChange={setShuffle}
+          onStart={start}
+          onToggleCategory={toggleCategory}
+          onToggleLesson={toggleLesson}
+          selectedIds={selectedIds}
+          shuffle={shuffle}
+        />
+      ) : !lesson || !step ? (
+        <div className={styles.setComplete}>
+          <h2 className={styles.pickerTitle} ref={headingRef} tabIndex={-1}>
+            Sada je hotová
+          </h2>
+          <p className={styles.pickerHint}>
+            Prošli jste {czechCount(queue.length, ["rovnici", "rovnice", "rovnic"])} až ke shrnutí.
+          </p>
+          <div className={styles.setCompleteActions}>
+            <button
+              className={styles.secondaryButton}
+              onClick={() => showView(queue)}
+              type="button"
+            >
+              Projít znovu
+            </button>
+            <button className={styles.primaryButton} onClick={() => showView(null)} type="button">
+              Vybrat další rovnice
+            </button>
+          </div>
         </div>
-      </nav>
-
-      {!lesson || !step ? (
-        <p className={styles.emptyState} role="status">
-          Tato kategorie zatím nemá připravenou interaktivní lekci.
-        </p>
       ) : (
         <div className={styles.lessonLayout}>
           <div className={styles.leftColumn}>
+            <div className={styles.playerBar}>
+              <button className={styles.textButton} onClick={() => showView(null)} type="button">
+                ← Výběr rovnic
+              </button>
+              <span className={styles.queuePosition}>
+                Rovnice {position + 1} z {queue.length}
+              </span>
+              <button
+                className={styles.textButton}
+                disabled={onLastStep}
+                onClick={() => setStepIndex(lesson.steps.length - 1)}
+                type="button"
+              >
+                Na shrnutí
+              </button>
+            </div>
             <header className={styles.lessonHeader}>
               <span className={styles.eyebrow}>
                 Kategorie {lesson.category} · {BALANCING_REACTION_CATEGORY_LABELS[lesson.category]}
               </span>
-              <h2 className={styles.lessonTitle}>
+              <h2 className={styles.lessonTitle} ref={headingRef} tabIndex={-1}>
                 <ChemicalText text={lesson.title} />
               </h2>
               <details className={styles.lessonDetails}>
@@ -321,18 +562,6 @@ export function BalancingReactionsLesson({
                 ) : null}
               </details>
             </header>
-            {categoryLessons.length > 1 ? (
-              <label className={styles.lessonSelector}>
-                Reakce v této kategorii
-                <select onChange={(event) => changeLesson(event.target.value)} value={lesson.id}>
-                  {categoryLessons.map((candidate) => (
-                    <option key={candidate.id} value={candidate.id}>
-                      {candidate.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : null}
 
             <div aria-live="polite" className={styles.stepPanel}>
               <p className={styles.stepTitle}>Aktuální krok: {step.title}</p>
@@ -341,9 +570,7 @@ export function BalancingReactionsLesson({
               </p>
               <ReactionEquation
                 current={step.equation}
-                showVariables={lesson.steps.some(
-                  (frame) => frame.title === "Odvozený celočíselný poměr",
-                )}
+                showVariables={algebraLesson ?? false}
                 isSummary={step.kind === "summary"}
                 focusedSpecies={step.focusedSpecies}
                 coefficientChanges={step.coefficientChanges}
@@ -362,7 +589,7 @@ export function BalancingReactionsLesson({
             <div className={styles.stepNavigation}>
               <button
                 disabled={actualStepIndex === 0}
-                onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
+                onClick={() => setStepIndex(Math.max(0, actualStepIndex - 1))}
                 type="button"
               >
                 ← Zpět
@@ -371,14 +598,8 @@ export function BalancingReactionsLesson({
                 Krok {actualStepIndex + 1} z {lesson.steps.length}
                 <span className="sr-only">. Použijte šipky vlevo a vpravo pro změnu kroku.</span>
               </span>
-              <button
-                disabled={actualStepIndex === lesson.steps.length - 1}
-                onClick={() =>
-                  setStepIndex((current) => Math.min(lesson.steps.length - 1, current + 1))
-                }
-                type="button"
-              >
-                Další krok →
+              <button onClick={advance} type="button">
+                {!onLastStep ? "Další krok →" : lastInQueue ? "Dokončit sadu →" : "Další rovnice →"}
               </button>
             </div>
           </div>
