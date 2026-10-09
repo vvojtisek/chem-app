@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/vvojtisek/chem-app/compare/v1.8.2...v1.9.0) (2026-10-09)
+
+
+### Features
+
+* **web:** pick a set of balancing equations before stepping through them ([#91](https://github.com/vvojtisek/chem-app/issues/91)) ([6dcb498](https://github.com/vvojtisek/chem-app/commit/6dcb49812823f44682fbc1c1bf57f02aad4a6196))
+
 ## [1.8.2](https://github.com/vvojtisek/chem-app/compare/v1.8.1...v1.8.2) (2026-10-09)
 
 
