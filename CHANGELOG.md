@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/vvojtisek/chem-app/compare/v1.9.0...v1.9.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **web:** confirm an in-app update actually took effect ([#93](https://github.com/vvojtisek/chem-app/issues/93)) ([c0c4eb9](https://github.com/vvojtisek/chem-app/commit/c0c4eb9d98b8ea712990169229550492d22671e3))
+
 ## [1.9.0](https://github.com/vvojtisek/chem-app/compare/v1.8.2...v1.9.0) (2026-10-09)
 
 
