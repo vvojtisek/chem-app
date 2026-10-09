@@ -158,6 +158,10 @@ export async function getLatestRelease(): Promise<LatestRelease> {
   );
 }
 
+export async function applyLatestRelease(): Promise<void> {
+  await unwrapEmptyResponse(await apiClient.POST("/api/v1/admin/releases/update"));
+}
+
 export async function getMyProfile(): Promise<UserProfile> {
   return unwrapApiResponse(await apiClient.GET("/api/v1/me/profile", { cache: "no-store" }));
 }

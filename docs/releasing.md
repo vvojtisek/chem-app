@@ -69,8 +69,9 @@ request before deploying if the deployed app should show the new version.
 
 ## Update notice for administrators
 
-Administrators see a "Nová verze vX.Y.Z" link next to the version in the app
-header when a newer GitHub Release exists. Learners see only the version.
+Administrators see an "Aktualizovat na vX.Y.Z" button and a "Co je nového"
+link to the release notes next to the version in the app header when a newer
+GitHub Release exists. Learners see only the version.
 
 - The API reads `https://api.github.com/repos/<RELEASE_CHECK_REPOSITORY>/releases/latest`
   at most once per hour (once per 10 minutes after a failure) and serves the
@@ -79,5 +80,8 @@ header when a newer GitHub Release exists. Learners see only the version.
   is accepted. Any error leaves the plain version in place.
 - Set `RELEASE_CHECK_REPOSITORY` to an empty value to turn the check off; it is
   off by default outside production.
-- The notice never changes the server. Deploying the new release remains a
-  manual step.
+- Next to the notice, administrators get an "Aktualizovat na vX.Y.Z" button.
+  After confirmation it asks Watchtower, through the API, to pull the `stable`
+  images and restart the app containers (ADR 0012). It can only apply what CI
+  published as `stable`; it never chooses a version. See
+  [deployment.md](deployment.md#updating-the-application).

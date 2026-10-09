@@ -62,6 +62,20 @@ def test_password_hash_waits_for_a_slot_before_returning_busy(
         ({"forwarded_allow_ips": "*"}, "FORWARDED_ALLOW_IPS"),
         ({"smtp_host": None}, "SMTP_HOST"),
         ({"smtp_starttls": False}, "SMTP_STARTTLS"),
+        (
+            {
+                "watchtower_update_url": "http://watchtower:8080/v1/update",
+                "watchtower_http_api_token": "too-short",
+            },
+            "WATCHTOWER_HTTP_API_TOKEN",
+        ),
+        (
+            {
+                "watchtower_update_url": "http://watchtower:8080/v1/update",
+                "watchtower_http_api_token": "REPLACE_WITH_FRESH_RANDOM_SECRET_OF_AT_LEAST_32_CHARACTERS",
+            },
+            "WATCHTOWER_HTTP_API_TOKEN",
+        ),
     ],
 )
 def test_production_rejects_unsafe_configuration(overrides: dict[str, object], reason: str) -> None:
