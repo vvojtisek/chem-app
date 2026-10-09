@@ -2,7 +2,7 @@
 
 The lookup is read-only and informational: it never changes what runs on the
 server. Responses are cached so the public GitHub API is called at most once
-per hour, and every failure degrades to "no update information".
+every five minutes, and every failure degrades to the last known release.
 """
 
 import json
@@ -16,7 +16,7 @@ from dataclasses import dataclass
 TAG_PATTERN = re.compile(r"v(?P<version>(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))")
 MAX_RESPONSE_BYTES = 256 * 1024
 REQUEST_TIMEOUT_SECONDS = 5
-SUCCESS_TTL_SECONDS = 60 * 60
+SUCCESS_TTL_SECONDS = 5 * 60
 FAILURE_TTL_SECONDS = 10 * 60
 
 Fetch = Callable[[str], bytes]

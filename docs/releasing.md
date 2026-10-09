@@ -74,8 +74,10 @@ link to the release notes next to the version in the app header when a newer
 GitHub Release exists. Learners see only the version.
 
 - The API reads `https://api.github.com/repos/<RELEASE_CHECK_REPOSITORY>/releases/latest`
-  at most once per hour (once per 10 minutes after a failure) and serves the
-  result at `GET /api/v1/admin/releases/latest`, which requires the admin role.
+  at most once every five minutes (once per 10 minutes after a failure) and
+  serves the result at `GET /api/v1/admin/releases/latest`, which requires the
+  admin role. The header asks again whenever the tab becomes visible, so a tab
+  left open picks up a new release without a reload.
 - Only a `vX.Y.Z` tag whose release page is on `github.com` for that repository
   is accepted. Any error leaves the plain version in place.
 - Set `RELEASE_CHECK_REPOSITORY` to an empty value to turn the check off; it is

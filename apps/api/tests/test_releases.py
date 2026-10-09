@@ -96,6 +96,27 @@ def test_checker_caches_success_and_keeps_last_release_after_failure() -> None:
     assert len(urls) == 2
 
 
+def test_checker_picks_up_a_newer_release_within_five_minutes() -> None:
+    clock = FakeClock()
+    payloads = [
+        release_payload(),
+        release_payload(
+            tag_name="v1.3.0",
+            html_url=f"https://github.com/{REPOSITORY}/releases/tag/v1.3.0",
+        ),
+    ]
+    checker = LatestReleaseChecker(REPOSITORY, fetch=lambda _url: payloads.pop(0), clock=clock)
+
+    assert checker.latest() == LatestRelease(
+        version="1.2.0", url=f"https://github.com/{REPOSITORY}/releases/tag/v1.2.0"
+    )
+    assert SUCCESS_TTL_SECONDS <= 5 * 60
+    clock.now = SUCCESS_TTL_SECONDS
+    assert checker.latest() == LatestRelease(
+        version="1.3.0", url=f"https://github.com/{REPOSITORY}/releases/tag/v1.3.0"
+    )
+
+
 def test_checker_returns_none_when_never_successful() -> None:
     def fetch(_url: str) -> bytes:
         raise OSError("offline")

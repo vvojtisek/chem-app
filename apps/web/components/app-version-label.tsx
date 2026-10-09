@@ -39,15 +39,25 @@ export function AppVersionLabel() {
   useEffect(() => {
     if (!isAdmin) return;
     let active = true;
-    getLatestRelease()
-      .then((release) => {
-        if (active) setLatest(release);
-      })
-      .catch(() => {
-        // Release information is optional; the plain version stays visible.
-      });
+    function refresh() {
+      getLatestRelease()
+        .then((release) => {
+          if (active) setLatest(release);
+        })
+        .catch(() => {
+          // Release information is optional; the last known state stays visible.
+        });
+    }
+    // The header stays mounted across navigation, so ask again whenever the tab
+    // comes back into view; otherwise a release published later never shows.
+    function refreshWhenVisible() {
+      if (document.visibilityState === "visible") refresh();
+    }
+    refresh();
+    document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
       active = false;
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [isAdmin]);
 
