@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/vvojtisek/chem-app/compare/v1.8.1...v1.8.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* **ci:** correct release update test and trim redundant runs ([#88](https://github.com/vvojtisek/chem-app/issues/88)) ([73d8149](https://github.com/vvojtisek/chem-app/commit/73d8149d51c79c9aa2a3a8ddb1006796a4b0a98f))
+
 ## [1.8.1](https://github.com/vvojtisek/chem-app/compare/v1.8.0...v1.8.1) (2026-10-09)
 
 
