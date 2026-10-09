@@ -146,6 +146,22 @@ describe("AppVersionLabel", () => {
     expect(screen.getByTitle("Verze aplikace")).toHaveTextContent(`v${APP_VERSION}`);
   });
 
+  it("shows a release published while the tab was in the background", async () => {
+    const laterVersion = `${major}.${minor + 2}.0`;
+    await renderWithNewerRelease();
+    hooks.getLatestRelease.mockResolvedValue({
+      latestVersion: laterVersion,
+      releaseUrl: `https://github.com/vvojtisek/chem-app/releases/tag/v${laterVersion}`,
+    });
+
+    fireEvent(document, new Event("visibilitychange"));
+
+    expect(
+      await screen.findByRole("button", { name: `Aktualizovat na v${laterVersion}` }),
+    ).toBeInTheDocument();
+    expect(hooks.getLatestRelease).toHaveBeenCalledTimes(2);
+  });
+
   it("keeps the version visible when the check fails", async () => {
     hooks.getLatestRelease.mockRejectedValue(new Error("offline"));
     render(<AppVersionLabel />);
