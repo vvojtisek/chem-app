@@ -32,6 +32,8 @@ const reviewMetadataKeys: ReadonlySet<string> = new Set([
   "ownerApprovedBy",
   "ownerApprovedAt",
   "reviewNote",
+  "reviewEvidence",
+  "reviewEvidenceConfirmedBy",
 ]);
 
 export function createReviewFingerprint(record: object): string {

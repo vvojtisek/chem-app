@@ -101,4 +101,32 @@ describe("production chemistry review coverage", () => {
       ),
     ).toEqual([{ code: "stale_review_fingerprint", recordId: route.id }]);
   });
+
+  it("excludes deprecated products and routes from the release gate", () => {
+    const [first] = sources.preparationProduction.products;
+    if (!first) throw new Error("Missing preparation fixture product.");
+    const [firstRoute] = first.routes;
+    if (!firstRoute) throw new Error("Missing preparation fixture route.");
+    const deprecatedRoute = { ...firstRoute, status: "deprecated" as const };
+    const withDeprecations = {
+      ...sources,
+      preparationProduction: {
+        ...sources.preparationProduction,
+        products: sources.preparationProduction.products.map((product, index) =>
+          index === 0
+            ? { ...product, routes: [deprecatedRoute, ...product.routes.slice(1)] }
+            : index === 1
+              ? { ...product, status: "deprecated" as const }
+              : product,
+        ),
+      },
+    };
+    const second = sources.preparationProduction.products[1];
+    if (!second) throw new Error("Missing second preparation fixture product.");
+    const ids = new Set(collectReleaseReviewTargets(content, withDeprecations).map(({ id }) => id));
+    expect(ids.has(firstRoute.id)).toBe(false);
+    expect(ids.has(first.id)).toBe(true);
+    expect(ids.has(second.id)).toBe(false);
+    for (const route of second.routes) expect(ids.has(route.id)).toBe(false);
+  });
 });

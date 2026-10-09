@@ -56,10 +56,11 @@ export function collectReleaseReviewTargets(
   }
 
   for (const product of sources.preparationProduction.products) {
+    if (product.status === "deprecated") continue;
     const { routes, ...productWithoutRoutes } = product;
     targets.push({ ...product, family: "product", fingerprintInput: productWithoutRoutes });
     for (const route of routes) {
-      if (route.status === "in-review") continue;
+      if (route.status === "in-review" || route.status === "deprecated") continue;
       // The route attestation also covers the product identity and cited source.
       // Reviewing a sibling route cannot invalidate this route's fingerprint.
       targets.push({

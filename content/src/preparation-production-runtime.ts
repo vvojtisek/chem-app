@@ -44,7 +44,11 @@ export interface PreparationProductionRuntimeProduct {
 /** Runtime content includes owner-approved material and only validated, approved equations. */
 export const curatedPreparationProduction: readonly PreparationProductionRuntimeProduct[] =
   collection.products
-    .filter((product) => parseEquationFormula(product.formula, allowedSymbols) !== null)
+    .filter(
+      (product) =>
+        product.status !== "deprecated" &&
+        parseEquationFormula(product.formula, allowedSymbols) !== null,
+    )
     .map((product) => ({
       id: product.id,
       nameCs: product.nameCs,
