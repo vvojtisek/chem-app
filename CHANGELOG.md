@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/vvojtisek/chem-app/compare/v1.4.0...v1.5.0) (2026-10-09)
+
+
+### Features
+
+* **auth:** replace self-registration with admin-created accounts ([#74](https://github.com/vvojtisek/chem-app/issues/74)) ([2dea75f](https://github.com/vvojtisek/chem-app/commit/2dea75f347a5044bfdc7f552ec361393071fc8a8))
+* let administrators apply a new release from the app ([#71](https://github.com/vvojtisek/chem-app/issues/71)) ([47db597](https://github.com/vvojtisek/chem-app/commit/47db5979241f65c47638b0d1da10f0e8a803165d))
+
 ## [1.4.0](https://github.com/vvojtisek/chem-app/compare/v1.3.0...v1.4.0) (2026-10-09)
 
 
