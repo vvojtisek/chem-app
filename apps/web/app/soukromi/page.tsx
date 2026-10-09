@@ -24,10 +24,11 @@ export default function PrivacyPage() {
             Údaje účtu
           </h2>
           <p className="mt-2 leading-7 text-ink-2">
-            Registrovaný účet používá uživatelské jméno, ověřenou e-mailovou adresu a heslo. Server
-            ukládá pouze hash hesla a hash identifikátoru přihlášení; přihlašovací cookie není
-            přístupná JavaScriptu. E-mailový poskytovatel zpracuje adresu a jednorázový odkaz pro
-            ověření nebo obnovu hesla.
+            Účty zakládá správce aplikace. Účet používá uživatelské jméno, e-mailovou adresu zadanou
+            správcem a heslo, které si nastavíte sami z odkazu v pozvánce. Server ukládá pouze hash
+            hesla a hash identifikátoru přihlášení; přihlašovací cookie není přístupná JavaScriptu.
+            E-mailový poskytovatel zpracuje adresu a jednorázový odkaz pro nastavení nebo obnovu
+            hesla.
           </p>
           <p className="mt-2 leading-7 text-ink-2">
             Host se přihlašuje bez e-mailu a může pouze prohlížet obsah. Pro ochranu přihlášení

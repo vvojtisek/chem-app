@@ -72,11 +72,12 @@ The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_
 
 ## Shared behavior
 
-- `/napoveda` explains study, practice, offline use, synchronization, progress reset, and curriculum review status. `/soukromi` summarizes the data handled by the app and links to the deployment owner's privacy notice; both pages are part of the offline shell. `/soukromi` is readable without signing in and is linked from registration (ADR 0010). The current privacy page is explicitly incomplete until the deployment owner fills in identity, contact, retention, and erasure details.
+- `/napoveda` explains study, practice, offline use, synchronization, progress reset, and curriculum review status. `/soukromi` summarizes the data handled by the app and links to the deployment owner's privacy notice; both pages are part of the offline shell. `/soukromi` is readable without signing in and is linked from the login page (ADR 0010). The current privacy page is explicitly incomplete until the deployment owner fills in identity, contact, retention, and erasure details.
 
 - Learning routes require an authenticated account or a read-only guest
-  session. Public registration uses email verification, and the learner sets
-  their password from the verification link. A previously verified account
+  session. There is no public registration: an administrator creates the
+  account in `/admin` and the learner sets their password from the emailed
+  invitation link (ADR 0013). A previously verified account
   can open the cached learning shell offline; synchronization requires a valid
   server session.
 - Attempt history synchronizes across devices after the learner signs in and

@@ -78,22 +78,6 @@ async function unwrapEmptyResponse(result: { response: Response; error?: unknown
   if (!result.response.ok) throw parseApiError(result.response.status, result.error);
 }
 
-export async function registerAccount(email: string): Promise<void> {
-  await unwrapEmptyResponse(await apiClient.POST("/api/v1/auth/register", { body: { email } }));
-}
-
-export async function verifyEmail(token: string, newPassword: string): Promise<void> {
-  await unwrapEmptyResponse(
-    await apiClient.POST("/api/v1/auth/verify-email", { body: { token, newPassword } }),
-  );
-}
-
-export async function requestEmailVerification(email: string): Promise<void> {
-  await unwrapEmptyResponse(
-    await apiClient.POST("/api/v1/auth/verification/request", { body: { email } }),
-  );
-}
-
 export async function requestPasswordReset(email: string): Promise<void> {
   await unwrapEmptyResponse(
     await apiClient.POST("/api/v1/auth/password-reset/request", { body: { email } }),
@@ -120,6 +104,14 @@ export async function updateMyProfile(displayName: string): Promise<CurrentUser>
   const result = await apiClient.PATCH("/api/v1/me/profile", { body: { displayName } });
   if (!result.response.ok) throw parseApiError(result.response.status, result.error);
   return getCurrentUser();
+}
+
+export async function createAdminAccount(body: {
+  email: string;
+  displayName?: string | null;
+  role: "admin" | "user" | "tester";
+}): Promise<UserProfile> {
+  return unwrapApiResponse(await apiClient.POST("/api/v1/admin/users", { body }));
 }
 
 export async function updateAdminProfile(

@@ -44,6 +44,9 @@ class User(Base):
 
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
+    __table_args__ = (
+        CheckConstraint("purpose IN ('reset', 'invite')", name="ck_password_reset_tokens_purpose"),
+    )
 
     id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
     user_id: Mapped[UUID] = mapped_column(
@@ -52,6 +55,10 @@ class PasswordResetToken(Base):
     token_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # "invite" tokens come from admin account creation and use invitation wording.
+    purpose: Mapped[str] = mapped_column(
+        String(16), nullable=False, default="reset", server_default="reset"
+    )
 
 
 class EmailVerificationToken(Base):

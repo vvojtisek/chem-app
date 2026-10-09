@@ -2,7 +2,7 @@
 
 The in-app `/soukromi` page is a technical summary, not a complete public
 privacy notice. The deployer must complete and review this checklist before
-opening public registration.
+creating learner accounts.
 
 - Identify the data controller/operator and provide a working privacy contact.
 - State the purposes and legal bases for account management, progress sync,

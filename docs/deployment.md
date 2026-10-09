@@ -32,7 +32,7 @@ the Docker Compose plugin.
    the example values. The example hostname is `chemie.vvojtisek.eu`.
 5. Keep this file out of Git and backups accessible to other users. The
    committed `.env.production.example` is only a placeholder template.
-6. Before opening public registration, complete the [privacy notice release
+6. Before creating learner accounts, complete the [privacy notice release
    checklist](privacy-notice-release-checklist.md), publish the operator's
    identity and contact on `/soukromi`, and review the
    [known limitations](known-limitations.md). The in-app notice is explicitly
@@ -67,9 +67,10 @@ stays up; it becomes healthy only after `alembic upgrade head` succeeds, and
 the API and mail worker start only after that. The
 seed command is idempotent and does not change an existing account. After it
 succeeds, remove all `SEED_*` entries from `.env.production` and keep the
-initial passwords in the operator's password manager. Public registration and
-self-service password recovery are enabled; new accounts set their password
-after following an email verification link. Confirm that Caddy, API, mail
+initial passwords in the operator's password manager. There is no public
+registration: administrators add accounts from `/admin`, and each new account
+sets its password from an emailed invitation link valid for seven days.
+Self-service password recovery is enabled. Confirm that Caddy, API, mail
 worker, web, and DB containers are running,
 then open `https://<DOMAIN>` and verify login with the three provisioned roles.
 Check that non-admin accounts receive `403` from admin-only APIs and that no
@@ -149,10 +150,10 @@ is the authoritative account and synchronized-attempt store.
 
 ## Account and secret operations
 
-- Public registration and password recovery use the configured SMTP relay.
+- Account invitations and password recovery use the configured SMTP relay.
   Keep its credentials in `.env.production` with owner-only permissions or
   inject them through the host's secret manager.
-- Registration and recovery requests queue messages in PostgreSQL and return
+- Account creation and recovery requests queue messages in PostgreSQL and return
   immediately. The `mail-worker` service reaches the external SMTP relay through
   `public-net` and PostgreSQL through `internal-net`; confirm relay connectivity
   when deploying. It retries SMTP failures. Watch its logs
@@ -160,15 +161,16 @@ is the authoritative account and synchronized-attempt store.
   queueing rather than delivery. Missing SMTP configuration returns `503` for
   every address. Keep `SECRET_KEY` stable while mail is pending: rotating it
   makes existing queued links unreadable and users must request new links.
-- Unverified accounts expire after seven days. Verification rejects old
-  accounts even before the scheduled purge removes their rows.
-- Password changes revoke that account's sessions. Admins can manage profile
-  details and set new passwords from `/admin`.
+- An unused invitation expires after seven days. The person can then use
+  password recovery with the same address, or an admin can set a password.
+  The API logs `Administrator <id> created account <id> with role <role>` for
+  each creation.
+- Password changes revoke that account's sessions. Admins can create accounts,
+  manage profile details, and set new passwords from `/admin`.
 - Schedule the combined expired-state purge daily from the host (for example,
   at 03:17) with this cron command:
   `17 3 * * * cd /srv/chem-app && docker compose --env-file .env.production -f docker-compose.prod.yml exec -T api python -m inorganic_api.cli purge-expired >> /var/log/chem-app-purge.log 2>&1`.
-  It removes expired sessions and mail tokens, old throttle rows, pending
-  email-verification accounts older than seven days, and stale guest
+  It removes expired sessions and mail tokens, old throttle rows, and stale guest
   accounts/outbox rows.
 - If `SECRET_KEY` is exposed, replace it and revoke all active sessions with
   `docker compose --env-file .env.production -f docker-compose.prod.yml exec api python -m inorganic_api.cli purge-sessions --all`; rotate account passwords as needed. Session records are server-side; changing this key alone is not a substitute for session revocation.

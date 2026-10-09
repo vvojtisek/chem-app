@@ -6,15 +6,28 @@ import { type FormEvent, useEffect, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
 import { PageHeader } from "@/components/page-header";
 import {
-  adminSetPassword,
   ApiError,
+  adminSetPassword,
   apiClient,
+  createAdminAccount,
   getAdminProfile,
-  updateAdminProfile,
   unwrapApiResponse,
+  updateAdminProfile,
 } from "@/lib/api/client";
 import { clearAccountMarker } from "@/lib/auth/account-marker";
 import { queryKeys } from "@/lib/query-keys";
+
+type AccountRole = "admin" | "user" | "tester";
+
+function createAccountError(cause: unknown): string {
+  if (cause instanceof ApiError && cause.code === "email_taken")
+    return "Tato e-mailová adresa už patří jinému účtu.";
+  if (cause instanceof ApiError && cause.code === "too_many_attempts")
+    return "Příliš mnoho nových účtů v krátké době. Zkuste to později.";
+  if (cause instanceof ApiError && cause.status === 503)
+    return "E-mailové služby teď nejsou dostupné, účet nebyl vytvořen.";
+  return "Účet se nepodařilo vytvořit. Zkontrolujte údaje a zkuste to znovu.";
+}
 
 export default function AdminPage() {
   const account = useAccount();
@@ -22,10 +35,16 @@ export default function AdminPage() {
   const [selectedId, setSelectedId] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"admin" | "user" | "tester">("user");
+  const [role, setRole] = useState<AccountRole>("user");
   const [isActive, setIsActive] = useState(true);
   const [newPassword, setNewPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [newRole, setNewRole] = useState<AccountRole>("user");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [createMessage, setCreateMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -81,6 +100,31 @@ export default function AdminPage() {
         <PageHeader description="Správa je dostupná pouze správci." title="Přístup odepřen" />
       </main>
     );
+
+  async function createAccount(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setCreating(true);
+    setCreateError("");
+    setCreateMessage("");
+    try {
+      const created = await createAdminAccount({
+        email: newEmail.trim(),
+        displayName: newDisplayName.trim() || null,
+        role: newRole,
+      });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.admin.users });
+      setNewEmail("");
+      setNewDisplayName("");
+      setNewRole("user");
+      setCreateMessage(
+        `Účet byl vytvořen. Pozvánka k nastavení hesla se odesílá na ${created.email ?? "zadanou adresu"}.`,
+      );
+    } catch (cause) {
+      setCreateError(createAccountError(cause));
+    } finally {
+      setCreating(false);
+    }
+  }
 
   async function saveProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -156,6 +200,72 @@ export default function AdminPage() {
           {stats.isError ? "Statistiky se nepodařilo načíst." : "Načítám statistiky…"}
         </p>
       )}
+      <section aria-labelledby="create-account" className="mt-8 rounded-2xl border bg-surface p-5">
+        <h2 className="text-xl font-semibold" id="create-account">
+          Přidat účet
+        </h2>
+        <p className="mt-1 text-sm text-ink-2">
+          Nový uživatel dostane e-mail s odkazem, kterým si do 7 dnů nastaví heslo. Přihlašuje se
+          e-mailovou adresou.
+        </p>
+        <form
+          className="mt-4 grid gap-4 sm:grid-cols-3"
+          onSubmit={(event) => void createAccount(event)}
+        >
+          <label className="grid gap-1 font-medium">
+            E-mail
+            <input
+              autoComplete="off"
+              className="min-h-11 rounded-xl border px-3"
+              maxLength={254}
+              onChange={(event) => setNewEmail(event.target.value)}
+              required
+              type="email"
+              value={newEmail}
+            />
+          </label>
+          <label className="grid gap-1 font-medium">
+            Zobrazované jméno (nepovinné)
+            <input
+              autoComplete="off"
+              className="min-h-11 rounded-xl border px-3"
+              maxLength={80}
+              onChange={(event) => setNewDisplayName(event.target.value)}
+              value={newDisplayName}
+            />
+          </label>
+          <label className="grid gap-1 font-medium">
+            Role
+            <select
+              className="min-h-11 rounded-xl border bg-surface px-3"
+              onChange={(event) => setNewRole(event.target.value as AccountRole)}
+              value={newRole}
+            >
+              <option value="user">Uživatel</option>
+              <option value="admin">Správce</option>
+              <option value="tester">Tester</option>
+            </select>
+          </label>
+          <button
+            className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50 sm:col-span-3 sm:justify-self-start"
+            disabled={creating}
+            type="submit"
+          >
+            {creating ? "Vytvářím účet…" : "Vytvořit účet a poslat pozvánku"}
+          </button>
+        </form>
+        {createMessage ? (
+          <p className="mt-4 text-good" role="status">
+            {createMessage}
+          </p>
+        ) : null}
+        {createError ? (
+          <p className="mt-4 text-bad" role="alert">
+            {createError}
+          </p>
+        ) : null}
+      </section>
+
       <h2 className="mt-8 text-xl font-semibold">Účty</h2>
       {users.data ? (
         <ul className="mt-3 divide-y rounded-xl border bg-surface">

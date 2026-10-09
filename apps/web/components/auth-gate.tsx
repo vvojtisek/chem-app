@@ -19,8 +19,8 @@ import { SyncProvider } from "./sync-provider";
 
 export type ActiveAccount = Pick<CurrentUser, "id" | "username" | "role" | "progressGeneration">;
 const AccountContext = createContext<ActiveAccount | null>(null);
-const publicAuthPaths = new Set(["/login", "/register", "/reset-password", "/verify-email"]);
-// Readable before sign-in (the privacy notice must be available before registration),
+const publicAuthPaths = new Set(["/login", "/reset-password"]);
+// Readable before sign-in (the privacy notice must be available before first sign-in),
 // but rendered inside the signed-in shell when a session exists.
 const anonymousReadablePaths = new Set(["/soukromi"]);
 

@@ -109,11 +109,8 @@ function LoginForm() {
         <Link className="underline" href="/reset-password">
           Zapomenuté heslo
         </Link>
-        <Link className="underline" href="/register">
-          Vytvořit účet
-        </Link>
-        <Link className="underline" href="/verify-email">
-          Znovu poslat potvrzení e-mailu
+        <Link className="underline" href="/soukromi">
+          Ochrana soukromí
         </Link>
       </div>
     </main>
