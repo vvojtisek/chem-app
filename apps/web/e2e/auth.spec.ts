@@ -18,11 +18,15 @@ test("redirects without a session and shows an accessible invalid-login error", 
   await expect(page.locator("p[role='alert']")).toContainText("e-mail nebo heslo");
 });
 
-test("links registration to a privacy notice that is readable without a session", async ({
+test("offers no self-registration and links login to a privacy notice readable without a session", async ({
   page,
 }) => {
-  await page.goto("/register");
-  await page.getByRole("link", { name: "informace o ochraně soukromí" }).click();
+  for (const removed of ["/register", "/verify-email"]) {
+    await page.goto(removed);
+    await expect(page).toHaveURL(/\/login\?next=/);
+  }
+  await expect(page.getByRole("link", { name: /účet/i })).toHaveCount(0);
+  await page.getByRole("link", { name: "Ochrana soukromí" }).click();
   await expect(page).toHaveURL(/\/soukromi$/);
   await expect(page.getByRole("heading", { name: "Ochrana soukromí", level: 1 })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Hlavní navigace" })).toHaveCount(0);
@@ -160,17 +164,40 @@ test.skip("guest can browse learning modes without controls that change saved da
 
 test("account screens fit iPad portrait and landscape viewports", async ({ page }) => {
   await page.context().clearCookies();
-  await page.goto("/register");
+  await page.goto("/reset-password");
 
   for (const viewport of [
     { width: 1024, height: 768 },
     { width: 768, height: 1024 },
   ]) {
     await page.setViewportSize(viewport);
-    await expect(page.getByRole("heading", { name: "Vytvořit účet" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Zaregistrovat se" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Obnovit heslo" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Poslat odkaz" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       viewport.width,
     );
   }
+});
+
+test("lets an administrator create an account that waits for its invitation", async ({ page }) => {
+  await page.goto("/login");
+  await page
+    .getByRole("textbox", { name: "E-mail nebo uživatelské jméno" })
+    .fill(process.env.SEED_ADMIN_USERNAME ?? "admin");
+  await page.getByLabel("Heslo").fill(process.env.SEED_ADMIN_PASSWORD ?? "CiOnlyAdmin_2026_ABCDE");
+  await page.getByRole("button", { name: "Přihlásit se" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.goto("/admin");
+
+  const address = `invite-${Date.now()}@example.test`;
+  const form = page.getByRole("region", { name: "Přidat účet" });
+  await form.getByRole("textbox", { name: "E-mail" }).fill(address);
+  await form.getByRole("textbox", { name: "Zobrazované jméno (nepovinné)" }).fill("Pozvaný žák");
+  await form.getByRole("button", { name: "Vytvořit účet a poslat pozvánku" }).click();
+
+  await expect(form.getByRole("status")).toContainText(address);
+  await expect(page.getByRole("listitem").filter({ hasText: address })).toContainText(
+    "Pozvaný žák",
+  );
+  await expect(form.getByRole("textbox", { name: "E-mail" })).toHaveValue("");
 });

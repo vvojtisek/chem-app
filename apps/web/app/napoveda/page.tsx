@@ -40,8 +40,8 @@ export default function HelpPage() {
             po obnovení připojení; synchronizaci ukazuje stav v horní navigaci.
           </p>
           <p className="mt-2 leading-7 text-ink-2">
-            Host může učivo prohlížet, ale neukládá osobní pokusy ani úpravy. Přihlášení,
-            registrace, změna hesla a synchronizace vyžadují připojení.
+            Host může učivo prohlížet, ale neukládá osobní pokusy ani úpravy. Přihlášení, nastavení
+            a změna hesla a synchronizace vyžadují připojení.
           </p>
         </section>
 
