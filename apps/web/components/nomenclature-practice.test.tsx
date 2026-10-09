@@ -1,10 +1,10 @@
 import type { NomenclatureRuntimeRecord } from "@inorganic/content/nomenclature-schema";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { IDBFactory } from "fake-indexeddb";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   NOMENCLATURE_SESSION_STORE,
   openLearningDatabase,
-  resetLearningDatabase,
   transactionCompleted,
 } from "@/lib/browser-learning-database";
 import { createBrowserNomenclatureStore } from "@/lib/browser-nomenclature-store";
@@ -71,9 +71,11 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
-beforeEach(async () => {
+beforeEach(() => {
   window.localStorage.clear();
-  await resetLearningDatabase(indexedDB);
+  // A fresh database per test: an earlier test's unmounted practice can still finish a queued
+  // checkpoint write, which would otherwise land in this test's database after a reset.
+  vi.stubGlobal("indexedDB", new IDBFactory());
 });
 
 function renderPractice(
