@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
@@ -190,6 +191,11 @@ export default function AdminPage() {
         description="Testovací účty jsou ze souhrnných statistik vyloučeny."
         title="Správa účtů"
       />
+      <p className="mb-4">
+        <Link className="font-semibold text-accent-strong underline" href="/admin/data">
+          Data a ověřování obsahu
+        </Link>
+      </p>
       {stats.data ? (
         <section aria-label="Souhrnné statistiky" className="rounded-xl border p-4">
           <p>Celkem pokusů: {stats.data.totalAttempts}</p>
