@@ -67,6 +67,13 @@ Validation errors use the same envelope with code `validation_error`; `details.f
 
 Never use `200` for a failed operation.
 
+`GET /api/v1/admin/releases/latest` returns `latestVersion`, `releaseUrl`,
+and `updatesEnabled`. The first two fields report the latest published release,
+if one can be found. `updatesEnabled` is true only when the API has both a
+Watchtower update URL and token configured. It reports configuration, not a
+live Watchtower health check; `POST /api/v1/admin/releases/update` can still
+return `503 update_unavailable` if Watchtower later fails or cannot be reached.
+
 ## Authentication and authorization
 
 ADRs 0005, 0006 and 0013 define local email/password accounts and opaque

@@ -20,6 +20,7 @@ class LatestReleaseResponse(BaseModel):
 
     latest_version: str | None
     release_url: str | None
+    updates_enabled: bool
 
 
 router = APIRouter(tags=["system"])
@@ -35,6 +36,13 @@ def release_checker_dependency() -> LatestReleaseChecker | None:
     return None if repository is None else _checker_for(repository)
 
 
+def release_updater_dependency() -> ReleaseUpdater | None:
+    settings = get_settings()
+    if settings.watchtower_update_url is None or settings.watchtower_http_api_token is None:
+        return None
+    return ReleaseUpdater(settings.watchtower_update_url, settings.watchtower_http_api_token)
+
+
 @router.get(
     "/admin/releases/latest",
     operation_id="getLatestRelease",
@@ -45,18 +53,18 @@ def release_checker_dependency() -> LatestReleaseChecker | None:
 def get_latest_release(
     _current: Annotated[AuthenticatedSession, Depends(require_role("admin"))],
     checker: Annotated[LatestReleaseChecker | None, Depends(release_checker_dependency)],
+    updater: Annotated[ReleaseUpdater | None, Depends(release_updater_dependency)],
 ) -> LatestReleaseResponse:
     release = None if checker is None else checker.latest()
     if release is None:
-        return LatestReleaseResponse(latest_version=None, release_url=None)
-    return LatestReleaseResponse(latest_version=release.version, release_url=release.url)
-
-
-def release_updater_dependency() -> ReleaseUpdater | None:
-    settings = get_settings()
-    if settings.watchtower_update_url is None or settings.watchtower_http_api_token is None:
-        return None
-    return ReleaseUpdater(settings.watchtower_update_url, settings.watchtower_http_api_token)
+        return LatestReleaseResponse(
+            latest_version=None, release_url=None, updates_enabled=updater is not None
+        )
+    return LatestReleaseResponse(
+        latest_version=release.version,
+        release_url=release.url,
+        updates_enabled=updater is not None,
+    )
 
 
 @router.post(

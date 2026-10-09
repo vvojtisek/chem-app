@@ -42,7 +42,11 @@ afterEach(() => {
 });
 
 async function renderWithNewerRelease() {
-  hooks.getLatestRelease.mockResolvedValue({ latestVersion: newerVersion, releaseUrl });
+  hooks.getLatestRelease.mockResolvedValue({
+    latestVersion: newerVersion,
+    releaseUrl,
+    updatesEnabled: true,
+  });
   render(<AppVersionLabel />);
   return screen.findByRole("button", { name: updateButtonName });
 }
@@ -56,6 +60,32 @@ describe("AppVersionLabel", () => {
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
     expect(screen.getByTitle("Verze aplikace")).toHaveTextContent(`v${APP_VERSION}`);
   });
+
+  it.each([
+    ["disabled", false],
+    ["not reported by an older API", undefined],
+  ])(
+    "shows manual deployment guidance and release notes when updates are %s",
+    async (_case, enabled) => {
+      hooks.getLatestRelease.mockResolvedValue({
+        latestVersion: newerVersion,
+        releaseUrl,
+        ...(enabled === undefined ? {} : { updatesEnabled: enabled }),
+      });
+      render(<AppVersionLabel />);
+
+      expect(await screen.findByText("Aktualizace jen ručně")).toHaveAttribute(
+        "title",
+        expect.stringContaining("správce serveru nasadit ručně"),
+      );
+      expect(screen.getByRole("link", { name: /Co je nového/ })).toHaveAttribute(
+        "href",
+        releaseUrl,
+      );
+      expect(screen.queryByRole("button", { name: updateButtonName })).not.toBeInTheDocument();
+      expect(hooks.applyLatestRelease).not.toHaveBeenCalled();
+    },
+  );
 
   it("starts the update only after confirmation", async () => {
     hooks.applyLatestRelease.mockResolvedValue(undefined);
@@ -96,11 +126,15 @@ describe("AppVersionLabel", () => {
   });
 
   it.each([
-    ["the installed version", { latestVersion: APP_VERSION, releaseUrl }],
-    ["no release information", { latestVersion: null, releaseUrl: null }],
+    ["the installed version", { latestVersion: APP_VERSION, releaseUrl, updatesEnabled: true }],
+    ["no release information", { latestVersion: null, releaseUrl: null, updatesEnabled: true }],
     [
       "a link outside GitHub",
-      { latestVersion: newerVersion, releaseUrl: "https://evil.example/release" },
+      {
+        latestVersion: newerVersion,
+        releaseUrl: "https://evil.example/release",
+        updatesEnabled: true,
+      },
     ],
   ])("shows only the version for %s", async (_case, release) => {
     hooks.getLatestRelease.mockResolvedValue(release);

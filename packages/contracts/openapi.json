@@ -839,11 +839,16 @@
               }
             ],
             "title": "Releaseurl"
+          },
+          "updatesEnabled": {
+            "title": "Updatesenabled",
+            "type": "boolean"
           }
         },
         "required": [
           "latestVersion",
-          "releaseUrl"
+          "releaseUrl",
+          "updatesEnabled"
         ],
         "title": "LatestReleaseResponse",
         "type": "object"

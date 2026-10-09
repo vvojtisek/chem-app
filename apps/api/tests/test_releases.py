@@ -6,10 +6,11 @@ from httpx import ASGITransport, AsyncClient
 from pydantic import ValidationError
 
 from inorganic_api.api.dependencies import get_current_user
-from inorganic_api.api.releases import release_checker_dependency
+from inorganic_api.api.releases import release_checker_dependency, release_updater_dependency
 from inorganic_api.config import Settings
 from inorganic_api.errors import AppError
 from inorganic_api.main import app
+from inorganic_api.services.release_updates import ReleaseUpdater
 from inorganic_api.services.releases import (
     FAILURE_TTL_SECONDS,
     MAX_RESPONSE_BYTES,
@@ -132,6 +133,7 @@ def overrides():
     yield app.dependency_overrides
     app.dependency_overrides.pop(get_current_user, None)
     app.dependency_overrides.pop(release_checker_dependency, None)
+    app.dependency_overrides.pop(release_updater_dependency, None)
 
 
 async def get_latest() -> tuple[int, dict]:
@@ -145,10 +147,26 @@ async def test_admin_sees_latest_release(overrides) -> None:
     release = LatestRelease("1.2.0", f"https://github.com/{REPOSITORY}/releases/tag/v1.2.0")
     overrides[get_current_user] = signed_in_as("admin")
     overrides[release_checker_dependency] = lambda: StaticChecker(release)
+    overrides[release_updater_dependency] = lambda: ReleaseUpdater(
+        "http://watchtower:8080/v1/update", "test-token"
+    )
 
     assert await get_latest() == (
         200,
-        {"latestVersion": "1.2.0", "releaseUrl": release.url},
+        {"latestVersion": "1.2.0", "releaseUrl": release.url, "updatesEnabled": True},
+    )
+
+
+@pytest.mark.anyio
+async def test_admin_sees_newer_release_when_updates_are_disabled(overrides) -> None:
+    release = LatestRelease("1.2.0", f"https://github.com/{REPOSITORY}/releases/tag/v1.2.0")
+    overrides[get_current_user] = signed_in_as("admin")
+    overrides[release_checker_dependency] = lambda: StaticChecker(release)
+    overrides[release_updater_dependency] = lambda: None
+
+    assert await get_latest() == (
+        200,
+        {"latestVersion": "1.2.0", "releaseUrl": release.url, "updatesEnabled": False},
     )
 
 
@@ -156,8 +174,12 @@ async def test_admin_sees_latest_release(overrides) -> None:
 async def test_admin_gets_empty_answer_when_check_is_disabled(overrides) -> None:
     overrides[get_current_user] = signed_in_as("admin")
     overrides[release_checker_dependency] = lambda: None
+    overrides[release_updater_dependency] = lambda: None
 
-    assert await get_latest() == (200, {"latestVersion": None, "releaseUrl": None})
+    assert await get_latest() == (
+        200,
+        {"latestVersion": None, "releaseUrl": None, "updatesEnabled": False},
+    )
 
 
 @pytest.mark.anyio

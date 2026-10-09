@@ -208,7 +208,7 @@ export function AppShell({
       </div>
 
       <div className="flex min-w-0 flex-col pb-20 md:pb-0">
-        <header className="sticky top-0 z-20 flex min-h-14 items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-20 flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur sm:px-6 md:flex-nowrap">
           <Link
             className="flex shrink-0 items-center gap-2 font-display text-lg font-bold text-ink md:hidden"
             href="/"
@@ -217,8 +217,8 @@ export function AppShell({
             {/* On the narrowest phones the sync status needs the room; the name stays for screen readers. */}
             <span className="max-[24rem]:sr-only">Anorganika</span>
           </Link>
-          <div className="ml-auto flex min-w-0 items-center gap-2">
-            <AppVersionLabel />
+          <AppVersionLabel />
+          <div className="ml-auto flex min-w-0 items-center gap-2 md:ml-0">
             <AccountBadge />
             {canSync ? <SyncStatusChip /> : null}
             <Link
