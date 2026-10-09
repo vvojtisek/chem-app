@@ -168,3 +168,12 @@ export function ChevronRightIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function SignOutIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M14 4.5H6.5v15H14" />
+      <path d="M10.5 12h10M17 8.5l3.5 3.5-3.5 3.5" />
+    </Icon>
+  );
+}
