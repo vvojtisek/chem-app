@@ -9,6 +9,7 @@ export type CurrentUser = components["schemas"]["MeResponse"];
 export type UserProfile = components["schemas"]["ProfileResponse"];
 export type UserProgression = components["schemas"]["Progression"];
 export type UserAttemptStats = components["schemas"]["AttemptStats"];
+export type LatestRelease = components["schemas"]["LatestReleaseResponse"];
 
 export class ApiError extends Error {
   constructor(
@@ -149,6 +150,12 @@ export async function adminSetPassword(userId: string, newPassword: string): Pro
 export async function logout(): Promise<void> {
   const result = await apiClient.POST("/api/v1/auth/logout");
   if (!result.response.ok) throw parseApiError(result.response.status, result.error);
+}
+
+export async function getLatestRelease(): Promise<LatestRelease> {
+  return unwrapApiResponse(
+    await apiClient.GET("/api/v1/admin/releases/latest", { cache: "no-store" }),
+  );
 }
 
 export async function getMyProfile(): Promise<UserProfile> {
