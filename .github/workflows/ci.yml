@@ -8,8 +8,21 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   quality:
+    # Release Please only changes version metadata and the changelog; its
+    # source commit was already checked before the release PR was opened.
+    if: >-
+      ${{
+        !(
+          (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please--branches--')) ||
+          (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(main): release '))
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -79,6 +92,13 @@ jobs:
         run: pnpm build
 
   browser:
+    if: >-
+      ${{
+        !(
+          (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please--branches--')) ||
+          (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(main): release '))
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -144,6 +164,13 @@ jobs:
         run: pnpm test:e2e
 
   security:
+    if: >-
+      ${{
+        !(
+          (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please--branches--')) ||
+          (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(main): release '))
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -173,6 +200,13 @@ jobs:
         run: uv --directory apps/api run --with pip-audit pip-audit
 
   docker:
+    if: >-
+      ${{
+        !(
+          (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please--branches--')) ||
+          (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(main): release '))
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

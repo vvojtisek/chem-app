@@ -152,6 +152,7 @@ describe("AppVersionLabel", () => {
     hooks.getLatestRelease.mockResolvedValue({
       latestVersion: laterVersion,
       releaseUrl: `https://github.com/vvojtisek/chem-app/releases/tag/v${laterVersion}`,
+      updatesEnabled: true,
     });
 
     fireEvent(document, new Event("visibilitychange"));
