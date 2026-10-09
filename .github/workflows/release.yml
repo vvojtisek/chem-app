@@ -3,7 +3,8 @@ name: Release
 # release-please keeps one open release pull request that bumps the version and
 # CHANGELOG.md from the Conventional Commit subjects merged since the last
 # release. Merging that pull request tags the commit and publishes the GitHub
-# Release. This workflow never builds or deploys anything.
+# Release. When a release is created, the api and web images are built from the
+# tagged commit and pushed to GHCR (ADR 0012). The workflow never deploys.
 on:
   push:
     branches: [main]
@@ -18,12 +19,107 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
     permissions:
       contents: write
       issues: write
       pull-requests: write
     steps:
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  # Builds each image natively on arm64, the production host architecture
+  # (t4g.small), and pushes only the X.Y.Z tag.
+  publish-image:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - service: api
+            dockerfile: apps/api/Dockerfile
+            build_arg: ""
+          - service: web
+            dockerfile: apps/web/Dockerfile
+            build_arg: API_PROXY_TARGET=http://api:8000
+    env:
+      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+      IMAGE: ghcr.io/${{ github.repository_owner }}/chem-app-${{ matrix.service }}
+      DOCKERFILE: ${{ matrix.dockerfile }}
+      BUILD_ARG: ${{ matrix.build_arg }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release-please.outputs.sha }}
+          persist-credentials: false
+      - name: Read version
+        run: |
+          if [[ ! "$TAG_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "::error::Unexpected release tag: $TAG_NAME"
+            exit 1
+          fi
+          echo "VERSION=${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
+      - name: Log in to GHCR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GITHUB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Build
+        run: |
+          build_args=()
+          if [[ -n "$BUILD_ARG" ]]; then build_args=(--build-arg "$BUILD_ARG"); fi
+          docker build \
+            --file "$DOCKERFILE" \
+            "${build_args[@]}" \
+            --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label "org.opencontainers.image.version=$VERSION" \
+            --tag "$IMAGE:$VERSION" \
+            .
+      - name: Push
+        run: docker push "$IMAGE:$VERSION"
+      - name: Log out
+        if: always()
+        run: docker logout ghcr.io
+
+  # Moves stable only after both images exist, so production never pulls a
+  # mismatched api and web pair.
+  promote-stable:
+    needs: [release-please, publish-image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      packages: write
+    env:
+      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+      OWNER: ${{ github.repository_owner }}
+    steps:
+      - name: Log in to GHCR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GITHUB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Tag stable
+        run: |
+          if [[ ! "$TAG_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "::error::Unexpected release tag: $TAG_NAME"
+            exit 1
+          fi
+          version="${BASH_REMATCH[1]}"
+          for service in api web; do
+            image="ghcr.io/$OWNER/chem-app-$service"
+            docker buildx imagetools create --tag "$image:stable" "$image:$version"
+          done
+      - name: Log out
+        if: always()
+        run: docker logout ghcr.io

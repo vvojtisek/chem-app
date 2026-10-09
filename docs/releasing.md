@@ -43,10 +43,29 @@ The branch name does not affect the version. Keep using the prefixes in
    ends with `Release-As: X.Y.Z`.
 4. Merge it. The workflow tags the merge commit `vX.Y.Z` and publishes the
    GitHub Release with the changelog entry.
+5. The same run builds the `api` and `web` images from that commit for
+   `linux/arm64` (the production host is a `t4g` instance) and pushes them to
+   `ghcr.io/vvojtisek/chem-app-api` and `ghcr.io/vvojtisek/chem-app-web` as
+   `X.Y.Z`. Only after both pushes succeed does it move the `stable` tag of
+   both images to `X.Y.Z` (ADR 0012).
 
 The workflow does not deploy. The server still updates from `main` as described
 in [deploy/aws/README.md](../deploy/aws/README.md), so merge the release pull
 request before deploying if the deployed app should show the new version.
+
+### Published images
+
+- The images contain no configuration or secrets. The `web` image is built with
+  `API_PROXY_TARGET=http://api:8000`, the address used by
+  `docker-compose.prod.yml`.
+- The first push creates each GHCR package as private. Make both packages
+  public once (package settings, "Change visibility") so the server can pull
+  them without registry credentials.
+- To roll back, point `stable` at an earlier version with
+  `docker buildx imagetools create --tag <image>:stable <image>:X.Y.Z` for both
+  images.
+- A release with no `feat`, `fix`, `perf` or `revert` changes is never cut, so
+  no images are built for `ci`, `docs` or `chore`-only merges.
 
 ## Update notice for administrators
 
