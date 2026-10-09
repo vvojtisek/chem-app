@@ -88,6 +88,7 @@ the overlay still needs everything in B.
 - Editors: only the owner edits and validates.
 - Validation evidence: the owner validates against documents confirmed by a
   named professor at the school, which the owner plans to go through one by one.
+  The professor's name may be recorded as an optional field.
 - Visibility: learners keep seeing unvalidated items. The owner wants to mark
   items as validated during the pass and to sort the list into validated and
   pending.
@@ -116,8 +117,12 @@ is needed.
    Validation requires a short evidence reference (for example the document
    title and page), stored in a new optional `reviewEvidence` field on the
    record. The field sits next to the other review fields and is excluded
-   from the fingerprint. The repository is public, so the reference contains
-   no personal names unless the owner explicitly decides otherwise.
+   from the fingerprint. An optional `reviewEvidenceConfirmedBy` field holds
+   the name of the person who confirmed the source document (for example the
+   professor named in it). The owner decided on 2026-10-09 to allow this name.
+   The repository is public, so a name entered there is published with the
+   content and its Git history; leave it empty when that is not wanted. Both
+   fields are authoring metadata and are excluded from the runtime snapshot.
 4. **Edit clears validation.** Saving a change to a reviewed record writes it
    back as `in-review` (or `owner-approved` when the owner releases it) and
    removes the review fields, matching the existing workflow.
@@ -178,7 +183,8 @@ Operational:
 2. API: GitHub adapter with timeouts, admin curriculum endpoints for
    preparation/production (list from the curation branch, create, update,
    deprecate, validate with evidence), audit log, tests with a fake adapter.
-   Content schema gains `reviewEvidence`.
+   Content schema gains `reviewEvidence` and optional
+   `reviewEvidenceConfirmedBy`.
 3. Web: admin console section "Data" with the validated/pending list and
    counts, editor using `@inorganic/content` validation, and
    validate/deprecate actions.
