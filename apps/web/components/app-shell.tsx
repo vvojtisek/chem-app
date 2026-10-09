@@ -2,12 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ComponentType, ReactNode, SVGProps } from "react";
+import { type ComponentType, type ReactNode, type SVGProps, useState } from "react";
 
 import { AppVersionLabel } from "./app-version-label";
 import { useAccount, useCapabilities } from "./auth-gate";
-import { BookIcon, ChartIcon, FlaskIcon, HelpIcon, HomeIcon, ShieldIcon, UserIcon } from "./icons";
+import {
+  BookIcon,
+  ChartIcon,
+  FlaskIcon,
+  HelpIcon,
+  HomeIcon,
+  ShieldIcon,
+  SignOutIcon,
+  UserIcon,
+} from "./icons";
 import { SyncStatusChip, useSync } from "./sync-provider";
+import { useSignOut } from "./use-sign-out";
 
 interface Destination {
   readonly href: string;
@@ -90,7 +100,23 @@ export function AppShell({
 }: Readonly<{ children: ReactNode; notice?: ReactNode }>) {
   const pathname = usePathname();
   const account = useAccount();
-  const { canSync } = useCapabilities();
+  const { canSync, isGuest } = useCapabilities();
+  const signOut = useSignOut();
+  const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState("");
+  const signOutLabel = isGuest ? "Ukončit hostovský přístup" : "Odhlásit";
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    setSignOutError("");
+    try {
+      await signOut();
+    } catch {
+      setSignOutError("Odhlášení se nepodařilo. Připojte se k síti a zkuste to znovu.");
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
@@ -169,6 +195,15 @@ export function AppShell({
               <span className="text-xs text-ink-3">Profil a nastavení</span>
             </span>
           </Link>
+          <button
+            className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-[15px] font-semibold text-ink-2 hover:bg-surface-2 disabled:opacity-50"
+            disabled={signingOut}
+            onClick={() => void handleSignOut()}
+            type="button"
+          >
+            <SignOutIcon className="text-xl" />
+            {signOutLabel}
+          </button>
         </div>
       </div>
 
@@ -200,8 +235,23 @@ export function AppShell({
             >
               <UserIcon />
             </Link>
+            <button
+              aria-label={signOutLabel}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 disabled:opacity-50 md:hidden"
+              disabled={signingOut}
+              onClick={() => void handleSignOut()}
+              title={signOutLabel}
+              type="button"
+            >
+              <SignOutIcon />
+            </button>
           </div>
         </header>
+        {signOutError ? (
+          <p className="border-b border-bad/40 bg-surface px-4 py-2 text-sm text-bad" role="alert">
+            {signOutError}
+          </p>
+        ) : null}
         {notice}
         {canSync ? <QuarantineNotice /> : null}
         <div className="flex-1">{children}</div>

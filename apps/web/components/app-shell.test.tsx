@@ -1,4 +1,6 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const hooks = vi.hoisted(() => ({
@@ -9,9 +11,20 @@ const hooks = vi.hoisted(() => ({
     role: "admin" | "user" | "tester" | "guest";
   },
   capabilities: { canSync: true, isGuest: false },
+  logout: vi.fn<() => Promise<void>>(),
+  clearAccountMarker: vi.fn(),
+  router: { replace: vi.fn(), refresh: vi.fn() },
 }));
 
-vi.mock("next/navigation", () => ({ usePathname: () => hooks.pathname }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => hooks.pathname,
+  useRouter: () => hooks.router,
+}));
+vi.mock("@/lib/api/client", () => ({
+  logout: hooks.logout,
+  getLatestRelease: () => Promise.reject(new Error("not under test")),
+}));
+vi.mock("@/lib/auth/account-marker", () => ({ clearAccountMarker: hooks.clearAccountMarker }));
 vi.mock("./auth-gate", () => ({
   useAccount: () => hooks.account,
   useCapabilities: () => hooks.capabilities,
@@ -21,9 +34,21 @@ vi.mock("./sync-provider", () => ({
   useSync: () => ({ quarantineMessage: "" }),
 }));
 
-import { AppShell } from "./app-shell";
+import { AppShell as BareAppShell } from "./app-shell";
+
+function AppShell({ children, notice }: Readonly<{ children: ReactNode; notice?: ReactNode }>) {
+  return (
+    <QueryClientProvider client={new QueryClient()}>
+      <BareAppShell notice={notice}>{children}</BareAppShell>
+    </QueryClientProvider>
+  );
+}
 
 beforeEach(() => {
+  hooks.logout.mockReset();
+  hooks.clearAccountMarker.mockReset();
+  hooks.router.replace.mockReset();
+  hooks.router.refresh.mockReset();
   hooks.pathname = "/";
   hooks.account = { id: "account-test", username: "jana", role: "user" };
   hooks.capabilities = { canSync: true, isGuest: false };
@@ -122,5 +147,50 @@ describe("AppShell", () => {
     render(<AppShell notice={<p role="status">Síťové ověření není dostupné.</p>}>obsah</AppShell>);
 
     expect(screen.getByRole("status")).toHaveTextContent("Síťové ověření není dostupné.");
+  });
+
+  it("offers sign-out in both the side rail and the phone top bar", () => {
+    render(<AppShell>obsah</AppShell>);
+
+    const buttons = screen.getAllByRole("button", { name: "Odhlásit" });
+    expect(buttons).toHaveLength(2);
+    expect(buttons.filter((button) => button.className.includes("md:hidden"))).toHaveLength(1);
+  });
+
+  it.each([
+    ["admin", "Odhlásit"],
+    ["tester", "Odhlásit"],
+    ["guest", "Ukončit hostovský přístup"],
+  ] as const)("offers sign-out to the %s role", (role, label) => {
+    hooks.account = { id: `account-${role}`, username: role, role };
+    hooks.capabilities = { canSync: role !== "guest", isGuest: role === "guest" };
+    render(<AppShell>obsah</AppShell>);
+
+    expect(screen.getAllByRole("button", { name: label })).toHaveLength(2);
+  });
+
+  it("ends the server session before forgetting the account and leaving for login", async () => {
+    hooks.logout.mockResolvedValue(undefined);
+    render(<AppShell>obsah</AppShell>);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Odhlásit" })[0] as HTMLElement);
+
+    await waitFor(() => expect(hooks.router.replace).toHaveBeenCalledWith("/login"));
+    expect(hooks.logout).toHaveBeenCalledTimes(1);
+    expect(hooks.clearAccountMarker).toHaveBeenCalledTimes(1);
+    expect(hooks.logout.mock.invocationCallOrder[0]).toBeLessThan(
+      hooks.clearAccountMarker.mock.invocationCallOrder[0] as number,
+    );
+  });
+
+  it("keeps the account and reports the failure when the server sign-out fails", async () => {
+    hooks.logout.mockRejectedValue(new Error("network"));
+    render(<AppShell>obsah</AppShell>);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Odhlásit" })[1] as HTMLElement);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Odhlášení se nepodařilo.");
+    expect(hooks.clearAccountMarker).not.toHaveBeenCalled();
+    expect(hooks.router.replace).not.toHaveBeenCalled();
   });
 });

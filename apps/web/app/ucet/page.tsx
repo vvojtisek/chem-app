@@ -7,11 +7,11 @@ import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { PageHeader } from "@/components/page-header";
 import { ProgressReset } from "@/components/progress-reset";
 import { useSync } from "@/components/sync-provider";
+import { useSignOut } from "@/components/use-sign-out";
 import {
   ApiError,
   changePassword,
   getMyProfile,
-  logout,
   updateMyDailyGoal,
   updateMyProfile,
 } from "@/lib/api/client";
@@ -25,6 +25,7 @@ export default function AccountPage() {
   const account = useAccount();
   const { canManageProfile, canViewProgress } = useCapabilities();
   const sync = useSync();
+  const endSession = useSignOut();
   const router = useRouter();
   const queryClient = useQueryClient();
   const isGuest = !canManageProfile;
@@ -67,11 +68,7 @@ export default function AccountPage() {
         if (!confirmed) return;
         await resetLearningDatabase(indexedDB, account.id);
       }
-      await logout();
-      clearAccountMarker();
-      queryClient.clear();
-      router.replace("/login");
-      router.refresh();
+      await endSession();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Odhlášení se nepodařilo.");
     } finally {
