@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/vvojtisek/chem-app/compare/v1.1.8...v1.2.0) (2026-10-09)
+
+
+### Features
+
+* show administrators when a newer release is available ([#63](https://github.com/vvojtisek/chem-app/issues/63)) ([b94e48b](https://github.com/vvojtisek/chem-app/commit/b94e48bc8be66d1b263bc56bdb0b44b6208da11d))
+
 ## [1.1.8](https://github.com/vvojtisek/chem-app/compare/v1.1.7...v1.1.8) (2026-10-09)
 
 
