@@ -99,8 +99,24 @@ administrators). The API logs `Administrator <id> requested a release update`
 and asks Watchtower to update asynchronously; the app is briefly unavailable
 while containers restart. Check the result with
 `docker compose --env-file .env.production -f docker-compose.prod.yml logs --tail=100 watchtower`
-and `ps`. Removing `WATCHTOWER_UPDATE_URL` from the `api` service disables the
-button's action; the API then answers `503 updates_disabled`.
+and `ps`. `GET /api/v1/admin/releases/latest` reports `updatesEnabled` from
+the API's Watchtower URL and token configuration. When either is absent, the
+header shows that the newer release requires manual deployment instead of
+offering the update button; the release notes link remains available. The
+update endpoint still answers `503 updates_disabled` if called directly.
+
+An environment-specific Compose overlay can intentionally set
+`WATCHTOWER_UPDATE_URL` to an empty string and put `watchtower` behind a
+disabled profile. In that setup, publishing a new application image cannot
+enable in-app updates. To enable the button, an operator must remove the empty
+URL override and the disabled Watchtower profile override, supply the
+Watchtower token, then apply the merged Compose configuration on the host so
+Watchtower starts and the API is recreated with its update URL. Preserve the
+existing database and Caddy volumes. A host that receives transferred files
+instead of a Git checkout needs the approved Compose files delivered through
+its existing deployment process; the `git pull` command below does not apply
+there. Keep the manual path for hosts that intentionally leave in-app updates
+disabled.
 
 Changes to Compose files, Caddy, PostgreSQL or `.env.production` are never
 applied by Watchtower. For those, and whenever Watchtower is unavailable, fetch

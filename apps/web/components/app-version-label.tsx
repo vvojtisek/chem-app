@@ -75,13 +75,26 @@ export function AppVersionLabel() {
   }
 
   return (
-    <span className="flex shrink-0 items-center gap-2 text-xs">
+    <span
+      className={
+        update
+          ? "order-last flex basis-full shrink-0 items-center justify-end gap-2 pb-1 text-xs md:order-none md:ml-auto md:basis-auto md:pb-0"
+          : "ml-auto flex shrink-0 items-center gap-2 text-xs"
+      }
+    >
       <span className="text-ink-3" title="Verze aplikace">
         v{APP_VERSION}
       </span>
       {update ? (
         <>
-          {updateState.status === "started" ? (
+          {!latest?.updatesEnabled ? (
+            <span
+              className="text-ink-3"
+              title="Aktualizace z aplikace nejsou na tomto serveru zapnuté; novou verzi musí správce serveru nasadit ručně."
+            >
+              Aktualizace jen ručně
+            </span>
+          ) : updateState.status === "started" ? (
             <span role="status" className="font-semibold text-accent">
               Aktualizace spuštěna, aplikace se za chvíli restartuje.
             </span>

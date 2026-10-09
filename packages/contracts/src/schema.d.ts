@@ -749,6 +749,8 @@ export interface components {
             latestVersion: string | null;
             /** Releaseurl */
             releaseUrl: string | null;
+            /** Updatesenabled */
+            updatesEnabled: boolean;
         };
         /** LoginRequest */
         LoginRequest: {
