@@ -14,6 +14,7 @@ from inorganic_api.api.attempts import router as attempts_router
 from inorganic_api.api.auth import router as auth_router
 from inorganic_api.api.health import router as health_router
 from inorganic_api.api.profiles import router as profiles_router
+from inorganic_api.api.releases import router as releases_router
 from inorganic_api.config import get_settings
 from inorganic_api.errors import AppError, ErrorEnvelope
 
@@ -131,3 +132,4 @@ app.include_router(health_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(attempts_router, prefix="/api/v1")
 app.include_router(profiles_router, prefix="/api/v1")
+app.include_router(releases_router, prefix="/api/v1")

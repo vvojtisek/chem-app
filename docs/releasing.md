@@ -47,3 +47,18 @@ The branch name does not affect the version. Keep using the prefixes in
 The workflow does not deploy. The server still updates from `main` as described
 in [deploy/aws/README.md](../deploy/aws/README.md), so merge the release pull
 request before deploying if the deployed app should show the new version.
+
+## Update notice for administrators
+
+Administrators see a "Nová verze vX.Y.Z" link next to the version in the app
+header when a newer GitHub Release exists. Learners see only the version.
+
+- The API reads `https://api.github.com/repos/<RELEASE_CHECK_REPOSITORY>/releases/latest`
+  at most once per hour (once per 10 minutes after a failure) and serves the
+  result at `GET /api/v1/admin/releases/latest`, which requires the admin role.
+- Only a `vX.Y.Z` tag whose release page is on `github.com` for that repository
+  is accepted. Any error leaves the plain version in place.
+- Set `RELEASE_CHECK_REPOSITORY` to an empty value to turn the check off; it is
+  off by default outside production.
+- The notice never changes the server. Deploying the new release remains a
+  manual step.
