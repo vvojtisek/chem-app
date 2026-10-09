@@ -44,10 +44,11 @@ The branch name does not affect the version. Keep using the prefixes in
 4. Merge it. The workflow tags the merge commit `vX.Y.Z` and publishes the
    GitHub Release with the changelog entry.
 5. The same run builds the `api` and `web` images from that commit for
-   `linux/arm64` (the production host is a `t4g` instance) and pushes them to
+   `linux/amd64` and `linux/arm64`, then pushes multi-architecture manifests to
    `ghcr.io/vvojtisek/chem-app-api` and `ghcr.io/vvojtisek/chem-app-web` as
    `X.Y.Z`. Only after both pushes succeed does it move the `stable` tag of
-   both images to `X.Y.Z` (ADR 0012).
+   both images to `X.Y.Z` (ADR 0012). Docker selects the matching architecture
+   for each production host.
 
 The workflow does not deploy. The server still updates from `main` as described
 in [deploy/aws/README.md](../deploy/aws/README.md), so merge the release pull
