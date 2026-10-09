@@ -53,14 +53,18 @@ repair an existing installation.
 Run commands from the repository root on the server:
 
 ```sh
-docker compose --env-file .env.production -f docker-compose.prod.yml build
+docker compose --env-file .env.production -f docker-compose.prod.yml pull
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d db
-docker compose --env-file .env.production -f docker-compose.prod.yml run --rm migrate
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --wait migrate
 docker compose --env-file .env.production -f docker-compose.prod.yml --profile setup run --rm seed
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 ```
 
-The migration task must complete before the API starts accepting traffic. The
+The `api`, `mail-worker`, `web` and `migrate` services run the
+`ghcr.io/vvojtisek/chem-app-api:stable` and `ghcr.io/vvojtisek/chem-app-web:stable`
+images published by the Release workflow. `migrate` applies migrations and then
+stays up; it becomes healthy only after `alembic upgrade head` succeeds, and
+the API and mail worker start only after that. The
 seed command is idempotent and does not change an existing account. After it
 succeeds, remove all `SEED_*` entries from `.env.production` and keep the
 initial passwords in the operator's password manager. Public registration and
@@ -78,15 +82,34 @@ docker compose --env-file .env.production -f docker-compose.prod.yml logs --tail
 
 ## Updating the application
 
-Before each update, create and verify an encrypted PostgreSQL backup. Then
-fetch the approved revision, rebuild the images, and start the stack. Compose
-runs the migration task before starting a new API container:
+Before each update, create and verify an encrypted PostgreSQL backup.
+
+Releases publish new `stable` images (ADR 0012). Watchtower applies them when
+asked through its HTTP API. It updates only containers labelled
+`com.centurylinklabs.watchtower.enable=true` (`api`, `mail-worker`, `web`,
+`migrate`), restarts them in Compose `depends_on` order so `migrate` runs
+before the new API, and never polls on its own. Its API listens only on
+`update-net`, which only `api` shares, and requires `WATCHTOWER_HTTP_API_TOKEN`.
+Nothing calls that API until the admin update endpoint is added; until then,
+apply releases with the manual path below.
+
+Changes to Compose files, Caddy, PostgreSQL or `.env.production` are never
+applied by Watchtower. For those, and whenever Watchtower is unavailable, fetch
+the approved revision, pull the images, and start the stack:
 
 ```sh
-docker compose --env-file .env.production -f docker-compose.prod.yml build
-docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+git pull --ff-only origin main
+docker compose --env-file .env.production -f docker-compose.prod.yml pull
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --wait
 docker compose --env-file .env.production -f docker-compose.prod.yml ps
 ```
+
+Migrations must stay compatible with the previous release (expand, then
+contract): during an update the old `web` keeps serving until it is replaced.
+To roll back, point `stable` at the previous version as described in
+[releasing.md](releasing.md#published-images), then pull and start again. If
+GHCR is unavailable, build the images on the host from the matching tag with
+`docker build` and tag them with the same names.
 
 Review release notes for migration recovery instructions. Prefer forward fixes
 for applied migrations. Do not downgrade a database unless the migration

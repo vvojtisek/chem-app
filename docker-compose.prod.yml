@@ -42,12 +42,10 @@ services:
         condition: service_healthy
 
   web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-      args:
-        API_PROXY_TARGET: http://api:8000
+    image: ghcr.io/vvojtisek/chem-app-web:stable
     restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     expose: ["3000"]
     read_only: true
     tmpfs:
@@ -71,10 +69,10 @@ services:
     networks: [public-net]
 
   api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+    image: ghcr.io/vvojtisek/chem-app-api:stable
     restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     expose: ["8000"]
     environment:
       APP_ENV: production
@@ -114,17 +112,17 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
-    networks: [public-net, internal-net]
+    networks: [public-net, internal-net, update-net]
     depends_on:
       migrate:
-        condition: service_completed_successfully
+        condition: service_healthy
 
   mail-worker:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+    image: ghcr.io/vvojtisek/chem-app-api:stable
     command: ["python", "-m", "inorganic_api.mail_worker"]
     restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     environment:
       APP_ENV: production
       DATABASE_URL: ${DATABASE_URL:?Set runtime DATABASE_URL in .env.production}
@@ -163,16 +161,32 @@ services:
     networks: [public-net, internal-net]
     depends_on:
       migrate:
-        condition: service_completed_successfully
+        condition: service_healthy
 
+  # Applies migrations, then stays up and reports healthy only after they
+  # succeed. api and mail-worker wait for it, and Watchtower updates it before
+  # them, so a new schema is in place before new application code starts.
   migrate:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    command: ["alembic", "upgrade", "head"]
-    restart: "no"
+    image: ghcr.io/vvojtisek/chem-app-api:stable
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        alembic upgrade head
+        touch /tmp/migrated
+        trap 'exit 0' TERM INT
+        sleep infinity &
+        wait
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     healthcheck:
-      disable: true
+      test: ["CMD", "test", "-f", "/tmp/migrated"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5m
     environment:
       APP_ENV: production
       DATABASE_URL: ${MIGRATION_DATABASE_URL:?Set owner MIGRATION_DATABASE_URL in .env.production}
@@ -200,6 +214,32 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  # Applies published images only when the API asks it to (ADR 0012). It has
+  # the Docker socket, which is root-equivalent on the host, so its HTTP API is
+  # reachable only from api over update-net, requires a token, and exposes
+  # only the update endpoint. It never touches caddy or db (no enable label).
+  watchtower:
+    image: nickfedor/watchtower:1.23.0@sha256:45b54f6dc15227cfb38dbb826f2881aa0f56aaf0c255cdbb38bd80e598bdca9a
+    restart: unless-stopped
+    environment:
+      WATCHTOWER_HTTP_API_ENDPOINTS: update
+      WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_HTTP_API_TOKEN:?Set WATCHTOWER_HTTP_API_TOKEN in .env.production}
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_USE_COMPOSE_DEPENDS_ON: "true"
+      WATCHTOWER_CLEANUP: "true"
+    expose: ["8080"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    pids_limit: 50
+    logging: *default-logging
+    networks: [update-net]
 
   db:
     image: postgres:17-alpine
@@ -235,9 +275,7 @@ services:
 
   seed:
     profiles: [setup]
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+    image: ghcr.io/vvojtisek/chem-app-api:stable
     command: ["python", "-m", "inorganic_api.cli", "seed-accounts"]
     restart: "no"
     healthcheck:
@@ -274,7 +312,7 @@ services:
     networks: [internal-net]
     depends_on:
       migrate:
-        condition: service_completed_successfully
+        condition: service_healthy
 
 networks:
   public-net:
@@ -287,6 +325,9 @@ networks:
           ip_range: 172.30.0.128/25
   internal-net:
     internal: true
+  # Shared only by api and watchtower. Not internal: Watchtower compares image
+  # digests with GHCR itself.
+  update-net:
 
 volumes:
   pg-data:

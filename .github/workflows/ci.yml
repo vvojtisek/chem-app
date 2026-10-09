@@ -181,5 +181,9 @@ jobs:
       - name: Validate production Compose configuration
         run: docker compose --env-file .env.production.example -f docker-compose.prod.yml config --quiet
 
+      # Production pulls these images from GHCR; the Release workflow builds
+      # them with the same arguments.
       - name: Build production images
-        run: docker compose --env-file .env.production.example -f docker-compose.prod.yml build
+        run: |
+          docker build --file apps/api/Dockerfile .
+          docker build --file apps/web/Dockerfile --build-arg API_PROXY_TARGET=http://api:8000 .
