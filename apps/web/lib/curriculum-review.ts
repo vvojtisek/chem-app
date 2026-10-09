@@ -180,7 +180,7 @@ async function reviewFields(
   };
 }
 
-function toProductInput(product: PreparationProductionProduct): ProductInput {
+export function toProductInput(product: PreparationProductionProduct): ProductInput {
   return {
     id: product.id,
     nameCs: product.nameCs,

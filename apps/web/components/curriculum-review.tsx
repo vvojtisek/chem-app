@@ -7,6 +7,7 @@ import type {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useMemo, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
+import { ProductEditor, RouteEditor } from "@/components/curriculum-editor";
 import { Equation, Formula } from "@/components/formula";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -21,10 +22,12 @@ import {
   type ReviewAction,
   type ReviewEvidence,
   type ReviewState,
+  type ProductInput,
   type ReviewTarget,
   reviewState,
   routeReviewState,
   toFileProduct,
+  toProductInput,
 } from "@/lib/curriculum-review";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -55,10 +58,20 @@ const PILL_ON = "border-good bg-good-soft text-good";
 const PILL_OFF = "border-line-strong bg-surface text-ink-2";
 const BUTTON = "min-h-11 rounded-xl border px-3 font-medium disabled:opacity-50";
 
+type Editing =
+  | { readonly kind: "product"; readonly productId: string | null }
+  | { readonly kind: "route"; readonly productId: string; readonly routeId: string | null };
+
 interface OpenForm {
   readonly productId: string;
   readonly target: ReviewTarget;
   readonly kind: "validate" | "remove";
+}
+
+function editingKey(editing: Editing): string {
+  return editing.kind === "product"
+    ? `product:${editing.productId ?? ""}`
+    : `route:${editing.productId}:${editing.routeId ?? ""}`;
 }
 
 function targetKey(productId: string, target: ReviewTarget): string {
@@ -114,6 +127,7 @@ export function CurriculumReview() {
   const [openForm, setOpenForm] = useState<OpenForm | null>(null);
   // The owner works through one document at a time, so the last evidence is reused.
   const [evidence, setEvidence] = useState<ReviewEvidence>({ evidence: "", confirmedBy: "" });
+  const [editing, setEditing] = useState<Editing | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -142,26 +156,16 @@ export function CurriculumReview() {
   const busy = saving || curriculum.isFetching;
   const canValidate = curriculum.data?.canValidate ?? false;
 
-  async function runAction(
-    product: PreparationProductionProduct,
-    target: ReviewTarget,
-    action: ReviewAction,
-  ) {
+  async function save(body: () => Promise<ProductInput>, success: string) {
     if (!curriculum.data) return;
     setSaving(true);
     setMessage("");
     setError("");
     try {
-      const body = await applyReviewAction(product, target, action);
-      await savePreparationProductionProduct(body, curriculum.data.fileSha);
+      await savePreparationProductionProduct(await body(), curriculum.data.fileSha);
       setOpenForm(null);
-      setMessage(
-        action.kind === "validate"
-          ? "Ověření bylo uloženo do pull requestu."
-          : action.kind === "remove"
-            ? "Záznam byl odebrán v pull requestu."
-            : "Ověření bylo zrušeno v pull requestu.",
-      );
+      setEditing(null);
+      setMessage(success);
     } catch (cause) {
       setError(saveError(cause));
     } finally {
@@ -170,6 +174,36 @@ export function CurriculumReview() {
       });
       setSaving(false);
     }
+  }
+
+  function runAction(
+    product: PreparationProductionProduct,
+    target: ReviewTarget,
+    action: ReviewAction,
+  ) {
+    return save(
+      () => applyReviewAction(product, target, action),
+      action.kind === "validate"
+        ? "Ověření bylo uloženo do pull requestu."
+        : action.kind === "remove"
+          ? "Záznam byl odebrán v pull requestu."
+          : "Ověření bylo zrušeno v pull requestu.",
+    );
+  }
+
+  function saveEdit(product: PreparationProductionProduct) {
+    void save(async () => toProductInput(product), "Změna byla uložena do pull requestu.");
+  }
+
+  function startEditing(next: Editing) {
+    setOpenForm(null);
+    setMessage("");
+    setError("");
+    setEditing(next);
+  }
+
+  function isEditing(next: Editing): boolean {
+    return editing !== null && editingKey(editing) === editingKey(next);
   }
 
   function submitValidation(
@@ -260,7 +294,10 @@ export function CurriculumReview() {
           <button
             className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50"
             disabled={busy}
-            onClick={() => setOpenForm({ productId: product.id, target, kind: "validate" })}
+            onClick={() => {
+              setEditing(null);
+              setOpenForm({ productId: product.id, target, kind: "validate" });
+            }}
             type="button"
           >
             Ověřit
@@ -280,7 +317,10 @@ export function CurriculumReview() {
           <button
             className={`${BUTTON} text-bad`}
             disabled={busy}
-            onClick={() => setOpenForm({ productId: product.id, target, kind: "remove" })}
+            onClick={() => {
+              setEditing(null);
+              setOpenForm({ productId: product.id, target, kind: "remove" });
+            }}
             type="button"
           >
             Odebrat
@@ -381,6 +421,26 @@ export function CurriculumReview() {
             />
           </label>
 
+          <div className="mt-4">
+            <button
+              className={BUTTON}
+              disabled={busy}
+              onClick={() => startEditing({ kind: "product", productId: null })}
+              type="button"
+            >
+              Přidat látku
+            </button>
+            {isEditing({ kind: "product", productId: null }) ? (
+              <ProductEditor
+                busy={busy}
+                onCancel={() => setEditing(null)}
+                onSave={saveEdit}
+                product={null}
+                products={products ?? []}
+              />
+            ) : null}
+          </div>
+
           <div aria-live="polite" className="mt-4 min-h-6">
             {message ? <p className="text-good">{message}</p> : null}
             {curriculum.isFetching && !saving ? <p>Načítám aktuální data…</p> : null}
@@ -412,6 +472,47 @@ export function CurriculumReview() {
                       {renderActions(product, { kind: "product" })}
                     </>
                   ) : null}
+                  {product.status === "deprecated" ? null : (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        className={BUTTON}
+                        disabled={busy}
+                        onClick={() => startEditing({ kind: "product", productId: product.id })}
+                        type="button"
+                      >
+                        Upravit látku
+                      </button>
+                      <button
+                        className={BUTTON}
+                        disabled={busy}
+                        onClick={() =>
+                          startEditing({ kind: "route", productId: product.id, routeId: null })
+                        }
+                        type="button"
+                      >
+                        Přidat rovnici
+                      </button>
+                    </div>
+                  )}
+                  {isEditing({ kind: "product", productId: product.id }) ? (
+                    <ProductEditor
+                      busy={busy}
+                      onCancel={() => setEditing(null)}
+                      onSave={saveEdit}
+                      product={product}
+                      products={products ?? []}
+                    />
+                  ) : null}
+                  {isEditing({ kind: "route", productId: product.id, routeId: null }) ? (
+                    <RouteEditor
+                      busy={busy}
+                      onCancel={() => setEditing(null)}
+                      onSave={saveEdit}
+                      product={product}
+                      products={products ?? []}
+                      routeId={null}
+                    />
+                  ) : null}
                   {routes.length > 0 ? (
                     <ul className="mt-4 grid gap-3 border-t pt-3">
                       {routes.map((route) => (
@@ -434,6 +535,37 @@ export function CurriculumReview() {
                           ) : null}
                           <ReviewDetails record={route} />
                           {renderActions(product, { kind: "route", routeId: route.id })}
+                          {product.status === "deprecated" ||
+                          route.status === "deprecated" ? null : (
+                            <button
+                              className={`${BUTTON} mt-2`}
+                              disabled={busy}
+                              onClick={() =>
+                                startEditing({
+                                  kind: "route",
+                                  productId: product.id,
+                                  routeId: route.id,
+                                })
+                              }
+                              type="button"
+                            >
+                              Upravit rovnici
+                            </button>
+                          )}
+                          {isEditing({
+                            kind: "route",
+                            productId: product.id,
+                            routeId: route.id,
+                          }) ? (
+                            <RouteEditor
+                              busy={busy}
+                              onCancel={() => setEditing(null)}
+                              onSave={saveEdit}
+                              product={product}
+                              products={products ?? []}
+                              routeId={route.id}
+                            />
+                          ) : null}
                         </li>
                       ))}
                     </ul>
