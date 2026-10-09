@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/vvojtisek/chem-app/compare/v1.2.0...v1.3.0) (2026-10-09)
+
+
+### Features
+
+* **deploy:** run published images and add Watchtower ([#67](https://github.com/vvojtisek/chem-app/issues/67)) ([fca0eea](https://github.com/vvojtisek/chem-app/commit/fca0eeace0cad803f37be0a0c0925087234ebaae))
+
 ## [1.2.0](https://github.com/vvojtisek/chem-app/compare/v1.1.8...v1.2.0) (2026-10-09)
 
 
