@@ -19,7 +19,7 @@ export const preparationProductionRouteSchema = z
     reactants: z.array(equationTermSchema).min(1),
     products: z.array(equationTermSchema).min(1),
     conditionsCs: z.string().max(120).nullable(),
-    status: z.enum(["owner-approved", "in-review", "reviewed"]),
+    status: z.enum(["owner-approved", "in-review", "reviewed", "deprecated"]),
     reviewNote: z.string().min(1).optional(),
     reviewedBy: z
       .string()
@@ -30,6 +30,8 @@ export const preparationProductionRouteSchema = z
       .string()
       .regex(/^sha256:[a-f0-9]{64}$/u)
       .optional(),
+    reviewEvidence: z.string().trim().min(1).max(300).optional(),
+    reviewEvidenceConfirmedBy: z.string().trim().min(1).max(120).optional(),
   })
   .superRefine((route, context) => {
     if (route.status === "reviewed" && (!route.reviewedBy || !route.reviewedAt)) {
@@ -49,7 +51,7 @@ export const preparationProductionProductSchema = z
     formula: z.string().min(1).max(256),
     notes: z.array(noteSchema),
     routes: z.array(preparationProductionRouteSchema),
-    status: z.enum(["owner-approved", "reviewed"]),
+    status: z.enum(["owner-approved", "reviewed", "deprecated"]),
     author: z.string().min(1),
     sources: z.array(sourceSchema).min(1),
     ownerApprovedBy: z.string().min(1),
@@ -63,6 +65,8 @@ export const preparationProductionProductSchema = z
       .string()
       .regex(/^sha256:[a-f0-9]{64}$/u)
       .optional(),
+    reviewEvidence: z.string().trim().min(1).max(300).optional(),
+    reviewEvidenceConfirmedBy: z.string().trim().min(1).max(120).optional(),
   })
   .superRefine((product, context) => {
     if (product.status === "reviewed" && (!product.reviewedBy || !product.reviewedAt)) {

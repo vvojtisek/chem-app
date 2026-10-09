@@ -1,6 +1,6 @@
 # ADR 0014: Edit curriculum datasets from the admin console
 
-- Status: Proposed
+- Status: Accepted (2026-10-09, merged in #72)
 - Date: 2026-10-09
 - Decision owners: Product owner and engineering
 - Affects: `docs/architecture.md` (curriculum data flow), `docs/chemistry-content.md`

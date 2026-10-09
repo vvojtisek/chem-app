@@ -132,4 +132,27 @@ describe("preparation and production validation", () => {
     expect(aliases(["H2O"])).toContain("invalid_equation_alias");
     expect(aliases(["Xy2"])).toContain("invalid_equation_alias");
   });
+
+  it("accepts deprecation and review evidence, and rejects blank evidence", () => {
+    expect(
+      preparationProductionProductSchema.parse({
+        ...product,
+        status: "deprecated",
+        routes: [{ ...baseRoute, status: "deprecated" }],
+      }).status,
+    ).toBe("deprecated");
+    const evidenced = preparationProductionRouteSchema.parse({
+      ...baseRoute,
+      reviewEvidence: "Skripta, s. 12",
+      reviewEvidenceConfirmedBy: "Confirming professor",
+    });
+    expect(evidenced.reviewEvidence).toBe("Skripta, s. 12");
+    expect(
+      preparationProductionRouteSchema.safeParse({ ...baseRoute, reviewEvidence: "  " }).success,
+    ).toBe(false);
+    expect(
+      preparationProductionRouteSchema.safeParse({ ...baseRoute, reviewEvidence: "x".repeat(301) })
+        .success,
+    ).toBe(false);
+  });
 });

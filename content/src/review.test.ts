@@ -89,6 +89,16 @@ describe("createReviewFingerprint", () => {
       }),
     ).toBe(createReviewFingerprint(lanthanum));
   });
+
+  it("ignores the validation evidence recorded with a review", () => {
+    expect(
+      createReviewFingerprint({
+        ...lanthanum,
+        reviewEvidence: "Skripta, s. 12",
+        reviewEvidenceConfirmedBy: "Confirming professor",
+      }),
+    ).toBe(createReviewFingerprint(lanthanum));
+  });
 });
 
 describe("findReviewFingerprintProblems", () => {
