@@ -12,6 +12,7 @@ from sqlalchemy.engine import make_url
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from inorganic_api.api.releases import release_updater_dependency
 from inorganic_api.cli import seed_accounts, set_password
 from inorganic_api.database import session_dependency
 from inorganic_api.main import app
@@ -19,6 +20,7 @@ from inorganic_api.models import AuthSession, User
 from inorganic_api.repositories import sessions
 from inorganic_api.services import auth as auth_service
 from inorganic_api.services.passwords import hash_password, verify_password
+from inorganic_api.services.release_updates import UPDATE_REQUEST_LIMIT, ReleaseUpdater
 
 API_DIR = Path(__file__).resolve().parents[1]
 ORIGIN = "http://localhost:3000"
@@ -236,6 +238,34 @@ async def test_csrf_origin_rotation_and_validation(db: Session, user: User) -> N
         )
         assert wrong_origin.status_code == 403
         assert (await client.get("/api/v1/auth/me")).status_code == 200
+
+
+@pytest.mark.anyio
+async def test_release_update_needs_admin_csrf_and_is_rate_limited(db: Session, user: User) -> None:
+    calls: list[str] = []
+    user.role = "admin"
+    db.flush()
+    app.dependency_overrides[release_updater_dependency] = lambda: ReleaseUpdater(
+        "http://watchtower:8080/v1/update",
+        "t" * 40,
+        post=lambda url, _token: calls.append(url) or 202,
+    )
+    try:
+        async with _client() as client:
+            assert (await _login(client, user)).status_code == 200
+            missing_csrf = await client.post(
+                "/api/v1/admin/releases/update", headers={"Origin": ORIGIN}
+            )
+            assert missing_csrf.status_code == 403
+            headers = {"Origin": ORIGIN, "X-CSRF-Token": client.cookies["__Host-inorganic_csrf"]}
+            statuses = [
+                (await client.post("/api/v1/admin/releases/update", headers=headers)).status_code
+                for _ in range(UPDATE_REQUEST_LIMIT + 1)
+            ]
+        assert statuses == [202] * UPDATE_REQUEST_LIMIT + [429]
+        assert len(calls) == UPDATE_REQUEST_LIMIT
+    finally:
+        app.dependency_overrides.pop(release_updater_dependency, None)
 
 
 @pytest.mark.anyio

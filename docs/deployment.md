@@ -90,8 +90,16 @@ asked through its HTTP API. It updates only containers labelled
 `migrate`), restarts them in Compose `depends_on` order so `migrate` runs
 before the new API, and never polls on its own. Its API listens only on
 `update-net`, which only `api` shares, and requires `WATCHTOWER_HTTP_API_TOKEN`.
-Nothing calls that API until the admin update endpoint is added; until then,
-apply releases with the manual path below.
+Administrators trigger it with the "Aktualizovat na vX.Y.Z" button in the
+app header, which appears only when a newer release exists and asks for
+confirmation. The button calls `POST /api/v1/admin/releases/update` (admin
+role, CSRF token, allowed Origin, at most 3 requests per 15 minutes across all
+administrators). The API logs `Administrator <id> requested a release update`
+and asks Watchtower to update asynchronously; the app is briefly unavailable
+while containers restart. Check the result with
+`docker compose --env-file .env.production -f docker-compose.prod.yml logs --tail=100 watchtower`
+and `ps`. Removing `WATCHTOWER_UPDATE_URL` from the `api` service disables the
+button's action; the API then answers `503 updates_disabled`.
 
 Changes to Compose files, Caddy, PostgreSQL or `.env.production` are never
 applied by Watchtower. For those, and whenever Watchtower is unavailable, fetch

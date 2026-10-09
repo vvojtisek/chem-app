@@ -44,9 +44,19 @@ class Settings(BaseSettings):
         default=None, pattern=r"^[A-Za-z0-9-]{1,39}/[A-Za-z0-9._-]{1,100}$"
     )
 
-    @field_validator("release_check_repository", mode="before")
+    watchtower_update_url: str | None = Field(
+        default=None, pattern=r"^https?://[A-Za-z0-9.-]{1,253}(:[0-9]{1,5})?/v1/update$"
+    )
+    watchtower_http_api_token: str | None = Field(default=None, max_length=256)
+
+    @field_validator(
+        "release_check_repository",
+        "watchtower_update_url",
+        "watchtower_http_api_token",
+        mode="before",
+    )
     @classmethod
-    def blank_release_check_repository_disables_check(cls, value: object) -> object:
+    def blank_optional_setting_is_unset(cls, value: object) -> object:
         return None if isinstance(value, str) and not value.strip() else value
 
     @model_validator(mode="after")
@@ -55,6 +65,8 @@ class Settings(BaseSettings):
             raise ValueError("PUBLIC_ORIGIN must contain only scheme and host")
         if self.session_idle_ttl > self.session_absolute_ttl:
             raise ValueError("session_idle_ttl must not exceed session_absolute_ttl")
+        if self.watchtower_update_url and not self.watchtower_http_api_token:
+            raise ValueError("WATCHTOWER_UPDATE_URL requires WATCHTOWER_HTTP_API_TOKEN")
         if self.app_env == "production":
             if not self.smtp_host or not self.smtp_from or not self.smtp_starttls:
                 raise ValueError("production requires SMTP_HOST, SMTP_FROM, and SMTP_STARTTLS")
@@ -67,6 +79,13 @@ class Settings(BaseSettings):
                 or any(marker in secret_marker for marker in ("replace", "placeholder", "change"))
             ):
                 raise ValueError("production SECRET_KEY must be at least 32 characters and unique")
+            token = self.watchtower_http_api_token
+            if (
+                self.watchtower_update_url
+                and token
+                and (len(token) < 32 or any(m in token.lower() for m in ("replace", "placeholder")))
+            ):
+                raise ValueError("production WATCHTOWER_HTTP_API_TOKEN must be a random secret")
             if self.database_url == DEFAULT_DATABASE_URL:
                 raise ValueError("production DATABASE_URL must be configured")
             if self.public_origin.scheme != "https":
