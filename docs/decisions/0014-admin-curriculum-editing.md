@@ -1,4 +1,4 @@
-# ADR 0013: Edit curriculum datasets from the admin console
+# ADR 0014: Edit curriculum datasets from the admin console
 
 - Status: Proposed
 - Date: 2026-10-09
@@ -82,7 +82,20 @@ Admin-created items live in the database and are merged with the static
 content at runtime. Rejected: two sources of truth for the same family, and
 the overlay still needs everything in B.
 
-## Decision (proposed: option A)
+## Owner input (2026-10-09)
+
+- Latency: an edit may take up to 24 hours to reach learners.
+- Editors: only the owner edits and validates.
+- Validation evidence: the owner validates against documents confirmed by a
+  named professor at the school, which the owner plans to go through one by one.
+- Visibility: learners keep seeing unvalidated items. The owner wants to mark
+  items as validated during the pass and to sort the list into validated and
+  pending.
+
+These answers fit option A: the latency is acceptable and no live editing
+is needed.
+
+## Decision (option A)
 
 1. **Scope and order.** Phase 1 covers preparation/production equations
    (products and routes). Nomenclature follows. Elements, groups and
@@ -100,6 +113,11 @@ the overlay still needs everything in B.
    wrong fingerprint. An admin without a linked SME entry can edit but not
    validate. This keeps the documented rule that a review is a personal
    attestation by a registered SME.
+   Validation requires a short evidence reference (for example the document
+   title and page), stored in a new optional `reviewEvidence` field on the
+   record. The field sits next to the other review fields and is excluded
+   from the fingerprint. The repository is public, so the reference contains
+   no personal names unless the owner explicitly decides otherwise.
 4. **Edit clears validation.** Saving a change to a reviewed record writes it
    back as `in-review` (or `owner-approved` when the owner releases it) and
    removes the review fields, matching the existing workflow.
@@ -109,13 +127,20 @@ the overlay still needs everything in B.
    exercise (0 of 117 routes and 0 of 510 names are SME-reviewed). The
    product owner can switch this per family later; the release gate
    `pnpm content:release-check` already enforces SME review where it is run.
-6. **Transport.** New admin endpoints under `/api/v1/admin/curriculum/...`,
+6. **Review queue.** The console lists records with filters and sorting by
+   state: validated (current SME review), pending (owner-approved or in
+   review) and deprecated. Progress counts per family are shown at the top.
+   Edits and validations go to one open content branch and pull request
+   (`content/curation`) that accumulates the work. The console reads record
+   state from that branch, so a validation shows as done immediately, before
+   it is merged and released. The owner merges the content PR when it suits.
+7. **Transport.** New admin endpoints under `/api/v1/admin/curriculum/...`,
    admin role, CSRF token and allowed Origin as on all mutations, bounded
    payloads, Pydantic schemas with `extra="forbid"` mirroring the content
    schemas for shape only. Each change writes a structured audit log line
    (actor ID, record ID, action, PR URL). The API validates shape and
    authorization; chemistry validity is CI's job.
-7. **GitHub access.** A GitHub App installation token (preferred) or
+8. **GitHub access.** A GitHub App installation token (preferred) or
    fine-grained token limited to `vvojtisek/chem-app` with `contents:write`
    and `pull_requests:write`, read from `.env.production`
    (`CURRICULUM_GITHUB_TOKEN`), validated at startup only when the feature is
@@ -140,9 +165,9 @@ Security properties that change (flagged per project policy):
 
 Operational:
 
-- Latency from save to learner is the PR merge, the release PR merge and an
-  update. Several edits can be batched in one content PR per session to keep
-  the release PR count down.
+- Latency from save to learner is the content PR merge, the release PR merge
+  and an update. All edits accumulate in one content PR, so the release PR
+  count stays low.
 - Concurrent edits to the same file are serialized by Git: the API rebases
   the content branch or reports a conflict to the admin.
 - Option B remains possible later; nothing in A blocks it.
@@ -151,10 +176,12 @@ Operational:
 
 1. This ADR and plan (docs only).
 2. API: GitHub adapter with timeouts, admin curriculum endpoints for
-   preparation/production (list from the deployed snapshot, create, update,
-   deprecate, validate), audit log, tests with a fake adapter.
-3. Web: admin console section "Data" with list, editor using
-   `@inorganic/content` validation, and validate/deprecate actions.
+   preparation/production (list from the curation branch, create, update,
+   deprecate, validate with evidence), audit log, tests with a fake adapter.
+   Content schema gains `reviewEvidence`.
+3. Web: admin console section "Data" with the validated/pending list and
+   counts, editor using `@inorganic/content` validation, and
+   validate/deprecate actions.
 4. Nomenclature editor.
 
 Each phase is a separate pull request. Production changes only when the owner
