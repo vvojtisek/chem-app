@@ -104,7 +104,7 @@ upgrades, backups, and secret rotation is in
 | ------------- | ------------------------------------- | ---------------------------------------------- | ---------------- |
 | `caddy`       | TLS termination, reverse proxy        | Caddy admin API on `127.0.0.1:2019`            | `unless-stopped` |
 | `web`         | Next.js server                        | `GET http://127.0.0.1:3000`                    | `unless-stopped` |
-| `api`         | FastAPI                               | `GET /api/v1/health/ready` (includes DB query) | `unless-stopped` |
+| `api`         | FastAPI                               | `GET /api/v1/health/ready` (DB reachable and schema not behind this release) | `unless-stopped` |
 | `mail-worker` | Delivers queued verification/reset mail | Heartbeat file touched after each poll (max age 120 s) | `unless-stopped` |
 | `db`          | PostgreSQL 17                         | `pg_isready` over TCP                          | `unless-stopped` |
 | `migrate`     | Runs `alembic upgrade head`, then idles | Healthy only after the migration succeeded (gates `api` and `mail-worker`) | `unless-stopped` |

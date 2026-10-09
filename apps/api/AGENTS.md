@@ -31,6 +31,7 @@ Routers must not contain queries or business workflows. Repositories must not re
 - Use one database session per request or background unit of work. Commit at an explicit application boundary.
 - Avoid hidden lazy loading in response serialization; load required relationships intentionally.
 - Use Alembic for every schema change. Never edit a migration that may have been applied.
+- Append each new revision to `MIGRATION_REVISIONS` in `services/schema_version.py`; API readiness reports unavailable while the database is behind it.
 - Migrations must address deployment order, rollback or roll-forward recovery, and compatibility with the previous application version.
 - Deterministic seed operations must be idempotent. Reviewed curriculum files remain the chemistry-content source of truth.
 
