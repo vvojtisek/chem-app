@@ -33,7 +33,7 @@
   results for the session only; its answers are not recorded as attempts and
   do not count towards progress or the daily goal.
 - Progress export/import is not implemented. Browser storage loss can remove
-  unsynchronized attempts and local custom cards.
+  unsynchronized attempts and local card edits.
 - Offline account access uses the last verified browser marker. It cannot
   authenticate a new device or confirm a password/session while disconnected.
 

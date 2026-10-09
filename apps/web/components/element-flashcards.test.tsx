@@ -84,4 +84,43 @@ describe("ElementFlashcards", () => {
     fireEvent.click(screen.getByRole("button", { name: "Otočit kartu" }));
     expect(screen.getByRole("heading", { level: 2, name: "Vodík" })).toBeInTheDocument();
   });
+
+  it("does not offer creating a custom element", () => {
+    render(<ElementFlashcards curatedElements={[hydrogen]} groups={[groupOne]} />);
+
+    expect(screen.getByRole("button", { name: "Upravit kartu" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Přidat vlastní prvek" })).toBeNull();
+  });
+
+  it("keeps previously stored custom elements out of the card list", async () => {
+    storedCards.set("custom.legacy", {
+      ...hydrogen,
+      id: "custom.legacy",
+      atomicNumber: 2,
+      symbol: "Xx",
+      nameCs: "Vlastní prvek",
+      nameLat: "Customium",
+      kind: "custom",
+      updatedAt: "2026-10-01T00:00:00.000Z",
+    });
+    storedCards.set(hydrogen.id, {
+      ...hydrogen,
+      nameCs: "Vodík — poznámka",
+      kind: "override",
+      updatedAt: "2026-10-01T00:00:00.000Z",
+    });
+    render(<ElementFlashcards curatedElements={[hydrogen]} groups={[groupOne]} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Otočit kartu" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { level: 2, name: "Vodík — poznámka" }),
+      ).toBeInTheDocument();
+    });
+    const cardPicker = screen.getByRole("combobox", { name: "Vybraná karta" });
+    expect(Array.from((cardPicker as HTMLSelectElement).options, (option) => option.value)).toEqual(
+      [hydrogen.id],
+    );
+    expect(storedCards.has("custom.legacy")).toBe(true);
+  });
 });
