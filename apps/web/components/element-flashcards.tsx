@@ -2,8 +2,8 @@
 
 import type { ElementFlashcardData, ElementGroupData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useState } from "react";
-import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
+import { ElementCategoryBadge } from "@/components/element-category-badge";
 import { GroupMnemonics } from "@/components/group-mnemonics";
 
 import {
@@ -61,23 +61,19 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
     setIsFlipped(false);
   }
 
-  async function saveCard(card: EditableCard, isCustom: boolean) {
-    if (!canEdit) return;
+  async function saveCard(card: EditableCard) {
+    if (!canEdit || !curatedElements.some((item) => item.id === card.id)) return;
     try {
       const stored: StoredElementCard = {
         ...card,
-        kind: isCustom ? "custom" : "override",
+        kind: "override",
         updatedAt: new Date().toISOString(),
       };
       await createBrowserElementCardStore(globalThis.indexedDB, account?.id).upsert(stored);
       setStoredCards(await createBrowserElementCardStore(globalThis.indexedDB, account?.id).list());
       setSelectedId(card.id);
       setEditor(null);
-      setMessage(
-        isCustom
-          ? "Vlastní karta byla uložena pouze do tohoto zařízení."
-          : "Lokální úprava byla uložena.",
-      );
+      setMessage("Lokální úprava byla uložena.");
     } catch (error: unknown) {
       setMessage(
         error instanceof Error
@@ -219,15 +215,6 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
               Obnovit výchozí
             </button>
           ) : null}
-          {canEdit ? (
-            <button
-              className="min-h-11 rounded-xl border border-good px-4 font-semibold text-good"
-              onClick={() => setEditor(createCustomCard(cards))}
-              type="button"
-            >
-              Přidat vlastní prvek
-            </button>
-          ) : null}
         </div>
         {message ? (
           <p className="mt-5 text-center text-sm text-ink-2" role="status">
@@ -237,12 +224,7 @@ function ElementCardLibrary({ curatedElements, groups }: ElementFlashcardsProps)
       </div>
 
       {editor ? (
-        <ElementEditor
-          card={editor}
-          isCustom={!curatedElements.some((item) => item.id === editor.id)}
-          onCancel={() => setEditor(null)}
-          onSave={saveCard}
-        />
+        <ElementEditor card={editor} onCancel={() => setEditor(null)} onSave={saveCard} />
       ) : null}
     </section>
   );
@@ -259,14 +241,12 @@ function Fact({ label, value }: { readonly label: string; readonly value: string
 
 function ElementEditor({
   card,
-  isCustom,
   onCancel,
   onSave,
 }: {
   readonly card: EditableCard;
-  readonly isCustom: boolean;
   readonly onCancel: () => void;
-  readonly onSave: (card: EditableCard, isCustom: boolean) => Promise<void>;
+  readonly onSave: (card: EditableCard) => Promise<void>;
 }) {
   const [draft, setDraft] = useState(card);
   const [error, setError] = useState("");
@@ -279,16 +259,13 @@ function ElementEditor({
       setError("Vyplňte český i latinský název a platnou značku.");
       return;
     }
-    await onSave(
-      {
-        ...draft,
-        nameCs: draft.nameCs.trim(),
-        nameLat: draft.nameLat.trim(),
-        symbol: draft.symbol.trim(),
-        valenceConfiguration: draft.valenceConfiguration.trim(),
-      },
-      isCustom,
-    );
+    await onSave({
+      ...draft,
+      nameCs: draft.nameCs.trim(),
+      nameLat: draft.nameLat.trim(),
+      symbol: draft.symbol.trim(),
+      valenceConfiguration: draft.valenceConfiguration.trim(),
+    });
   }
   return (
     <form
@@ -297,9 +274,7 @@ function ElementEditor({
       noValidate
       onSubmit={(event) => void submit(event)}
     >
-      <h2 className="text-2xl font-semibold text-ink">
-        {isCustom ? "Nový vlastní prvek" : "Lokální úprava karty"}
-      </h2>
+      <h2 className="text-2xl font-semibold text-ink">Lokální úprava karty</h2>
       <p className="mt-2 text-sm leading-6 text-ink-2">
         Úpravy nejsou publikací kurikula; uloží se jen do tohoto prohlížeče.
       </p>
@@ -400,8 +375,9 @@ function mergeCards(
   stored: readonly StoredElementCard[],
 ): readonly EditableCard[] {
   const cards = new Map(curated.map((card) => [card.id, card]));
+  // Custom cards created before their removal stay stored but are not shown: only reviewed elements are taught.
   for (const card of stored) {
-    if (card.kind === "custom" || cards.has(card.id)) cards.set(card.id, toEditableCard(card));
+    if (card.kind === "override" && cards.has(card.id)) cards.set(card.id, toEditableCard(card));
   }
   return [...cards.values()].sort(
     (left, right) => left.atomicNumber - right.atomicNumber || left.id.localeCompare(right.id),
@@ -410,17 +386,4 @@ function mergeCards(
 function toEditableCard(card: ElementFlashcardData | StoredElementCard): EditableCard {
   const { kind: _kind, updatedAt: _updatedAt, ...editable } = card as StoredElementCard;
   return editable;
-}
-function createCustomCard(cards: readonly EditableCard[]): EditableCard {
-  return {
-    id: `custom.${globalThis.crypto?.randomUUID?.() ?? Date.now().toString(36)}`,
-    atomicNumber: Math.min(118, Math.max(1, (cards.at(-1)?.atomicNumber ?? 0) + 1)),
-    symbol: "X",
-    nameCs: "",
-    nameLat: "",
-    period: 7,
-    group: null,
-    atomicWeight: 1,
-    valenceConfiguration: "",
-  };
 }
