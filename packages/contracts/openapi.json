@@ -451,6 +451,30 @@
         "title": "ConfirmResetRequest",
         "type": "object"
       },
+      "ContentSource": {
+        "additionalProperties": false,
+        "properties": {
+          "locator": {
+            "maxLength": 2048,
+            "minLength": 9,
+            "pattern": "^https://\\S+$",
+            "title": "Locator",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "locator"
+        ],
+        "title": "ContentSource",
+        "type": "object"
+      },
       "DailyTrend": {
         "additionalProperties": false,
         "properties": {
@@ -670,6 +694,46 @@
           "matchPolicy"
         ],
         "title": "EquationAttempt",
+        "type": "object"
+      },
+      "EquationTerm": {
+        "additionalProperties": false,
+        "properties": {
+          "acceptedAliases": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 256,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 10,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acceptedaliases"
+          },
+          "coefficient": {
+            "maximum": 999.0,
+            "minimum": 1.0,
+            "title": "Coefficient",
+            "type": "integer"
+          },
+          "formula": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Formula",
+            "type": "string"
+          }
+        },
+        "required": [
+          "coefficient",
+          "formula"
+        ],
+        "title": "EquationTerm",
         "type": "object"
       },
       "ErrorBody": {
@@ -1132,6 +1196,186 @@
         "title": "PeriodicTableAttempt",
         "type": "object"
       },
+      "PreparationProductionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "canValidate": {
+            "title": "Canvalidate",
+            "type": "boolean"
+          },
+          "contentVersion": {
+            "title": "Contentversion",
+            "type": "string"
+          },
+          "fileSha": {
+            "title": "Filesha",
+            "type": "string"
+          },
+          "pendingChanges": {
+            "title": "Pendingchanges",
+            "type": "boolean"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/StoredProduct"
+            },
+            "title": "Products",
+            "type": "array"
+          },
+          "pullRequestUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pullrequesturl"
+          }
+        },
+        "required": [
+          "contentVersion",
+          "products",
+          "fileSha",
+          "pendingChanges",
+          "pullRequestUrl",
+          "canValidate"
+        ],
+        "title": "PreparationProductionResponse",
+        "type": "object"
+      },
+      "ProductInput": {
+        "additionalProperties": false,
+        "properties": {
+          "formula": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Formula",
+            "type": "string"
+          },
+          "id": {
+            "maxLength": 200,
+            "pattern": "^preparation-production\\.product\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "nameCs": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Namecs",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/ProductNote"
+            },
+            "maxItems": 20,
+            "title": "Notes",
+            "type": "array"
+          },
+          "reviewEvidence": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidence"
+          },
+          "reviewEvidenceConfirmedBy": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidenceconfirmedby"
+          },
+          "reviewFingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^sha256:[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewfingerprint"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/RouteInput"
+            },
+            "maxItems": 50,
+            "title": "Routes",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ContentSource"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "owner-approved",
+              "reviewed",
+              "deprecated"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nameCs",
+          "formula",
+          "notes",
+          "routes",
+          "status",
+          "sources"
+        ],
+        "title": "ProductInput",
+        "type": "object"
+      },
+      "ProductNote": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "preparation",
+              "manufacture"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "text"
+        ],
+        "title": "ProductNote",
+        "type": "object"
+      },
       "ProfileResponse": {
         "additionalProperties": false,
         "properties": {
@@ -1363,6 +1607,453 @@
         "title": "RejectedAttempt",
         "type": "object"
       },
+      "RouteInput": {
+        "additionalProperties": false,
+        "properties": {
+          "conditionsCs": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditionscs"
+          },
+          "id": {
+            "maxLength": 200,
+            "pattern": "^preparation-production\\.route\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "preparation",
+              "manufacture"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/EquationTerm"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Products",
+            "type": "array"
+          },
+          "reactants": {
+            "items": {
+              "$ref": "#/components/schemas/EquationTerm"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Reactants",
+            "type": "array"
+          },
+          "reviewEvidence": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidence"
+          },
+          "reviewEvidenceConfirmedBy": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidenceconfirmedby"
+          },
+          "reviewFingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^sha256:[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewfingerprint"
+          },
+          "reviewNote": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewnote"
+          },
+          "sourceId": {
+            "maxLength": 100,
+            "pattern": "^id-[a-z0-9-]+$",
+            "title": "Sourceid",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "owner-approved",
+              "in-review",
+              "reviewed",
+              "deprecated"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sourceId",
+          "kind",
+          "reactants",
+          "products",
+          "conditionsCs",
+          "status"
+        ],
+        "title": "RouteInput",
+        "type": "object"
+      },
+      "SaveProductRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseSha": {
+            "pattern": "^[0-9a-f]{40}$",
+            "title": "Basesha",
+            "type": "string"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductInput"
+          }
+        },
+        "required": [
+          "product",
+          "baseSha"
+        ],
+        "title": "SaveProductRequest",
+        "type": "object"
+      },
+      "SaveProductResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "fileSha": {
+            "title": "Filesha",
+            "type": "string"
+          },
+          "pullRequestUrl": {
+            "title": "Pullrequesturl",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fileSha",
+          "pullRequestUrl"
+        ],
+        "title": "SaveProductResponse",
+        "type": "object"
+      },
+      "StoredProduct": {
+        "properties": {
+          "author": {
+            "title": "Author",
+            "type": "string"
+          },
+          "formula": {
+            "title": "Formula",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "nameCs": {
+            "title": "Namecs",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "ownerApprovedAt": {
+            "title": "Ownerapprovedat",
+            "type": "string"
+          },
+          "ownerApprovedBy": {
+            "title": "Ownerapprovedby",
+            "type": "string"
+          },
+          "reviewEvidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidence"
+          },
+          "reviewEvidenceConfirmedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidenceconfirmedby"
+          },
+          "reviewFingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewfingerprint"
+          },
+          "reviewedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedat"
+          },
+          "reviewedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedby"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/StoredRoute"
+            },
+            "title": "Routes",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nameCs",
+          "formula",
+          "notes",
+          "routes",
+          "status",
+          "author",
+          "sources",
+          "ownerApprovedBy",
+          "ownerApprovedAt"
+        ],
+        "title": "StoredProduct",
+        "type": "object"
+      },
+      "StoredRoute": {
+        "properties": {
+          "conditionsCs": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditionscs"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/StoredTerm"
+            },
+            "title": "Products",
+            "type": "array"
+          },
+          "reactants": {
+            "items": {
+              "$ref": "#/components/schemas/StoredTerm"
+            },
+            "title": "Reactants",
+            "type": "array"
+          },
+          "reviewEvidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidence"
+          },
+          "reviewEvidenceConfirmedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidenceconfirmedby"
+          },
+          "reviewFingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewfingerprint"
+          },
+          "reviewNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewnote"
+          },
+          "reviewedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedat"
+          },
+          "reviewedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedby"
+          },
+          "sourceId": {
+            "title": "Sourceid",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sourceId",
+          "kind",
+          "reactants",
+          "products",
+          "conditionsCs",
+          "status"
+        ],
+        "title": "StoredRoute",
+        "type": "object"
+      },
+      "StoredTerm": {
+        "properties": {
+          "acceptedAliases": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acceptedaliases"
+          },
+          "coefficient": {
+            "title": "Coefficient",
+            "type": "integer"
+          },
+          "formula": {
+            "title": "Formula",
+            "type": "string"
+          }
+        },
+        "required": [
+          "coefficient",
+          "formula"
+        ],
+        "title": "StoredTerm",
+        "type": "object"
+      },
       "UpdateDailyGoalRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1463,6 +2154,207 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/curriculum/preparation-production": {
+      "get": {
+        "operationId": "getPreparationProductionCurriculum",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreparationProductionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Show the preparation and production equations with their review state",
+        "tags": [
+          "curriculum"
+        ]
+      }
+    },
+    "/api/v1/admin/curriculum/preparation-production/products/{product_id}": {
+      "put": {
+        "operationId": "savePreparationProductionProduct",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "pattern": "^preparation-production\\.product\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "title": "Product Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveProductRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveProductResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Create or change one product and its equations on the curation pull request",
+        "tags": [
+          "curriculum"
+        ]
+      }
+    },
     "/api/v1/admin/releases/latest": {
       "get": {
         "operationId": "getLatestRelease",

@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/v1/admin/curriculum/preparation-production": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show the preparation and production equations with their review state */
+        get: operations["getPreparationProductionCurriculum"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/curriculum/preparation-production/products/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or change one product and its equations on the curation pull request */
+        put: operations["savePreparationProductionProduct"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/releases/latest": {
         parameters: {
             query?: never;
@@ -543,6 +577,13 @@ export interface components {
             /** Token */
             token: string;
         };
+        /** ContentSource */
+        ContentSource: {
+            /** Locator */
+            locator: string;
+            /** Title */
+            title: string;
+        };
         /** DailyTrend */
         DailyTrend: {
             /** Correctattempts */
@@ -652,6 +693,15 @@ export interface components {
             sequence: number;
             /** Sessionid */
             sessionId: string;
+        };
+        /** EquationTerm */
+        EquationTerm: {
+            /** Acceptedaliases */
+            acceptedAliases?: string[] | null;
+            /** Coefficient */
+            coefficient: number;
+            /** Formula */
+            formula: string;
         };
         /** ErrorBody */
         ErrorBody: {
@@ -848,6 +898,57 @@ export interface components {
              */
             round: "initial" | "retry";
         };
+        /** PreparationProductionResponse */
+        PreparationProductionResponse: {
+            /** Canvalidate */
+            canValidate: boolean;
+            /** Contentversion */
+            contentVersion: string;
+            /** Filesha */
+            fileSha: string;
+            /** Pendingchanges */
+            pendingChanges: boolean;
+            /** Products */
+            products: components["schemas"]["StoredProduct"][];
+            /** Pullrequesturl */
+            pullRequestUrl: string | null;
+        };
+        /** ProductInput */
+        ProductInput: {
+            /** Formula */
+            formula: string;
+            /** Id */
+            id: string;
+            /** Namecs */
+            nameCs: string;
+            /** Notes */
+            notes: components["schemas"]["ProductNote"][];
+            /** Reviewevidence */
+            reviewEvidence?: string | null;
+            /** Reviewevidenceconfirmedby */
+            reviewEvidenceConfirmedBy?: string | null;
+            /** Reviewfingerprint */
+            reviewFingerprint?: string | null;
+            /** Routes */
+            routes: components["schemas"]["RouteInput"][];
+            /** Sources */
+            sources: components["schemas"]["ContentSource"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "owner-approved" | "reviewed" | "deprecated";
+        };
+        /** ProductNote */
+        ProductNote: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "preparation" | "manufacture";
+            /** Text */
+            text: string;
+        };
         /** ProfileResponse */
         ProfileResponse: {
             /**
@@ -928,6 +1029,125 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** RouteInput */
+        RouteInput: {
+            /** Conditionscs */
+            conditionsCs: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "preparation" | "manufacture";
+            /** Products */
+            products: components["schemas"]["EquationTerm"][];
+            /** Reactants */
+            reactants: components["schemas"]["EquationTerm"][];
+            /** Reviewevidence */
+            reviewEvidence?: string | null;
+            /** Reviewevidenceconfirmedby */
+            reviewEvidenceConfirmedBy?: string | null;
+            /** Reviewfingerprint */
+            reviewFingerprint?: string | null;
+            /** Reviewnote */
+            reviewNote?: string | null;
+            /** Sourceid */
+            sourceId: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "owner-approved" | "in-review" | "reviewed" | "deprecated";
+        };
+        /** SaveProductRequest */
+        SaveProductRequest: {
+            /** Basesha */
+            baseSha: string;
+            product: components["schemas"]["ProductInput"];
+        };
+        /** SaveProductResponse */
+        SaveProductResponse: {
+            /** Filesha */
+            fileSha: string;
+            /** Pullrequesturl */
+            pullRequestUrl: string;
+        };
+        /** StoredProduct */
+        StoredProduct: {
+            /** Author */
+            author: string;
+            /** Formula */
+            formula: string;
+            /** Id */
+            id: string;
+            /** Namecs */
+            nameCs: string;
+            /** Notes */
+            notes: {
+                [key: string]: string;
+            }[];
+            /** Ownerapprovedat */
+            ownerApprovedAt: string;
+            /** Ownerapprovedby */
+            ownerApprovedBy: string;
+            /** Reviewevidence */
+            reviewEvidence?: string | null;
+            /** Reviewevidenceconfirmedby */
+            reviewEvidenceConfirmedBy?: string | null;
+            /** Reviewfingerprint */
+            reviewFingerprint?: string | null;
+            /** Reviewedat */
+            reviewedAt?: string | null;
+            /** Reviewedby */
+            reviewedBy?: string | null;
+            /** Routes */
+            routes: components["schemas"]["StoredRoute"][];
+            /** Sources */
+            sources: {
+                [key: string]: string;
+            }[];
+            /** Status */
+            status: string;
+        };
+        /** StoredRoute */
+        StoredRoute: {
+            /** Conditionscs */
+            conditionsCs: string | null;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Products */
+            products: components["schemas"]["StoredTerm"][];
+            /** Reactants */
+            reactants: components["schemas"]["StoredTerm"][];
+            /** Reviewevidence */
+            reviewEvidence?: string | null;
+            /** Reviewevidenceconfirmedby */
+            reviewEvidenceConfirmedBy?: string | null;
+            /** Reviewfingerprint */
+            reviewFingerprint?: string | null;
+            /** Reviewnote */
+            reviewNote?: string | null;
+            /** Reviewedat */
+            reviewedAt?: string | null;
+            /** Reviewedby */
+            reviewedBy?: string | null;
+            /** Sourceid */
+            sourceId: string;
+            /** Status */
+            status: string;
+        };
+        /** StoredTerm */
+        StoredTerm: {
+            /** Acceptedaliases */
+            acceptedAliases?: string[] | null;
+            /** Coefficient */
+            coefficient: number;
+            /** Formula */
+            formula: string;
+        };
         /** UpdateDailyGoalRequest */
         UpdateDailyGoalRequest: {
             /** Dailygoal */
@@ -960,6 +1180,153 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getPreparationProductionCurriculum: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparationProductionResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    savePreparationProductionProduct: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveProductRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SaveProductResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     getLatestRelease: {
         parameters: {
             query?: never;

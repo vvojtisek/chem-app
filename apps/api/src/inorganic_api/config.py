@@ -1,6 +1,7 @@
 from functools import lru_cache
 from ipaddress import ip_address
 from typing import Literal
+from uuid import UUID
 
 from pydantic import AliasChoices, AnyHttpUrl, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -49,10 +50,26 @@ class Settings(BaseSettings):
     )
     watchtower_http_api_token: str | None = Field(default=None, max_length=256)
 
+    curriculum_github_repository: str | None = Field(
+        default=None, pattern=r"^[A-Za-z0-9-]{1,39}/[A-Za-z0-9._-]{1,100}$"
+    )
+    curriculum_github_token: str | None = Field(default=None, max_length=512)
+    curriculum_sme_reviewers: str | None = Field(
+        default=None,
+        max_length=1024,
+        pattern=(
+            r"^[0-9a-fA-F-]{36}=reviewer\.[a-z0-9]+(?:-[a-z0-9]+)*"
+            r"(?:,[0-9a-fA-F-]{36}=reviewer\.[a-z0-9]+(?:-[a-z0-9]+)*)*$"
+        ),
+    )
+
     @field_validator(
         "release_check_repository",
         "watchtower_update_url",
         "watchtower_http_api_token",
+        "curriculum_github_repository",
+        "curriculum_github_token",
+        "curriculum_sme_reviewers",
         mode="before",
     )
     @classmethod
@@ -67,6 +84,16 @@ class Settings(BaseSettings):
             raise ValueError("session_idle_ttl must not exceed session_absolute_ttl")
         if self.watchtower_update_url and not self.watchtower_http_api_token:
             raise ValueError("WATCHTOWER_UPDATE_URL requires WATCHTOWER_HTTP_API_TOKEN")
+        if bool(self.curriculum_github_repository) != bool(self.curriculum_github_token):
+            raise ValueError(
+                "CURRICULUM_GITHUB_REPOSITORY and CURRICULUM_GITHUB_TOKEN must be set together"
+            )
+        try:
+            _ = self.curriculum_sme_reviewer_ids
+        except ValueError as exc:
+            raise ValueError(
+                "CURRICULUM_SME_REVIEWERS must map account UUIDs to reviewers"
+            ) from exc
         if self.app_env == "production":
             if not self.smtp_host or not self.smtp_from or not self.smtp_starttls:
                 raise ValueError("production requires SMTP_HOST, SMTP_FROM, and SMTP_STARTTLS")
@@ -86,6 +113,9 @@ class Settings(BaseSettings):
                 and (len(token) < 32 or any(m in token.lower() for m in ("replace", "placeholder")))
             ):
                 raise ValueError("production WATCHTOWER_HTTP_API_TOKEN must be a random secret")
+            github_token = self.curriculum_github_token
+            if github_token and any(m in github_token.lower() for m in ("replace", "placeholder")):
+                raise ValueError("production CURRICULUM_GITHUB_TOKEN must be a real token")
             if self.database_url == DEFAULT_DATABASE_URL:
                 raise ValueError("production DATABASE_URL must be configured")
             if self.public_origin.scheme != "https":
@@ -113,6 +143,14 @@ class Settings(BaseSettings):
             }:
                 raise ValueError("production CORS_ORIGINS must equal PUBLIC_ORIGIN")
         return self
+
+    @property
+    def curriculum_sme_reviewer_ids(self) -> dict[UUID, str]:
+        """Map administrator account IDs to their registered chemistry-SME reviewer IDs."""
+        if not self.curriculum_sme_reviewers:
+            return {}
+        pairs = (entry.split("=", 1) for entry in self.curriculum_sme_reviewers.split(","))
+        return {UUID(account_id): reviewer_id for account_id, reviewer_id in pairs}
 
 
 @lru_cache
