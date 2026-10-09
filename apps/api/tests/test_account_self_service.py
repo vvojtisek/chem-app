@@ -17,12 +17,11 @@ from inorganic_api.errors import AppError
 from inorganic_api.main import app
 from inorganic_api.models import (
     AttemptEvent,
-    EmailVerificationToken,
-    LoginThrottle,
     MailOutbox,
     PasswordResetToken,
     User,
 )
+from inorganic_api.repositories import mail_outbox
 from inorganic_api.services import accounts, auth, maintenance
 from inorganic_api.services.email import decrypt_token
 from inorganic_api.services.passwords import hash_password
@@ -103,17 +102,15 @@ def csrf(http: AsyncClient) -> dict[str, str]:
     return {"Origin": ORIGIN, "X-CSRF-Token": http.cookies["__Host-inorganic_csrf"]}
 
 
-def queued_token(db: Session, recipient: str, purpose: str) -> str:
-    rows = (
-        db.query(MailOutbox)
-        .filter_by(recipient=recipient)
-        .order_by(MailOutbox.created_at, MailOutbox.id)
-        .all()
-    )
-    row = next(
-        item for item in rows if (item.verification_token_id is not None) == (purpose == "verify")
-    )
-    return decrypt_token(get_settings(), row.encrypted_token)
+def queued_invite(db: Session, recipient: str) -> tuple[PasswordResetToken, str]:
+    row = db.query(MailOutbox).filter_by(recipient=recipient).one()
+    token = db.get(PasswordResetToken, row.reset_token_id)
+    assert token is not None
+    return token, decrypt_token(get_settings(), row.encrypted_token)
+
+
+async def create_account(http: AsyncClient, **body: object):
+    return await http.post("/api/v1/admin/users", headers=csrf(http), json=body)
 
 
 def test_abuse_request_quota(db: Session) -> None:
@@ -165,16 +162,6 @@ def test_purge_preserves_inactive_accounts_with_real_passwords_and_attempts(db: 
     cleared_email = account(db)
     disabled_email = account(db)
     disabled_email.email = f"disabled-{uuid4().hex}@example.test"
-    pending = User(
-        id=uuid4(),
-        username=f"user_{uuid4().hex}",
-        email=f"pending-{uuid4().hex}@example.test",
-        password_hash="!pending-email-verification",
-        role="user",
-        is_active=False,
-        created_at=old,
-    )
-    db.add(pending)
     for user in (seeded, cleared_email, disabled_email):
         user.is_active = False
         user.created_at = old
@@ -194,85 +181,67 @@ def test_purge_preserves_inactive_accounts_with_real_passwords_and_attempts(db: 
     db.flush()
 
     counts = maintenance.purge_expired_state(db, get_settings())
-    assert counts["unverified_accounts"] == 1
-    assert db.get(User, pending.id) is None
+    assert "unverified_accounts" not in counts
     for user in (seeded, cleared_email, disabled_email):
         assert db.get(User, user.id) is not None
         assert db.query(AttemptEvent).filter_by(user_id=user.id).count() == 1
-    accounts.register(db, get_settings(), disabled_email.email, "192.0.2.31")
-    assert db.get(User, disabled_email.id) is not None
-    assert db.query(AttemptEvent).filter_by(user_id=disabled_email.id).count() == 1
 
 
 @pytest.mark.anyio
-async def test_registration_verification_password_change_and_reset(
-    db: Session, monkeypatch: pytest.MonkeyPatch
-) -> None:
+async def test_self_registration_endpoints_are_gone(db: Session) -> None:
+    async with client() as http:
+        for path in (
+            "/api/v1/auth/register",
+            "/api/v1/auth/verify-email",
+            "/api/v1/auth/verification/request",
+        ):
+            response = await http.post(
+                path, headers={"Origin": ORIGIN}, json={"email": "someone@example.test"}
+            )
+            assert response.status_code == 404, path
+
+
+@pytest.mark.anyio
+async def test_admin_invitation_password_change_and_reset(db: Session) -> None:
     db.autoflush = False
-    # This flow registers the same address twice from one test client IP.
-    monkeypatch.setattr(accounts, "REGISTER_IP_LIMIT", 10)
+    admin = account(db, "admin")
     address = f"learner-{uuid4().hex[:10]}@example.test"
     async with client() as http:
-        denied = await http.post("/api/v1/auth/register", json={"email": address})
-        assert denied.status_code == 403
-        response = await http.post(
-            "/api/v1/auth/register",
-            headers={"Origin": ORIGIN},
-            json={"email": address.upper()},
+        await login(http, admin)
+        created = await create_account(
+            http, email=address.upper(), displayName="Nový žák", role="user"
         )
-        assert response.status_code == 202, response.text
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
-        first_verify_token = queued_token(db, address, "verify")
-        unverified = await http.post(
+        assert created.status_code == 201, created.text
+        body = created.json()
+        assert body["email"] == address
+        assert body["displayName"] == "Nový žák"
+        assert body["role"] == "user"
+        assert body["isActive"] is True
+        assert body["emailVerified"] is True
+        assert body["lastLoginAt"] is None
+        invite, invite_token = queued_invite(db, address)
+        assert invite.purpose == "invite"
+        assert invite.token_hash != invite_token
+        assert invite.expires_at - datetime.now(UTC) > timedelta(days=6)
+        new_account = db.query(User).filter_by(email=address).one()
+        assert new_account.password_hash.startswith("$argon2")
+    async with client() as http:
+        before_invite = await http.post(
             "/api/v1/auth/login",
             headers={"Origin": ORIGIN},
             json={"email": address, "password": PASSWORD},
         )
-        assert unverified.status_code == 401
-        resent = await http.post(
-            "/api/v1/auth/verification/request",
+        assert before_invite.status_code == 401
+        accepted = await http.post(
+            "/api/v1/auth/password-reset/confirm",
             headers={"Origin": ORIGIN},
-            json={"email": address},
+            json={"token": invite_token, "newPassword": PASSWORD},
         )
-        assert resent.status_code == 202
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
-        duplicate = await http.post(
-            "/api/v1/auth/register",
-            headers={"Origin": ORIGIN},
-            json={"email": address},
-        )
-        assert duplicate.status_code == 202
-        assert db.query(MailOutbox).filter_by(recipient=address).count() == 1
-        replaced = await http.post(
-            "/api/v1/auth/verify-email",
-            headers={"Origin": ORIGIN},
-            json={"token": first_verify_token, "newPassword": PASSWORD},
-        )
-        assert replaced.status_code == 400
-        verification = (
-            db.query(EmailVerificationToken)
-            .filter_by(user_id=db.query(User).filter_by(email=address).one().id)
-            .order_by(EmailVerificationToken.expires_at.desc())
-            .first()
-        )
-        assert verification is not None
-        current_verify_token = decrypt_token(
-            get_settings(),
-            db.query(MailOutbox)
-            .filter_by(verification_token_id=verification.id)
-            .one()
-            .encrypted_token,
-        )
-        verified = await http.post(
-            "/api/v1/auth/verify-email",
-            headers={"Origin": ORIGIN},
-            json={"token": current_verify_token, "newPassword": PASSWORD},
-        )
-        assert verified.status_code == 204, verified.text
+        assert accepted.status_code == 204, accepted.text
         replay = await http.post(
-            "/api/v1/auth/verify-email",
+            "/api/v1/auth/password-reset/confirm",
             headers={"Origin": ORIGIN},
-            json={"token": current_verify_token, "newPassword": PASSWORD},
+            json={"token": invite_token, "newPassword": PASSWORD},
         )
         assert replay.status_code == 400
         signed_in = await http.post(
@@ -359,16 +328,14 @@ async def test_email_configuration_failure_and_expired_reset_are_safe(
         raise AppError(503, "email_unavailable", "Email delivery is temporarily unavailable.")
 
     address = f"outage-{uuid4().hex[:8]}@example.test"
+    admin = account(db, "admin")
     async with client() as http:
+        await login(http, admin)
         with monkeypatch.context() as patch:
             patch.setattr(
                 "inorganic_api.services.accounts.email.require_delivery_config", unavailable
             )
-            registration = await http.post(
-                "/api/v1/auth/register",
-                headers={"Origin": ORIGIN},
-                json={"email": address},
-            )
+            creation = await create_account(http, email=address, role="user")
             recovery = await http.post(
                 "/api/v1/auth/password-reset/request",
                 headers={"Origin": ORIGIN},
@@ -379,9 +346,7 @@ async def test_email_configuration_failure_and_expired_reset_are_safe(
                 headers={"Origin": ORIGIN},
                 json={"email": f"other-{uuid4().hex[:8]}@example.test"},
             )
-        assert (
-            registration.status_code == recovery.status_code == unknown_recovery.status_code == 503
-        )
+        assert creation.status_code == recovery.status_code == unknown_recovery.status_code == 503
         assert db.query(User).filter_by(email=address).count() == 0
         learner = account(db)
         learner.email = address
@@ -412,24 +377,87 @@ async def test_email_configuration_failure_and_expired_reset_are_safe(
         assert expired.status_code == 400
 
 
-def test_registration_allows_one_request_per_ip_per_hour(db: Session) -> None:
-    settings = get_settings()
-    ip = f"test-{uuid4()}"
-    accounts.register(db, settings, f"first-{uuid4().hex[:8]}@example.test", ip)
-    with pytest.raises(AppError) as limited:
-        accounts.register(db, settings, f"second-{uuid4().hex[:8]}@example.test", ip)
-    assert limited.value.status_code == 429
-    accounts.register(db, settings, f"other-{uuid4().hex[:8]}@example.test", f"test-{uuid4()}")
+@pytest.mark.anyio
+async def test_admin_account_creation_requires_admin_csrf_and_valid_input(db: Session) -> None:
+    admin = account(db, "admin")
+    learner = account(db)
+    existing = account(db)
+    existing.email = f"taken-{uuid4().hex[:8]}@example.test"
+    db.flush()
+    address = f"new-{uuid4().hex[:8]}@example.test"
+    async with client() as http:
+        anonymous = await http.post(
+            "/api/v1/admin/users",
+            headers={"Origin": ORIGIN},
+            json={"email": address, "role": "user"},
+        )
+        assert anonymous.status_code == 401
+        await login(http, learner)
+        assert (await create_account(http, email=address, role="user")).status_code == 403
+        await login(http, admin)
+        missing_csrf = await http.post(
+            "/api/v1/admin/users",
+            headers={"Origin": ORIGIN},
+            json={"email": address, "role": "user"},
+        )
+        assert missing_csrf.status_code == 403
+        wrong_origin = await http.post(
+            "/api/v1/admin/users",
+            headers={**csrf(http), "Origin": "https://attacker.example"},
+            json={"email": address, "role": "user"},
+        )
+        assert wrong_origin.status_code == 403
+        for invalid in (
+            {"email": address, "role": "guest"},
+            {"email": address},
+            {"email": "not-an-address", "role": "user"},
+            {"email": address, "role": "user", "password": PASSWORD},
+            {"email": address, "role": "user", "isActive": False},
+        ):
+            assert (await create_account(http, **invalid)).status_code == 422, invalid
+        duplicate = await create_account(http, email=existing.email.upper(), role="admin")
+        assert duplicate.status_code == 409
+        assert duplicate.json()["error"]["code"] == "email_taken"
+        assert db.query(MailOutbox).filter_by(recipient=existing.email).count() == 0
+        assert db.query(User).filter_by(email=address).count() == 0
+        promoted = await create_account(http, email=address, role="admin")
+        assert promoted.status_code == 201, promoted.text
+        assert promoted.json()["role"] == "admin"
+        assert promoted.json()["displayName"] == address.split("@", 1)[0]
 
-    key = auth._throttle_hash(settings.secret_key, "register-ip", ip)
-    throttle = db.query(LoginThrottle).filter_by(key_hash=key).one()
-    throttle.window_start -= accounts.REGISTER_IP_WINDOW - timedelta(minutes=1)
-    db.flush()
-    with pytest.raises(AppError):
-        accounts.register(db, settings, f"third-{uuid4().hex[:8]}@example.test", ip)
-    throttle.window_start -= timedelta(minutes=1)
-    db.flush()
-    accounts.register(db, settings, f"fourth-{uuid4().hex[:8]}@example.test", ip)
+
+def test_admin_account_creation_is_rate_limited_per_admin(
+    db: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(accounts, "ADMIN_CREATE_LIMIT", 2)
+    settings = get_settings()
+    first_admin = account(db, "admin")
+    second_admin = account(db, "admin")
+    for _ in range(2):
+        accounts.admin_create_account(
+            db, settings, first_admin, f"a-{uuid4().hex[:8]}@example.test", None, "user"
+        )
+    with pytest.raises(AppError) as limited:
+        accounts.admin_create_account(
+            db, settings, first_admin, f"b-{uuid4().hex[:8]}@example.test", None, "user"
+        )
+    assert limited.value.status_code == 429
+    accounts.admin_create_account(
+        db, settings, second_admin, f"c-{uuid4().hex[:8]}@example.test", None, "tester"
+    )
+
+
+def test_invitation_mail_is_claimed_with_invite_purpose(db: Session) -> None:
+    admin = account(db, "admin")
+    address = f"claim-{uuid4().hex[:8]}@example.test"
+    accounts.admin_create_account(db, get_settings(), admin, address, None, "user")
+    claimed = None
+    while (message := mail_outbox.claim_next(db)) is not None:
+        if message.recipient == address:
+            claimed = message
+            break
+    assert claimed is not None
+    assert claimed.purpose == "invite"
 
 
 @pytest.mark.anyio

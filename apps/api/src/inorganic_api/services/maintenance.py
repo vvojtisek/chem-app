@@ -14,7 +14,6 @@ def purge_expired_state(
         "sessions": sessions.purge_expired(db, now),
         "throttles": maintenance.delete_stale_throttles(db, now),
         "tokens": maintenance.delete_obsolete_tokens(db, now),
-        "unverified_accounts": maintenance.delete_expired_unverified_users(db, now),
         "guest_accounts": maintenance.delete_inactive_guest_accounts(
             db, now, guest_max_age=timedelta(seconds=settings.session_absolute_ttl)
         ),

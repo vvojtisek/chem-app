@@ -8,6 +8,7 @@ from pydantic.alias_generators import to_camel
 from sqlalchemy.orm import Session
 
 from inorganic_api.api.dependencies import get_current_user, require_csrf, require_role
+from inorganic_api.config import get_settings
 from inorganic_api.database import session_dependency
 from inorganic_api.errors import ErrorEnvelope
 from inorganic_api.models import User
@@ -67,6 +68,16 @@ class AdminUpdateProfileRequest(UpdateProfileRequest):
         if value is None:
             raise ValueError("field cannot be null")
         return value
+
+
+class AdminCreateAccountRequest(UpdateProfileRequest):
+    email: str = Field(max_length=254)
+    role: Literal["admin", "user", "tester"]
+
+    @field_validator("email")
+    @classmethod
+    def normalize_address(cls, value: str) -> str:
+        return accounts.normalize_email(value)
 
 
 class ChangePasswordRequest(ApiModel):
@@ -172,6 +183,25 @@ def change_my_password(
     db: Annotated[Session, Depends(session_dependency)],
 ) -> None:
     accounts.change_password(db, current.user, body.current_password, body.new_password)
+
+
+@router.post(
+    "/admin/users",
+    operation_id="adminCreateAccount",
+    status_code=201,
+    response_model=ProfileResponse,
+    responses={**WRITE_ERRORS, 429: {"model": ErrorEnvelope}, 503: {"model": ErrorEnvelope}},
+)
+def admin_create_account(
+    body: AdminCreateAccountRequest,
+    current: Annotated[AuthenticatedSession, Depends(require_csrf)],
+    db: Annotated[Session, Depends(session_dependency)],
+) -> ProfileResponse:
+    return _profile(
+        accounts.admin_create_account(
+            db, get_settings(), current.user, body.email, body.display_name, body.role
+        )
+    )
 
 
 @router.patch(
