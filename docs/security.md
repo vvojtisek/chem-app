@@ -44,23 +44,27 @@ Apply least privilege, explicit validation, deny-by-default authorization, short
 
 ## Authentication
 
-ADRs 0005 and 0006 select local email/password accounts, verified public
-registration, self-service recovery, and a restricted guest role. Use Argon2id
+ADRs 0005, 0006 and 0013 select local email/password accounts created by
+administrators, self-service recovery, and a restricted guest role. There is no
+public registration. Use Argon2id
 with current library defaults, reject passwords above 1024 bytes, and require
 at least 12 characters. Login must verify a dummy hash for unknown users,
 return the same error for unknown accounts and wrong passwords, and apply
 database-backed throttles per IP, per account and IP pair, and per account. The
 per-account limit must stay above the per-IP limit so that one client cannot lock
-an account out for its owner. Registration, verification, and recovery must also
-be rate limited.
+an account out for its owner. Recovery must also be rate limited, and account
+creation is limited per administrator.
 
-Email verification and password recovery tokens are cryptographically random,
-single use, short lived, and stored as SHA-256 hashes in the token tables.
-The temporary mail outbox holds encrypted token values until delivery. All
-registration and recovery responses must hide account existence, including
-SMTP timing. New users select a password only after email verification; delete
-unverified accounts after seven days. Never log token values or complete action
-links. Production email delivery requires configured TLS SMTP settings and a
+Invitation and password recovery tokens are cryptographically random, single
+use, expiring (seven days for invitations, 30 minutes for recovery), and stored
+as SHA-256 hashes in the token tables. The temporary mail outbox holds
+encrypted token values until delivery. Recovery responses must hide account
+existence, including SMTP timing. Admin account creation reports an address
+already in use with `409`; this reveals account existence to administrators
+only. An administrator never chooses or sees a new account's password: until
+the invitation is used, the account's hash is of a discarded random secret.
+Never log token values, complete action links, or email addresses in audit
+lines. Production email delivery requires configured TLS SMTP settings and a
 running mail worker; secrets belong in deployment environment or secret management.
 
 Session identifiers are random opaque values; store only SHA-256 token hashes

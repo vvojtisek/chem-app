@@ -69,12 +69,15 @@ Never use `200` for a failed operation.
 
 ## Authentication and authorization
 
-ADRs 0005 and 0006 define local email/password accounts and opaque server
-sessions. `POST /api/v1/auth/register` accepts an email and returns a generic
-`202`; the account becomes active only when `POST /api/v1/auth/verify-email`
-receives the single-use token and a new password. `POST
-/api/v1/auth/verification/request` resends that link without revealing account
-state. `POST /api/v1/auth/login` accepts email or a legacy username with a
+ADRs 0005, 0006 and 0013 define local email/password accounts and opaque
+server sessions. There is no public registration endpoint. `POST
+/api/v1/admin/users` (admin role, CSRF and Origin checks) creates an account
+from `email`, optional `displayName`, and `role` (`user`, `admin`, or
+`tester`), returns `201` with the profile, and queues an invitation link that
+is consumed by `POST /api/v1/auth/password-reset/confirm`. It returns `409
+email_taken` for an address in use, `429` after 30 creations per administrator
+in 15 minutes, and `503` without creating anything when mail delivery is not
+configured. `POST /api/v1/auth/login` accepts email or a legacy username with a
 password and sets the session and CSRF cookies; its JSON response contains the
 current account only. `POST /api/v1/auth/guest` creates a read-only guest
 session. `GET /api/v1/auth/me` returns the authenticated account or `401`.
@@ -83,13 +86,13 @@ and returns `204`. Invalid credentials use one generic `401` response;
 throttled login returns `429` with `Retry-After`.
 
 `POST /api/v1/auth/password-reset/request` queues a short-lived recovery link
-with a generic `202` response. Registration and verification requests also
-queue links. The separate mail worker retries SMTP delivery; `202` confirms
+with a generic `202` response. The separate mail worker retries SMTP delivery; `202` confirms
 queueing, while missing mail configuration returns `503` regardless of account
 state. `POST /api/v1/auth/password-reset/confirm`
 consumes that link and revokes the account's sessions. Authenticated users
 change their password through `POST /api/v1/me/password` and edit their own
 profile through `/api/v1/me/profile`. Admin account operations are under
+`/api/v1/admin/users` (list and create), and
 `/api/v1/admin/users/{user_id}/profile` and `/password`. `GET
 /api/v1/me/progression` returns the account's accepted attempt totals, rank, and
 30-day daily trend. Guests cannot mutate progress or profile data; authorization

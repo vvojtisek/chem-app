@@ -131,7 +131,7 @@ The element-card browser flow must prove that a Czech card can be opened, flippe
 ## Automated accessibility
 
 `apps/web/e2e/accessibility.spec.ts` uses axe-core Playwright with WCAG 2.0,
-2.1, and 2.2 A/AA rule tags. It scans login and registration, the learner home,
+2.1, and 2.2 A/AA rule tags. It scans login and password recovery, the learner home,
 periodic-table selection and active practice, nomenclature, equations,
 flashcards, progress, and profile in desktop and mobile Chromium. Passing the
 automated scan does not replace manual keyboard-only, focus visibility,
