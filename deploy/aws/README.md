@@ -135,5 +135,13 @@ chem-cz-refresh.timer` and `journalctl -u chem-cz-refresh.service`. If the
 RIPE feed is unavailable during a refresh, the previous set remains active.
 
 An instance stop/start retains the Elastic IP association, EBS root volume,
-and DNS record. The stack creates no external database backup, monitoring, or
-SMTP relay; configure those before relying on the service for production use.
+and DNS record. The stack creates an Amazon Data Lifecycle Manager policy that
+snapshots the root volume daily at 02:30 UTC and keeps 14 snapshots. The
+policy selects instances by the `chem-app-backup` tag. Snapshots are
+crash-consistent and live in the same account and region, so they do not
+replace a tested logical dump copied off the host (see the runbook). The stack
+creates no monitoring or SMTP relay; configure those before relying on the
+service for production use. Updating an existing stack adds the policy and a
+service role, so deploy with `CAPABILITY_IAM`. To restore, create a volume from
+a snapshot and attach it to a replacement instance; restoration has not been
+rehearsed.

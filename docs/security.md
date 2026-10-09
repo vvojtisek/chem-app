@@ -49,8 +49,10 @@ registration, self-service recovery, and a restricted guest role. Use Argon2id
 with current library defaults, reject passwords above 1024 bytes, and require
 at least 12 characters. Login must verify a dummy hash for unknown users,
 return the same error for unknown accounts and wrong passwords, and apply
-database-backed per-account and per-IP throttles. Registration, verification,
-and recovery must also be rate limited.
+database-backed throttles per IP, per account and IP pair, and per account. The
+per-account limit must stay above the per-IP limit so that one client cannot lock
+an account out for its owner. Registration, verification, and recovery must also
+be rate limited.
 
 Email verification and password recovery tokens are cryptographically random,
 single use, short lived, and stored as SHA-256 hashes in the token tables.

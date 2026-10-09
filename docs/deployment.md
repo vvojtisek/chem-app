@@ -97,6 +97,11 @@ events remain archived and the downgrade would remove the generation barrier.
 
 ## Backups and recovery
 
+The AWS stack in `deploy/aws/stack.yaml` also takes daily crash-consistent EBS
+snapshots (14 retained). They are a second layer, not a substitute for the
+logical dump below, and a restore from them must be rehearsed before it is
+relied on.
+
 Create an encrypted custom-format dump and copy it to storage outside the
 server. Restrict access to the backup and test restoration to a separate,
 isolated PostgreSQL instance before relying on it:

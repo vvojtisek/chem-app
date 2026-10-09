@@ -137,6 +137,40 @@ Resources:
                     route53:ChangeResourceRecordSetsNormalizedRecordNames: _acme-challenge.vscht.vvojtisek.eu
                     route53:ChangeResourceRecordSetsActions: [CREATE, UPSERT, DELETE]
 
+  SnapshotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: dlm.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSDataLifecycleManagerServiceRole
+
+  SnapshotPolicy:
+    Type: AWS::DLM::LifecyclePolicy
+    Properties:
+      Description: chem-app host daily EBS snapshots 14 day retention
+      State: ENABLED
+      ExecutionRoleArn: !GetAtt SnapshotRole.Arn
+      PolicyDetails:
+        PolicyType: EBS_SNAPSHOT_MANAGEMENT
+        ResourceTypes: [INSTANCE]
+        TargetTags:
+          - Key: chem-app-backup
+            Value: !Ref AWS::StackName
+        Schedules:
+          - Name: daily
+            CopyTags: true
+            CreateRule:
+              Interval: 24
+              IntervalUnit: HOURS
+              Times: ['02:30']
+            RetainRule:
+              Count: 14
+
   HostProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -195,6 +229,8 @@ Resources:
         - Key: Name
           Value: chem-app-vscht
         - Key: chem-app-stack
+          Value: !Ref AWS::StackName
+        - Key: chem-app-backup
           Value: !Ref AWS::StackName
         - !If
           - CreateNetwork
