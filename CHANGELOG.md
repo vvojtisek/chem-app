@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/vvojtisek/chem-app/compare/v1.6.0...v1.7.0) (2026-10-09)
+
+
+### Features
+
+* **web:** review and validate equations in the admin console ([#81](https://github.com/vvojtisek/chem-app/issues/81)) ([f301973](https://github.com/vvojtisek/chem-app/commit/f30197327356a0c21f8b3ef225de09177b1596d0))
+
+
+### Bug Fixes
+
+* **web:** remove creating custom elements from element cards ([#80](https://github.com/vvojtisek/chem-app/issues/80)) ([739c769](https://github.com/vvojtisek/chem-app/commit/739c7699c1f17061673c143d16e37ed56b2fffe8))
+
 ## [1.6.0](https://github.com/vvojtisek/chem-app/compare/v1.5.1...v1.6.0) (2026-10-09)
 
 
