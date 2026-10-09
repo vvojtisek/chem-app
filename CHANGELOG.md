@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/vvojtisek/chem-app/compare/v1.8.0...v1.8.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **releases:** respect disabled in-app updates ([#85](https://github.com/vvojtisek/chem-app/issues/85)) ([339b505](https://github.com/vvojtisek/chem-app/commit/339b505772530d0aa3136d86b8707dceb5a2e3f4))
+* show newly published releases in the update button ([#86](https://github.com/vvojtisek/chem-app/issues/86)) ([72c5873](https://github.com/vvojtisek/chem-app/commit/72c587325da45f2e9bca75cb0aac6ff4e0a732d4))
+
 ## [1.8.0](https://github.com/vvojtisek/chem-app/compare/v1.7.0...v1.8.0) (2026-10-09)
 
 
