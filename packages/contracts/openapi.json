@@ -713,6 +713,39 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "LatestReleaseResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "latestVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latestversion"
+          },
+          "releaseUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Releaseurl"
+          }
+        },
+        "required": [
+          "latestVersion",
+          "releaseUrl"
+        ],
+        "title": "LatestReleaseResponse",
+        "type": "object"
+      },
       "LoginRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1415,6 +1448,62 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/releases/latest": {
+      "get": {
+        "operationId": "getLatestRelease",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LatestReleaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Show the latest published release to administrators",
+        "tags": [
+          "system"
+        ]
+      }
+    },
     "/api/v1/admin/stats": {
       "get": {
         "operationId": "getAdminStats",

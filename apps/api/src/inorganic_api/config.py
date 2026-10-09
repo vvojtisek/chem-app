@@ -2,7 +2,7 @@ from functools import lru_cache
 from ipaddress import ip_address
 from typing import Literal
 
-from pydantic import AliasChoices, AnyHttpUrl, Field, model_validator
+from pydantic import AliasChoices, AnyHttpUrl, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_DATABASE_URL = (
@@ -40,6 +40,14 @@ class Settings(BaseSettings):
     smtp_password: str | None = None
     smtp_starttls: bool = False
     smtp_timeout: int = Field(default=10, ge=1, le=30)
+    release_check_repository: str | None = Field(
+        default=None, pattern=r"^[A-Za-z0-9-]{1,39}/[A-Za-z0-9._-]{1,100}$"
+    )
+
+    @field_validator("release_check_repository", mode="before")
+    @classmethod
+    def blank_release_check_repository_disables_check(cls, value: object) -> object:
+        return None if isinstance(value, str) and not value.strip() else value
 
     @model_validator(mode="after")
     def validate_production(self) -> "Settings":

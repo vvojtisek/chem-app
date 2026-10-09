@@ -95,6 +95,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
       SMTP_TIMEOUT: ${SMTP_TIMEOUT:-10}
+      RELEASE_CHECK_REPOSITORY: ${RELEASE_CHECK_REPOSITORY-vvojtisek/chem-app}
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
