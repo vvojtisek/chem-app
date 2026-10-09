@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/vvojtisek/chem-app/compare/v1.3.0...v1.4.0) (2026-10-09)
+
+
+### Features
+
+* **api:** report a database schema behind the release as not ready ([#69](https://github.com/vvojtisek/chem-app/issues/69)) ([02a9bba](https://github.com/vvojtisek/chem-app/commit/02a9bbaf7641e45559187b67f8e0a706050e2f68))
+
 ## [1.3.0](https://github.com/vvojtisek/chem-app/compare/v1.2.0...v1.3.0) (2026-10-09)
 
 
