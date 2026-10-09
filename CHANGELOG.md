@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/vvojtisek/chem-app/compare/v1.5.1...v1.6.0) (2026-10-09)
+
+
+### Features
+
+* **api:** save admin curriculum edits to a curation pull request ([#78](https://github.com/vvojtisek/chem-app/issues/78)) ([b18a00d](https://github.com/vvojtisek/chem-app/commit/b18a00d03c1289e4c249f48cc0586aad59dbeba7))
+
 ## [1.5.1](https://github.com/vvojtisek/chem-app/compare/v1.5.0...v1.5.1) (2026-10-09)
 
 
