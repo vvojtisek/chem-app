@@ -276,6 +276,10 @@ Use Conventional Commits:
 
 `<type>(<scope>): <description>`
 
+Pull requests are squash-merged and the pull request title decides the
+release version (`feat` minor, `fix`/`perf`/`revert` patch, `!` major). See
+`docs/releasing.md`.
+
 Commits must be atomic.
 
 Do not mix feature work, bug fixes, refactoring, formatting sweeps, dependency
