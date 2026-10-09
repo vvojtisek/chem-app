@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/vvojtisek/chem-app/compare/v1.7.0...v1.8.0) (2026-10-09)
+
+
+### Features
+
+* **web:** add and edit equations and substances in the admin console ([#83](https://github.com/vvojtisek/chem-app/issues/83)) ([3dcb2ee](https://github.com/vvojtisek/chem-app/commit/3dcb2eec3141b49cb4b3ad497ec91df932ab4803))
+
 ## [1.7.0](https://github.com/vvojtisek/chem-app/compare/v1.6.0...v1.7.0) (2026-10-09)
 
 
