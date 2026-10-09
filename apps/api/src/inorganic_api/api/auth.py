@@ -75,10 +75,6 @@ class ConfirmResetRequest(TokenRequest):
         return value
 
 
-class VerifyEmailRequest(ConfirmResetRequest):
-    pass
-
-
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -146,86 +142,6 @@ def login(
     )
     _set_session_cookies(response, result)
     return _me(result)
-
-
-@router.post(
-    "/register",
-    operation_id="registerAccount",
-    status_code=202,
-    response_class=Response,
-    responses={
-        403: {"model": ErrorEnvelope},
-        422: {"model": ErrorEnvelope},
-        429: {"model": ErrorEnvelope},
-        503: {"model": ErrorEnvelope},
-    },
-)
-def register(
-    request: Request,
-    body: EmailRequest,
-    db: Annotated[Session, Depends(session_dependency)],
-) -> None:
-    settings = get_settings()
-    auth.require_origin(settings, request.headers.get("origin"))
-    accounts.register(
-        db,
-        settings,
-        body.email,
-        request.client.host if request.client else "unknown",
-    )
-
-
-@router.post(
-    "/verify-email",
-    operation_id="verifyEmail",
-    status_code=204,
-    response_class=Response,
-    responses={
-        400: {"model": ErrorEnvelope},
-        403: {"model": ErrorEnvelope},
-        422: {"model": ErrorEnvelope},
-        429: {"model": ErrorEnvelope},
-        503: {"model": ErrorEnvelope},
-    },
-)
-def verify_email(
-    request: Request,
-    body: VerifyEmailRequest,
-    db: Annotated[Session, Depends(session_dependency)],
-) -> None:
-    settings = get_settings()
-    auth.require_origin(settings, request.headers.get("origin"))
-    accounts.verify_email(
-        db,
-        settings,
-        body.token,
-        body.newPassword,
-        request.client.host if request.client else "unknown",
-    )
-
-
-@router.post(
-    "/verification/request",
-    operation_id="requestEmailVerification",
-    status_code=202,
-    response_class=Response,
-    responses={
-        403: {"model": ErrorEnvelope},
-        422: {"model": ErrorEnvelope},
-        429: {"model": ErrorEnvelope},
-        503: {"model": ErrorEnvelope},
-    },
-)
-def request_email_verification(
-    request: Request,
-    body: EmailRequest,
-    db: Annotated[Session, Depends(session_dependency)],
-) -> None:
-    settings = get_settings()
-    auth.require_origin(settings, request.headers.get("origin"))
-    accounts.request_verification(
-        db, settings, body.email, request.client.host if request.client else "unknown"
-    )
 
 
 @router.post(

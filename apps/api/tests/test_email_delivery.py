@@ -1,4 +1,5 @@
 import ssl
+from email.message import EmailMessage
 
 import pytest
 
@@ -27,8 +28,9 @@ class RecordingSmtp:
     def login(self, username: str, password: str) -> None:
         self.calls.append("login")
 
-    def send_message(self, message: object) -> None:
+    def send_message(self, message: EmailMessage) -> None:
         self.calls.append("send")
+        self.message = message
 
 
 def test_starttls_verifies_server_certificate_before_credentials(
@@ -51,3 +53,26 @@ def test_starttls_verifies_server_certificate_before_credentials(
     assert smtp.starttls_context.verify_mode == ssl.CERT_REQUIRED
     assert smtp.starttls_context.check_hostname is True
     assert smtp.calls == ["starttls", "login", "send"]
+
+
+@pytest.mark.parametrize(
+    ("purpose", "subject", "wording"),
+    [
+        ("invite", "Pozvánka – Anorganická chemie", "Správce vám vytvořil účet"),
+        ("reset", "Obnovení hesla – Anorganická chemie", "Nastavte si nové heslo"),
+    ],
+)
+def test_account_links_open_the_password_form(
+    monkeypatch: pytest.MonkeyPatch, purpose: str, subject: str, wording: str
+) -> None:
+    RecordingSmtp.instances.clear()
+    monkeypatch.setattr(email.smtplib, "SMTP", RecordingSmtp)
+    settings = Settings(public_origin="https://chem.example.test")
+
+    email.send_account_link(settings, "student@example.test", "token-value", purpose)
+
+    (smtp,) = RecordingSmtp.instances
+    assert smtp.message["Subject"] == subject
+    body = smtp.message.get_content()
+    assert wording in body
+    assert "https://chem.example.test/reset-password?token=token-value" in body

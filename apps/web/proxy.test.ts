@@ -11,7 +11,7 @@ function navigate(path: string, cookie?: string) {
 }
 
 describe("proxy", () => {
-  it("serves the privacy notice without a session so it can be read before registration", () => {
+  it("serves the privacy notice without a session so it can be read before first sign-in", () => {
     const response = navigate("/soukromi");
 
     expect(response.headers.get("location")).toBeNull();

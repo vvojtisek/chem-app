@@ -44,7 +44,7 @@
   supported browsers. No moderated usability sessions or screen-reader review
   have been completed yet, and no performance budget has been signed off.
 - Playwright runs axe-core WCAG 2.0/2.1/2.2 A and AA checks on login,
-  registration, the home page, all four learning modes, dashboard, and profile
+  password recovery, the home page, all four learning modes, dashboard, and profile
   in desktop and mobile Chromium. These scans passed, but they do not certify
   WCAG conformance or replace manual keyboard, focus-visibility, contrast
   review in context, or screen-reader testing.

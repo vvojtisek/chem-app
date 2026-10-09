@@ -32,9 +32,7 @@ function ResetPasswordForm() {
         router.refresh();
       } else {
         await requestPasswordReset(email);
-        setMessage(
-          "Pokud je adresa u účtu registrovaná, přijde vám e-mail s odkazem k obnově hesla.",
-        );
+        setMessage("Pokud adresa patří k účtu, přijde vám e-mail s odkazem k obnově hesla.");
       }
     } catch (cause) {
       setError(

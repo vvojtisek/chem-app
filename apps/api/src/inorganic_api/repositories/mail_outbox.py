@@ -7,7 +7,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from inorganic_api.models import EmailVerificationToken, MailOutbox, PasswordResetToken, User
+from inorganic_api.models import MailOutbox, PasswordResetToken, User
 
 LEASE = timedelta(seconds=60)
 
@@ -18,18 +18,6 @@ class ClaimedMail:
     recipient: str
     encrypted_token: str
     purpose: str
-
-
-def enqueue_verification(
-    db: Session, recipient: str, encrypted_token: str, token: EmailVerificationToken
-) -> None:
-    db.add(
-        MailOutbox(
-            recipient=recipient,
-            encrypted_token=encrypted_token,
-            verification_token_id=token.id,
-        )
-    )
 
 
 def enqueue_reset(
@@ -58,11 +46,11 @@ def claim_next(db: Session) -> ClaimedMail | None:
         .with_for_update(skip_locked=True)
     )
     for row in rows:
-        purpose = "verify" if row.verification_token_id is not None else "reset"
+        # Rows that still reference a verification token predate ADR 0013 and are dropped.
         token = (
-            db.get(EmailVerificationToken, row.verification_token_id)
-            if row.verification_token_id is not None
-            else db.get(PasswordResetToken, row.reset_token_id)
+            db.get(PasswordResetToken, row.reset_token_id)
+            if row.reset_token_id is not None
+            else None
         )
         user = db.get(User, token.user_id) if token is not None else None
         usable = (
@@ -71,21 +59,9 @@ def claim_next(db: Session) -> ClaimedMail | None:
             and token.expires_at > now
             and user is not None
             and user.email == row.recipient
-            and (
-                (
-                    purpose == "verify"
-                    and user.role == "user"
-                    and not user.is_active
-                    and user.email_verified_at is None
-                    and user.created_at > now - timedelta(days=7)
-                )
-                or (
-                    purpose == "reset"
-                    and user.role != "guest"
-                    and user.is_active
-                    and user.email_verified_at is not None
-                )
-            )
+            and user.role != "guest"
+            and user.is_active
+            and user.email_verified_at is not None
         )
         if not usable:
             db.delete(row)
@@ -93,7 +69,7 @@ def claim_next(db: Session) -> ClaimedMail | None:
         row.attempts += 1
         row.leased_until = now + LEASE
         db.commit()
-        return ClaimedMail(row.id, row.recipient, row.encrypted_token, purpose)
+        return ClaimedMail(row.id, row.recipient, row.encrypted_token, token.purpose)
     db.commit()
     return None
 

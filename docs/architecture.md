@@ -61,15 +61,15 @@ The API may distribute the same snapshot and record progress, but it is not the 
 
 ### Authentication and accounts
 
-FastAPI owns email/password registration, verified email ownership, self-service
-password recovery, opaque server-side sessions, and authorization. Passwords
-use Argon2id. Reset and verification tokens are single-use, expire, and are
-stored only as hashes. The browser receives only a secure HttpOnly session
+FastAPI owns admin-created email/password accounts with emailed invitations,
+self-service password recovery, opaque server-side sessions, and authorization.
+There is no public registration. Passwords use Argon2id. Invitation and reset
+tokens are single-use, expire, and are stored only as hashes. The browser receives only a secure HttpOnly session
 cookie and a separate CSRF cookie; mutations validate CSRF and same-origin
 requests. Roles are `guest`, `user`, `admin`, and the existing `tester`
 compatibility role. Guests can read the learning app, while the API rejects
-their writes. Registered users own their profile and data; admins manage
-accounts. See ADRs 0005 and 0006.
+their writes. Users own their profile and data; admins create and manage
+accounts. See ADRs 0005, 0006 and 0013.
 
 The Next.js proxy checks only for the presence of the session cookie and is a
 navigation convenience. API authentication remains authoritative. A small

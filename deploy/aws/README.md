@@ -88,7 +88,7 @@ account passwords, and working STARTTLS SMTP settings. Keep credentials out of
 CloudFormation parameters, user data, shell history, and Git. The API requires
 SMTP configuration in production; obtain a relay and verified sender before
 starting. Complete the [privacy notice release checklist](../../docs/privacy-notice-release-checklist.md)
-before inviting users to register.
+before creating learner accounts.
 
 The app checkout and AWS overlay must both be present. Once this directory is
 on `main`, update and start the current `main` revision as follows:
@@ -150,7 +150,7 @@ sudo nft list set inet chem_cz allowed
 
 From a Czech network, run `curl -fsSI https://vscht.vvojtisek.eu` and verify
 HTTPS. Also verify a connection refusal or timeout
-from a non-Czech network. Verify login, account verification email, and API
+from a non-Czech network. Verify login, an account invitation email, and API
 readiness. Check the periodic refresh with `systemctl status
 chem-cz-refresh.timer` and `journalctl -u chem-cz-refresh.service`. If the
 RIPE feed is unavailable during a refresh, the previous set remains active.

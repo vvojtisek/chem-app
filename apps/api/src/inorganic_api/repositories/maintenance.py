@@ -37,20 +37,6 @@ def delete_obsolete_tokens(db: Session, now: datetime) -> int:
     return (verification_result.rowcount or 0) + (reset_result.rowcount or 0)
 
 
-def delete_expired_unverified_users(db: Session, now: datetime) -> int:
-    result = db.execute(
-        delete(User).where(
-            User.role == "user",
-            User.is_active.is_(False),
-            User.email.is_not(None),
-            User.email_verified_at.is_(None),
-            User.password_hash == "!pending-email-verification",
-            User.created_at <= now - timedelta(days=7),
-        )
-    )
-    return result.rowcount or 0
-
-
 def delete_inactive_guest_accounts(db: Session, now: datetime, guest_max_age: timedelta) -> int:
     active_session = exists(
         select(AuthSession.id).where(

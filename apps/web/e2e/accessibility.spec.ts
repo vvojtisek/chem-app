@@ -19,8 +19,8 @@ test("account entry screens meet automated WCAG 2.2 AA checks", async ({ browser
     await expect(page.getByRole("heading", { name: "Přihlášení" })).toBeVisible();
     await expectWcag22Aa(page);
 
-    await page.goto("/register");
-    await expect(page.getByRole("heading", { name: "Vytvořit účet" })).toBeVisible();
+    await page.goto("/reset-password");
+    await expect(page.getByRole("heading", { name: "Obnovit heslo" })).toBeVisible();
     await expectWcag22Aa(page);
   } finally {
     await context.close();

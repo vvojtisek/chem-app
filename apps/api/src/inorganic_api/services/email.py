@@ -36,15 +36,16 @@ def decrypt_token(settings: Settings, encrypted_token: str) -> str:
 
 def send_account_link(settings: Settings, recipient: str, token: str, purpose: str) -> None:
     require_delivery_config(settings)
-    if purpose == "verify":
-        path = "/verify-email"
-        subject = "Potvrzení e-mailu – Anorganická chemie"
-        description = "Potvrďte svoji e-mailovou adresu"
+    if purpose == "invite":
+        subject = "Pozvánka – Anorganická chemie"
+        description = (
+            "Správce vám vytvořil účet. Přihlašovat se budete touto e-mailovou adresou."
+            " Nastavte si heslo"
+        )
     else:
-        path = "/reset-password"
         subject = "Obnovení hesla – Anorganická chemie"
         description = "Nastavte si nové heslo"
-    url = f"{str(settings.public_origin).rstrip('/')}{path}?token={quote(token)}"
+    url = f"{str(settings.public_origin).rstrip('/')}/reset-password?token={quote(token)}"
     message = EmailMessage()
     message["From"] = settings.smtp_from
     message["To"] = recipient

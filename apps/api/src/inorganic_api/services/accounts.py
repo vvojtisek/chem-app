@@ -1,32 +1,31 @@
-"""Verified account creation, recovery, and profile mutations."""
+"""Admin account creation, recovery, and profile mutations."""
 
+import logging
 import re
 import secrets
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
-from sqlalchemy import delete
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from inorganic_api.config import Settings
 from inorganic_api.errors import AppError
-from inorganic_api.models import EmailVerificationToken, PasswordResetToken, User
+from inorganic_api.models import PasswordResetToken, User
 from inorganic_api.repositories import account_tokens, mail_outbox, sessions, users
 from inorganic_api.services import auth, email
 from inorganic_api.services.passwords import hash_password, verify_password
+
+logger = logging.getLogger(__name__)
 
 EMAIL_PATTERN = re.compile(
     r"^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?"
     r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+$"
 )
-VERIFY_TTL = timedelta(hours=24)
 RESET_TTL = timedelta(minutes=30)
-UNVERIFIED_TTL = timedelta(days=7)
-# Open registration sends mail to arbitrary addresses; allow one request per client IP per hour.
-REGISTER_IP_LIMIT = 1
-REGISTER_IP_WINDOW = timedelta(hours=1)
+INVITE_TTL = timedelta(days=7)
+# Each creation sends one invitation; bound the mail a single admin session can trigger.
+ADMIN_CREATE_LIMIT = 30
 
 
 def normalize_email(value: str) -> str:
@@ -44,114 +43,6 @@ def normalize_email(value: str) -> str:
 def _new_token() -> tuple[str, str]:
     token = secrets.token_urlsafe(32)
     return token, auth.token_hash(token)
-
-
-def register(db: Session, settings: Settings, address: str, ip: str) -> None:
-    email.require_delivery_config(settings)
-    if not auth.consume_rate_limit(
-        db, settings, "register-ip", ip, limit=REGISTER_IP_LIMIT, window=REGISTER_IP_WINDOW
-    ):
-        raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
-    if not auth.consume_rate_limit(db, settings, "register-email", address, limit=3):
-        return
-    now = datetime.now(UTC)
-    db.execute(
-        delete(User).where(
-            User.email == address,
-            User.role == "user",
-            User.is_active.is_(False),
-            User.email.is_not(None),
-            User.email_verified_at.is_(None),
-            User.password_hash == "!pending-email-verification",
-            User.created_at <= now - UNVERIFIED_TTL,
-        )
-    )
-    account_id = uuid4()
-    username = f"user_{account_id.hex}"
-    inserted = db.scalar(
-        insert(User)
-        .values(
-            id=account_id,
-            username=username,
-            email=address,
-            display_name=address.split("@", 1)[0][:80],
-            password_hash="!pending-email-verification",
-            role="user",
-            is_active=False,
-        )
-        .on_conflict_do_nothing(index_elements=[User.email])
-        .returning(User.id)
-    )
-    if inserted is None:
-        db.commit()
-        return
-    token, digest = _new_token()
-    verification = EmailVerificationToken(
-        id=uuid4(), user_id=inserted, token_hash=digest, expires_at=now + VERIFY_TTL
-    )
-    db.add(verification)
-    db.flush([verification])
-    mail_outbox.enqueue_verification(
-        db, address, email.encrypt_token(settings, token), verification
-    )
-    db.commit()
-
-
-def request_verification(db: Session, settings: Settings, address: str, ip: str) -> None:
-    email.require_delivery_config(settings)
-    if not auth.consume_rate_limit(db, settings, "verify-request-ip", ip, limit=20):
-        raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
-    if not auth.consume_rate_limit(db, settings, "verify-request-email", address, limit=3):
-        return
-    user = users.get_by_email(db, address)
-    if (
-        user is None
-        or user.role != "user"
-        or user.is_active
-        or user.email_verified_at is not None
-        or user.created_at <= datetime.now(UTC) - UNVERIFIED_TTL
-    ):
-        db.commit()
-        return
-    now = datetime.now(UTC)
-    token, digest = _new_token()
-    account_tokens.revoke_verifications(db, user.id, now)
-    verification = EmailVerificationToken(
-        id=uuid4(), user_id=user.id, token_hash=digest, expires_at=now + VERIFY_TTL
-    )
-    db.add(verification)
-    db.flush([verification])
-    mail_outbox.enqueue_verification(
-        db, address, email.encrypt_token(settings, token), verification
-    )
-    db.commit()
-
-
-def verify_email(db: Session, settings: Settings, token: str, password: str, ip: str) -> None:
-    if not auth.consume_rate_limit(db, settings, "verify-ip", ip, limit=30):
-        raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
-    row = account_tokens.verification_for_update(db, auth.token_hash(token))
-    now = datetime.now(UTC)
-    if row is None or row.used_at is not None or row.expires_at <= now:
-        raise AppError(400, "invalid_token", "This link is invalid or has expired.")
-    user = users.get_by_id(db, row.user_id)
-    if (
-        user is None
-        or user.role != "user"
-        or user.email_verified_at is not None
-        or user.created_at <= now - UNVERIFIED_TTL
-    ):
-        raise AppError(400, "invalid_token", "This link is invalid or has expired.")
-    row.used_at = now
-    user.password_hash = hash_password(password)
-    user.password_changed_at = now
-    user.email_verified_at = now
-    user.is_active = True
-    # The API session factory disables autoflush. Persist token consumption before
-    # deleting the other outstanding verification tokens for this account.
-    db.flush()
-    account_tokens.revoke_verifications(db, user.id, now)
-    db.commit()
 
 
 def request_reset(db: Session, settings: Settings, address: str, ip: str) -> None:
@@ -277,6 +168,58 @@ def admin_update_profile(db: Session, actor: User, user_id: UUID, changes: dict)
         db.rollback()
         raise AppError(409, "email_taken", "This email address is already in use.") from exc
     return target
+
+
+def admin_create_account(
+    db: Session,
+    settings: Settings,
+    actor: User,
+    address: str,
+    display_name: str | None,
+    role: str,
+) -> User:
+    """Create an active account and queue an invitation to choose its password."""
+    if actor.role != "admin":
+        raise AppError(403, "forbidden", "Access denied.")
+    email.require_delivery_config(settings)
+    if not auth.consume_rate_limit(
+        db, settings, "admin-create-account", str(actor.id), limit=ADMIN_CREATE_LIMIT
+    ):
+        raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
+    # Nobody knows this secret, so the account cannot sign in until the invitation is used,
+    # and a sign-in attempt costs the same Argon2 work as for any other account.
+    placeholder_hash = hash_password(secrets.token_urlsafe(32))
+    now = datetime.now(UTC)
+    account_id = uuid4()
+    user = User(
+        id=account_id,
+        username=f"user_{account_id.hex}",
+        email=address,
+        email_verified_at=now,
+        display_name=display_name or address.split("@", 1)[0][:80],
+        password_hash=placeholder_hash,
+        role=role,
+        is_active=True,
+    )
+    try:
+        with db.begin_nested():
+            db.add(user)
+    except IntegrityError as exc:
+        raise AppError(409, "email_taken", "This email address is already in use.") from exc
+    token, digest = _new_token()
+    invite = PasswordResetToken(
+        id=uuid4(),
+        user_id=user.id,
+        token_hash=digest,
+        expires_at=now + INVITE_TTL,
+        purpose="invite",
+    )
+    db.add(invite)
+    db.flush([invite])
+    mail_outbox.enqueue_reset(db, address, email.encrypt_token(settings, token), invite)
+    db.commit()
+    logger.warning("Administrator %s created account %s with role %s", actor.id, user.id, role)
+    return user
 
 
 def admin_get_profile(db: Session, actor: User, user_id: UUID) -> User:
