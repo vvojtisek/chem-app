@@ -23,12 +23,15 @@ import { CurriculumReview } from "./curriculum-review";
 
 const baseSha = "a".repeat(40);
 
-function route(id: string, status: string, formula: string) {
+function route(id: string, status: string, formula: string, partner: string) {
   return {
     id: `preparation-production.route.${id}`,
     sourceId: "id-20-1",
     kind: "preparation",
-    reactants: [{ coefficient: 1, formula: "Zn", acceptedAliases: null }],
+    reactants: [
+      { coefficient: 1, formula: "Zn", acceptedAliases: null },
+      { coefficient: 1, formula: partner, acceptedAliases: null },
+    ],
     products: [{ coefficient: 1, formula, acceptedAliases: null }],
     conditionsCs: null,
     status,
@@ -54,7 +57,10 @@ function curriculum(canValidate = true): PreparationProductionCurriculum {
         nameCs: "Vodík",
         formula: "H2",
         notes: [],
-        routes: [route("pending", "owner-approved", "ZnCl2"), route("done", "reviewed", "ZnO")],
+        routes: [
+          route("pending", "owner-approved", "ZnCl2", "Cl2"),
+          route("done", "reviewed", "ZnS", "S"),
+        ],
         status: "owner-approved",
         author: "Autor",
         sources: [{ title: "Zdroj", locator: "https://example.test/zdroj" }],
@@ -100,10 +106,10 @@ describe("CurriculumReview", () => {
       "aria-pressed",
       "true",
     );
-    expect(screen.queryByRole("img", { name: "ZnO" })).toBeNull();
+    expect(screen.queryByRole("img", { name: "ZnS" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: /^Ověřeno/u }));
-    expect(within(routeItem("ZnO")).getByText(/doklad: Skripta, str. 3/u)).toBeVisible();
+    expect(within(routeItem("ZnS")).getByText(/doklad: Skripta, str. 3/u)).toBeVisible();
   });
 
   it("records a validation with evidence, the fingerprint and the loaded file version", async () => {
@@ -181,5 +187,82 @@ describe("CurriculumReview", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Data se mezitím změnila");
     expect(api.get).toHaveBeenCalledTimes(2);
+  });
+
+  it("saves an edited equation and clears its validation", async () => {
+    api.get.mockResolvedValue(curriculum());
+    renderReview();
+    await screen.findByText(/Rovnice:/u);
+    fireEvent.click(screen.getByRole("button", { name: /^Ověřeno/u }));
+    const item = routeItem("ZnS");
+
+    fireEvent.click(within(item).getByRole("button", { name: "Upravit rovnici" }));
+    const form = within(item).getByRole("form", { name: "Upravit rovnici" });
+    expect(within(form).getByText(/zruší její ověření/u)).toBeVisible();
+    fireEvent.change(within(form).getByLabelText("Rovnice"), {
+      target: { value: "2 Zn + O2 -> 2 ZnO" },
+    });
+    fireEvent.click(within(form).getByRole("button", { name: "Uložit rovnici" }));
+
+    await waitFor(() => expect(api.save).toHaveBeenCalledTimes(1));
+    const [body] = api.save.mock.calls[0] as unknown as [{ routes: Record<string, unknown>[] }];
+    expect(body.routes[1]).toMatchObject({
+      id: "preparation-production.route.done",
+      status: "owner-approved",
+      reactants: [
+        { coefficient: 2, formula: "Zn" },
+        { coefficient: 1, formula: "O2" },
+      ],
+      reviewFingerprint: null,
+      reviewEvidence: null,
+    });
+  });
+
+  it("refuses to save an unbalanced equation and says why", async () => {
+    api.get.mockResolvedValue(curriculum());
+    renderReview();
+    await screen.findByText(/Rovnice:/u);
+
+    fireEvent.click(screen.getByRole("button", { name: "Přidat rovnici" }));
+    const form = screen.getByRole("form", { name: "Přidat rovnici" });
+    fireEvent.change(within(form).getByLabelText("Rovnice"), {
+      target: { value: "Zn + HCl -> ZnCl2 + H2" },
+    });
+    fireEvent.click(within(form).getByRole("button", { name: "Přidat rovnici" }));
+
+    expect(await within(form).findByRole("alert")).toHaveTextContent("není vyčíslená");
+    expect(api.save).not.toHaveBeenCalled();
+  });
+
+  it("adds a substance with its first equation", async () => {
+    api.get.mockResolvedValue(curriculum());
+    renderReview();
+    await screen.findByText(/Rovnice:/u);
+
+    fireEvent.click(screen.getByRole("button", { name: "Přidat látku" }));
+    const form = screen.getByRole("form", { name: "Přidat látku" });
+    const fill = (label: RegExp | string, value: string) =>
+      fireEvent.change(within(form).getByLabelText(label), { target: { value } });
+    fill("Název", "Chlorid sodný");
+    fill("Vzorec", "NaCl");
+    fill("Zdroj (název)", "Skripta");
+    fill("Zdroj (odkaz https://)", "https://example.test/skripta");
+    fill("Rovnice", "2 Na + Cl2 -> 2 NaCl");
+    fireEvent.click(within(form).getByRole("button", { name: "Přidat látku" }));
+
+    await waitFor(() => expect(api.save).toHaveBeenCalledTimes(1));
+    const [body] = api.save.mock.calls[0] as unknown as [Record<string, unknown>];
+    expect(body).toMatchObject({
+      id: "preparation-production.product.chlorid-sodny",
+      status: "owner-approved",
+      sources: [{ title: "Skripta", locator: "https://example.test/skripta" }],
+      routes: [
+        {
+          id: "preparation-production.route.chlorid-sodny-id-admin-1-preparation",
+          sourceId: "id-admin-1",
+        },
+      ],
+    });
+    expect(body).not.toHaveProperty("author");
   });
 });
