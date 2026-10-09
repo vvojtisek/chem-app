@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/vvojtisek/chem-app/compare/v1.5.0...v1.5.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **web:** show the sign-out button in the app shell ([#73](https://github.com/vvojtisek/chem-app/issues/73)) ([d784877](https://github.com/vvojtisek/chem-app/commit/d78487717891ccdf26406a7b40897a40ca0f4905))
+
 ## [1.5.0](https://github.com/vvojtisek/chem-app/compare/v1.4.0...v1.5.0) (2026-10-09)
 
 
