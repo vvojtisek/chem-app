@@ -10,6 +10,9 @@ export type UserProfile = components["schemas"]["ProfileResponse"];
 export type UserProgression = components["schemas"]["Progression"];
 export type UserAttemptStats = components["schemas"]["AttemptStats"];
 export type LatestRelease = components["schemas"]["LatestReleaseResponse"];
+export type PreparationProductionCurriculum =
+  components["schemas"]["PreparationProductionResponse"];
+export type SavedCurriculumProduct = components["schemas"]["SaveProductResponse"];
 
 export class ApiError extends Error {
   constructor(
@@ -152,6 +155,24 @@ export async function getLatestRelease(): Promise<LatestRelease> {
 
 export async function applyLatestRelease(): Promise<void> {
   await unwrapEmptyResponse(await apiClient.POST("/api/v1/admin/releases/update"));
+}
+
+export async function getPreparationProductionCurriculum(): Promise<PreparationProductionCurriculum> {
+  return unwrapApiResponse(
+    await apiClient.GET("/api/v1/admin/curriculum/preparation-production", { cache: "no-store" }),
+  );
+}
+
+export async function savePreparationProductionProduct(
+  product: components["schemas"]["ProductInput"],
+  baseSha: string,
+): Promise<SavedCurriculumProduct> {
+  return unwrapApiResponse(
+    await apiClient.PUT("/api/v1/admin/curriculum/preparation-production/products/{product_id}", {
+      params: { path: { product_id: product.id } },
+      body: { product, baseSha },
+    }),
+  );
 }
 
 export async function getMyProfile(): Promise<UserProfile> {
