@@ -101,14 +101,35 @@ git pull --ff-only origin main
 docker compose --env-file .env.production \
   -f docker-compose.prod.yml -f deploy/aws/compose.yaml build
 docker compose --env-file .env.production \
+  -f docker-compose.prod.yml -f deploy/aws/compose.yaml pull --ignore-buildable
+docker compose --env-file .env.production \
   -f docker-compose.prod.yml -f deploy/aws/compose.yaml up -d db
 docker compose --env-file .env.production \
-  -f docker-compose.prod.yml -f deploy/aws/compose.yaml run --rm migrate
+  -f docker-compose.prod.yml -f deploy/aws/compose.yaml up -d --wait migrate
 docker compose --env-file .env.production \
   -f docker-compose.prod.yml -f deploy/aws/compose.yaml --profile setup run --rm seed
 docker compose --env-file .env.production \
   -f docker-compose.prod.yml -f deploy/aws/compose.yaml up -d
 ```
+
+`build` builds only the AWS Caddy image; the `api` and `web` images are pulled
+from GHCR (`stable` tag, see [docs/releasing.md](../../docs/releasing.md)).
+Watchtower applies later releases on request; it needs
+`WATCHTOWER_HTTP_API_TOKEN` in `.env.production` (`openssl rand -hex 32`).
+
+### Switching a host that builds images locally
+
+A host deployed before ADR 0012 builds its images and runs `migrate` as a
+one-shot task. Switch it once, after a release has published both images and
+both GHCR packages are public:
+
+1. Create and verify a `pg_dump` backup as in the runbook.
+2. Add `WATCHTOWER_HTTP_API_TOKEN` to `.env.production`.
+3. Run the commands above from `git pull` onward, skipping the `seed` step.
+   `up -d` replaces the locally built containers with the pulled images,
+   starts `migrate` as a long-running service and starts `watchtower`.
+4. Check that every service, including `migrate` and `watchtower`, is
+   `Up … (healthy)`.
 
 Remove `SEED_*` entries from `.env.production` after successful seeding. Keep
 the database volume, Caddy data volume, and `SECRET_KEY` across updates.

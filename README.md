@@ -107,7 +107,8 @@ upgrades, backups, and secret rotation is in
 | `api`         | FastAPI                               | `GET /api/v1/health/ready` (includes DB query) | `unless-stopped` |
 | `mail-worker` | Delivers queued verification/reset mail | Heartbeat file touched after each poll (max age 120 s) | `unless-stopped` |
 | `db`          | PostgreSQL 17                         | `pg_isready` over TCP                          | `unless-stopped` |
-| `migrate`     | One-shot `alembic upgrade head`       | none (must exit 0 before `api` starts)         | `no`             |
+| `migrate`     | Runs `alembic upgrade head`, then idles | Healthy only after the migration succeeded (gates `api` and `mail-worker`) | `unless-stopped` |
+| `watchtower`  | Applies published images on request (ADR 0012) | Image default (`watchtower --health-check`) | `unless-stopped` |
 | `seed`        | One-shot initial accounts (`setup` profile) | none                                     | `no`             |
 
 A container that exits or crashes is restarted automatically, including after
@@ -297,12 +298,16 @@ To keep commands short, define an alias for the rest of the session:
 alias dc='docker compose --env-file .env.production -f docker-compose.prod.yml'
 ```
 
-### 3. Build and start
+### 3. Pull and start
+
+The `api` and `web` images are published to GHCR by the Release workflow
+([`docs/releasing.md`](docs/releasing.md)); production runs their `stable`
+tag.
 
 ```bash
-dc build                          # several minutes on first run
+dc pull                           # api and web images from GHCR
 dc up -d db                       # first start initialises the database roles
-dc run --rm migrate               # applies migrations as the owner role
+dc up -d --wait migrate           # applies migrations as the owner role
 dc --profile setup run --rm seed  # creates the three initial accounts once
 dc up -d --wait                   # starts everything; returns when all are healthy
 ```
@@ -318,8 +323,8 @@ manager.
 dc ps
 ```
 
-Every long-running service must show `Up … (healthy)`; `migrate` shows
-`Exited (0)`. For details on one container, including the output of recent
+Every service must show `Up … (healthy)`, including `migrate`, which stays up
+after applying migrations. For details on one container, including the output of recent
 health probes:
 
 ```bash
@@ -348,7 +353,7 @@ dc logs -f api                    # follow a single service
 ```bash
 dc restart api                    # restart one service
 dc down                           # stop the stack; volumes and data are kept
-git pull --ff-only && dc build && dc up -d --wait   # update; migrate runs first
+git pull --ff-only && dc pull && dc up -d --wait    # update; migrate runs first
 ```
 
 Back up the database before every update and on a schedule (see
