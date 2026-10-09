@@ -8,10 +8,17 @@ import {
   getLatestRelease,
   type LatestRelease,
 } from "@/lib/api/client";
-import { APP_VERSION, isNewerVersion } from "@/lib/app-version";
+import {
+  APP_VERSION,
+  fetchServedVersion,
+  isNewerVersion,
+  reloadIntoNewBuild,
+} from "@/lib/app-version";
 import { useAccount } from "./auth-gate";
 
 const RELEASES_ORIGIN = "https://github.com/";
+const UPDATE_POLL_INTERVAL_MS = 10_000;
+const UPDATE_TIMEOUT_MS = 10 * 60_000;
 
 const UPDATE_ERRORS: Record<string, string> = {
   updates_disabled: "Aktualizace z aplikace nejsou na tomto serveru zapnuté.",
@@ -61,6 +68,36 @@ export function AppVersionLabel() {
     };
   }, [isAdmin]);
 
+  // A 202 only means Watchtower accepted the request. Watch for the new build
+  // to start serving and reload into it; if it never does, say so instead of
+  // claiming the restart is still coming.
+  useEffect(() => {
+    if (updateState.status !== "started") return;
+    let active = true;
+    const deadline = Date.now() + UPDATE_TIMEOUT_MS;
+    const timer = setInterval(() => {
+      if (Date.now() > deadline) {
+        clearInterval(timer);
+        setUpdateState({
+          status: "failed",
+          message: `Aktualizace se do 10 minut neprojevila, server stále běží na v${APP_VERSION}. Zkontrolujte logy služby watchtower.`,
+        });
+        return;
+      }
+      fetchServedVersion()
+        .then((served) => {
+          if (active && served !== null && served !== APP_VERSION) reloadIntoNewBuild();
+        })
+        .catch(() => {
+          // The server is restarting; try again on the next tick.
+        });
+    }, UPDATE_POLL_INTERVAL_MS);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [updateState.status]);
+
   const update =
     isAdmin &&
     latest?.latestVersion &&
@@ -106,7 +143,7 @@ export function AppVersionLabel() {
             </span>
           ) : updateState.status === "started" ? (
             <span role="status" className="font-semibold text-accent">
-              Aktualizace spuštěna, aplikace se za chvíli restartuje.
+              Aktualizace probíhá, stránka se po dokončení sama obnoví.
             </span>
           ) : (
             <button

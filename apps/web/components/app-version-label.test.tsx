@@ -7,6 +7,8 @@ const hooks = vi.hoisted(() => ({
   role: "admin" as "admin" | "user" | "tester" | "guest",
   getLatestRelease: vi.fn(),
   applyLatestRelease: vi.fn(),
+  fetchServedVersion: vi.fn(),
+  reloadIntoNewBuild: vi.fn(),
 }));
 
 vi.mock("./auth-gate", () => ({
@@ -18,6 +20,15 @@ vi.mock("@/lib/api/client", async (importOriginal) => {
     ApiError: actual.ApiError,
     getLatestRelease: hooks.getLatestRelease,
     applyLatestRelease: hooks.applyLatestRelease,
+  };
+});
+
+vi.mock("@/lib/app-version", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/app-version")>();
+  return {
+    ...actual,
+    fetchServedVersion: hooks.fetchServedVersion,
+    reloadIntoNewBuild: hooks.reloadIntoNewBuild,
   };
 });
 
@@ -33,6 +44,8 @@ beforeEach(() => {
   hooks.role = "admin";
   hooks.getLatestRelease.mockReset();
   hooks.applyLatestRelease.mockReset();
+  hooks.fetchServedVersion.mockReset();
+  hooks.reloadIntoNewBuild.mockReset();
   vi.spyOn(window, "confirm").mockReturnValue(true);
 });
 
@@ -95,8 +108,48 @@ describe("AppVersionLabel", () => {
 
     expect(window.confirm).toHaveBeenCalledOnce();
     expect(hooks.applyLatestRelease).toHaveBeenCalledOnce();
-    expect(await screen.findByRole("status")).toHaveTextContent("Aktualizace spuštěna");
+    expect(await screen.findByRole("status")).toHaveTextContent("Aktualizace probíhá");
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("reloads once the server serves a different build", async () => {
+    hooks.applyLatestRelease.mockResolvedValue(undefined);
+    const button = await renderWithNewerRelease();
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+    try {
+      hooks.fetchServedVersion.mockRejectedValueOnce(new Error("restarting"));
+      hooks.fetchServedVersion.mockResolvedValueOnce(APP_VERSION);
+      hooks.fetchServedVersion.mockResolvedValue(newerVersion);
+      fireEvent.click(button);
+      await screen.findByRole("status");
+
+      await vi.advanceTimersByTimeAsync(20_000);
+      expect(hooks.reloadIntoNewBuild).not.toHaveBeenCalled();
+
+      await vi.advanceTimersByTimeAsync(10_000);
+      expect(hooks.reloadIntoNewBuild).toHaveBeenCalledOnce();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("reports an update that never takes effect instead of waiting forever", async () => {
+    hooks.applyLatestRelease.mockResolvedValue(undefined);
+    hooks.fetchServedVersion.mockResolvedValue(APP_VERSION);
+    const button = await renderWithNewerRelease();
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+    try {
+      fireEvent.click(button);
+      await screen.findByRole("status");
+
+      await vi.advanceTimersByTimeAsync(10 * 60_000 + 10_000);
+
+      expect(await screen.findByRole("alert")).toHaveTextContent("watchtower");
+      expect(screen.getByRole("button", { name: updateButtonName })).toBeEnabled();
+      expect(hooks.reloadIntoNewBuild).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("does nothing when the administrator cancels", async () => {

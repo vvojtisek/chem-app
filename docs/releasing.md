@@ -87,3 +87,8 @@ GitHub Release exists. Learners see only the version.
   images and restart the app containers (ADR 0012). It can only apply what CI
   published as `stable`; it never chooses a version. See
   [deployment.md](deployment.md#updating-the-application).
+- Watchtower answering 202 only means it accepted the request. The tab then
+  polls `GET /app-version` (the version of the web build that is serving) every
+  10 seconds and reloads once it changes. If it has not changed after
+  10 minutes, the header says so and offers the button again; check
+  `docker compose ... logs watchtower` on the host.
