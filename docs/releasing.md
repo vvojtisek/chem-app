@@ -41,14 +41,16 @@ The branch name does not affect the version. Keep using the prefixes in
    `.release-please-manifest.json`, and adds the changes to `CHANGELOG.md`.
 3. Review it. To force a different version, add a commit to `main` whose body
    ends with `Release-As: X.Y.Z`.
-4. Merge it. The workflow tags the merge commit `vX.Y.Z` and publishes the
+4. Merge it. The workflow tags the merge commit `vX.Y.Z` and creates a draft
    GitHub Release with the changelog entry.
 5. The same run builds the `api` and `web` images from that commit for
    `linux/amd64` and `linux/arm64`, then pushes multi-architecture manifests to
    `ghcr.io/vvojtisek/chem-app-api` and `ghcr.io/vvojtisek/chem-app-web` as
    `X.Y.Z`. Only after both pushes succeed does it move the `stable` tag of
-   both images to `X.Y.Z` (ADR 0012). Docker selects the matching architecture
-   for each production host.
+   both images to `X.Y.Z` (ADR 0012). It then publishes the GitHub Release.
+   Docker selects the matching architecture for each production host. The app's
+   latest-release check therefore cannot offer an update before both images
+   are available.
 
 The workflow does not deploy. The server still updates from `main` as described
 in [deploy/aws/README.md](../deploy/aws/README.md), so merge the release pull
