@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/vvojtisek/chem-app/compare/v1.9.1...v1.9.2) (2026-10-10)
+
+
+### Bug Fixes
+
+* **release:** publish multi-architecture images ([#95](https://github.com/vvojtisek/chem-app/issues/95)) ([5a6a3d4](https://github.com/vvojtisek/chem-app/commit/5a6a3d4ca42e094747e248c6c0b3e868a20956e3))
+
 ## [1.9.1](https://github.com/vvojtisek/chem-app/compare/v1.9.0...v1.9.1) (2026-10-09)
 
 
