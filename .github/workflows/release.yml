@@ -139,7 +139,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ env.TAG_NAME }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Publish release after stable images are ready
         run: |
