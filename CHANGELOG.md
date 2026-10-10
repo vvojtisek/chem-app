@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.3](https://github.com/vvojtisek/chem-app/compare/v1.9.2...v1.9.3) (2026-10-10)
+
+
+### Bug Fixes
+
+* **release:** publish release after images are ready ([#97](https://github.com/vvojtisek/chem-app/issues/97)) ([56f6922](https://github.com/vvojtisek/chem-app/commit/56f692280ab753bab27bed1877c0811d16782b3b))
+
 ## [1.9.2](https://github.com/vvojtisek/chem-app/compare/v1.9.1...v1.9.2) (2026-10-10)
 
 
