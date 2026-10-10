@@ -3,7 +3,7 @@ FROM node:24-slim AS builder
 WORKDIR /app
 ARG API_PROXY_TARGET=http://api:8000
 ENV API_PROXY_TARGET=${API_PROXY_TARGET}
-RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
+RUN npm install --global pnpm@12.11.2
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/package.json

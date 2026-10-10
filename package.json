@@ -2,7 +2,7 @@
   "name": "inorganic-chemistry-learning",
   "version": "1.14.0",
   "private": true,
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@12.11.2",
   "scripts": {
     "build": "pnpm -r --if-present build",
     "content:record-review": "pnpm --filter @inorganic/content record-review",
