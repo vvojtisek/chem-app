@@ -105,7 +105,17 @@ export async function applyNomenclatureAction(
   } else {
     changed = { ...base, status: action.kind === "remove" ? "deprecated" : "owner-approved" };
   }
-  const next = records.map((item) => (item.id === record.id ? changed : item));
+  return nomenclatureSave(records, changed);
+}
+
+/** The save request for one changed or new record, with the snapshot rebuilt from all records. */
+export async function nomenclatureSave(
+  records: readonly NomenclatureRecord[],
+  changed: NomenclatureRecord,
+): Promise<NomenclatureSave> {
+  const next = records.some((item) => item.id === changed.id)
+    ? records.map((item) => (item.id === changed.id ? changed : item))
+    : [...records, changed];
   return { record: toRecordInput(changed), runtimeSnapshot: await buildRuntimeSnapshot(next) };
 }
 
