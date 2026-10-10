@@ -6,15 +6,19 @@ import { type FormEvent, useMemo, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
 import { curriculumLoadError, curriculumSaveError } from "@/components/curriculum-review";
 import { Formula } from "@/components/formula";
+import { NomenclatureEditor } from "@/components/nomenclature-editor";
 import { CATEGORY_LABELS } from "@/components/nomenclature-filters";
 import { getNomenclatureCurriculum, saveNomenclatureRecord } from "@/lib/api/client";
 import type { ReviewEvidence } from "@/lib/curriculum-review";
+import { canEditNomenclature } from "@/lib/nomenclature-editing";
 import {
   applyNomenclatureAction,
   availableNomenclatureActions,
   countNomenclatureStates,
   type NomenclatureAction,
+  type NomenclatureSave,
   type NomenclatureState,
+  nomenclatureSave,
   nomenclatureState,
   toFileRecord,
 } from "@/lib/nomenclature-review";
@@ -84,8 +88,9 @@ export function NomenclatureReview() {
   const [shown, setShown] = useState(PAGE_SIZE);
   const [openForm, setOpenForm] = useState<{
     readonly id: string;
-    readonly kind: "validate" | "remove";
+    readonly kind: "validate" | "remove" | "edit";
   } | null>(null);
+  const [adding, setAdding] = useState(false);
   // The owner works through one document at a time, so the last evidence is reused.
   const [evidence, setEvidence] = useState<ReviewEvidence>({ evidence: "", confirmedBy: "" });
   const [saving, setSaving] = useState(false);
@@ -111,28 +116,43 @@ export function NomenclatureReview() {
   const busy = saving || curriculum.isFetching;
   const canValidate = curriculum.data?.canValidate ?? false;
 
-  async function runAction(record: NomenclatureRecord, action: NomenclatureAction) {
+  async function save(
+    build: (records: readonly NomenclatureRecord[]) => Promise<NomenclatureSave>,
+    success: string,
+  ) {
     if (!curriculum.data || records === null) return;
     setSaving(true);
     setMessage("");
     setError("");
     try {
-      const save = await applyNomenclatureAction(records, record, action);
-      await saveNomenclatureRecord(save, curriculum.data.fileSha);
+      await saveNomenclatureRecord(await build(records), curriculum.data.fileSha);
       setOpenForm(null);
-      setMessage(
-        action.kind === "validate"
-          ? "Ověření bylo uloženo do pull requestu."
-          : action.kind === "remove"
-            ? "Záznam byl odebrán v pull requestu."
-            : "Ověření bylo zrušeno v pull requestu.",
-      );
+      setAdding(false);
+      setMessage(success);
     } catch (cause) {
       setError(curriculumSaveError(cause));
     } finally {
       await queryClient.invalidateQueries({ queryKey: queryKeys.admin.nomenclatureCurriculum });
       setSaving(false);
     }
+  }
+
+  function runAction(record: NomenclatureRecord, action: NomenclatureAction) {
+    return save(
+      (current) => applyNomenclatureAction(current, record, action),
+      action.kind === "validate"
+        ? "Ověření bylo uloženo do pull requestu."
+        : action.kind === "remove"
+          ? "Záznam byl odebrán v pull requestu."
+          : "Ověření bylo zrušeno v pull requestu.",
+    );
+  }
+
+  function saveEdit(changed: NomenclatureRecord, added: boolean) {
+    return save(
+      (current) => nomenclatureSave(current, changed),
+      added ? "Záznam byl přidán do pull requestu." : "Úprava byla uložena do pull requestu.",
+    );
   }
 
   function submitValidation(event: FormEvent<HTMLFormElement>, record: NomenclatureRecord) {
@@ -144,6 +164,17 @@ export function NomenclatureReview() {
     const actions = availableNomenclatureActions(record);
     const open = openForm?.id === record.id ? openForm.kind : null;
     if (actions.length === 0) return null;
+
+    if (open === "edit" && records)
+      return (
+        <NomenclatureEditor
+          busy={busy}
+          onCancel={() => setOpenForm(null)}
+          onSave={(changed) => void saveEdit(changed, false)}
+          record={record}
+          records={records}
+        />
+      );
 
     if (open === "validate")
       return (
@@ -219,6 +250,16 @@ export function NomenclatureReview() {
             type="button"
           >
             Ověřit
+          </button>
+        ) : null}
+        {canEditNomenclature(record) ? (
+          <button
+            className={BUTTON}
+            disabled={busy}
+            onClick={() => setOpenForm({ id: record.id, kind: "edit" })}
+            type="button"
+          >
+            Upravit
           </button>
         ) : null}
         {actions.includes("unvalidate") ? (
@@ -328,6 +369,25 @@ export function NomenclatureReview() {
               value={search}
             />
           </label>
+
+          {adding && records ? (
+            <NomenclatureEditor
+              busy={busy}
+              onCancel={() => setAdding(false)}
+              onSave={(changed) => void saveEdit(changed, true)}
+              record={null}
+              records={records}
+            />
+          ) : (
+            <button
+              className={`${BUTTON} mt-4`}
+              disabled={busy}
+              onClick={() => setAdding(true)}
+              type="button"
+            >
+              Přidat záznam
+            </button>
+          )}
 
           <div aria-live="polite" className="mt-4 min-h-6">
             {message ? <p className="text-good">{message}</p> : null}

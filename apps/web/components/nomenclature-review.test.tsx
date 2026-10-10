@@ -127,6 +127,72 @@ describe("Nomenclature review", () => {
     expect(body.runtimeSnapshot.compounds).toEqual([]);
   });
 
+  it("saves an edited record without its validation", async () => {
+    api.get.mockResolvedValue(curriculum());
+    await openNomenclature();
+    const item = recordItem(published.nameCs);
+
+    fireEvent.click(within(item).getByRole("button", { name: "Upravit" }));
+    const form = within(item).getByRole("form", { name: "Upravit záznam" });
+    fireEvent.change(within(form).getByLabelText("Vysvětlení"), {
+      target: { value: "Kation NH4(+I), anion CO3(-II)." },
+    });
+    fireEvent.click(within(form).getByRole("button", { name: "Uložit záznam" }));
+
+    await waitFor(() => expect(api.save).toHaveBeenCalledTimes(1));
+    const [body] = api.save.mock.calls[0] as unknown as [
+      { record: Record<string, unknown>; runtimeSnapshot: { compounds: unknown[] } },
+    ];
+    expect(body.record).toMatchObject({
+      id: published.id,
+      explanationCs: "Kation NH4(+I), anion CO3(-II).",
+      status: "owner-approved",
+      reviewFingerprint: null,
+    });
+    expect(body.runtimeSnapshot.compounds).toEqual([
+      expect.objectContaining({ explanationCs: "Kation NH4(+I), anion CO3(-II)." }),
+    ]);
+    expect(await screen.findByText("Úprava byla uložena do pull requestu.")).toBeVisible();
+  });
+
+  it("adds a record pending validation and refuses an ambiguous name first", async () => {
+    api.get.mockResolvedValue(curriculum());
+    await openNomenclature();
+
+    fireEvent.click(screen.getByRole("button", { name: "Přidat záznam" }));
+    const form = screen.getByRole("form", { name: "Přidat záznam" });
+    const fill = (label: string, value: string) =>
+      fireEvent.change(within(form).getByLabelText(label), { target: { value } });
+    fill("Vzorec", "RbI");
+    fill("Název", published.nameCs);
+    fill("Vysvětlení", "Rb(+I) a I(-I).");
+    fill("Kategorie", "binary-salt");
+    fill("Zdroj (název)", "Skripta");
+    fill("Zdroj (odkaz https://)", "https://example.test/skripta");
+    fireEvent.click(within(form).getByRole("button", { name: "Přidat záznam" }));
+
+    expect(await within(form).findByRole("alert")).toHaveTextContent("Stejný název");
+    expect(api.save).not.toHaveBeenCalled();
+
+    fill("Název", "jodid rubidný");
+    fireEvent.click(within(form).getByRole("button", { name: "Přidat záznam" }));
+
+    await waitFor(() => expect(api.save).toHaveBeenCalledTimes(1));
+    const [body] = api.save.mock.calls[0] as unknown as [
+      { record: Record<string, unknown>; runtimeSnapshot: { compounds: { id: string }[] } },
+    ];
+    expect(body.record).toMatchObject({
+      id: "nomenclature.admin-1",
+      formula: "RbI",
+      status: "owner-approved",
+    });
+    expect(body.record).not.toHaveProperty("author");
+    expect(body.runtimeSnapshot.compounds.map(({ id }) => id)).toEqual([
+      "nomenclature.admin-1",
+      published.id,
+    ]);
+  });
+
   it("denies the data screen to non-admins", () => {
     auth.role = "user";
     render(

@@ -218,6 +218,14 @@ Decision:
 - Validation, withdrawal and removal follow decisions 3 to 5. Drafts and
   records held for review stay unpublished; the console can remove them but
   never publishes them by validating.
+- Adding and editing follow decisions 2 and 4, as for equations: a
+  new record is published as `owner-approved` under a fresh key
+  `nomenclature.admin-N` that is never reused, needs an `https://` reference,
+  and starts without aliases. Only published records can be edited. A change
+  clears the record's validation, an unchanged save keeps it. The console
+  rejects a save that adds a validation problem (unknown element, ambiguous
+  name or formula, a duplicate question), and a formula asked from the name
+  is stored in canonical notation.
 
 Limits: the GitHub contents API serves files up to 1 MB and the reverse proxy
 accepts request bodies up to 1 MB. Today the records file is about 650 kB and

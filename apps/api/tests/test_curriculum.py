@@ -818,6 +818,30 @@ def test_nomenclature_publishing_a_draft_records_the_console_approval(
     assert saved["ownerApprovedAt"] == "2026-10-10"
 
 
+def test_nomenclature_new_record_is_appended_with_console_author_and_approval(
+    nomenclature_github: FakeGitHub, nomenclature_repository: CurriculumRepository
+) -> None:
+    loaded = load_nomenclature(nomenclature_repository)
+    record = {
+        **editable_record(loaded.collection["records"][0]),
+        "id": "nomenclature.admin-1",
+        "sourceKey": "admin-1",
+        "formula": "RbI",
+        "nameCs": "jodid rubidný",
+    }
+    snapshot = runtime_snapshot()
+    snapshot["compounds"].append({**snapshot["compounds"][0], "id": record["id"]})
+    save_nomenclature_record(
+        nomenclature_repository, admin(), None, record, snapshot, loaded.file_sha, now=NOW
+    )
+    records = branch_records(nomenclature_github)
+    assert len(records) == len(loaded.collection["records"]) + 1
+    saved = records[-1]
+    assert (saved["id"], saved["author"]) == ("nomenclature.admin-1", curriculum.NEW_PRODUCT_AUTHOR)
+    assert saved["ownerApprovedBy"] == curriculum.NEW_PRODUCT_OWNER_APPROVAL
+    assert saved["ownerApprovedAt"] == "2026-10-10"
+
+
 @pytest.mark.anyio
 async def test_nomenclature_http_round_trip(overrides, nomenclature_github: FakeGitHub) -> None:
     overrides[curriculum_repository_dependency] = lambda: CurriculumRepository(
