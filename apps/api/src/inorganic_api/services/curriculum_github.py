@@ -6,6 +6,7 @@ into ``main`` stays a human action protected by branch protection.
 """
 
 import base64
+import hashlib
 import json
 import logging
 import urllib.error
@@ -166,6 +167,54 @@ class CurriculumRepository:
         if status == 409:
             raise FileChangedError
         return _require_str(data, "content", "sha")
+
+    def commit_files(
+        self, branch: str, expected_head: str, files: dict[str, str], message: str
+    ) -> str:
+        """Commit several files at once on top of ``expected_head`` and return the new head.
+
+        The branch moves only by fast-forward from ``expected_head``; if anything else
+        moved it first, GitHub rejects the update and ``FileChangedError`` is raised.
+        """
+        for text in files.values():
+            if len(text.encode("utf-8")) > MAX_FILE_BYTES:
+                raise AppError(413, "curriculum_file_too_large", "The dataset file is too large.")
+        _, commit = self._call("GET", f"/git/commits/{_quote(expected_head)}", ok=(200,))
+        base_tree = _require_str(commit, "tree", "sha")
+        _, tree = self._call(
+            "POST",
+            "/git/trees",
+            {
+                "base_tree": base_tree,
+                "tree": [
+                    {"path": path, "mode": "100644", "type": "blob", "content": text}
+                    for path, text in files.items()
+                ],
+            },
+            ok=(201,),
+        )
+        _, created = self._call(
+            "POST",
+            "/git/commits",
+            {"message": message, "tree": _require_str(tree, "sha"), "parents": [expected_head]},
+            ok=(201,),
+        )
+        head = _require_str(created, "sha")
+        status, _ = self._call(
+            "PATCH",
+            f"/git/refs/heads/{_quote(branch)}",
+            {"sha": head, "force": False},
+            ok=(200, 409, 422),
+        )
+        if status != 200:
+            raise FileChangedError
+        return head
+
+
+def git_blob_sha(text: str) -> str:
+    """The Git object ID of a file with this content, as GitHub reports it."""
+    data = text.encode("utf-8")
+    return hashlib.sha1(b"blob %d\0" % len(data) + data, usedforsecurity=False).hexdigest()
 
 
 def _quote(value: str) -> str:

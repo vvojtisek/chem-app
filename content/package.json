@@ -12,7 +12,8 @@
     "./preparation-production-schema": "./src/preparation-production-schema.ts",
     "./preparation-production-validation": "./src/preparation-production-validation.ts",
     "./review-fingerprint": "./src/review-fingerprint.ts",
-    "./nomenclature-schema": "./src/nomenclature-schema.ts"
+    "./nomenclature-schema": "./src/nomenclature-schema.ts",
+    "./nomenclature-snapshot": "./src/nomenclature-snapshot.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
