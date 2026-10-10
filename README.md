@@ -17,7 +17,7 @@ Read `AGENTS.md` and the nested instruction file for the area being changed befo
 ## Prerequisites
 
 - Node.js 24
-- pnpm 11.7.0
+- pnpm 12.11.2
 - Python 3.12 or newer
 - `uv` 0.12 or newer
 - Docker with Compose for local PostgreSQL and Mailpit
