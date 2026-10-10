@@ -13,6 +13,7 @@ export type LatestRelease = components["schemas"]["LatestReleaseResponse"];
 export type PreparationProductionCurriculum =
   components["schemas"]["PreparationProductionResponse"];
 export type SavedCurriculumProduct = components["schemas"]["SaveProductResponse"];
+export type NomenclatureCurriculum = components["schemas"]["NomenclatureCurriculumResponse"];
 
 export class ApiError extends Error {
   constructor(
@@ -171,6 +172,24 @@ export async function savePreparationProductionProduct(
     await apiClient.PUT("/api/v1/admin/curriculum/preparation-production/products/{product_id}", {
       params: { path: { product_id: product.id } },
       body: { product, baseSha },
+    }),
+  );
+}
+
+export async function getNomenclatureCurriculum(): Promise<NomenclatureCurriculum> {
+  return unwrapApiResponse(
+    await apiClient.GET("/api/v1/admin/curriculum/nomenclature", { cache: "no-store" }),
+  );
+}
+
+export async function saveNomenclatureRecord(
+  body: Omit<components["schemas"]["SaveNomenclatureRequest"], "baseSha">,
+  baseSha: string,
+): Promise<SavedCurriculumProduct> {
+  return unwrapApiResponse(
+    await apiClient.PUT("/api/v1/admin/curriculum/nomenclature/records/{record_id}", {
+      params: { path: { record_id: body.record.id } },
+      body: { ...body, baseSha },
     }),
   );
 }

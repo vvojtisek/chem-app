@@ -9,7 +9,6 @@ import { type FormEvent, useMemo, useState } from "react";
 import { useAccount } from "@/components/auth-gate";
 import { ProductEditor, RouteEditor } from "@/components/curriculum-editor";
 import { Equation, Formula } from "@/components/formula";
-import { PageHeader } from "@/components/page-header";
 import {
   ApiError,
   getPreparationProductionCurriculum,
@@ -78,7 +77,7 @@ function targetKey(productId: string, target: ReviewTarget): string {
   return target.kind === "product" ? productId : target.routeId;
 }
 
-function loadError(cause: unknown): string {
+export function curriculumLoadError(cause: unknown): string {
   if (cause instanceof ApiError && cause.code === "curriculum_editing_disabled")
     return "Úpravy dat z aplikace jsou na serveru vypnuté. Zapnou se nastavením CURRICULUM_GITHUB_REPOSITORY a CURRICULUM_GITHUB_TOKEN (viz docs/deployment.md).";
   if (cause instanceof ApiError && cause.code === "curriculum_repository_unavailable")
@@ -86,7 +85,7 @@ function loadError(cause: unknown): string {
   return "Data se nepodařilo načíst.";
 }
 
-function saveError(cause: unknown): string {
+export function curriculumSaveError(cause: unknown): string {
   if (cause instanceof ApiError) {
     switch (cause.code) {
       case "curriculum_changed":
@@ -146,12 +145,7 @@ export function CurriculumReview() {
   }, [curriculum.data]);
   const counts = useMemo(() => countReviewStates(products ?? []), [products]);
 
-  if (!allowed)
-    return (
-      <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-8 lg:py-10">
-        <PageHeader description="Správa je dostupná pouze správci." title="Přístup odepřen" />
-      </main>
-    );
+  if (!allowed) return null;
 
   const busy = saving || curriculum.isFetching;
   const canValidate = curriculum.data?.canValidate ?? false;
@@ -167,7 +161,7 @@ export function CurriculumReview() {
       setEditing(null);
       setMessage(success);
     } catch (cause) {
-      setError(saveError(cause));
+      setError(curriculumSaveError(cause));
     } finally {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.admin.preparationProductionCurriculum,
@@ -342,12 +336,12 @@ export function CurriculumReview() {
     .filter(({ productShown, routes }) => productShown || routes.length > 0);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 lg:py-10">
-      <PageHeader
-        breadcrumbs={[{ label: "Správa", href: "/admin" }, { label: "Data" }]}
-        description="Rovnice přípravy a výroby. Ověřením potvrzujete záznam podle dokladu. Změny se ukládají do jednoho pull requestu; studenti je uvidí po jeho sloučení a vydání nové verze. Neověřené záznamy studenti vidí dál."
-        title="Data: příprava a výroba"
-      />
+    <section aria-label="Příprava a výroba">
+      <p className="mb-4 max-w-[65ch] text-ink-2">
+        Rovnice přípravy a výroby. Ověřením potvrzujete záznam podle dokladu. Změny se ukládají do
+        jednoho pull requestu; studenti je uvidí po jeho sloučení a vydání nové verze. Neověřené
+        záznamy studenti vidí dál.
+      </p>
 
       {curriculum.data && products === null ? (
         <p className="text-bad" role="alert">
@@ -580,10 +574,10 @@ export function CurriculumReview() {
           className={curriculum.isError ? "text-bad" : ""}
           role={curriculum.isError ? "alert" : "status"}
         >
-          {curriculum.isError ? loadError(curriculum.error) : "Načítám data…"}
+          {curriculum.isError ? curriculumLoadError(curriculum.error) : "Načítám data…"}
         </p>
       )}
-    </main>
+    </section>
   );
 }
 
