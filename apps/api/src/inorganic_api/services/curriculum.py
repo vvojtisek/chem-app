@@ -14,7 +14,11 @@ from typing import Any
 
 from inorganic_api.errors import AppError
 from inorganic_api.models import User
-from inorganic_api.services.curriculum_github import CurriculumRepository, FileChangedError
+from inorganic_api.services.curriculum_github import (
+    CurriculumRepository,
+    FileChangedError,
+    git_blob_sha,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +26,9 @@ BASE_BRANCH = "main"
 CURATION_BRANCH = "content/curation"
 PREPARATION_PRODUCTION_PATH = "content/data/preparation-production.json"
 PREPARATION_PRODUCTION_VERSION_PREFIX = "preparation-production-"
+NOMENCLATURE_PATH = "content/data/nomenclature.json"
+NOMENCLATURE_SNAPSHOT_PATH = "content/generated/nomenclature-runtime.json"
+PUBLISHED_STATUSES = ("owner-approved", "reviewed")
 PULL_REQUEST_TITLE = "fix(content): apply curriculum changes from the admin console"
 PULL_REQUEST_BODY = (
     "Changes and chemistry-SME validations recorded in the admin console (ADR 0014).\n\n"
@@ -62,6 +69,32 @@ ROUTE_KEY_ORDER = (
     "reviewFingerprint",
     "reviewEvidence",
     "reviewEvidenceConfirmedBy",
+)
+NOMENCLATURE_KEY_ORDER = (
+    "id",
+    "sourceKey",
+    "formula",
+    "charge",
+    "nameCs",
+    "explanationCs",
+    "baseCategory",
+    "tags",
+    "difficulty",
+    "contextCs",
+    "directions",
+    "aliases",
+    "disposition",
+    "reviewIssues",
+    "status",
+    "author",
+    "sources",
+    "reviewedBy",
+    "reviewedAt",
+    "reviewFingerprint",
+    "reviewEvidence",
+    "reviewEvidenceConfirmedBy",
+    "ownerApprovedBy",
+    "ownerApprovedAt",
 )
 REVIEW_KEYS = (
     "reviewedBy",
@@ -169,6 +202,121 @@ def save_product(
         pull_request_url,
     )
     return SaveResult(file_sha=file_sha, pull_request_url=pull_request_url)
+
+
+def load_nomenclature(repository: CurriculumRepository) -> CurriculumSnapshot:
+    """Return the nomenclature records as the owner currently sees them."""
+    pull_request_url = repository.open_pull_request_url(CURATION_BRANCH, BASE_BRANCH)
+    branch = CURATION_BRANCH if pull_request_url else BASE_BRANCH
+    file = repository.read_file(NOMENCLATURE_PATH, branch)
+    return CurriculumSnapshot(
+        collection=_parse_collection(file.text, "records"),
+        file_sha=file.sha,
+        pending_changes=pull_request_url is not None,
+        pull_request_url=pull_request_url,
+    )
+
+
+def save_nomenclature_record(
+    repository: CurriculumRepository,
+    actor: User,
+    reviewer_id: str | None,
+    record: dict[str, Any],
+    runtime_snapshot: dict[str, Any],
+    base_sha: str,
+    *,
+    now: datetime | None = None,
+) -> SaveResult:
+    """Create or replace one nomenclature record on the curation branch.
+
+    The learner app reads the generated runtime snapshot, so it is committed in the
+    same commit as the records. The admin console derives it with the content
+    package's own code; the API checks only that it publishes exactly the
+    published records, and CI rejects a snapshot that differs from a fresh build.
+    """
+    if actor.role != "admin":
+        raise AppError(403, "forbidden", "Access denied.")
+    now = now or datetime.now(UTC)
+    today = now.date().isoformat()
+
+    pull_request_url = repository.open_pull_request_url(CURATION_BRANCH, BASE_BRANCH)
+    if pull_request_url is None:
+        repository.reset_branch(CURATION_BRANCH, repository.branch_sha(BASE_BRANCH))
+    head = repository.branch_sha(CURATION_BRANCH)
+    current_file = repository.read_file(NOMENCLATURE_PATH, head)
+    if current_file.sha != base_sha:
+        raise _stale()
+
+    collection = _parse_collection(current_file.text, "records")
+    records: list[dict[str, Any]] = collection["records"]
+    index = next((i for i, item in enumerate(records) if item.get("id") == record["id"]), None)
+    current = None if index is None else records[index]
+    merged = _merge_nomenclature_record(record, current, reviewer_id, today)
+    if index is None:
+        records.append(merged)
+    else:
+        records[index] = merged
+
+    published = {item["id"] for item in records if item.get("status") in PUBLISHED_STATUSES}
+    snapshot_ids = [compound["id"] for compound in runtime_snapshot["compounds"]]
+    if len(snapshot_ids) != len(set(snapshot_ids)) or set(snapshot_ids) != published:
+        raise AppError(
+            422,
+            "curriculum_snapshot_mismatch",
+            "The runtime snapshot does not match the published records.",
+        )
+
+    records_text = format_content_json(collection)
+    action = "create" if current is None else "update"
+    try:
+        repository.commit_files(
+            CURATION_BRANCH,
+            head,
+            {
+                NOMENCLATURE_PATH: records_text,
+                NOMENCLATURE_SNAPSHOT_PATH: format_content_json(runtime_snapshot),
+            },
+            f"chore(content): {action} {record['id']} from the admin console",
+        )
+    except FileChangedError as exc:
+        raise _stale() from exc
+    if pull_request_url is None:
+        pull_request_url = repository.create_pull_request(
+            CURATION_BRANCH, BASE_BRANCH, PULL_REQUEST_TITLE, PULL_REQUEST_BODY
+        )
+    logger.warning(
+        "Curriculum change: account=%s action=%s record=%s status=%s pr=%s",
+        actor.id,
+        action,
+        record["id"],
+        merged["status"],
+        pull_request_url,
+    )
+    return SaveResult(file_sha=git_blob_sha(records_text), pull_request_url=pull_request_url)
+
+
+def _merge_nomenclature_record(
+    incoming: dict[str, Any],
+    current: dict[str, Any] | None,
+    reviewer_id: str | None,
+    today: str,
+) -> dict[str, Any]:
+    if (
+        current is not None
+        and current.get("status") == "deprecated"
+        and incoming["status"] != "deprecated"
+    ):
+        raise AppError(409, "curriculum_record_deprecated", "A removed record cannot be restored.")
+    record = _apply_review(incoming, current, reviewer_id, today)
+    record["author"] = NEW_PRODUCT_AUTHOR if current is None else current["author"]
+    for key in ("ownerApprovedBy", "ownerApprovedAt"):
+        if current is not None and key in current:
+            record[key] = current[key]
+    if record["status"] == "owner-approved" and "ownerApprovedBy" not in record:
+        # Publishing a record from the console is the owner's release decision.
+        record["ownerApprovedBy"] = NEW_PRODUCT_OWNER_APPROVAL
+        record["ownerApprovedAt"] = today
+    return _ordered(record, NOMENCLATURE_KEY_ORDER)
 
 
 def _merge_product(
@@ -303,14 +451,14 @@ def _ordered(record: dict[str, Any], order: tuple[str, ...]) -> dict[str, Any]:
     return {key: record[key] for key in order if key in record}
 
 
-def _parse_collection(text: str) -> dict[str, Any]:
+def _parse_collection(text: str, items_key: str = "products") -> dict[str, Any]:
     try:
         data = json.loads(text)
     except ValueError as exc:
         raise AppError(
             503, "curriculum_repository_unavailable", "The content repository is unavailable."
         ) from exc
-    if not isinstance(data, dict) or not isinstance(data.get("products"), list):
+    if not isinstance(data, dict) or not isinstance(data.get(items_key), list):
         raise AppError(
             503, "curriculum_repository_unavailable", "The content repository is unavailable."
         )

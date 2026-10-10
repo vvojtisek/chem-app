@@ -985,6 +985,63 @@
         "title": "ModeStats",
         "type": "object"
       },
+      "NomenclatureAlias": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "sourceLocator": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Sourcelocator",
+            "type": "string"
+          },
+          "value": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "reason",
+          "sourceLocator"
+        ],
+        "title": "NomenclatureAlias",
+        "type": "object"
+      },
+      "NomenclatureAliases": {
+        "additionalProperties": false,
+        "properties": {
+          "formulas": {
+            "items": {
+              "$ref": "#/components/schemas/NomenclatureAlias"
+            },
+            "maxItems": 20,
+            "title": "Formulas",
+            "type": "array"
+          },
+          "names": {
+            "items": {
+              "$ref": "#/components/schemas/NomenclatureAlias"
+            },
+            "maxItems": 20,
+            "title": "Names",
+            "type": "array"
+          }
+        },
+        "required": [
+          "names",
+          "formulas"
+        ],
+        "title": "NomenclatureAliases",
+        "type": "object"
+      },
       "NomenclatureAttempt": {
         "additionalProperties": false,
         "properties": {
@@ -1114,6 +1171,484 @@
           "matchPolicy"
         ],
         "title": "NomenclatureAttempt",
+        "type": "object"
+      },
+      "NomenclatureCompound": {
+        "additionalProperties": false,
+        "description": "One published record as the learner app reads it (field order is the file order).",
+        "properties": {
+          "anionFamily": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anionfamily"
+          },
+          "category": {
+            "enum": [
+              "element-ion",
+              "oxide",
+              "hydride",
+              "binary-acid",
+              "oxoacid",
+              "hydroxide",
+              "binary-salt",
+              "oxoacid-salt",
+              "coordination",
+              "other"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "charge": {
+            "maximum": 4.0,
+            "minimum": -4.0,
+            "title": "Charge",
+            "type": "integer"
+          },
+          "contextCs": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contextcs"
+          },
+          "directions": {
+            "items": {
+              "enum": [
+                "formula-to-name",
+                "name-to-formula"
+              ],
+              "type": "string"
+            },
+            "maxItems": 2,
+            "title": "Directions",
+            "type": "array"
+          },
+          "elementCount": {
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Elementcount",
+            "type": "integer"
+          },
+          "explanationCs": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Explanationcs",
+            "type": "string"
+          },
+          "formula": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Formula",
+            "type": "string"
+          },
+          "formulaAliases": {
+            "items": {
+              "maxLength": 300,
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Formulaaliases",
+            "type": "array"
+          },
+          "id": {
+            "maxLength": 200,
+            "pattern": "^nomenclature\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "nameAliases": {
+            "items": {
+              "maxLength": 300,
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Namealiases",
+            "type": "array"
+          },
+          "nameCs": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Namecs",
+            "type": "string"
+          },
+          "reviewLevel": {
+            "enum": [
+              "owner-approved",
+              "sme-reviewed"
+            ],
+            "title": "Reviewlevel",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "enum": [
+                "hydrate",
+                "double-salt",
+                "peroxide",
+                "mixed-oxidation",
+                "trivial-name"
+              ],
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "reviewLevel",
+          "formula",
+          "charge",
+          "nameCs",
+          "explanationCs",
+          "category",
+          "elementCount",
+          "anionFamily",
+          "tags",
+          "contextCs",
+          "directions",
+          "nameAliases",
+          "formulaAliases"
+        ],
+        "title": "NomenclatureCompound",
+        "type": "object"
+      },
+      "NomenclatureCurriculumResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "canValidate": {
+            "title": "Canvalidate",
+            "type": "boolean"
+          },
+          "fileSha": {
+            "title": "Filesha",
+            "type": "string"
+          },
+          "pendingChanges": {
+            "title": "Pendingchanges",
+            "type": "boolean"
+          },
+          "pullRequestUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pullrequesturl"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/StoredNomenclatureRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "records",
+          "fileSha",
+          "pendingChanges",
+          "pullRequestUrl",
+          "canValidate"
+        ],
+        "title": "NomenclatureCurriculumResponse",
+        "type": "object"
+      },
+      "NomenclatureRecordInput": {
+        "additionalProperties": false,
+        "properties": {
+          "aliases": {
+            "$ref": "#/components/schemas/NomenclatureAliases"
+          },
+          "baseCategory": {
+            "anyOf": [
+              {
+                "enum": [
+                  "element-ion",
+                  "oxide",
+                  "hydride",
+                  "binary-acid",
+                  "oxoacid",
+                  "hydroxide",
+                  "binary-salt",
+                  "oxoacid-salt",
+                  "coordination",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basecategory"
+          },
+          "charge": {
+            "maximum": 4.0,
+            "minimum": -4.0,
+            "title": "Charge",
+            "type": "integer"
+          },
+          "contextCs": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contextcs"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "enum": [
+                  "basic",
+                  "intermediate",
+                  "advanced"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difficulty"
+          },
+          "directions": {
+            "items": {
+              "enum": [
+                "formula-to-name",
+                "name-to-formula"
+              ],
+              "type": "string"
+            },
+            "maxItems": 2,
+            "title": "Directions",
+            "type": "array"
+          },
+          "disposition": {
+            "enum": [
+              "core-candidate",
+              "decision-required",
+              "defer-grammar",
+              "defer-scope"
+            ],
+            "title": "Disposition",
+            "type": "string"
+          },
+          "explanationCs": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Explanationcs",
+            "type": "string"
+          },
+          "formula": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Formula",
+            "type": "string"
+          },
+          "id": {
+            "maxLength": 200,
+            "pattern": "^nomenclature\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Id",
+            "type": "string"
+          },
+          "nameCs": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Namecs",
+            "type": "string"
+          },
+          "reviewEvidence": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidence"
+          },
+          "reviewEvidenceConfirmedBy": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidenceconfirmedby"
+          },
+          "reviewFingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^sha256:[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewfingerprint"
+          },
+          "reviewIssues": {
+            "items": {
+              "pattern": "^R[0-9]{2}$",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Reviewissues",
+            "type": "array"
+          },
+          "sourceKey": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Sourcekey",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/NomenclatureSource"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "in-review",
+              "owner-approved",
+              "reviewed",
+              "deprecated"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "enum": [
+                "hydrate",
+                "double-salt",
+                "peroxide",
+                "mixed-oxidation",
+                "trivial-name"
+              ],
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "sourceKey",
+          "formula",
+          "charge",
+          "nameCs",
+          "explanationCs",
+          "baseCategory",
+          "tags",
+          "difficulty",
+          "contextCs",
+          "directions",
+          "aliases",
+          "disposition",
+          "reviewIssues",
+          "status",
+          "sources"
+        ],
+        "title": "NomenclatureRecordInput",
+        "type": "object"
+      },
+      "NomenclatureRuntimeSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "compounds": {
+            "items": {
+              "$ref": "#/components/schemas/NomenclatureCompound"
+            },
+            "maxItems": 2000,
+            "title": "Compounds",
+            "type": "array"
+          },
+          "contentVersion": {
+            "pattern": "^nomenclature-v3-[0-9a-f]{12}$",
+            "title": "Contentversion",
+            "type": "string"
+          },
+          "schemaVersion": {
+            "const": 3,
+            "title": "Schemaversion",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "contentVersion",
+          "compounds"
+        ],
+        "title": "NomenclatureRuntimeSnapshot",
+        "type": "object"
+      },
+      "NomenclatureSource": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "seed",
+              "reference"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "locator": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Locator",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "locator",
+          "kind"
+        ],
+        "title": "NomenclatureSource",
         "type": "object"
       },
       "PeriodicTableAttempt": {
@@ -1739,6 +2274,29 @@
         "title": "RouteInput",
         "type": "object"
       },
+      "SaveNomenclatureRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseSha": {
+            "pattern": "^[0-9a-f]{40}$",
+            "title": "Basesha",
+            "type": "string"
+          },
+          "record": {
+            "$ref": "#/components/schemas/NomenclatureRecordInput"
+          },
+          "runtimeSnapshot": {
+            "$ref": "#/components/schemas/NomenclatureRuntimeSnapshot"
+          }
+        },
+        "required": [
+          "record",
+          "runtimeSnapshot",
+          "baseSha"
+        ],
+        "title": "SaveNomenclatureRequest",
+        "type": "object"
+      },
       "SaveProductRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1775,6 +2333,221 @@
           "pullRequestUrl"
         ],
         "title": "SaveProductResponse",
+        "type": "object"
+      },
+      "StoredNomenclatureRecord": {
+        "properties": {
+          "aliases": {
+            "additionalProperties": {
+              "items": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "title": "Aliases",
+            "type": "object"
+          },
+          "author": {
+            "title": "Author",
+            "type": "string"
+          },
+          "baseCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basecategory"
+          },
+          "charge": {
+            "title": "Charge",
+            "type": "integer"
+          },
+          "contextCs": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contextcs"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difficulty"
+          },
+          "directions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Directions",
+            "type": "array"
+          },
+          "disposition": {
+            "title": "Disposition",
+            "type": "string"
+          },
+          "explanationCs": {
+            "title": "Explanationcs",
+            "type": "string"
+          },
+          "formula": {
+            "title": "Formula",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "nameCs": {
+            "title": "Namecs",
+            "type": "string"
+          },
+          "ownerApprovedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownerapprovedat"
+          },
+          "ownerApprovedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownerapprovedby"
+          },
+          "reviewEvidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidence"
+          },
+          "reviewEvidenceConfirmedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewevidenceconfirmedby"
+          },
+          "reviewFingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewfingerprint"
+          },
+          "reviewIssues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reviewissues",
+            "type": "array"
+          },
+          "reviewedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedat"
+          },
+          "reviewedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewedby"
+          },
+          "sourceKey": {
+            "title": "Sourcekey",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "sourceKey",
+          "formula",
+          "charge",
+          "nameCs",
+          "explanationCs",
+          "baseCategory",
+          "tags",
+          "difficulty",
+          "contextCs",
+          "directions",
+          "aliases",
+          "disposition",
+          "reviewIssues",
+          "status",
+          "author",
+          "sources"
+        ],
+        "title": "StoredNomenclatureRecord",
         "type": "object"
       },
       "StoredProduct": {
@@ -2159,6 +2932,207 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/curriculum/nomenclature": {
+      "get": {
+        "operationId": "getNomenclatureCurriculum",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NomenclatureCurriculumResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Show the nomenclature records with their review state",
+        "tags": [
+          "curriculum"
+        ]
+      }
+    },
+    "/api/v1/admin/curriculum/nomenclature/records/{record_id}": {
+      "put": {
+        "operationId": "saveNomenclatureRecord",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "pattern": "^nomenclature\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "title": "Record Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveNomenclatureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveProductResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Create or change one nomenclature record on the curation pull request",
+        "tags": [
+          "curriculum"
+        ]
+      }
+    },
     "/api/v1/admin/curriculum/preparation-production": {
       "get": {
         "operationId": "getPreparationProductionCurriculum",

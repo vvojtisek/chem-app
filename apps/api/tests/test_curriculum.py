@@ -15,7 +15,10 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from pydantic import ValidationError
 
-from inorganic_api.api.curriculum import curriculum_repository_dependency
+from inorganic_api.api.curriculum import (
+    NomenclatureRuntimeSnapshot,
+    curriculum_repository_dependency,
+)
 from inorganic_api.api.dependencies import get_current_user, require_csrf
 from inorganic_api.config import Settings
 from inorganic_api.errors import AppError
@@ -23,14 +26,19 @@ from inorganic_api.main import app
 from inorganic_api.services import curriculum
 from inorganic_api.services.curriculum import (
     CURATION_BRANCH,
+    NOMENCLATURE_PATH,
+    NOMENCLATURE_SNAPSHOT_PATH,
     PREPARATION_PRODUCTION_PATH,
     format_content_json,
+    load_nomenclature,
     load_preparation_production,
+    save_nomenclature_record,
     save_product,
 )
 from inorganic_api.services.curriculum_github import (
     CurriculumRepository,
     FileChangedError,
+    git_blob_sha,
     send_request,
 )
 
@@ -43,7 +51,7 @@ FINGERPRINT = "sha256:" + "a" * 64
 
 
 def blob_sha(text: str) -> str:
-    return hashlib.sha1(text.encode()).hexdigest()  # noqa: S324 - fake Git object id
+    return git_blob_sha(text)
 
 
 class FakeGitHub:
@@ -51,6 +59,8 @@ class FakeGitHub:
 
     def __init__(self, files: dict[str, str]) -> None:
         self.commits: dict[str, dict[str, str]] = {}
+        self.parents: dict[str, str] = {}
+        self.trees: dict[str, dict[str, str]] = {}
         self.branches = {"main": self._commit(files)}
         self.pulls: list[dict[str, Any]] = []
         self.requests: list[tuple[str, str]] = []
@@ -62,8 +72,8 @@ class FakeGitHub:
         self.commits[sha] = dict(files)
         return sha
 
-    def files(self, branch: str) -> dict[str, str]:
-        return self.commits[self.branches[branch]]
+    def files(self, ref: str) -> dict[str, str]:
+        return self.commits[self.branches.get(ref, ref)]
 
     def __call__(
         self, method: str, url: str, body: dict[str, Any] | None, token: str
@@ -85,9 +95,28 @@ class FakeGitHub:
                 return reply(404, {"message": "Not Found"})
             return reply(200, {"object": {"sha": self.branches[branch]}})
         if method == "PATCH" and path.startswith("/git/refs/heads/"):
-            assert body is not None and body["force"] is True
-            self.branches[path.removeprefix("/git/refs/heads/")] = body["sha"]
+            assert body is not None
+            branch = path.removeprefix("/git/refs/heads/")
+            if not body["force"] and self.parents.get(body["sha"]) != self.branches[branch]:
+                return reply(422, {"message": "Update is not a fast forward"})
+            self.branches[branch] = body["sha"]
             return reply(200, {})
+        if method == "GET" and path.startswith("/git/commits/"):
+            sha = path.removeprefix("/git/commits/")
+            self.trees[f"tree-{sha}"] = self.commits[sha]
+            return reply(200, {"sha": sha, "tree": {"sha": f"tree-{sha}"}})
+        if method == "POST" and path == "/git/trees":
+            assert body is not None
+            files = dict(self.trees[body["base_tree"]])
+            files.update({entry["path"]: entry["content"] for entry in body["tree"]})
+            tree_sha = f"tree-new-{len(self.trees)}"
+            self.trees[tree_sha] = files
+            return reply(201, {"sha": tree_sha})
+        if method == "POST" and path == "/git/commits":
+            assert body is not None
+            sha = self._commit(self.trees[body["tree"]])
+            self.parents[sha] = body["parents"][0]
+            return reply(201, {"sha": sha})
         if method == "POST" and path == "/git/refs":
             assert body is not None
             self.branches[body["ref"].removeprefix("refs/heads/")] = body["sha"]
@@ -624,3 +653,206 @@ async def test_put_rejects_server_owned_fields_and_bad_input(
     )
     assert (status, body["error"]["code"]) == (422, code)
     assert github.pulls == []
+
+
+GENERATED_DIR = CONTENT_DIR.parent / "generated"
+
+
+def load_nomenclature_files() -> dict[str, str]:
+    return {
+        NOMENCLATURE_PATH: (CONTENT_DIR / "nomenclature.json").read_text(encoding="utf-8"),
+        NOMENCLATURE_SNAPSHOT_PATH: (GENERATED_DIR / "nomenclature-runtime.json").read_text(
+            encoding="utf-8"
+        ),
+    }
+
+
+@pytest.fixture
+def nomenclature_github() -> FakeGitHub:
+    return FakeGitHub(load_nomenclature_files())
+
+
+@pytest.fixture
+def nomenclature_repository(nomenclature_github: FakeGitHub) -> CurriculumRepository:
+    return CurriculumRepository(REPOSITORY, TOKEN, send=nomenclature_github)
+
+
+def runtime_snapshot() -> dict[str, Any]:
+    return json.loads(load_nomenclature_files()[NOMENCLATURE_SNAPSHOT_PATH])
+
+
+def editable_record(record: dict[str, Any]) -> dict[str, Any]:
+    server_owned = {"author", "ownerApprovedBy", "ownerApprovedAt", "reviewedBy", "reviewedAt"}
+    return {key: value for key, value in record.items() if key not in server_owned}
+
+
+def branch_records(github: FakeGitHub) -> list[dict[str, Any]]:
+    return json.loads(github.files(CURATION_BRANCH)[NOMENCLATURE_PATH])["records"]
+
+
+def test_runtime_snapshot_model_round_trips_the_generated_file() -> None:
+    text = load_nomenclature_files()[NOMENCLATURE_SNAPSHOT_PATH]
+    model = NomenclatureRuntimeSnapshot.model_validate(json.loads(text))
+    assert format_content_json(model.model_dump(by_alias=True)) == text
+
+
+def test_nomenclature_validation_commits_records_and_snapshot_together(
+    nomenclature_github: FakeGitHub, nomenclature_repository: CurriculumRepository
+) -> None:
+    loaded = load_nomenclature(nomenclature_repository)
+    record = {
+        **editable_record(loaded.collection["records"][0]),
+        "status": "reviewed",
+        "reviewFingerprint": FINGERPRINT,
+        "reviewEvidence": "Skripta VŠCHT, s. 40",
+    }
+    snapshot = runtime_snapshot()
+    snapshot["compounds"][0]["reviewLevel"] = "sme-reviewed"
+    commits_before = len(nomenclature_github.commits)
+
+    result = save_nomenclature_record(
+        nomenclature_repository,
+        admin(),
+        SME_REVIEWER,
+        record,
+        snapshot,
+        loaded.file_sha,
+        now=NOW,
+    )
+
+    files = nomenclature_github.files(CURATION_BRANCH)
+    saved = branch_records(nomenclature_github)[0]
+    assert len(nomenclature_github.commits) == commits_before + 1
+    assert saved["status"] == "reviewed"
+    assert saved["reviewedBy"] == SME_REVIEWER
+    assert saved["reviewedAt"] == "2026-10-10"
+    assert saved["author"] == "seed-import"
+    assert saved["ownerApprovedAt"] == "2026-09-23"
+    assert list(saved)[-4:] == [
+        "reviewFingerprint",
+        "reviewEvidence",
+        "ownerApprovedBy",
+        "ownerApprovedAt",
+    ]
+    assert json.loads(files[NOMENCLATURE_SNAPSHOT_PATH]) == snapshot
+    assert files[NOMENCLATURE_SNAPSHOT_PATH] == format_content_json(snapshot)
+    assert result.file_sha == blob_sha(files[NOMENCLATURE_PATH])
+    assert nomenclature_github.pulls[0]["head"] == CURATION_BRANCH
+    assert load_nomenclature(nomenclature_repository).file_sha == result.file_sha
+
+
+def test_nomenclature_snapshot_must_publish_exactly_the_published_records(
+    nomenclature_github: FakeGitHub, nomenclature_repository: CurriculumRepository
+) -> None:
+    loaded = load_nomenclature(nomenclature_repository)
+    record = {**editable_record(loaded.collection["records"][0]), "status": "deprecated"}
+    with pytest.raises(AppError) as caught:
+        save_nomenclature_record(
+            nomenclature_repository,
+            admin(),
+            None,
+            record,
+            runtime_snapshot(),
+            loaded.file_sha,
+            now=NOW,
+        )
+    assert (caught.value.status_code, caught.value.code) == (422, "curriculum_snapshot_mismatch")
+    assert nomenclature_github.pulls == []
+
+
+def test_nomenclature_rejects_a_stale_base_and_a_moved_branch(
+    nomenclature_github: FakeGitHub, nomenclature_repository: CurriculumRepository
+) -> None:
+    loaded = load_nomenclature(nomenclature_repository)
+    record = editable_record(loaded.collection["records"][0])
+    with pytest.raises(AppError) as caught:
+        save_nomenclature_record(
+            nomenclature_repository, admin(), None, record, runtime_snapshot(), "0" * 40, now=NOW
+        )
+    assert caught.value.code == "curriculum_changed"
+
+    # Someone else moves the branch between the read and the update.
+    original = nomenclature_github.__call__
+
+    def racing(method: str, url: str, body: Any, token: str) -> tuple[int, bytes]:
+        if method == "POST" and url.endswith("/git/commits"):
+            files = nomenclature_github.files(CURATION_BRANCH)
+            nomenclature_github.branches[CURATION_BRANCH] = nomenclature_github._commit(files)
+        return original(method, url, body, token)
+
+    racing_repository = CurriculumRepository(REPOSITORY, TOKEN, send=racing)
+    with pytest.raises(AppError) as caught:
+        save_nomenclature_record(
+            racing_repository,
+            admin(),
+            None,
+            record,
+            runtime_snapshot(),
+            loaded.file_sha,
+            now=NOW,
+        )
+    assert caught.value.code == "curriculum_changed"
+
+
+def test_nomenclature_publishing_a_draft_records_the_console_approval(
+    nomenclature_github: FakeGitHub, nomenclature_repository: CurriculumRepository
+) -> None:
+    loaded = load_nomenclature(nomenclature_repository)
+    index, draft = next(
+        (i, r) for i, r in enumerate(loaded.collection["records"]) if r["status"] == "draft"
+    )
+    record = {
+        **editable_record(draft),
+        "status": "owner-approved",
+        "disposition": "core-candidate",
+        "reviewIssues": [],
+        "directions": ["formula-to-name"],
+    }
+    snapshot = runtime_snapshot()
+    snapshot["compounds"].append({**snapshot["compounds"][0], "id": draft["id"]})
+    save_nomenclature_record(
+        nomenclature_repository, admin(), None, record, snapshot, loaded.file_sha, now=NOW
+    )
+    saved = branch_records(nomenclature_github)[index]
+    assert saved["ownerApprovedBy"] == curriculum.NEW_PRODUCT_OWNER_APPROVAL
+    assert saved["ownerApprovedAt"] == "2026-10-10"
+
+
+@pytest.mark.anyio
+async def test_nomenclature_http_round_trip(overrides, nomenclature_github: FakeGitHub) -> None:
+    overrides[curriculum_repository_dependency] = lambda: CurriculumRepository(
+        REPOSITORY, TOKEN, send=nomenclature_github
+    )
+    user = admin()
+    overrides[get_current_user] = session_for(user)
+    overrides[require_csrf] = session_for(user)
+    status, body = await request("GET", "/nomenclature")
+    assert status == 200
+    assert len(body["records"]) == 510
+    assert body["records"][0]["baseCategory"] == "oxoacid-salt"
+    assert body["canValidate"] is False
+
+    record = editable_record(json.loads(load_nomenclature_files()[NOMENCLATURE_PATH])["records"][0])
+    for key in [key for key, value in record.items() if value is None]:
+        if key not in {"baseCategory", "difficulty", "contextCs"}:
+            del record[key]
+    status, saved = await request(
+        "PUT",
+        f"/nomenclature/records/{record['id']}",
+        json={"record": record, "runtimeSnapshot": runtime_snapshot(), "baseSha": body["fileSha"]},
+    )
+    assert status == 200
+    assert (
+        branch_records(nomenclature_github)[0]
+        == json.loads(load_nomenclature_files()[NOMENCLATURE_PATH])["records"][0]
+    )
+    assert nomenclature_github.files(CURATION_BRANCH) == load_nomenclature_files()
+    assert saved["fileSha"] == body["fileSha"]
+
+    record["author"] = "someone"
+    status, error = await request(
+        "PUT",
+        f"/nomenclature/records/{record['id']}",
+        json={"record": record, "runtimeSnapshot": runtime_snapshot(), "baseSha": body["fileSha"]},
+    )
+    assert (status, error["error"]["code"]) == (422, "validation_error")

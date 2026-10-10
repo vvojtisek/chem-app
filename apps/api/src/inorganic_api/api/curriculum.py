@@ -16,6 +16,21 @@ PRODUCT_ID = r"^preparation-production\.product\.[a-z0-9]+(?:-[a-z0-9]+)*$"
 ROUTE_ID = r"^preparation-production\.route\.[a-z0-9]+(?:-[a-z0-9]+)*$"
 SOURCE_ID = r"^id-[a-z0-9-]+$"
 FINGERPRINT = r"^sha256:[a-f0-9]{64}$"
+NOMENCLATURE_ID = r"^nomenclature\.[a-z0-9]+(?:-[a-z0-9]+)*$"
+NomenclatureCategory = Literal[
+    "element-ion",
+    "oxide",
+    "hydride",
+    "binary-acid",
+    "oxoacid",
+    "hydroxide",
+    "binary-salt",
+    "oxoacid-salt",
+    "coordination",
+    "other",
+]
+NomenclatureTag = Literal["hydrate", "double-salt", "peroxide", "mixed-oxidation", "trivial-name"]
+NomenclatureDirection = Literal["formula-to-name", "name-to-formula"]
 
 
 class _Model(BaseModel):
@@ -77,6 +92,73 @@ class SaveProductResponse(_Model):
     pull_request_url: str
 
 
+class NomenclatureAlias(_Model):
+    value: str = Field(min_length=1, max_length=300)
+    reason: str = Field(min_length=1, max_length=500)
+    source_locator: str = Field(min_length=1, max_length=2048)
+
+
+class NomenclatureAliases(_Model):
+    names: list[NomenclatureAlias] = Field(max_length=20)
+    formulas: list[NomenclatureAlias] = Field(max_length=20)
+
+
+class NomenclatureSource(_Model):
+    title: str = Field(min_length=1, max_length=300)
+    locator: str = Field(min_length=1, max_length=2048)
+    kind: Literal["seed", "reference"]
+
+
+class NomenclatureRecordInput(_Evidence):
+    id: str = Field(pattern=NOMENCLATURE_ID, max_length=200)
+    source_key: str = Field(min_length=1, max_length=256)
+    formula: str = Field(min_length=1, max_length=256)
+    charge: int = Field(ge=-4, le=4)
+    name_cs: str = Field(min_length=1, max_length=200)
+    explanation_cs: str = Field(min_length=1, max_length=4000)
+    base_category: NomenclatureCategory | None
+    tags: list[NomenclatureTag] = Field(max_length=5)
+    difficulty: Literal["basic", "intermediate", "advanced"] | None
+    context_cs: str | None = Field(max_length=500)
+    directions: list[NomenclatureDirection] = Field(max_length=2)
+    aliases: NomenclatureAliases
+    disposition: Literal["core-candidate", "decision-required", "defer-grammar", "defer-scope"]
+    review_issues: list[Annotated[str, Field(pattern=r"^R[0-9]{2}$")]] = Field(max_length=20)
+    status: Literal["draft", "in-review", "owner-approved", "reviewed", "deprecated"]
+    sources: list[NomenclatureSource] = Field(min_length=1, max_length=10)
+
+
+class NomenclatureCompound(_Model):
+    """One published record as the learner app reads it (field order is the file order)."""
+
+    id: str = Field(pattern=NOMENCLATURE_ID, max_length=200)
+    review_level: Literal["owner-approved", "sme-reviewed"]
+    formula: str = Field(min_length=1, max_length=256)
+    charge: int = Field(ge=-4, le=4)
+    name_cs: str = Field(min_length=1, max_length=200)
+    explanation_cs: str = Field(min_length=1, max_length=4000)
+    category: NomenclatureCategory
+    element_count: int = Field(ge=1, le=20)
+    anion_family: str | None = Field(max_length=200)
+    tags: list[NomenclatureTag] = Field(max_length=5)
+    context_cs: str | None = Field(max_length=500)
+    directions: list[NomenclatureDirection] = Field(max_length=2)
+    name_aliases: list[Annotated[str, Field(max_length=300)]] = Field(max_length=20)
+    formula_aliases: list[Annotated[str, Field(max_length=300)]] = Field(max_length=20)
+
+
+class NomenclatureRuntimeSnapshot(_Model):
+    schema_version: Literal[3]
+    content_version: str = Field(pattern=r"^nomenclature-v3-[0-9a-f]{12}$")
+    compounds: list[NomenclatureCompound] = Field(max_length=2000)
+
+
+class SaveNomenclatureRequest(_Model):
+    record: NomenclatureRecordInput
+    runtime_snapshot: NomenclatureRuntimeSnapshot
+    base_sha: str = Field(pattern=r"^[0-9a-f]{40}$")
+
+
 class _StoredReview(_Model):
     model_config = ConfigDict(extra="ignore", alias_generator=to_camel, populate_by_name=True)
 
@@ -119,6 +201,36 @@ class StoredProduct(_StoredReview):
     owner_approved_at: str
 
 
+class StoredNomenclatureRecord(_StoredReview):
+    id: str
+    source_key: str
+    formula: str
+    charge: int
+    name_cs: str
+    explanation_cs: str
+    base_category: str | None
+    tags: list[str]
+    difficulty: str | None
+    context_cs: str | None
+    directions: list[str]
+    aliases: dict[str, list[dict[str, str]]]
+    disposition: str
+    review_issues: list[str]
+    status: str
+    author: str
+    sources: list[dict[str, str]]
+    owner_approved_by: str | None = None
+    owner_approved_at: str | None = None
+
+
+class NomenclatureCurriculumResponse(_Model):
+    records: list[StoredNomenclatureRecord]
+    file_sha: str
+    pending_changes: bool
+    pull_request_url: str | None
+    can_validate: bool
+
+
 class PreparationProductionResponse(_Model):
     content_version: str
     products: list[StoredProduct]
@@ -157,6 +269,15 @@ def _route_record(route: RouteInput) -> dict[str, Any]:
     record = route.model_dump(by_alias=True, exclude_none=True)
     record["conditionsCs"] = route.conditions_cs
     return record
+
+
+def _nomenclature_record(record: NomenclatureRecordInput) -> dict[str, Any]:
+    data = record.model_dump(by_alias=True, exclude_none=True)
+    # These fields are nullable in the file, not optional.
+    data["baseCategory"] = record.base_category
+    data["difficulty"] = record.difficulty
+    data["contextCs"] = record.context_cs
+    return data
 
 
 def _product_record(product: ProductInput) -> dict[str, Any]:
@@ -220,6 +341,68 @@ def save_preparation_production_product(
         current.user,
         get_settings().curriculum_sme_reviewer_ids.get(current.user.id),
         _product_record(body.product),
+        body.base_sha,
+    )
+    return SaveProductResponse(file_sha=result.file_sha, pull_request_url=result.pull_request_url)
+
+
+@router.get(
+    "/admin/curriculum/nomenclature",
+    operation_id="getNomenclatureCurriculum",
+    response_model=NomenclatureCurriculumResponse,
+    responses={
+        401: {"model": ErrorEnvelope},
+        403: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
+    },
+    summary="Show the nomenclature records with their review state",
+)
+def get_nomenclature(
+    current: Annotated[AuthenticatedSession, Depends(require_role("admin"))],
+    repository: Annotated[CurriculumRepository | None, Depends(curriculum_repository_dependency)],
+) -> NomenclatureCurriculumResponse:
+    snapshot = curriculum.load_nomenclature(_require_repository(repository))
+    return NomenclatureCurriculumResponse(
+        records=[
+            StoredNomenclatureRecord.model_validate(item) for item in snapshot.collection["records"]
+        ],
+        file_sha=snapshot.file_sha,
+        pending_changes=snapshot.pending_changes,
+        pull_request_url=snapshot.pull_request_url,
+        can_validate=current.user.id in get_settings().curriculum_sme_reviewer_ids,
+    )
+
+
+@router.put(
+    "/admin/curriculum/nomenclature/records/{record_id}",
+    operation_id="saveNomenclatureRecord",
+    response_model=SaveProductResponse,
+    responses={
+        401: {"model": ErrorEnvelope},
+        403: {"model": ErrorEnvelope},
+        409: {"model": ErrorEnvelope},
+        413: {"model": ErrorEnvelope},
+        422: {"model": ErrorEnvelope},
+        503: {"model": ErrorEnvelope},
+    },
+    summary="Create or change one nomenclature record on the curation pull request",
+)
+def save_nomenclature_record(
+    record_id: Annotated[str, Path(pattern=NOMENCLATURE_ID, max_length=200)],
+    body: SaveNomenclatureRequest,
+    current: Annotated[AuthenticatedSession, Depends(require_csrf)],
+    repository: Annotated[CurriculumRepository | None, Depends(curriculum_repository_dependency)],
+) -> SaveProductResponse:
+    if current.user.role != "admin":
+        raise AppError(403, "forbidden", "Access denied.")
+    if body.record.id != record_id:
+        raise AppError(422, "curriculum_id_mismatch", "The record ID does not match the URL.")
+    result = curriculum.save_nomenclature_record(
+        _require_repository(repository),
+        current.user,
+        get_settings().curriculum_sme_reviewer_ids.get(current.user.id),
+        _nomenclature_record(body.record),
+        body.runtime_snapshot.model_dump(by_alias=True),
         body.base_sha,
     )
     return SaveProductResponse(file_sha=result.file_sha, pull_request_url=result.pull_request_url)

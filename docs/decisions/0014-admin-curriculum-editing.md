@@ -192,3 +192,34 @@ Operational:
 
 Each phase is a separate pull request. Production changes only when the owner
 sets the token and merges.
+
+## Amendment (2026-10-10): nomenclature
+
+The owner asked to validate and add nomenclature records from the console as
+well. Nomenclature differs from preparation/production in one way: the
+learner app reads `content/generated/nomenclature-runtime.json`, a snapshot
+generated from `content/data/nomenclature.json`, and `pnpm content:validate`
+fails when the two disagree. Every validation changes the snapshot
+(`reviewLevel`), so a records-only commit would turn CI red.
+
+Decision:
+
+- The console rebuilds the snapshot with the content package's own code
+  (`@inorganic/content/nomenclature-snapshot`, browser-safe; only the
+  content-version hash uses Web Crypto instead of `node:crypto`) and sends it
+  with the changed record.
+- The API commits the records file and the snapshot in one commit through the
+  Git Data API. The branch moves only by fast-forward from the head it read,
+  so a concurrent change is reported as stale and nothing is half-written.
+- The API does not derive the snapshot (no second implementation of the
+  nomenclature rules in Python). It checks only that the snapshot publishes
+  exactly the records whose status is `owner-approved` or `reviewed`. CI
+  still rebuilds the snapshot and rejects any difference before merge.
+- Validation, withdrawal and removal follow decisions 3 to 5. Drafts and
+  records held for review stay unpublished; the console can remove them but
+  never publishes them by validating.
+
+Limits: the GitHub contents API serves files up to 1 MB and the reverse proxy
+accepts request bodies up to 1 MB. Today the records file is about 650 kB and
+a save request about 200 kB, so the limits allow roughly 750 records before
+the adapter must switch to the blob API.

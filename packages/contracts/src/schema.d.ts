@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/v1/admin/curriculum/nomenclature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show the nomenclature records with their review state */
+        get: operations["getNomenclatureCurriculum"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/curriculum/nomenclature/records/{record_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Create or change one nomenclature record on the curation pull request */
+        put: operations["saveNomenclatureRecord"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/curriculum/preparation-production": {
         parameters: {
             query?: never;
@@ -797,6 +831,22 @@ export interface components {
             /** Totalattempts */
             totalAttempts: number;
         };
+        /** NomenclatureAlias */
+        NomenclatureAlias: {
+            /** Reason */
+            reason: string;
+            /** Sourcelocator */
+            sourceLocator: string;
+            /** Value */
+            value: string;
+        };
+        /** NomenclatureAliases */
+        NomenclatureAliases: {
+            /** Formulas */
+            formulas: components["schemas"]["NomenclatureAlias"][];
+            /** Names */
+            names: components["schemas"]["NomenclatureAlias"][];
+        };
         /** NomenclatureAttempt */
         NomenclatureAttempt: {
             /** Compoundid */
@@ -858,6 +908,129 @@ export interface components {
             sequence: number;
             /** Sessionid */
             sessionId: string;
+        };
+        /**
+         * NomenclatureCompound
+         * @description One published record as the learner app reads it (field order is the file order).
+         */
+        NomenclatureCompound: {
+            /** Anionfamily */
+            anionFamily: string | null;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "element-ion" | "oxide" | "hydride" | "binary-acid" | "oxoacid" | "hydroxide" | "binary-salt" | "oxoacid-salt" | "coordination" | "other";
+            /** Charge */
+            charge: number;
+            /** Contextcs */
+            contextCs: string | null;
+            /** Directions */
+            directions: ("formula-to-name" | "name-to-formula")[];
+            /** Elementcount */
+            elementCount: number;
+            /** Explanationcs */
+            explanationCs: string;
+            /** Formula */
+            formula: string;
+            /** Formulaaliases */
+            formulaAliases: string[];
+            /** Id */
+            id: string;
+            /** Namealiases */
+            nameAliases: string[];
+            /** Namecs */
+            nameCs: string;
+            /**
+             * Reviewlevel
+             * @enum {string}
+             */
+            reviewLevel: "owner-approved" | "sme-reviewed";
+            /** Tags */
+            tags: ("hydrate" | "double-salt" | "peroxide" | "mixed-oxidation" | "trivial-name")[];
+        };
+        /** NomenclatureCurriculumResponse */
+        NomenclatureCurriculumResponse: {
+            /** Canvalidate */
+            canValidate: boolean;
+            /** Filesha */
+            fileSha: string;
+            /** Pendingchanges */
+            pendingChanges: boolean;
+            /** Pullrequesturl */
+            pullRequestUrl: string | null;
+            /** Records */
+            records: components["schemas"]["StoredNomenclatureRecord"][];
+        };
+        /** NomenclatureRecordInput */
+        NomenclatureRecordInput: {
+            aliases: components["schemas"]["NomenclatureAliases"];
+            /** Basecategory */
+            baseCategory: ("element-ion" | "oxide" | "hydride" | "binary-acid" | "oxoacid" | "hydroxide" | "binary-salt" | "oxoacid-salt" | "coordination" | "other") | null;
+            /** Charge */
+            charge: number;
+            /** Contextcs */
+            contextCs: string | null;
+            /** Difficulty */
+            difficulty: ("basic" | "intermediate" | "advanced") | null;
+            /** Directions */
+            directions: ("formula-to-name" | "name-to-formula")[];
+            /**
+             * Disposition
+             * @enum {string}
+             */
+            disposition: "core-candidate" | "decision-required" | "defer-grammar" | "defer-scope";
+            /** Explanationcs */
+            explanationCs: string;
+            /** Formula */
+            formula: string;
+            /** Id */
+            id: string;
+            /** Namecs */
+            nameCs: string;
+            /** Reviewevidence */
+            reviewEvidence?: string | null;
+            /** Reviewevidenceconfirmedby */
+            reviewEvidenceConfirmedBy?: string | null;
+            /** Reviewfingerprint */
+            reviewFingerprint?: string | null;
+            /** Reviewissues */
+            reviewIssues: string[];
+            /** Sourcekey */
+            sourceKey: string;
+            /** Sources */
+            sources: components["schemas"]["NomenclatureSource"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "in-review" | "owner-approved" | "reviewed" | "deprecated";
+            /** Tags */
+            tags: ("hydrate" | "double-salt" | "peroxide" | "mixed-oxidation" | "trivial-name")[];
+        };
+        /** NomenclatureRuntimeSnapshot */
+        NomenclatureRuntimeSnapshot: {
+            /** Compounds */
+            compounds: components["schemas"]["NomenclatureCompound"][];
+            /** Contentversion */
+            contentVersion: string;
+            /**
+             * Schemaversion
+             * @constant
+             */
+            schemaVersion: 3;
+        };
+        /** NomenclatureSource */
+        NomenclatureSource: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "seed" | "reference";
+            /** Locator */
+            locator: string;
+            /** Title */
+            title: string;
         };
         /** PeriodicTableAttempt */
         PeriodicTableAttempt: {
@@ -1062,6 +1235,13 @@ export interface components {
              */
             status: "owner-approved" | "in-review" | "reviewed" | "deprecated";
         };
+        /** SaveNomenclatureRequest */
+        SaveNomenclatureRequest: {
+            /** Basesha */
+            baseSha: string;
+            record: components["schemas"]["NomenclatureRecordInput"];
+            runtimeSnapshot: components["schemas"]["NomenclatureRuntimeSnapshot"];
+        };
         /** SaveProductRequest */
         SaveProductRequest: {
             /** Basesha */
@@ -1074,6 +1254,63 @@ export interface components {
             fileSha: string;
             /** Pullrequesturl */
             pullRequestUrl: string;
+        };
+        /** StoredNomenclatureRecord */
+        StoredNomenclatureRecord: {
+            /** Aliases */
+            aliases: {
+                [key: string]: {
+                    [key: string]: string;
+                }[];
+            };
+            /** Author */
+            author: string;
+            /** Basecategory */
+            baseCategory: string | null;
+            /** Charge */
+            charge: number;
+            /** Contextcs */
+            contextCs: string | null;
+            /** Difficulty */
+            difficulty: string | null;
+            /** Directions */
+            directions: string[];
+            /** Disposition */
+            disposition: string;
+            /** Explanationcs */
+            explanationCs: string;
+            /** Formula */
+            formula: string;
+            /** Id */
+            id: string;
+            /** Namecs */
+            nameCs: string;
+            /** Ownerapprovedat */
+            ownerApprovedAt?: string | null;
+            /** Ownerapprovedby */
+            ownerApprovedBy?: string | null;
+            /** Reviewevidence */
+            reviewEvidence?: string | null;
+            /** Reviewevidenceconfirmedby */
+            reviewEvidenceConfirmedBy?: string | null;
+            /** Reviewfingerprint */
+            reviewFingerprint?: string | null;
+            /** Reviewissues */
+            reviewIssues: string[];
+            /** Reviewedat */
+            reviewedAt?: string | null;
+            /** Reviewedby */
+            reviewedBy?: string | null;
+            /** Sourcekey */
+            sourceKey: string;
+            /** Sources */
+            sources: {
+                [key: string]: string;
+            }[];
+            /** Status */
+            status: string;
+            /** Tags */
+            tags: string[];
         };
         /** StoredProduct */
         StoredProduct: {
@@ -1182,6 +1419,153 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getNomenclatureCurriculum: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NomenclatureCurriculumResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    saveNomenclatureRecord: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                record_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveNomenclatureRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SaveProductResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Request Entity Too Large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     getPreparationProductionCurriculum: {
         parameters: {
             query?: never;
