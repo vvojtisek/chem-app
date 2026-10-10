@@ -65,6 +65,8 @@ export const nomenclatureRecordSchema = z
       .string()
       .regex(/^sha256:[a-f0-9]{64}$/u)
       .optional(),
+    reviewEvidence: z.string().trim().min(1).max(300).optional(),
+    reviewEvidenceConfirmedBy: z.string().trim().min(1).max(120).optional(),
     ownerApprovedBy: z.string().min(1).optional(),
     ownerApprovedAt: z.iso.date().optional(),
   })
