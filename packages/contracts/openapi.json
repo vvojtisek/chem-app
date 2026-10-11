@@ -58,6 +58,17 @@
       "AdminUpdateProfileRequest": {
         "additionalProperties": false,
         "properties": {
+          "curriculumSme": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Curriculumsme"
+          },
           "displayName": {
             "anyOf": [
               {
@@ -121,6 +132,10 @@
             "format": "date-time",
             "title": "Createdat",
             "type": "string"
+          },
+          "curriculumSme": {
+            "title": "Curriculumsme",
+            "type": "boolean"
           },
           "displayName": {
             "anyOf": [
@@ -187,6 +202,7 @@
           "displayName",
           "role",
           "isActive",
+          "curriculumSme",
           "createdAt",
           "lastLoginAt"
         ],
@@ -897,6 +913,10 @@
       },
       "MeResponse": {
         "properties": {
+          "curriculumSme": {
+            "title": "Curriculumsme",
+            "type": "boolean"
+          },
           "displayName": {
             "anyOf": [
               {
@@ -950,7 +970,8 @@
           "role",
           "email",
           "displayName",
-          "progressGeneration"
+          "progressGeneration",
+          "curriculumSme"
         ],
         "title": "MeResponse",
         "type": "object"
@@ -1924,6 +1945,10 @@
             "title": "Createdat",
             "type": "string"
           },
+          "curriculumSme": {
+            "title": "Curriculumsme",
+            "type": "boolean"
+          },
           "dailyGoal": {
             "anyOf": [
               {
@@ -2006,6 +2031,7 @@
           "dailyGoal",
           "role",
           "isActive",
+          "curriculumSme",
           "createdAt",
           "lastLoginAt"
         ],
@@ -2145,6 +2171,79 @@
           "message"
         ],
         "title": "RejectedAttempt",
+        "type": "object"
+      },
+      "ReviewerProfileRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "publicName": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Publicname",
+            "type": "string"
+          },
+          "qualification": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Qualification",
+            "type": "string"
+          }
+        },
+        "required": [
+          "publicName",
+          "qualification"
+        ],
+        "title": "ReviewerProfileRequest",
+        "type": "object"
+      },
+      "ReviewerProfileResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "managedByConfiguration": {
+            "title": "Managedbyconfiguration",
+            "type": "boolean"
+          },
+          "publicName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicname"
+          },
+          "qualification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qualification"
+          },
+          "reviewerId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewerid"
+          }
+        },
+        "required": [
+          "reviewerId",
+          "publicName",
+          "qualification",
+          "managedByConfiguration"
+        ],
+        "title": "ReviewerProfileResponse",
         "type": "object"
       },
       "RouteInput": {
@@ -3329,6 +3428,154 @@
           }
         ],
         "summary": "Create or change one product and its equations on the curation pull request",
+        "tags": [
+          "curriculum"
+        ]
+      }
+    },
+    "/api/v1/admin/curriculum/reviewer-profile": {
+      "get": {
+        "operationId": "getCurriculumReviewerProfile",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewerProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Show the signed-in SME's public reviewer entry",
+        "tags": [
+          "curriculum"
+        ]
+      },
+      "put": {
+        "operationId": "updateCurriculumReviewerProfile",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewerProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewerProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Set the signed-in SME's public name and qualification for validations",
         "tags": [
           "curriculum"
         ]

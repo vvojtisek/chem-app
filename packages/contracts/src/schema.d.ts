@@ -72,6 +72,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/curriculum/reviewer-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show the signed-in SME's public reviewer entry */
+        get: operations["getCurriculumReviewerProfile"];
+        /** Set the signed-in SME's public name and qualification for validations */
+        put: operations["updateCurriculumReviewerProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/releases/latest": {
         parameters: {
             query?: never;
@@ -506,6 +524,8 @@ export interface components {
         };
         /** AdminUpdateProfileRequest */
         AdminUpdateProfileRequest: {
+            /** Curriculumsme */
+            curriculumSme?: boolean | null;
             /** Displayname */
             displayName?: string | null;
             /** Email */
@@ -522,6 +542,8 @@ export interface components {
              * Format: date-time
              */
             createdAt: string;
+            /** Curriculumsme */
+            curriculumSme: boolean;
             /** Displayname */
             displayName: string | null;
             /** Email */
@@ -797,6 +819,8 @@ export interface components {
         };
         /** MeResponse */
         MeResponse: {
+            /** Curriculumsme */
+            curriculumSme: boolean;
             /** Displayname */
             displayName: string | null;
             /** Email */
@@ -1131,6 +1155,8 @@ export interface components {
              * Format: date-time
              */
             createdAt: string;
+            /** Curriculumsme */
+            curriculumSme: boolean;
             /** Dailygoal */
             dailyGoal: number | null;
             /** Displayname */
@@ -1203,6 +1229,24 @@ export interface components {
             index: number;
             /** Message */
             message: string;
+        };
+        /** ReviewerProfileRequest */
+        ReviewerProfileRequest: {
+            /** Publicname */
+            publicName: string;
+            /** Qualification */
+            qualification: string;
+        };
+        /** ReviewerProfileResponse */
+        ReviewerProfileResponse: {
+            /** Managedbyconfiguration */
+            managedByConfiguration: boolean;
+            /** Publicname */
+            publicName: string | null;
+            /** Qualification */
+            qualification: string | null;
+            /** Reviewerid */
+            reviewerId: string | null;
         };
         /** RouteInput */
         RouteInput: {
@@ -1704,6 +1748,115 @@ export interface operations {
             };
             /** @description Service Unavailable */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getCurriculumReviewerProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewerProfileResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    updateCurriculumReviewerProfile: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewerProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewerProfileResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };

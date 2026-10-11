@@ -17,7 +17,10 @@ import { AppShell } from "./app-shell";
 import { LegacyImportDialog } from "./legacy-import-dialog";
 import { SyncProvider } from "./sync-provider";
 
-export type ActiveAccount = Pick<CurrentUser, "id" | "username" | "role" | "progressGeneration">;
+export type ActiveAccount = Pick<
+  CurrentUser,
+  "id" | "username" | "role" | "progressGeneration" | "curriculumSme"
+>;
 const AccountContext = createContext<ActiveAccount | null>(null);
 const publicAuthPaths = new Set(["/login", "/reset-password"]);
 // Readable before sign-in (the privacy notice must be available before first sign-in),
@@ -179,6 +182,8 @@ export function AuthGate({ children }: Readonly<{ children: ReactNode }>) {
           username: marker.username,
           role: marker.role,
           progressGeneration: marker.progressGeneration,
+          // Data editing needs the server; offline, only the role is known.
+          curriculumSme: marker.role === "admin",
         }}
         offline
       >

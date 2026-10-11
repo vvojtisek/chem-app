@@ -14,6 +14,7 @@ from inorganic_api.errors import ErrorEnvelope
 from inorganic_api.models import User
 from inorganic_api.services import accounts
 from inorganic_api.services.auth import AuthenticatedSession
+from inorganic_api.services.curriculum_access import is_curriculum_sme
 from inorganic_api.services.passwords import MAX_PASSWORD_BYTES
 
 
@@ -30,6 +31,8 @@ class ProfileResponse(ApiModel):
     daily_goal: int | None
     role: Literal["admin", "user", "tester", "guest"]
     is_active: bool
+    # Admins always count as SMEs; for other accounts an admin sets the flag.
+    curriculum_sme: bool
     created_at: datetime
     last_login_at: datetime | None
 
@@ -56,13 +59,14 @@ class AdminUpdateProfileRequest(UpdateProfileRequest):
     email: str | None = Field(default=None, max_length=254)
     role: Literal["admin", "user", "tester"] | None = None
     is_active: bool | None = None
+    curriculum_sme: bool | None = None
 
     @field_validator("email")
     @classmethod
     def normalize_address(cls, value: str | None) -> str | None:
         return accounts.normalize_email(value) if value is not None else None
 
-    @field_validator("role", "is_active")
+    @field_validator("role", "is_active", "curriculum_sme")
     @classmethod
     def require_non_null(cls, value: object) -> object:
         if value is None:
@@ -113,6 +117,7 @@ def _profile(user: User) -> ProfileResponse:
         daily_goal=user.daily_goal,
         role=user.role,
         is_active=user.is_active,
+        curriculum_sme=is_curriculum_sme(user),
         created_at=user.created_at,
         last_login_at=user.last_login_at,
     )

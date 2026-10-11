@@ -119,7 +119,7 @@ function matchesSearch(product: PreparationProductionProduct, search: string): b
 
 export function CurriculumReview() {
   const account = useAccount();
-  const allowed = account?.role === "admin";
+  const allowed = account?.curriculumSme === true;
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<Filter>("pending");
   const [search, setSearch] = useState("");
@@ -365,8 +365,8 @@ export function CurriculumReview() {
           ) : null}
           {canValidate ? null : (
             <p className="mt-3 rounded-xl border border-warn bg-warn-soft p-3">
-              Váš účet není zapsán jako odborník (SME), proto nemůžete ověřovat. Odebrat záznam nebo
-              zrušit ověření můžete.
+              Ověřovat můžete, až vyplníte veřejný profil odborníka nahoře. Upravit nebo odebrat
+              záznam a zrušit ověření můžete hned.
             </p>
           )}
 

@@ -197,6 +197,7 @@ class AdminUser(ApiModel):
     display_name: str | None
     role: Literal["admin", "user", "tester", "guest"]
     is_active: bool
+    curriculum_sme: bool
     created_at: datetime
     last_login_at: datetime | None
 

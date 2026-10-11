@@ -15,7 +15,11 @@ vi.mock("@/lib/api/client", async (importOriginal) => ({
   savePreparationProductionProduct: api.save,
 }));
 vi.mock("@/components/auth-gate", () => ({
-  useAccount: () => ({ id: "11111111-1111-4111-8111-111111111111", role: "admin" }),
+  useAccount: () => ({
+    id: "11111111-1111-4111-8111-111111111111",
+    role: "admin",
+    curriculumSme: true,
+  }),
 }));
 
 import { ApiError } from "@/lib/api/client";
@@ -160,7 +164,7 @@ describe("CurriculumReview", () => {
     api.get.mockResolvedValue(curriculum(false));
     renderReview();
 
-    expect(await screen.findByText(/není zapsán jako odborník/u)).toBeVisible();
+    expect(await screen.findByText(/vyplníte veřejný profil odborníka/u)).toBeVisible();
     expect(screen.queryByRole("button", { name: "Ověřit" })).toBeNull();
     expect(within(routeItem("ZnCl2")).getByRole("button", { name: "Odebrat" })).toBeVisible();
   });

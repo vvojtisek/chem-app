@@ -160,6 +160,9 @@ def admin_update_profile(db: Session, actor: User, user_id: UUID, changes: dict)
         target.role = changes["role"]
     if "is_active" in changes:
         target.is_active = changes["is_active"]
+    if "curriculum_sme" in changes:
+        # Admins count as SMEs regardless; the flag matters for other accounts.
+        target.curriculum_sme = changes["curriculum_sme"]
     if not target.is_active or ("role" in changes and target.id == actor.id):
         sessions.revoke_for_user(db, target.id)
     try:

@@ -548,6 +548,70 @@ async def test_admin_profile_and_password_management(db: Session) -> None:
 
 
 @pytest.mark.anyio
+async def test_admin_marks_an_account_as_curriculum_sme(db: Session) -> None:
+    admin = account(db, "admin")
+    learner = account(db)
+    profile_path = "/api/v1/admin/curriculum/reviewer-profile"
+    async with client() as http:
+        await login(http, learner)
+        assert (await http.get("/api/v1/auth/me")).json()["curriculumSme"] is False
+        assert (await http.get(profile_path)).status_code == 403
+        assert (await http.get("/api/v1/admin/curriculum/nomenclature")).status_code == 403
+        self_grant = await http.patch(
+            f"/api/v1/admin/users/{learner.id}/profile",
+            headers=csrf(http),
+            json={"curriculumSme": True},
+        )
+        assert self_grant.status_code == 403
+
+        await login(http, admin)
+        assert (await http.get("/api/v1/auth/me")).json()["curriculumSme"] is True
+        granted = await http.patch(
+            f"/api/v1/admin/users/{learner.id}/profile",
+            headers=csrf(http),
+            json={"curriculumSme": True},
+        )
+        assert granted.status_code == 200, granted.text
+        assert granted.json()["curriculumSme"] is True
+        listed = (await http.get("/api/v1/admin/users")).json()["items"]
+        assert next(item for item in listed if item["id"] == str(learner.id))["curriculumSme"]
+
+        await login(http, learner)
+        assert (await http.get("/api/v1/auth/me")).json()["curriculumSme"] is True
+        # Curriculum data only: editing is not configured here, other admin areas stay closed.
+        disabled = await http.get("/api/v1/admin/curriculum/nomenclature")
+        assert disabled.json()["error"]["code"] == "curriculum_editing_disabled"
+        assert (await http.get("/api/v1/admin/users")).status_code == 403
+        assert (await http.get("/api/v1/admin/stats")).status_code == 403
+        assert (await http.get(profile_path)).json() == {
+            "reviewerId": None,
+            "publicName": None,
+            "qualification": None,
+            "managedByConfiguration": False,
+        }
+        body = {"publicName": "  Jana  Nováková ", "qualification": "Ph.D. anorganická chemie"}
+        assert (await http.put(profile_path, json=body)).status_code == 403
+        saved = await http.put(profile_path, headers=csrf(http), json=body)
+        assert saved.status_code == 200, saved.text
+        assert saved.json() == {
+            "reviewerId": f"reviewer.account-{learner.id.hex[:12]}",
+            "publicName": "Jana Nováková",
+            "qualification": "Ph.D. anorganická chemie",
+            "managedByConfiguration": False,
+        }
+
+        await login(http, admin)
+        revoked = await http.patch(
+            f"/api/v1/admin/users/{learner.id}/profile",
+            headers=csrf(http),
+            json={"curriculumSme": False},
+        )
+        assert revoked.json()["curriculumSme"] is False
+        await login(http, learner)
+        assert (await http.get(profile_path)).status_code == 403
+
+
+@pytest.mark.anyio
 async def test_progression_uses_server_received_attempts(db: Session) -> None:
     learner = account(db)
     now = datetime.now(UTC)

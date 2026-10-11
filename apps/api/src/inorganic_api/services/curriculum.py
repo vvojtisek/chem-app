@@ -14,6 +14,7 @@ from typing import Any
 
 from inorganic_api.errors import AppError
 from inorganic_api.models import User
+from inorganic_api.services.curriculum_access import CurriculumReviewer, require_curriculum_sme
 from inorganic_api.services.curriculum_github import (
     CurriculumRepository,
     FileChangedError,
@@ -28,6 +29,7 @@ PREPARATION_PRODUCTION_PATH = "content/data/preparation-production.json"
 PREPARATION_PRODUCTION_VERSION_PREFIX = "preparation-production-"
 NOMENCLATURE_PATH = "content/data/nomenclature.json"
 NOMENCLATURE_SNAPSHOT_PATH = "content/generated/nomenclature-runtime.json"
+REVIEWERS_PATH = "content/data/reviewers.json"
 PUBLISHED_STATUSES = ("owner-approved", "reviewed")
 PULL_REQUEST_TITLE = "fix(content): apply curriculum changes from the admin console"
 PULL_REQUEST_BODY = (
@@ -140,15 +142,14 @@ def load_preparation_production(repository: CurriculumRepository) -> CurriculumS
 def save_product(
     repository: CurriculumRepository,
     actor: User,
-    reviewer_id: str | None,
+    reviewer: CurriculumReviewer | None,
     product: dict[str, Any],
     base_sha: str,
     *,
     now: datetime | None = None,
 ) -> SaveResult:
     """Create or replace one product (with its routes) on the curation branch."""
-    if actor.role != "admin":
-        raise AppError(403, "forbidden", "Access denied.")
+    require_curriculum_sme(actor)
     now = now or datetime.now(UTC)
     today = now.date().isoformat()
 
@@ -158,7 +159,8 @@ def save_product(
         # No pending batch: start a fresh one from the base branch so merged or
         # rejected history never leaks into the next pull request.
         repository.reset_branch(CURATION_BRANCH, repository.branch_sha(BASE_BRANCH))
-    current_file = repository.read_file(PREPARATION_PRODUCTION_PATH, CURATION_BRANCH)
+    head = repository.branch_sha(CURATION_BRANCH)
+    current_file = repository.read_file(PREPARATION_PRODUCTION_PATH, head)
     if current_file.sha != base_sha:
         raise _stale()
 
@@ -166,7 +168,7 @@ def save_product(
     products: list[dict[str, Any]] = collection["products"]
     index = next((i for i, item in enumerate(products) if item.get("id") == product["id"]), None)
     current = None if index is None else products[index]
-    merged = _merge_product(product, current, reviewer_id, today)
+    merged = _merge_product(product, current, _reviewer_id(reviewer), today)
     _check_route_ids(products, index, merged)
     if index is None:
         products.append(merged)
@@ -178,14 +180,26 @@ def save_product(
         collection["contentVersion"] = _content_version(now)
 
     action = "create" if current is None else "update"
+    message = f"chore(content): {action} {product['id']} from the admin console"
+    products_text = format_content_json(collection)
+    registration = _reviewer_registration(repository, head, reviewer, [merged, *merged["routes"]])
     try:
-        file_sha = repository.write_file(
-            PREPARATION_PRODUCTION_PATH,
-            CURATION_BRANCH,
-            format_content_json(collection),
-            current_file.sha,
-            f"chore(content): {action} {product['id']} from the admin console",
-        )
+        if registration:
+            repository.commit_files(
+                CURATION_BRANCH,
+                head,
+                {PREPARATION_PRODUCTION_PATH: products_text, **registration},
+                message,
+            )
+            file_sha = git_blob_sha(products_text)
+        else:
+            file_sha = repository.write_file(
+                PREPARATION_PRODUCTION_PATH,
+                CURATION_BRANCH,
+                products_text,
+                current_file.sha,
+                message,
+            )
     except FileChangedError as exc:
         raise _stale() from exc
     if pull_request_url is None:
@@ -220,7 +234,7 @@ def load_nomenclature(repository: CurriculumRepository) -> CurriculumSnapshot:
 def save_nomenclature_record(
     repository: CurriculumRepository,
     actor: User,
-    reviewer_id: str | None,
+    reviewer: CurriculumReviewer | None,
     record: dict[str, Any],
     runtime_snapshot: dict[str, Any],
     base_sha: str,
@@ -234,8 +248,7 @@ def save_nomenclature_record(
     package's own code; the API checks only that it publishes exactly the
     published records, and CI rejects a snapshot that differs from a fresh build.
     """
-    if actor.role != "admin":
-        raise AppError(403, "forbidden", "Access denied.")
+    require_curriculum_sme(actor)
     now = now or datetime.now(UTC)
     today = now.date().isoformat()
 
@@ -251,7 +264,7 @@ def save_nomenclature_record(
     records: list[dict[str, Any]] = collection["records"]
     index = next((i for i, item in enumerate(records) if item.get("id") == record["id"]), None)
     current = None if index is None else records[index]
-    merged = _merge_nomenclature_record(record, current, reviewer_id, today)
+    merged = _merge_nomenclature_record(record, current, _reviewer_id(reviewer), today)
     if index is None:
         records.append(merged)
     else:
@@ -275,6 +288,7 @@ def save_nomenclature_record(
             {
                 NOMENCLATURE_PATH: records_text,
                 NOMENCLATURE_SNAPSHOT_PATH: format_content_json(runtime_snapshot),
+                **_reviewer_registration(repository, head, reviewer, [merged]),
             },
             f"chore(content): {action} {record['id']} from the admin console",
         )
@@ -398,7 +412,7 @@ def _apply_review(
         raise AppError(
             403,
             "curriculum_sme_required",
-            "Only an administrator registered as a chemistry SME can validate content.",
+            "Only a chemistry SME with a reviewer profile can validate content.",
         )
     if not incoming.get("reviewFingerprint") or not incoming.get("reviewEvidence"):
         raise AppError(
@@ -463,6 +477,45 @@ def _parse_collection(text: str, items_key: str = "products") -> dict[str, Any]:
             503, "curriculum_repository_unavailable", "The content repository is unavailable."
         )
     return data
+
+
+def _reviewer_id(reviewer: CurriculumReviewer | None) -> str | None:
+    return None if reviewer is None else reviewer.id
+
+
+def _reviewer_registration(
+    repository: CurriculumRepository,
+    ref: str,
+    reviewer: CurriculumReviewer | None,
+    saved: list[dict[str, Any]],
+) -> dict[str, str]:
+    """The reviewers file to commit with a validation by an SME who registered in the app.
+
+    CI accepts a review only from a reviewer registered as a chemistry SME, so the
+    entry goes into the same commit as the first record it validates.
+    """
+    if reviewer is None or reviewer.entry is None:
+        return {}
+    if not any(item.get("reviewedBy") == reviewer.id for item in saved):
+        return {}
+    try:
+        reviewers = json.loads(repository.read_file(REVIEWERS_PATH, ref).text)
+    except ValueError as exc:
+        raise AppError(
+            503, "curriculum_repository_unavailable", "The content repository is unavailable."
+        ) from exc
+    if not isinstance(reviewers, list):
+        raise AppError(
+            503, "curriculum_repository_unavailable", "The content repository is unavailable."
+        )
+    index = next((i for i, item in enumerate(reviewers) if item.get("id") == reviewer.id), None)
+    if index is not None and reviewers[index] == reviewer.entry:
+        return {}
+    if index is None:
+        reviewers.append(reviewer.entry)
+    else:
+        reviewers[index] = reviewer.entry
+    return {REVIEWERS_PATH: format_content_json(reviewers)}
 
 
 def _stale() -> AppError:

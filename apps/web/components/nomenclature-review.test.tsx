@@ -9,16 +9,21 @@ const api = vi.hoisted(() => ({
   get: vi.fn<() => Promise<NomenclatureCurriculum>>(),
   save: vi.fn(async () => ({ fileSha: "f".repeat(40), pullRequestUrl: "https://example.test/pr" })),
 }));
-const auth = vi.hoisted(() => ({ role: "admin" }));
+const auth = vi.hoisted(() => ({ role: "admin", curriculumSme: true }));
 
 vi.mock("@/lib/api/client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/api/client")>()),
   getNomenclatureCurriculum: api.get,
   saveNomenclatureRecord: api.save,
   getPreparationProductionCurriculum: vi.fn(() => new Promise(() => {})),
+  getCurriculumReviewerProfile: vi.fn(() => new Promise(() => {})),
 }));
 vi.mock("@/components/auth-gate", () => ({
-  useAccount: () => ({ id: "11111111-1111-4111-8111-111111111111", role: auth.role }),
+  useAccount: () => ({
+    id: "11111111-1111-4111-8111-111111111111",
+    role: auth.role,
+    curriculumSme: auth.curriculumSme,
+  }),
 }));
 
 import { AdminData } from "./admin-data";
@@ -57,6 +62,7 @@ function recordItem(name: string): HTMLElement {
 
 beforeEach(() => {
   auth.role = "admin";
+  auth.curriculumSme = true;
   api.get.mockReset();
   api.save.mockClear();
 });
@@ -193,8 +199,21 @@ describe("Nomenclature review", () => {
     ]);
   });
 
-  it("denies the data screen to non-admins", () => {
+  it("opens the data screen to a chemistry SME who is not an administrator", async () => {
     auth.role = "user";
+    api.get.mockResolvedValue(curriculum());
+    await openNomenclature();
+
+    expect(screen.getByRole("heading", { name: "Data a ověřování obsahu" })).toBeVisible();
+    expect(screen.queryByRole("link", { name: "Správa" })).toBeNull();
+    expect(
+      within(recordItem(published.nameCs)).getByRole("button", { name: "Ověřit" }),
+    ).toBeVisible();
+  });
+
+  it("denies the data screen to accounts that are not SMEs", () => {
+    auth.role = "user";
+    auth.curriculumSme = false;
     render(
       <QueryClientProvider client={new QueryClient()}>
         <AdminData />

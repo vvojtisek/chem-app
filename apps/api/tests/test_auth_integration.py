@@ -108,6 +108,7 @@ async def test_login_me_logout_and_cookie_security(db: Session, user: User) -> N
             "email": None,
             "displayName": None,
             "progressGeneration": "00000000-0000-0000-0000-000000000000",
+            "curriculumSme": False,
         }
         assert any(
             cookie.startswith("__Host-inorganic_session=")

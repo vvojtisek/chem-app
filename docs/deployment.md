@@ -198,7 +198,11 @@ is the authoritative account and synchronized-attempt store.
   applied. Require CI and a human merge on `main` before enabling it, because
   the token can push other branches and open pull requests. The API logs
   `Curriculum change: account=<id> action=<create|update> product=<id> ...`
-  for each save. Map SME accounts with
+  for each save. Every administrator, and every account an administrator
+  marks as an SME in `/admin`, can edit and validate; an SME without a hand-made
+  reviewer entry enters a public name and qualification once, and the API adds
+  it to `content/data/reviewers.json` with their first validation. Optionally
+  map an account to an existing reviewer entry with
   `CURRICULUM_SME_REVIEWERS=<account UUID>=reviewer.<id>`; the signed-in
   account's UUID is the `id` field of `GET /api/v1/auth/me`. Rotate the token
   in GitHub and `.env.production` if it is exposed.

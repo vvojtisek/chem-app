@@ -9,6 +9,7 @@ const hooks = vi.hoisted(() => ({
     id: string;
     username: string;
     role: "admin" | "user" | "tester" | "guest";
+    curriculumSme?: boolean;
   },
   capabilities: { canSync: true, isGuest: false },
   logout: vi.fn<() => Promise<void>>(),
@@ -125,6 +126,15 @@ describe("AppShell", () => {
     render(<AppShell>obsah</AppShell>);
 
     expect(screen.getByRole("link", { name: "Správa" })).toHaveAttribute("href", "/admin");
+    expect(screen.queryByRole("link", { name: "Data" })).toBeNull();
+  });
+
+  it("links a chemistry SME who is not an administrator to the data screen only", () => {
+    hooks.account = { id: "account-sme", username: "jana", role: "user", curriculumSme: true };
+    render(<AppShell>obsah</AppShell>);
+
+    expect(screen.getByRole("link", { name: "Data" })).toHaveAttribute("href", "/admin/data");
+    expect(screen.queryByRole("link", { name: "Správa" })).toBeNull();
   });
 
   it("labels read-only guests and hides the sync status", () => {
