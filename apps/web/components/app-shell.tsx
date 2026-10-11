@@ -176,6 +176,14 @@ export function AppShell({
               <ShieldIcon className="text-xl" />
               Správa
             </Link>
+          ) : account?.curriculumSme ? (
+            <Link
+              className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
+              href="/admin/data"
+            >
+              <ShieldIcon className="text-xl" />
+              Data
+            </Link>
           ) : null}
           <Link
             aria-label="Profil"

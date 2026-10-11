@@ -10,6 +10,7 @@ from inorganic_api.config import get_settings
 from inorganic_api.database import session_dependency
 from inorganic_api.errors import AppError, ErrorEnvelope
 from inorganic_api.services import accounts, auth
+from inorganic_api.services.curriculum_access import is_curriculum_sme
 from inorganic_api.services.passwords import MAX_PASSWORD_BYTES
 
 
@@ -45,6 +46,7 @@ class MeResponse(BaseModel):
     email: str | None
     displayName: str | None  # noqa: N815 - API uses camelCase.
     progressGeneration: UUID  # noqa: N815 - API uses camelCase.
+    curriculumSme: bool  # noqa: N815 - may edit and validate curriculum data (ADR 0014).
 
 
 class EmailRequest(BaseModel):
@@ -87,6 +89,7 @@ def _me(current: auth.AuthenticatedSession | auth.NewSession) -> MeResponse:
         email=user.email,
         displayName=user.display_name,
         progressGeneration=user.progress_generation,
+        curriculumSme=is_curriculum_sme(user),
     )
 
 

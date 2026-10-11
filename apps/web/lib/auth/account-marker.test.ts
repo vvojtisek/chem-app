@@ -13,6 +13,7 @@ const user = {
   email: null,
   displayName: null,
   progressGeneration: "00000000-0000-0000-0000-000000000000",
+  curriculumSme: false,
 } as const;
 
 beforeEach(() => localStorage.clear());

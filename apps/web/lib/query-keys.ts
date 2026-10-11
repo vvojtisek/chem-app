@@ -14,5 +14,6 @@ export const queryKeys = {
     attempts: (userId: string) => ["admin", "attempts", userId] as const,
     preparationProductionCurriculum: ["admin", "curriculum", "preparation-production"] as const,
     nomenclatureCurriculum: ["admin", "curriculum", "nomenclature"] as const,
+    reviewerProfile: ["admin", "curriculum", "reviewer-profile"] as const,
   },
 } as const;

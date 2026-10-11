@@ -14,6 +14,7 @@ export type PreparationProductionCurriculum =
   components["schemas"]["PreparationProductionResponse"];
 export type SavedCurriculumProduct = components["schemas"]["SaveProductResponse"];
 export type NomenclatureCurriculum = components["schemas"]["NomenclatureCurriculumResponse"];
+export type CurriculumReviewerProfile = components["schemas"]["ReviewerProfileResponse"];
 
 export class ApiError extends Error {
   constructor(
@@ -125,6 +126,7 @@ export async function updateAdminProfile(
     email?: string | null;
     role?: "admin" | "user" | "tester";
     isActive?: boolean;
+    curriculumSme?: boolean;
   },
 ): Promise<void> {
   const result = await apiClient.PATCH("/api/v1/admin/users/{user_id}/profile", {
@@ -191,6 +193,20 @@ export async function saveNomenclatureRecord(
       params: { path: { record_id: body.record.id } },
       body: { ...body, baseSha },
     }),
+  );
+}
+
+export async function getCurriculumReviewerProfile(): Promise<CurriculumReviewerProfile> {
+  return unwrapApiResponse(
+    await apiClient.GET("/api/v1/admin/curriculum/reviewer-profile", { cache: "no-store" }),
+  );
+}
+
+export async function updateCurriculumReviewerProfile(
+  body: components["schemas"]["ReviewerProfileRequest"],
+): Promise<CurriculumReviewerProfile> {
+  return unwrapApiResponse(
+    await apiClient.PUT("/api/v1/admin/curriculum/reviewer-profile", { body }),
   );
 }
 

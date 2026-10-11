@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
@@ -189,7 +190,15 @@ export default function AccountPage() {
                   : account.role === "tester"
                     ? "Testovací účet"
                     : "Uživatel"}
+                {account.curriculumSme && account.role !== "admin" ? " · odborník (SME)" : ""}
               </dd>
+              {account.curriculumSme ? (
+                <dd className="mt-1">
+                  <Link className="font-semibold text-accent-strong underline" href="/admin/data">
+                    Data a ověřování obsahu
+                  </Link>
+                </dd>
+              ) : null}
             </div>
             <div>
               <dt className="text-sm text-ink-2">Synchronizace</dt>

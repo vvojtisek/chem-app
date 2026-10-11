@@ -8,6 +8,7 @@ MIGRATION_REVISIONS: tuple[str, ...] = (
     "0005_progress_generation",
     "0006_daily_goal",
     "0007_admin_invites",
+    "0008_curriculum_sme",
 )
 
 

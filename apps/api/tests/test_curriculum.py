@@ -29,11 +29,17 @@ from inorganic_api.services.curriculum import (
     NOMENCLATURE_PATH,
     NOMENCLATURE_SNAPSHOT_PATH,
     PREPARATION_PRODUCTION_PATH,
+    REVIEWERS_PATH,
     format_content_json,
     load_nomenclature,
     load_preparation_production,
     save_nomenclature_record,
     save_product,
+)
+from inorganic_api.services.curriculum_access import (
+    CurriculumReviewer,
+    curriculum_reviewer,
+    is_curriculum_sme,
 )
 from inorganic_api.services.curriculum_github import (
     CurriculumRepository,
@@ -47,6 +53,7 @@ TOKEN = "github-token-for-tests"
 CONTENT_DIR = Path(__file__).resolve().parents[3] / "content" / "data"
 NOW = datetime(2026, 10, 10, 8, 30, 5, tzinfo=UTC)
 SME_REVIEWER = "reviewer.vvojtisek"
+SME = CurriculumReviewer(SME_REVIEWER, None)
 FINGERPRINT = "sha256:" + "a" * 64
 
 
@@ -169,8 +176,20 @@ def repository(github: FakeGitHub) -> CurriculumRepository:
     return CurriculumRepository(REPOSITORY, TOKEN, send=github)
 
 
+def account(role: str = "admin", **fields: Any) -> SimpleNamespace:
+    values: dict[str, Any] = {
+        "id": uuid4(),
+        "role": role,
+        "is_active": True,
+        "curriculum_sme": False,
+        "sme_public_name": None,
+        "sme_qualification": None,
+    }
+    return SimpleNamespace(**{**values, **fields})
+
+
 def admin() -> SimpleNamespace:
-    return SimpleNamespace(id=uuid4(), role="admin")
+    return account("admin")
 
 
 def first_product(text: str) -> dict[str, Any]:
@@ -337,7 +356,9 @@ def test_a_new_product_is_appended_with_server_owned_attribution(
 
 
 def save_error(
-    repository: CurriculumRepository, product: dict[str, Any], reviewer: str | None = None
+    repository: CurriculumRepository,
+    product: dict[str, Any],
+    reviewer: CurriculumReviewer | None = None,
 ) -> AppError:
     snapshot = load_preparation_production(repository)
     with pytest.raises(AppError) as error:
@@ -402,7 +423,7 @@ def test_only_a_registered_sme_can_validate(repository: CurriculumRepository) ->
 def test_validation_needs_evidence(repository: CurriculumRepository) -> None:
     product = validated(editable(first_product(load_dataset())))
     del product["routes"][0]["reviewEvidence"]
-    error = save_error(repository, product, reviewer=SME_REVIEWER)
+    error = save_error(repository, product, reviewer=SME)
     assert (error.status_code, error.code) == (422, "curriculum_evidence_required")
 
 
@@ -414,7 +435,7 @@ def test_validation_records_the_signed_in_reviewer_and_server_date(
         editable(snapshot.collection["products"][0]),
         reviewEvidenceConfirmedBy="prof. Example",
     )
-    result = save_product(repository, admin(), SME_REVIEWER, product, snapshot.file_sha, now=NOW)
+    result = save_product(repository, admin(), SME, product, snapshot.file_sha, now=NOW)
 
     route = branch_dataset(github)["products"][0]["routes"][0]
     assert route["status"] == "reviewed"
@@ -434,7 +455,7 @@ def test_validation_records_the_signed_in_reviewer_and_server_date(
     # Saving again later keeps the original attestation date.
     reloaded = load_preparation_production(repository)
     again = editable(reloaded.collection["products"][0])
-    save_product(repository, admin(), SME_REVIEWER, again, result.file_sha, now=NOW.replace(day=20))
+    save_product(repository, admin(), SME, again, result.file_sha, now=NOW.replace(day=20))
     assert branch_dataset(github)["products"][0]["routes"][0]["reviewedAt"] == "2026-10-10"
 
     # Reopening the record removes the whole review.
@@ -451,9 +472,7 @@ def test_non_admins_cannot_save(repository: CurriculumRepository) -> None:
     snapshot = load_preparation_production(repository)
     product = editable(snapshot.collection["products"][0])
     with pytest.raises(AppError) as error:
-        save_product(
-            repository, SimpleNamespace(id=uuid4(), role="user"), None, product, snapshot.file_sha
-        )
+        save_product(repository, account("user"), None, product, snapshot.file_sha)
     assert error.value.status_code == 403
 
 
@@ -572,7 +591,7 @@ async def test_get_lists_products_for_admins_only(overrides, github: FakeGitHub)
     overrides[curriculum_repository_dependency] = lambda: CurriculumRepository(
         REPOSITORY, TOKEN, send=github
     )
-    overrides[get_current_user] = session_for(SimpleNamespace(id=uuid4(), role="user"))
+    overrides[get_current_user] = session_for(account("user"))
     status, body = await request("GET", "/preparation-production")
     assert (status, body["error"]["code"]) == (403, "forbidden")
 
@@ -713,7 +732,7 @@ def test_nomenclature_validation_commits_records_and_snapshot_together(
     result = save_nomenclature_record(
         nomenclature_repository,
         admin(),
-        SME_REVIEWER,
+        SME,
         record,
         snapshot,
         loaded.file_sha,
@@ -880,3 +899,99 @@ async def test_nomenclature_http_round_trip(overrides, nomenclature_github: Fake
         json={"record": record, "runtimeSnapshot": runtime_snapshot(), "baseSha": body["fileSha"]},
     )
     assert (status, error["error"]["code"]) == (422, "validation_error")
+
+
+@pytest.mark.parametrize(
+    ("fields", "expected"),
+    [
+        ({"role": "admin"}, True),
+        ({"role": "admin", "is_active": False}, False),
+        ({"role": "user"}, False),
+        ({"role": "user", "curriculum_sme": True}, True),
+        ({"role": "tester", "curriculum_sme": True}, True),
+        ({"role": "user", "curriculum_sme": True, "is_active": False}, False),
+        ({"role": "guest", "curriculum_sme": True}, False),
+    ],
+)
+def test_admins_and_flagged_accounts_are_curriculum_smes(
+    fields: dict[str, Any], expected: bool
+) -> None:
+    assert is_curriculum_sme(account(**fields)) is expected
+
+
+def test_reviewer_comes_from_configuration_or_the_sme_profile() -> None:
+    configured = admin()
+    assert curriculum_reviewer(configured, {configured.id: SME_REVIEWER}) == SME
+    assert curriculum_reviewer(admin(), {}) is None
+    sme = account("user", curriculum_sme=True, sme_public_name="Jana", sme_qualification="Ph.D.")
+    assert curriculum_reviewer(sme, {}) == CurriculumReviewer(
+        f"reviewer.account-{sme.id.hex[:12]}",
+        {
+            "id": f"reviewer.account-{sme.id.hex[:12]}",
+            "name": "Jana",
+            "role": "chemistry-sme",
+            "qualification": "Ph.D.",
+        },
+    )
+    assert curriculum_reviewer(account("user", sme_public_name="Jana"), {}) is None
+
+
+def load_reviewers() -> str:
+    return (CONTENT_DIR / "reviewers.json").read_text(encoding="utf-8")
+
+
+def test_first_validation_by_an_app_sme_registers_the_reviewer_in_the_same_commit() -> None:
+    github = FakeGitHub(
+        {PREPARATION_PRODUCTION_PATH: load_dataset(), REVIEWERS_PATH: load_reviewers()}
+    )
+    repository = CurriculumRepository(REPOSITORY, TOKEN, send=github)
+    sme = account("user", curriculum_sme=True, sme_public_name="Jana", sme_qualification="Ph.D.")
+    reviewer = curriculum_reviewer(sme, {})
+    assert reviewer is not None
+
+    # An edit without a validation leaves the reviewers file alone.
+    snapshot = load_preparation_production(repository)
+    plain = editable(snapshot.collection["products"][0])
+    result = save_product(repository, sme, reviewer, plain, snapshot.file_sha, now=NOW)
+    assert github.files(CURATION_BRANCH)[REVIEWERS_PATH] == load_reviewers()
+
+    product = validated(editable(load_preparation_production(repository).collection["products"][0]))
+    commits_before = len(github.commits)
+    result = save_product(repository, sme, reviewer, product, result.file_sha, now=NOW)
+
+    files = github.files(CURATION_BRANCH)
+    assert len(github.commits) == commits_before + 1
+    assert branch_dataset(github)["products"][0]["routes"][0]["reviewedBy"] == reviewer.id
+    reviewers = json.loads(files[REVIEWERS_PATH])
+    assert reviewers[-1] == reviewer.entry
+    assert files[REVIEWERS_PATH] == format_content_json(reviewers)
+    assert result.file_sha == blob_sha(files[PREPARATION_PRODUCTION_PATH])
+
+    # A later validation finds the entry and changes only the dataset.
+    again = editable(load_preparation_production(repository).collection["products"][0])
+    again["routes"][1].update(
+        status="reviewed", reviewFingerprint=FINGERPRINT, reviewEvidence="Skripta, s. 13"
+    )
+    save_product(repository, sme, reviewer, again, result.file_sha, now=NOW)
+    assert json.loads(github.files(CURATION_BRANCH)[REVIEWERS_PATH]) == reviewers
+
+
+def test_nomenclature_validation_by_an_app_sme_registers_the_reviewer() -> None:
+    github = FakeGitHub({**load_nomenclature_files(), REVIEWERS_PATH: load_reviewers()})
+    repository = CurriculumRepository(REPOSITORY, TOKEN, send=github)
+    sme = account("tester", curriculum_sme=True, sme_public_name="Jana", sme_qualification="Ph.D.")
+    reviewer = curriculum_reviewer(sme, {})
+    loaded = load_nomenclature(repository)
+    record = {
+        **editable_record(loaded.collection["records"][0]),
+        "status": "reviewed",
+        "reviewFingerprint": FINGERPRINT,
+        "reviewEvidence": "Skripta VŠCHT, s. 40",
+    }
+    snapshot = runtime_snapshot()
+    snapshot["compounds"][0]["reviewLevel"] = "sme-reviewed"
+    save_nomenclature_record(repository, sme, reviewer, record, snapshot, loaded.file_sha, now=NOW)
+
+    assert reviewer is not None
+    assert branch_records(github)[0]["reviewedBy"] == reviewer.id
+    assert json.loads(github.files(CURATION_BRANCH)[REVIEWERS_PATH])[-1] == reviewer.entry

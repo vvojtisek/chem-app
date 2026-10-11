@@ -85,7 +85,7 @@ the overlay still needs everything in B.
 ## Owner input (2026-10-09)
 
 - Latency: an edit may take up to 24 hours to reach learners.
-- Editors: only the owner edits and validates.
+- Editors: only the owner edits and validates (superseded by the 2026-10-11 amendment).
 - Validation evidence: the owner validates against documents confirmed by a
   named professor at the school, which the owner plans to go through one by one.
   The professor's name may be recorded as an optional field.
@@ -231,3 +231,41 @@ Limits: the GitHub contents API serves files up to 1 MB and the reverse proxy
 accepts request bodies up to 1 MB. Today the records file is about 650 kB and
 a save request about 200 kB, so the limits allow roughly 750 records before
 the adapter must switch to the blob API.
+
+## Amendment (2026-10-11): SME accounts
+
+The owner asked that every administrator count as a chemistry SME and that an
+administrator can mark any account as an SME, which opens editing and
+validation in `/admin/data` to that account. This replaces "only the owner
+edits and validates" and the requirement that every SME account is mapped in
+`CURRICULUM_SME_REVIEWERS`.
+
+Decision:
+
+- An account is a curriculum SME when it is active and is an administrator, or
+  is a learner or tester account with the new `users.curriculum_sme` flag
+  (migration `0008_curriculum_sme`). Guests never are. Only an administrator
+  can set the flag (`PATCH /api/v1/admin/users/{id}/profile`).
+- An SME may read and save the curriculum datasets and nothing else in the
+  administration: the user list, statistics, accounts and releases still
+  require the admin role. The checks run on the server on every request, so
+  removing the flag takes effect immediately.
+- CI accepts a review only from a reviewer registered in
+  `content/data/reviewers.json` as `chemistry-sme` with a qualification. An SME
+  enters their own public name and qualification in the console once
+  (`PUT /api/v1/admin/curriculum/reviewer-profile`); their reviewer ID is
+  `reviewer.account-<first 12 hex digits of the account UUID>`. The API adds
+  or updates that entry in the same commit as the first record the SME
+  validates. Validation stays unavailable until the profile exists. The
+  person named is the person signed in, never an agent.
+- `CURRICULUM_SME_REVIEWERS` stays optional: it maps an account to a reviewer
+  entry maintained by hand (today `reviewer.vvojtisek`) and takes precedence
+  over the in-app profile.
+- The owner still merges the curation pull request, so validations by other
+  SMEs reach learners only after the owner merges them.
+
+Consequences: the repository is public, so an SME's name and qualification are
+published with their first validation and remain in the Git history. More
+accounts can now cause commits through the server's GitHub token (still only
+on `content/curation`); branch protection on `main` remains the control that
+keeps those commits from reaching learners unreviewed.

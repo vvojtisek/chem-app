@@ -25,6 +25,7 @@ from inorganic_api.api.attempt_schemas import (
 from inorganic_api.errors import AppError
 from inorganic_api.models import User
 from inorganic_api.repositories import attempts as repository
+from inorganic_api.services.curriculum_access import is_curriculum_sme
 
 EVENT_ADAPTER = TypeAdapter(AttemptInput)
 RANKS = (
@@ -295,6 +296,7 @@ def users_page(db: Session, actor: User, cursor: str | None, limit: int) -> Admi
                 display_name=row.display_name,
                 role=row.role,
                 is_active=row.is_active,
+                curriculum_sme=is_curriculum_sme(row),
                 created_at=row.created_at,
                 last_login_at=row.last_login_at,
             )

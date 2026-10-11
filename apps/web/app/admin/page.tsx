@@ -38,6 +38,8 @@ export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<AccountRole>("user");
   const [isActive, setIsActive] = useState(true);
+  // Only meaningful for non-admins: every admin is a chemistry SME.
+  const [curriculumSme, setCurriculumSme] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [newEmail, setNewEmail] = useState("");
@@ -93,6 +95,7 @@ export default function AdminPage() {
       profile.data.role === "admin" || profile.data.role === "tester" ? profile.data.role : "user",
     );
     setIsActive(profile.data.isActive);
+    setCurriculumSme(profile.data.role !== "admin" && profile.data.curriculumSme);
   }, [profile.data]);
 
   if (!allowed)
@@ -138,6 +141,7 @@ export default function AdminPage() {
         email: email.trim() || null,
         role,
         isActive,
+        ...(role === "admin" ? {} : { curriculumSme }),
       });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.admin.users }),
@@ -279,6 +283,7 @@ export default function AdminPage() {
             <li className="flex flex-wrap items-center justify-between gap-3 p-3" key={user.id}>
               <span>
                 {user.displayName || user.username} · {user.role}
+                {user.curriculumSme && user.role !== "admin" ? " · odborník (SME)" : ""}
                 {user.isActive ? "" : " · neaktivní"}
                 {user.email ? <small className="block text-ink-2">{user.email}</small> : null}
                 <small className="block text-ink-2">
@@ -362,6 +367,20 @@ export default function AdminPage() {
               />
               Aktivní účet
             </label>
+            <label className="flex min-h-11 items-center gap-3 font-medium sm:col-span-2">
+              <input
+                aria-describedby="curriculum-sme-hint"
+                checked={role === "admin" || curriculumSme}
+                disabled={role === "admin"}
+                onChange={(event) => setCurriculumSme(event.target.checked)}
+                type="checkbox"
+              />
+              Odborník (SME): smí upravovat a ověřovat data
+            </label>
+            <span className="-mt-2 text-xs text-ink-2 sm:col-span-2" id="curriculum-sme-hint">
+              Správce je odborníkem vždy. Odborník bez role správce vidí jen stránku Data, ne
+              ostatní správu.
+            </span>
             <button
               className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill disabled:opacity-50 sm:col-span-2 sm:justify-self-start"
               disabled={busy}

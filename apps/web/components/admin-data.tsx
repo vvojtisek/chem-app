@@ -5,6 +5,7 @@ import { useAccount } from "@/components/auth-gate";
 import { CurriculumReview } from "@/components/curriculum-review";
 import { NomenclatureReview } from "@/components/nomenclature-review";
 import { PageHeader } from "@/components/page-header";
+import { ReviewerProfile } from "@/components/reviewer-profile";
 
 type Dataset = "preparation-production" | "nomenclature";
 
@@ -13,24 +14,33 @@ const DATASETS: readonly { readonly value: Dataset; readonly label: string }[] =
   { value: "nomenclature", label: "Názvosloví" },
 ];
 
-/** The admin data screen: one dataset at a time, each saved to the same pull request. */
+/**
+ * The data screen for chemistry SMEs (every admin, and accounts an admin marked as SME):
+ * one dataset at a time, each saved to the same pull request.
+ */
 export function AdminData() {
   const account = useAccount();
   const [dataset, setDataset] = useState<Dataset>("preparation-production");
 
-  if (account?.role !== "admin")
+  if (!account?.curriculumSme)
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-8 lg:py-10">
-        <PageHeader description="Správa je dostupná pouze správci." title="Přístup odepřen" />
+        <PageHeader
+          description="Data mohou upravovat jen správci a odborníci (SME)."
+          title="Přístup odepřen"
+        />
       </main>
     );
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
-        breadcrumbs={[{ label: "Správa", href: "/admin" }, { label: "Data" }]}
+        breadcrumbs={
+          account.role === "admin" ? [{ label: "Správa", href: "/admin" }, { label: "Data" }] : []
+        }
         title="Data a ověřování obsahu"
       />
+      <ReviewerProfile />
       <fieldset className="mb-6">
         <legend className="sr-only">Sada dat</legend>
         <div className="flex flex-wrap gap-2">

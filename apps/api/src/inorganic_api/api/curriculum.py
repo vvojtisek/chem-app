@@ -2,13 +2,16 @@ from functools import lru_cache
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Path
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
+from sqlalchemy.orm import Session
 
-from inorganic_api.api.dependencies import require_csrf, require_role
+from inorganic_api.api.dependencies import get_current_user, require_csrf
 from inorganic_api.config import get_settings
+from inorganic_api.database import session_dependency
 from inorganic_api.errors import AppError, ErrorEnvelope
-from inorganic_api.services import curriculum
+from inorganic_api.models import User
+from inorganic_api.services import curriculum, curriculum_access
 from inorganic_api.services.auth import AuthenticatedSession
 from inorganic_api.services.curriculum_github import CurriculumRepository
 
@@ -223,6 +226,27 @@ class StoredNomenclatureRecord(_StoredReview):
     owner_approved_at: str | None = None
 
 
+class ReviewerProfileRequest(_Model):
+    public_name: str = Field(min_length=1, max_length=120)
+    qualification: str = Field(min_length=1, max_length=300)
+
+    @field_validator("public_name", "qualification")
+    @classmethod
+    def normalize_text(cls, value: str) -> str:
+        result = " ".join(value.split())
+        if not result:
+            raise ValueError("value cannot be blank")
+        return result
+
+
+class ReviewerProfileResponse(_Model):
+    reviewer_id: str | None
+    public_name: str | None
+    qualification: str | None
+    # The reviewer entry is maintained by hand (CURRICULUM_SME_REVIEWERS), not in the app.
+    managed_by_configuration: bool
+
+
 class NomenclatureCurriculumResponse(_Model):
     records: list[StoredNomenclatureRecord]
     file_sha: str
@@ -298,9 +322,10 @@ def _product_record(product: ProductInput) -> dict[str, Any]:
     summary="Show the preparation and production equations with their review state",
 )
 def get_preparation_production(
-    current: Annotated[AuthenticatedSession, Depends(require_role("admin"))],
+    current: Annotated[AuthenticatedSession, Depends(get_current_user)],
     repository: Annotated[CurriculumRepository | None, Depends(curriculum_repository_dependency)],
 ) -> PreparationProductionResponse:
+    curriculum_access.require_curriculum_sme(current.user)
     snapshot = curriculum.load_preparation_production(_require_repository(repository))
     return PreparationProductionResponse(
         content_version=str(snapshot.collection.get("contentVersion", "")),
@@ -308,7 +333,7 @@ def get_preparation_production(
         file_sha=snapshot.file_sha,
         pending_changes=snapshot.pending_changes,
         pull_request_url=snapshot.pull_request_url,
-        can_validate=current.user.id in get_settings().curriculum_sme_reviewer_ids,
+        can_validate=_reviewer(current.user) is not None,
     )
 
 
@@ -332,14 +357,13 @@ def save_preparation_production_product(
     current: Annotated[AuthenticatedSession, Depends(require_csrf)],
     repository: Annotated[CurriculumRepository | None, Depends(curriculum_repository_dependency)],
 ) -> SaveProductResponse:
-    if current.user.role != "admin":
-        raise AppError(403, "forbidden", "Access denied.")
+    curriculum_access.require_curriculum_sme(current.user)
     if body.product.id != product_id:
         raise AppError(422, "curriculum_id_mismatch", "The product ID does not match the URL.")
     result = curriculum.save_product(
         _require_repository(repository),
         current.user,
-        get_settings().curriculum_sme_reviewer_ids.get(current.user.id),
+        _reviewer(current.user),
         _product_record(body.product),
         body.base_sha,
     )
@@ -358,9 +382,10 @@ def save_preparation_production_product(
     summary="Show the nomenclature records with their review state",
 )
 def get_nomenclature(
-    current: Annotated[AuthenticatedSession, Depends(require_role("admin"))],
+    current: Annotated[AuthenticatedSession, Depends(get_current_user)],
     repository: Annotated[CurriculumRepository | None, Depends(curriculum_repository_dependency)],
 ) -> NomenclatureCurriculumResponse:
+    curriculum_access.require_curriculum_sme(current.user)
     snapshot = curriculum.load_nomenclature(_require_repository(repository))
     return NomenclatureCurriculumResponse(
         records=[
@@ -369,7 +394,7 @@ def get_nomenclature(
         file_sha=snapshot.file_sha,
         pending_changes=snapshot.pending_changes,
         pull_request_url=snapshot.pull_request_url,
-        can_validate=current.user.id in get_settings().curriculum_sme_reviewer_ids,
+        can_validate=_reviewer(current.user) is not None,
     )
 
 
@@ -393,16 +418,65 @@ def save_nomenclature_record(
     current: Annotated[AuthenticatedSession, Depends(require_csrf)],
     repository: Annotated[CurriculumRepository | None, Depends(curriculum_repository_dependency)],
 ) -> SaveProductResponse:
-    if current.user.role != "admin":
-        raise AppError(403, "forbidden", "Access denied.")
+    curriculum_access.require_curriculum_sme(current.user)
     if body.record.id != record_id:
         raise AppError(422, "curriculum_id_mismatch", "The record ID does not match the URL.")
     result = curriculum.save_nomenclature_record(
         _require_repository(repository),
         current.user,
-        get_settings().curriculum_sme_reviewer_ids.get(current.user.id),
+        _reviewer(current.user),
         _nomenclature_record(body.record),
         body.runtime_snapshot.model_dump(by_alias=True),
         body.base_sha,
     )
     return SaveProductResponse(file_sha=result.file_sha, pull_request_url=result.pull_request_url)
+
+
+def _reviewer(user: User) -> curriculum_access.CurriculumReviewer | None:
+    return curriculum_access.curriculum_reviewer(user, get_settings().curriculum_sme_reviewer_ids)
+
+
+def _reviewer_profile(user: User) -> ReviewerProfileResponse:
+    reviewer = _reviewer(user)
+    return ReviewerProfileResponse(
+        reviewer_id=None if reviewer is None else reviewer.id,
+        public_name=user.sme_public_name,
+        qualification=user.sme_qualification,
+        managed_by_configuration=user.id in get_settings().curriculum_sme_reviewer_ids,
+    )
+
+
+@router.get(
+    "/admin/curriculum/reviewer-profile",
+    operation_id="getCurriculumReviewerProfile",
+    response_model=ReviewerProfileResponse,
+    responses={401: {"model": ErrorEnvelope}, 403: {"model": ErrorEnvelope}},
+    summary="Show the signed-in SME's public reviewer entry",
+)
+def get_reviewer_profile(
+    current: Annotated[AuthenticatedSession, Depends(get_current_user)],
+) -> ReviewerProfileResponse:
+    curriculum_access.require_curriculum_sme(current.user)
+    return _reviewer_profile(current.user)
+
+
+@router.put(
+    "/admin/curriculum/reviewer-profile",
+    operation_id="updateCurriculumReviewerProfile",
+    response_model=ReviewerProfileResponse,
+    responses={
+        401: {"model": ErrorEnvelope},
+        403: {"model": ErrorEnvelope},
+        422: {"model": ErrorEnvelope},
+    },
+    summary="Set the signed-in SME's public name and qualification for validations",
+)
+def update_reviewer_profile(
+    body: ReviewerProfileRequest,
+    current: Annotated[AuthenticatedSession, Depends(require_csrf)],
+    db: Annotated[Session, Depends(session_dependency)],
+) -> ReviewerProfileResponse:
+    user = curriculum_access.update_reviewer_profile(
+        db, current.user, body.public_name, body.qualification
+    )
+    return _reviewer_profile(user)
