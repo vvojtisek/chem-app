@@ -134,7 +134,9 @@ Resources:
                 Condition:
                   ForAllValues:StringEquals:
                     route53:ChangeResourceRecordSetsRecordTypes: TXT
-                    route53:ChangeResourceRecordSetsNormalizedRecordNames: _acme-challenge.vscht.vvojtisek.eu
+                    route53:ChangeResourceRecordSetsNormalizedRecordNames:
+                      - _acme-challenge.vscht.vvojtisek.eu
+                      - _acme-challenge.fitness.vvojtisek.eu
                     route53:ChangeResourceRecordSetsActions: [CREATE, UPSERT, DELETE]
 
   SnapshotRole:
