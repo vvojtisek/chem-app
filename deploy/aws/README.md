@@ -81,6 +81,13 @@ to that address and that there is no AAAA record for this name.
 
 ## Configure and start the app
 
+The shared AWS Caddyfile also serves `fitness.vvojtisek.eu` over HTTPS and
+proxies it to `workout-logger:8000` on the existing `chem-app_public-net` Docker
+network. The Workout Logger Compose service publishes no host ports; Caddy is
+the only public listener. Keep its app release and database under the separate
+`/srv/workout-logger` deployment documented in the
+[Workout Logger repository](https://github.com/vvojtisek/workout-logger/tree/main/deploy/aws).
+
 Use SSM to create `/srv/chem-app/.env.production` from
 `.env.production.example` with mode `0600`. Set `DOMAIN=vscht.vvojtisek.eu`,
 `ACME_EMAIL`, unique PostgreSQL owner/runtime passwords, `SECRET_KEY`, seed
