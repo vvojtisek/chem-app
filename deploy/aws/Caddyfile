@@ -1,5 +1,6 @@
 {
 	email {$ACME_EMAIL}
+	auto_https disable_redirects
 }
 
 {$DOMAIN} {
@@ -20,16 +21,26 @@
 		-Server
 	}
 
-	handle /api/* {
-		request_body {
-			max_size 1MB
-		}
-		header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
-		reverse_proxy api:8000
-	}
+	@disabled_auth path /api/v1/auth/register /api/v1/auth/register/* /api/v1/auth/verification /api/v1/auth/verification/* /api/v1/auth/verify-email /api/v1/auth/verify-email/* /api/v1/auth/password-reset /api/v1/auth/password-reset/* /api/v1/auth/guest /api/v1/auth/guest/*
 
-	handle {
-		reverse_proxy web:3000
+	# Keep private-deployment account actions blocked before requests reach the API.
+	route {
+		handle @disabled_auth {
+			header Content-Type application/json
+			respond `{"error":{"code":"private_deployment","message":"This account action is unavailable on this private deployment.","details":{}}}` 403
+		}
+
+		handle /api/* {
+			request_body {
+				max_size 1MB
+			}
+			header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
+			reverse_proxy api:8000
+		}
+
+		handle {
+			reverse_proxy web:3000
+		}
 	}
 }
 

@@ -215,9 +215,19 @@ jobs:
       - name: Validate production Compose configuration
         run: docker compose --env-file .env.production.example -f docker-compose.prod.yml config --quiet
 
+      - name: Validate AWS Compose overlay
+        run: docker compose --env-file .env.production.example -f docker-compose.prod.yml -f deploy/aws/compose.yaml config --quiet
+
       # Production pulls these images from GHCR; the Release workflow builds
       # them with the same arguments.
       - name: Build production images
         run: |
           docker build --file apps/api/Dockerfile .
           docker build --file apps/web/Dockerfile --build-arg API_PROXY_TARGET=http://api:8000 .
+          docker build --file deploy/aws/Caddy.Dockerfile --tag chem-app-caddy-route53:2.10.2 .
+          docker run --rm \
+            --env DOMAIN=vscht.vvojtisek.eu \
+            --env ACME_EMAIL=ops@example.com \
+            --volume "$PWD/deploy/aws/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            chem-app-caddy-route53:2.10.2 \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
