@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.20.0](https://github.com/vvojtisek/chem-app/compare/v1.19.0...v1.20.0) (2026-10-13)
+
+
+### Features
+
+* **deploy:** route fitness host through shared Caddy ([#115](https://github.com/vvojtisek/chem-app/issues/115)) ([3d5a37d](https://github.com/vvojtisek/chem-app/commit/3d5a37d9466e3fe231523db157c3aeca2af7bc00))
+
+
+### Bug Fixes
+
+* **deploy:** allow fitness dns validation ([1bcc6fa](https://github.com/vvojtisek/chem-app/commit/1bcc6fa4e111ff692041384199c3c45cd163ade4))
+* **deploy:** preserve private auth routes in aws caddy ([2429bfb](https://github.com/vvojtisek/chem-app/commit/2429bfb36ffc97b77262ee05555fc295ee80f2f3))
+* **deploy:** preserve private auth routes in aws caddy ([7eefed4](https://github.com/vvojtisek/chem-app/commit/7eefed452ce75fc27aad49d4d973a4af27ebf88b))
+
 ## [1.19.0](https://github.com/vvojtisek/chem-app/compare/v1.18.0...v1.19.0) (2026-10-12)
 
 
