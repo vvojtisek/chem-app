@@ -42,7 +42,9 @@ The branch name does not affect the version. Keep using the prefixes in
 3. Review it. To force a different version, add a commit to `main` whose body
    ends with `Release-As: X.Y.Z`.
 4. Merge it. The workflow tags the merge commit `vX.Y.Z` and creates a draft
-   GitHub Release with the changelog entry.
+   GitHub Release with the changelog entry. The tag is created immediately
+   (`force-tag-creation`), not when the draft is published, so release-please
+   finds this release as the baseline for the next release pull request.
 5. The same run builds the `api` and `web` images from that commit for
    `linux/amd64` and `linux/arm64`, then pushes multi-architecture manifests to
    `ghcr.io/vvojtisek/chem-app-api` and `ghcr.io/vvojtisek/chem-app-web` as
