@@ -5,6 +5,13 @@ name: Release
 # release. Merging that pull request tags the commit and creates a draft GitHub
 # Release. The workflow publishes that release only after both GHCR images are
 # built and the stable tags are promoted (ADR 0012). It never deploys.
+#
+# force-tag-creation in release-please-config.json creates the vX.Y.Z tag
+# together with the draft release. GitHub only tags a draft when it is
+# published, and the same release-please step opens the next release pull
+# request right after creating the release. Without the tag it cannot find the
+# release it just made, falls back to bootstrap-sha and proposes another
+# release with the whole history as its changelog.
 on:
   push:
     branches: [main]
