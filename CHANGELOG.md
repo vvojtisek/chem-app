@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.24.1](https://github.com/vvojtisek/chem-app/compare/v1.24.0...v1.24.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update certifi for PYSEC-2026-4320 ([b849ab1](https://github.com/vvojtisek/chem-app/commit/b849ab15ea7ab35bd34d9efb9ba9a77eace322fb))
+* **deps:** update certifi for PYSEC-2026-4320 ([c3ba49e](https://github.com/vvojtisek/chem-app/commit/c3ba49e8d8f253b4339ba0b30f72c12019229d39))
+
 ## [1.24.0](https://github.com/vvojtisek/chem-app/compare/v1.23.0...v1.24.0) (2026-10-21)
 
 
