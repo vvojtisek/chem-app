@@ -99,3 +99,16 @@ export function finishPracticeQueue<Question extends PracticeQueueQuestion>(
 ): PracticeQueueState<Question> {
   return { ...state, status: "finished", current: null };
 }
+
+/**
+ * Moves the current question to the end of the queue without grading it. With nothing else
+ * left, the same question stays current.
+ */
+export function skipPracticeQueue<Question extends PracticeQueueQuestion>(
+  state: PracticeQueueState<Question>,
+): PracticeQueueState<Question> {
+  const question = state.current;
+  if (state.status !== "running" || !question || state.queue.length === 0) return state;
+  const [next = null, ...queue] = [...state.queue, question];
+  return { ...state, current: next, queue };
+}

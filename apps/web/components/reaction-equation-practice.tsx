@@ -16,9 +16,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { Equation, EquationSide, Formula } from "@/components/formula";
 import { CheckIcon, CrossIcon } from "@/components/icons";
+import { NamedSubstance, QuestionTools } from "@/components/question-tools";
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
 import { createClientId } from "@/lib/client-id";
+import { czechCount } from "@/lib/czech-plural";
 import { drawSeries } from "@/lib/periodic-table-scope";
+import { formulaNames, type ProductsHint, reactionProductsHint } from "@/lib/practice-hints";
 import {
   createReactionProductsQuestion,
   isReactionProductsAnswerCorrect,
@@ -62,6 +65,9 @@ export function ReactionEquationPractice({
   const account = useAccount();
   const { canSave } = useCapabilities();
   const symbols = useMemo(() => new Set(allowedSymbols), [allowedSymbols]);
+  const names = useMemo(() => formulaNames(products), [products]);
+  // Changes whenever another question, or the same one again, is shown; resets the hint.
+  const [shown, setShown] = useState(0);
   const sessionId = useRef<string | null>(null);
   const sequence = useRef(0);
   const submissionLocked = useRef(false);
@@ -244,7 +250,29 @@ export function ReactionEquationPractice({
     finishAnswer(result.correct, result.atomBalance);
   }
 
+  /** Moves the current question to the end of the series without grading it. */
+  function skip() {
+    if (!questions || !question || feedback || questionIndex >= questions.length - 1) return;
+    const reordered = [
+      ...questions.slice(0, questionIndex),
+      ...questions.slice(questionIndex + 1),
+      question,
+    ];
+    setQuestions(reordered);
+    setRetrying(false);
+    drawChoice(level, reordered[questionIndex]);
+    setShown((value) => value + 1);
+    setProductAnswer("");
+    setCoefficients({});
+    setEquationAnswer("");
+    setPhase("products");
+    setAtomBalance(null);
+    setUnreduced(false);
+    setSaveNotice("");
+  }
+
   function advance() {
+    setShown((value) => value + 1);
     const nextIndex = feedback === "correct" ? questionIndex + 1 : questionIndex;
     setQuestionIndex(nextIndex);
     setRetrying(feedback !== "correct");
@@ -272,6 +300,7 @@ export function ReactionEquationPractice({
     );
   }
 
+  const canSkip = Boolean(questions && questionIndex < questions.length - 1);
   const editingCoefficients =
     level === "beginner" || (level === "advanced" && phase === "coefficients");
 
@@ -351,11 +380,17 @@ export function ReactionEquationPractice({
               <Formula formula={question.product.formula} />)
             </h2>
           )}
+          {level !== "easy" && !feedback ? (
+            <QuestionTools hint={null} key={`tools-${shown}`} onSkip={canSkip ? skip : undefined} />
+          ) : null}
           {level === "easy" ? (
             <ProductChoice
               chosen={chosenOption}
               disabled={Boolean(feedback)}
+              hint={reactionProductsHint(question.route, question.product.formula, names)}
+              key={`choice-${shown}`}
               onChoose={checkChoice}
+              onSkip={canSkip && !feedback ? skip : undefined}
               question={choice}
               route={question.route}
             />
@@ -525,24 +560,28 @@ function ProductChoice({
   question,
   chosen,
   disabled,
+  hint,
   onChoose,
+  onSkip,
 }: Readonly<{
   route: Route;
   question: ReactionProductsQuestion | null;
   chosen: string | null;
   disabled: boolean;
+  hint: ProductsHint;
   onChoose: (optionId: string) => void;
+  onSkip: (() => void) | undefined;
 }>) {
   return (
     <>
       <p className="mt-5 rounded-xl bg-surface-2 p-4 text-center text-xl leading-9 font-semibold text-ink">
         <span className="sr-only">Výchozí látky: </span>
-        <EquationSide terms={route.reactants} withCoefficients={false} />{" "}
-        <span aria-hidden="true">→ ?</span>
+        <EquationSide terms={route.reactants} /> <span aria-hidden="true">→ ?</span>
       </p>
       {route.conditionsCs ? (
         <p className="mt-2 text-center text-sm text-ink-2">Podmínky: {route.conditionsCs}</p>
       ) : null}
+      {disabled ? null : <QuestionTools hint={<ProductsHintText hint={hint} />} onSkip={onSkip} />}
       {question && question.id === route.id ? (
         <fieldset className="mt-4">
           <legend className="sr-only">Produkty reakce</legend>
@@ -580,6 +619,27 @@ function ProductChoice({
             })}
           </ul>
         </fieldset>
+      ) : null}
+    </>
+  );
+}
+
+const PRODUCT_FORMS = ["produkt", "produkty", "produktů"] as const;
+
+/**
+ * How many products form and, when there are several, the name of one of them. A single
+ * product is not named, because that would be the whole answer.
+ */
+function ProductsHintText({ hint }: Readonly<{ hint: ProductsHint }>) {
+  if (hint.productCount <= 1) return <>Vzniká jediný produkt.</>;
+  return (
+    <>
+      Vznikají {czechCount(hint.productCount, PRODUCT_FORMS)}.
+      {hint.product ? (
+        <>
+          {" "}
+          Jedním z nich je <NamedSubstance {...hint.product} />.
+        </>
       ) : null}
     </>
   );

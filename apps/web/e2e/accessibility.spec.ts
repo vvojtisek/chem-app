@@ -54,6 +54,7 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await expect(page.getByRole("region", { name: /^Ze kterých výchozích látek/ })).toBeVisible();
   await page
     .getByRole("region", { name: /^Ze kterých výchozích látek/ })
+    .getByRole("list", { name: "Možnosti odpovědi" })
     .getByRole("button")
     .first()
     .click();

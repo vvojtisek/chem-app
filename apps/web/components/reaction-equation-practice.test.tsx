@@ -116,6 +116,38 @@ describe("reaction equation practice", () => {
     expect(appendAttempt).not.toHaveBeenCalled();
   });
 
+  it("shows the reactants with their coefficients", () => {
+    renderChoice();
+    const route = document.querySelector("[data-route-id]");
+    // The first curriculum route in dataset order is Zn + 2 HCl.
+    expect(route).toHaveTextContent(/Zn \+ 2\s?HCl → \?/u);
+  });
+
+  it("names one product in the hint without revealing a single-product answer", () => {
+    renderChoice();
+    fireEvent.click(screen.getByRole("button", { name: "Nápověda" }));
+    expect(screen.getByText(/^Vznikají 2 produkty\. Jedním z nich je vodík/u)).toBeInTheDocument();
+  });
+
+  it("skips to the next question without counting an answer", () => {
+    renderChoice();
+    const first = document.querySelector("[data-route-id]")?.getAttribute("data-route-id");
+    fireEvent.click(screen.getByRole("button", { name: "Přeskočit" }));
+    const second = document.querySelector("[data-route-id]")?.getAttribute("data-route-id");
+    expect(second).not.toBe(first);
+    expect(screen.getByText(/^Otázka 1 z/u)).toBeInTheDocument();
+    expect(screen.getByText("Správně: 0")).toBeInTheDocument();
+    expect(screen.getByText("Chybně: 0")).toBeInTheDocument();
+    expect(choiceOptions()).toHaveLength(4);
+  });
+
+  it("offers skipping at the balancing levels too", () => {
+    renderChoice();
+    fireEvent.click(screen.getByRole("button", { name: "Začátečník" }));
+    expect(screen.getByRole("button", { name: "Přeskočit" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Nápověda" })).toBeNull();
+  });
+
   it("draws the questions in a new order for each start", () => {
     const seeds = [0.1, 0.5, 0.9];
     const firstRoutes = seeds.map((value) => {
