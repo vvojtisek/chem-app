@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.26.0](https://github.com/vvojtisek/chem-app/compare/v1.25.0...v1.26.0) (2026-11-04)
+
+
+### Features
+
+* **web:** hints, skipping and balanced reactants in practice ([7f63a64](https://github.com/vvojtisek/chem-app/commit/7f63a6423c3bde48d5551c5839983c8d37f93bc1))
+* **web:** hints, skipping and balanced reactants in practice ([db083ca](https://github.com/vvojtisek/chem-app/commit/db083cab0a5311529410f7801cb7c5246f9ad000))
+
 ## [1.25.0](https://github.com/vvojtisek/chem-app/compare/v1.24.2...v1.25.0) (2026-11-04)
 
 
