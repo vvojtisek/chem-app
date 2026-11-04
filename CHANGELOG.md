@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/vvojtisek/chem-app/compare/v1.24.2...v1.25.0) (2026-11-04)
+
+
+### Features
+
+* **web:** product choice level, route quiz direction, shuffled practice ([8b71ca8](https://github.com/vvojtisek/chem-app/commit/8b71ca8172ee8e91500c32a701f511c52873eaf6))
+
 ## [1.24.2](https://github.com/vvojtisek/chem-app/compare/v1.24.1...v1.24.2) (2026-11-04)
 
 
