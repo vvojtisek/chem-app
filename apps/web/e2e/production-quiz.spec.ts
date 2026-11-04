@@ -40,7 +40,7 @@ async function currentQuestion(page: Page) {
   const kind: Route["kind"] = text.startsWith("Příprava") ? "preparation" : "manufacture";
   // Coefficients are joined to formulas with a no-break space on the page.
   const reactants = (/Výchozí látky: (.+?) → \?/u.exec(text)?.[1] ?? "").replace(/\s/gu, " ");
-  const options = card.getByRole("button");
+  const options = card.getByRole("list", { name: "Možnosti odpovědi" }).getByRole("button");
   const names = await options.evaluateAll((buttons) =>
     buttons.map((button) => button.querySelector("[data-option-name]")?.textContent ?? ""),
   );
@@ -117,7 +117,7 @@ test("asks how to make a substance and accepts the reviewed reactants", async ({
       )
       .map((route) => [...new Set(route.reactants.map((term) => term.formula))].sort().join("+")),
   );
-  const options = card.getByRole("button");
+  const options = card.getByRole("list", { name: "Možnosti odpovědi" }).getByRole("button");
   await expect(options).toHaveCount(4);
   const reactantSets = await options.evaluateAll((buttons) =>
     buttons.map((button) =>

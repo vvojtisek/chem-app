@@ -7,12 +7,20 @@ import { AnswerFeedback } from "@/components/answer-feedback";
 import { FinalAnswerReview } from "@/components/final-answer-review";
 import { Equation, EquationSide, Formula } from "@/components/formula";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { NamedSubstance, QuestionTools } from "@/components/question-tools";
 import { czechCount } from "@/lib/czech-plural";
 import { drawSeries } from "@/lib/periodic-table-scope";
+import {
+  formulaNames,
+  type RouteHint,
+  routeReactantHint,
+  substanceElementsHint,
+} from "@/lib/practice-hints";
 import {
   answerPracticeQueue,
   createPracticeQueue,
   type PracticeQueueState,
+  skipPracticeQueue,
 } from "@/lib/practice-queue";
 import {
   countProductionQuizQuestions,
@@ -100,6 +108,7 @@ export function ProductionQuiz({
       ) as Record<ProductionQuizKind, number>;
     return { "choose-route": count("choose-route"), "identify-product": count("identify-product") };
   }, [products]);
+  const names = useMemo(() => formulaNames(products), [products]);
   const availableByKind = availableByDirection[direction];
   const available = availableByKind[settings.kind];
   const plannedCount = Math.min(settings.count ?? available, available);
@@ -153,6 +162,14 @@ export function ProductionQuiz({
     setRunId((value) => value + 1);
   }
 
+  /** Puts the question at the end of the queue without grading it. */
+  function skip() {
+    if (!session?.current) return;
+    setSession(skipPracticeQueue(session));
+    setFeedback(null);
+    setRunId((value) => value + 1);
+  }
+
   if (!session) {
     return (
       <QuizSetup
@@ -183,7 +200,9 @@ export function ProductionQuiz({
         <QuestionCard
           firstOptionRef={firstOptionRef}
           key={`${question.id}-${runId}`}
+          names={names}
           onAnswer={answer}
+          onSkip={session.queue.length > 0 ? skip : undefined}
           question={question}
           random={random}
         />
@@ -341,31 +360,22 @@ function SegmentedChoice<Value extends string | number | null>({
   );
 }
 
-function QuestionCard({
-  question,
-  onAnswer,
-  firstOptionRef,
-  random,
-}: Readonly<{
-  question: ProductionQuizItem;
-  onAnswer: (optionId: string) => void;
-  firstOptionRef: Ref<HTMLButtonElement>;
-  random: () => number;
-}>) {
+interface CardProps<Question> {
+  readonly question: Question;
+  readonly onAnswer: (optionId: string) => void;
+  /** Absent when no other question is left to skip to. */
+  readonly onSkip: (() => void) | undefined;
+  readonly firstOptionRef: Ref<HTMLButtonElement>;
+  readonly random: () => number;
+  readonly names: ReadonlyMap<string, string>;
+}
+
+function QuestionCard(props: CardProps<ProductionQuizItem>) {
+  const { question } = props;
   return question.direction === "choose-route" ? (
-    <RouteQuestionCard
-      firstOptionRef={firstOptionRef}
-      onAnswer={onAnswer}
-      question={question}
-      random={random}
-    />
+    <RouteQuestionCard {...props} question={question} />
   ) : (
-    <ProductQuestionCard
-      firstOptionRef={firstOptionRef}
-      onAnswer={onAnswer}
-      question={question}
-      random={random}
-    />
+    <ProductQuestionCard {...props} question={question} />
   );
 }
 
@@ -404,14 +414,11 @@ function OptionButton({
 function ProductQuestionCard({
   question,
   onAnswer,
+  onSkip,
   firstOptionRef,
   random,
-}: Readonly<{
-  question: ProductionQuizQuestion;
-  onAnswer: (optionId: string) => void;
-  firstOptionRef: Ref<HTMLButtonElement>;
-  random: () => number;
-}>) {
+}: CardProps<ProductionQuizQuestion>) {
+  const elements = substanceElementsHint(question.answer.formula);
   const headingId = useId();
   const options = useShuffled(question.options, random);
   const verb = question.kind === "preparation" ? "připravit" : "vyrobit";
@@ -434,7 +441,11 @@ function ProductQuestionCard({
       <h2 className="mt-5 text-center text-lg font-semibold text-ink" id={headingId}>
         Kterou látku lze takto {verb}?
       </h2>
-      <ul className="mt-4 grid list-none gap-2 p-0 sm:grid-cols-2">
+      <QuestionTools
+        hint={elements.length > 0 ? `Hledaná látka obsahuje prvky: ${elements.join(", ")}.` : null}
+        onSkip={onSkip}
+      />
+      <ul aria-label="Možnosti odpovědi" className="mt-4 grid list-none gap-2 p-0 sm:grid-cols-2">
         {options.map((option, index) => (
           <li key={option.id}>
             <OptionButton
@@ -459,14 +470,12 @@ function ProductQuestionCard({
 function RouteQuestionCard({
   question,
   onAnswer,
+  onSkip,
   firstOptionRef,
   random,
-}: Readonly<{
-  question: ProductionRouteQuestion;
-  onAnswer: (optionId: string) => void;
-  firstOptionRef: Ref<HTMLButtonElement>;
-  random: () => number;
-}>) {
+  names,
+}: CardProps<ProductionRouteQuestion>) {
+  const reactant = routeReactantHint(question, names);
   const headingId = useId();
   const options = useShuffled(question.options, random);
   return (
@@ -488,7 +497,8 @@ function RouteQuestionCard({
           ? "Ze kterých výchozích látek tuto látku laboratorně připravíme?"
           : "Ze kterých výchozích látek se tato látka průmyslově vyrábí?"}
       </h2>
-      <ul className="mt-4 grid list-none gap-2 p-0">
+      <QuestionTools hint={<RouteHintText hint={reactant} />} onSkip={onSkip} />
+      <ul aria-label="Možnosti odpovědi" className="mt-4 grid list-none gap-2 p-0">
         {options.map((option, index) => (
           <li key={option.id}>
             <OptionButton
@@ -502,6 +512,18 @@ function RouteQuestionCard({
         ))}
       </ul>
     </section>
+  );
+}
+
+const REACTANT_FORMS = ["výchozí látka", "výchozí látky", "výchozích látek"] as const;
+
+function RouteHintText({ hint }: Readonly<{ hint: RouteHint }>) {
+  return hint.kind === "reactant" ? (
+    <>
+      Jednou z výchozích látek je <NamedSubstance {...hint.reactant} />.
+    </>
+  ) : (
+    <>Správný postup má {czechCount(hint.reactantCount, REACTANT_FORMS)}.</>
   );
 }
 

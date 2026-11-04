@@ -12,7 +12,9 @@ function questionCard() {
 }
 
 function options() {
-  return within(questionCard()).getAllByRole("button");
+  return within(
+    within(questionCard()).getByRole("list", { name: "Možnosti odpovědi" }),
+  ).getAllByRole("button");
 }
 
 function progress() {
@@ -85,7 +87,8 @@ describe("ProductionQuiz", () => {
       expect(screen.getByText("Správně", { selector: "p" })).toBeInTheDocument();
     }
     expect(progress()).toHaveAttribute("aria-valuetext", "9 z 10");
-    expect(questionCard().textContent).toBe(firstQuestion);
+    // The last question left cannot be skipped, so the „Přeskočit“ button is gone.
+    expect(questionCard().textContent).toBe(firstQuestion?.replace("Přeskočit", ""));
 
     const [correct] = options();
     if (!correct) throw new Error("missing option");
@@ -103,7 +106,9 @@ describe("ProductionQuiz", () => {
     fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
 
     const card = routeCard();
-    const buttons = within(card).getAllByRole("button");
+    const buttons = within(
+      within(card).getByRole("list", { name: "Možnosti odpovědi" }),
+    ).getAllByRole("button");
     expect(buttons).toHaveLength(4);
     expect(buttons.map((button) => button.textContent?.slice(0, 2))).toEqual([
       "a)",
@@ -126,26 +131,60 @@ describe("ProductionQuiz", () => {
     render(<ProductionQuiz products={curatedPreparationProduction} random={random} />);
     fireEvent.click(screen.getByRole("radio", { name: "10" }));
     fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
-    const before = within(routeCard())
+    const before = within(within(routeCard()).getByRole("list", { name: "Možnosti odpovědi" }))
       .getAllByRole("button")
       .map((button) => button.textContent?.slice(3));
     const firstQuestion = routeCard().getAttribute("data-question-id");
-    const wrong = within(routeCard()).getAllByRole("button")[1];
+    const wrong = within(
+      within(routeCard()).getByRole("list", { name: "Možnosti odpovědi" }),
+    ).getAllByRole("button")[1];
     if (!wrong) throw new Error("missing option");
     fireEvent.click(wrong);
     expect(screen.getByText(/^Vaše odpověď:/u)).toBeInTheDocument();
     for (let answered = 1; answered <= 9; answered += 1) {
-      const [correct] = within(routeCard()).getAllByRole("button");
+      const [correct] = within(
+        within(routeCard()).getByRole("list", { name: "Možnosti odpovědi" }),
+      ).getAllByRole("button");
       if (!correct) throw new Error("missing option");
       if (answered === 9) reverse = true;
       fireEvent.click(correct);
     }
     expect(routeCard().getAttribute("data-question-id")).toBe(firstQuestion);
-    const after = within(routeCard())
+    const after = within(within(routeCard()).getByRole("list", { name: "Možnosti odpovědi" }))
       .getAllByRole("button")
       .map((button) => button.textContent?.slice(3));
     expect([...after].sort()).toEqual([...before].sort());
     expect(after).not.toEqual(before);
+  });
+
+  it("shows a hint from the reviewed route and skips without grading", () => {
+    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
+    const card = routeCard();
+    const firstQuestion = card.getAttribute("data-question-id");
+    const hint = within(card).getByRole("button", { name: "Nápověda" });
+    expect(hint).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(hint);
+    expect(
+      within(card).getByText(/^(Jednou z výchozích látek je|Správný postup má)/u),
+    ).toBeInTheDocument();
+
+    fireEvent.click(within(card).getByRole("button", { name: "Přeskočit" }));
+    expect(routeCard().getAttribute("data-question-id")).not.toBe(firstQuestion);
+    expect(screen.getByText("Správně: 0")).toBeInTheDocument();
+    expect(screen.getByText("Špatně: 0")).toBeInTheDocument();
+    expect(
+      within(routeCard()).queryByText(/^(Jednou z výchozích látek je|Správný postup má)/u),
+    ).toBeNull();
+  });
+
+  it("hints the elements of the substance in the „Co vzniká“ direction", () => {
+    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    startQuiz();
+    fireEvent.click(within(questionCard()).getByRole("button", { name: "Nápověda" }));
+    expect(
+      within(questionCard()).getByText(/^Hledaná látka obsahuje prvky: /u),
+    ).toBeInTheDocument();
   });
 
   it("stops early and returns to the settings", () => {
