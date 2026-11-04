@@ -8,9 +8,14 @@ import { describe, expect, it } from "vitest";
 import {
   createProductionQuiz,
   createProductionQuizQuestion,
+  createProductionRouteQuestion,
   excludedDistractorFormulas,
   isProductionQuizAnswerCorrect,
   listProductionQuizRoutes,
+  listProductionRouteTargets,
+  listRouteDistractors,
+  type ProductionQuizQuestion,
+  reactantKey,
 } from "./preparation-production-quiz";
 
 function seeded(seed: number): () => number {
@@ -223,6 +228,8 @@ describe("createProductionQuiz", () => {
       curatedPreparationProduction,
       { kind: "all", count: null },
       seeded(11),
+    ).filter(
+      (question): question is ProductionQuizQuestion => question.direction !== "choose-route",
     );
 
     expect(quiz.length).toBe(listProductionQuizRoutes(curatedPreparationProduction).length);
@@ -236,5 +243,163 @@ describe("createProductionQuiz", () => {
       );
       for (const option of distractors) expect(excluded.has(option.formula)).toBe(false);
     }
+  });
+});
+
+const oxygen = product("p.o2", "Kyslík", "O2", [
+  route(
+    "r.o2-hgo",
+    "preparation",
+    [[2, "HgO"]],
+    [
+      [2, "Hg"],
+      [1, "O2"],
+    ],
+  ),
+]);
+const potassiumPerchlorate = product("p.kclo4", "Chloristan draselný", "KClO4", [
+  route(
+    "r.kclo4",
+    "preparation",
+    [[4, "KClO3"]],
+    [
+      [1, "KCl"],
+      [3, "KClO4"],
+    ],
+  ),
+]);
+const sulfuricAcid = product("p.h2so4", "Kyselina sírová", "H2SO4", [
+  // An intermediate step of the manufacture: it does not make H2SO4 itself.
+  route(
+    "r.h2so4-step",
+    "manufacture",
+    [
+      [1, "S"],
+      [1, "O2"],
+    ],
+    [[1, "SO2"]],
+  ),
+  route(
+    "r.h2so4",
+    "manufacture",
+    [
+      [1, "SO3"],
+      [1, "H2O"],
+    ],
+    [[1, "H2SO4"]],
+  ),
+]);
+const sulfurDioxide = product("p.so2", "Oxid siřičitý", "SO2", [
+  route(
+    "r.so2",
+    "manufacture",
+    [
+      [1, "S"],
+      [1, "O2"],
+    ],
+    [[1, "SO2"]],
+  ),
+]);
+const hydrogenChloride = product("p.hcl", "Chlorovodík", "HCl", [
+  route(
+    "r.hcl",
+    "manufacture",
+    [
+      [1, "H2"],
+      [1, "Cl2"],
+    ],
+    [[2, "HCl"]],
+  ),
+]);
+const routeProducts = [
+  ...products,
+  oxygen,
+  potassiumPerchlorate,
+  sulfuricAcid,
+  sulfurDioxide,
+  hydrogenChloride,
+];
+
+describe("listRouteDistractors", () => {
+  it("never offers reactants that contain every element of the target", () => {
+    const ids = listRouteDistractors(oxygen, "preparation", routeProducts).map(
+      (candidate) => candidate.id,
+    );
+    // KClO3 makes KClO4 in its reviewed route, but heated KClO3 also gives oxygen.
+    expect(ids).not.toContain("r.kclo4");
+    expect(ids).not.toContain("r.no");
+    // Only the oxygen-free reactants are left.
+    expect(ids).toEqual(["r.nh3", "r.hcl"]);
+  });
+
+  it("excludes intermediate steps of the target and routes sharing their reactants", () => {
+    const ids = listRouteDistractors(sulfuricAcid, "manufacture", routeProducts).map(
+      (candidate) => candidate.id,
+    );
+    expect(ids).not.toContain("r.so2");
+    expect(ids).not.toContain("r.h2so4-step");
+    expect(ids).not.toContain("r.h2so4");
+  });
+
+  it("excludes routes whose reactants also yield the target under other conditions", () => {
+    const ids = listRouteDistractors(nitrogenDioxide, "preparation", routeProducts).map(
+      (candidate) => candidate.id,
+    );
+    expect(ids).not.toContain("r.no");
+  });
+});
+
+describe("createProductionRouteQuestion", () => {
+  it("asks one question per product and kind and grades by route ID", () => {
+    const targets = listProductionRouteTargets(routeProducts);
+    const acid = targets.find((target) => target.product.id === "p.h2so4");
+    expect(acid?.routes.map((item) => item.id)).toEqual(["r.h2so4"]);
+    if (!acid) throw new Error("fixture");
+    for (let seed = 1; seed <= 30; seed += 1) {
+      const question = createProductionRouteQuestion(acid, routeProducts, seeded(seed));
+      if (!question) throw new Error("no question");
+      expect(question.id).toBe("p.h2so4|manufacture");
+      expect(question.options.map((option) => option.id)).toContain("r.h2so4");
+      expect(new Set(question.options.map((option) => reactantKey(option.route))).size).toBe(
+        question.options.length,
+      );
+      expect(isProductionQuizAnswerCorrect(question, "r.h2so4")).toBe(true);
+      expect(isProductionQuizAnswerCorrect(question, "p.h2so4")).toBe(false);
+    }
+  });
+
+  it("builds a sound question for every product and kind in the curriculum", () => {
+    const quiz = createProductionQuiz(
+      curatedPreparationProduction,
+      { kind: "all", count: null, direction: "choose-route" },
+      seeded(5),
+    );
+    expect(quiz.length).toBeGreaterThan(0);
+    expect(new Set(quiz.map((question) => question.id)).size).toBe(quiz.length);
+    for (const question of quiz) {
+      if (question.direction !== "choose-route") throw new Error("direction");
+      expect(question.options).toHaveLength(4);
+      expect(question.route.products.map((term) => term.formula)).toContain(
+        question.product.formula,
+      );
+      const elements = new Set(question.product.formula.match(/[A-Z][a-z]?/gu));
+      for (const option of question.options) {
+        if (option.id === question.route.id) continue;
+        const reactantElements = new Set(
+          option.route.reactants.flatMap((term) => term.formula.match(/[A-Z][a-z]?/gu) ?? []),
+        );
+        expect([...elements].every((symbol) => reactantElements.has(symbol))).toBe(false);
+        expect(
+          option.route.products.some((term) => term.formula === question.product.formula),
+        ).toBe(false);
+      }
+    }
+  });
+
+  it("draws a different order of questions for different seeds", () => {
+    const settings = { kind: "all", count: 10, direction: "choose-route" } as const;
+    const first = createProductionQuiz(curatedPreparationProduction, settings, seeded(1));
+    const second = createProductionQuiz(curatedPreparationProduction, settings, seeded(2));
+    expect(first.map((question) => question.id)).not.toEqual(second.map((question) => question.id));
   });
 });

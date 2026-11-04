@@ -30,14 +30,16 @@ test("starts and hydrates learning modes offline after one home visit", async ({
 
   await page.goto("/procvicovani/rovnice", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Chemické rovnice" })).toBeVisible();
-  await page.getByRole("button", { name: "Vyhodnotit koeficienty" }).click();
-  await expect(page.getByText("To není správné řešení.")).toBeVisible();
-  await page.getByRole("button", { name: "Zkusit znovu" }).click();
+  const productOptions = page.getByRole("group", { name: "Produkty reakce" }).getByRole("button");
+  await expect(productOptions).toHaveCount(4);
+  await productOptions.first().click();
+  await expect(page.getByText(/^(Správně\.|To není správné řešení\.)$/u)).toBeVisible();
+  await page.getByRole("button", { name: "Začátečník" }).click();
   await expect(page.getByRole("button", { name: "Vyhodnotit koeficienty" })).toBeVisible();
 
   await page.goto("/procvicovani/priprava-vyroba", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: /^Spustit kvíz/ }).click();
-  await expect(page.getByRole("region", { name: /^Kterou látku lze takto/ })).toBeVisible();
+  await expect(page.getByRole("region", { name: /^Ze kterých výchozích látek/ })).toBeVisible();
 
   await page.goto("/flashcards/prvky", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();

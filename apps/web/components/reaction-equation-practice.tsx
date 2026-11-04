@@ -12,32 +12,52 @@ import {
   type PreparationProductionRuntimeProduct,
   preparationProductionContentVersion,
 } from "@inorganic/content/preparation-production";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { Equation, EquationSide, Formula } from "@/components/formula";
 import { CheckIcon, CrossIcon } from "@/components/icons";
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
 import { createClientId } from "@/lib/client-id";
+import { drawSeries } from "@/lib/periodic-table-scope";
+import {
+  createReactionProductsQuestion,
+  isReactionProductsAnswerCorrect,
+  listReactionProductRoutes,
+  type ReactionProductsQuestion,
+} from "@/lib/reaction-products-quiz";
 
-type Level = "beginner" | "advanced" | "pro";
+type Level = "easy" | "beginner" | "advanced" | "pro";
+/** Levels whose attempts are saved; the attempt schema does not know the choice level yet. */
+type RecordedLevel = Exclude<Level, "easy">;
 type Route = PreparationProductionRuntimeProduct["routes"][number];
 interface Question {
   readonly product: PreparationProductionRuntimeProduct;
   readonly route: Route;
 }
 
+const LEVELS: readonly Level[] = ["easy", "beginner", "advanced", "pro"];
+const OPTION_LETTERS = ["a", "b", "c", "d"] as const;
+
 const levelLabels: Readonly<Record<Level, string>> = {
+  easy: "Snadný",
   beginner: "Začátečník",
   advanced: "Pokročilý",
   pro: "Profík",
 };
 
+/**
+ * Equation practice in four levels. „Snadný“ asks only which products the reactants give, as a
+ * choice of four; the other levels ask for coefficients, products and coefficients, or the
+ * whole equation. Each start draws the questions in a new random order.
+ */
 export function ReactionEquationPractice({
   products,
   allowedSymbols,
+  random = Math.random,
 }: Readonly<{
   products: readonly PreparationProductionRuntimeProduct[];
   allowedSymbols: readonly string[];
+  random?: () => number;
 }>) {
   const account = useAccount();
   const { canSave } = useCapabilities();
@@ -45,8 +65,10 @@ export function ReactionEquationPractice({
   const sessionId = useRef<string | null>(null);
   const sequence = useRef(0);
   const submissionLocked = useRef(false);
+  const allRoutes = useMemo(() => products.flatMap((product) => product.routes), [products]);
   const questionsByLevel = useMemo(
-    () => ({
+    (): Readonly<Record<Level, readonly Question[]>> => ({
+      easy: listReactionProductRoutes(products),
       beginner: products.flatMap((product) => product.routes.map((route) => ({ product, route }))),
       advanced: products.flatMap((product) => product.routes.map((route) => ({ product, route }))),
       pro: products.flatMap((product) => {
@@ -62,8 +84,12 @@ export function ReactionEquationPractice({
     [products],
   );
 
-  const [level, setLevel] = useState<Level>("beginner");
+  const [level, setLevel] = useState<Level>("easy");
+  // Drawn after mounting, so the server-rendered page and the first client render agree.
+  const [questions, setQuestions] = useState<readonly Question[] | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [choice, setChoice] = useState<ReactionProductsQuestion | null>(null);
+  const [chosenOption, setChosenOption] = useState<string | null>(null);
   const [productAnswer, setProductAnswer] = useState("");
   const [coefficients, setCoefficients] = useState<Readonly<Record<string, string>>>({});
   const [equationAnswer, setEquationAnswer] = useState("");
@@ -77,8 +103,27 @@ export function ReactionEquationPractice({
   const [unreduced, setUnreduced] = useState(false);
   const [saveNotice, setSaveNotice] = useState("");
 
-  const questions = questionsByLevel[level];
-  const question = questions[questionIndex];
+  /** Draws new options for every question shown at the easy level, also for a retry. */
+  const drawChoice = useCallback(
+    (nextLevel: Level, next: Question | undefined) => {
+      setChoice(
+        nextLevel === "easy" && next
+          ? createReactionProductsQuestion(next.route, allRoutes, symbols, random)
+          : null,
+      );
+      setChosenOption(null);
+    },
+    [allRoutes, symbols, random],
+  );
+
+  useEffect(() => {
+    const drawn = drawSeries(questionsByLevel.easy, Infinity, random);
+    setQuestions(drawn);
+    drawChoice("easy", drawn[0]);
+  }, [questionsByLevel, random, drawChoice]);
+
+  const question = questions?.[questionIndex];
+  const questionCount = questions?.length ?? questionsByLevel[level].length;
   const proQuestions =
     level === "pro" && question
       ? (products
@@ -91,8 +136,11 @@ export function ReactionEquationPractice({
       : [];
 
   function changeLevel(nextLevel: Level) {
+    const drawn = drawSeries(questionsByLevel[nextLevel], Infinity, random);
     setLevel(nextLevel);
+    setQuestions(drawn);
     setQuestionIndex(0);
+    drawChoice(nextLevel, drawn[0]);
     setProductAnswer("");
     setCoefficients({});
     setEquationAnswer("");
@@ -110,7 +158,8 @@ export function ReactionEquationPractice({
   }
 
   function recordAttempt(isCorrect: boolean) {
-    if (!canSave || !account || !question) return;
+    if (!canSave || !account || !question || level === "easy") return;
+    const recordedLevel: RecordedLevel = level;
     sessionId.current ??= createClientId();
     const direction = {
       beginner: "coefficients",
@@ -128,8 +177,8 @@ export function ReactionEquationPractice({
       eventSchemaVersion: 1 as const,
       sessionId: sessionId.current,
       sequence: sequence.current++,
-      level,
-      direction: direction[level],
+      level: recordedLevel,
+      direction: direction[recordedLevel],
       matchPolicy: "approved-balanced" as const,
       progressGeneration: account.progressGeneration,
     };
@@ -149,6 +198,11 @@ export function ReactionEquationPractice({
     if (correct) {
       setCorrectCount((count) => count + 1);
       setFeedback("correct");
+      setAtomBalance(null);
+    } else if (level === "easy") {
+      // Nothing was balanced, so atom counts would not explain the mistake.
+      setIncorrectCount((count) => count + 1);
+      setFeedback("incorrect");
       setAtomBalance(null);
     } else {
       setIncorrectCount((count) => count + 1);
@@ -178,6 +232,12 @@ export function ReactionEquationPractice({
     finishAnswer(result.correct, result.atomBalance, result.balanced && !result.correct);
   }
 
+  function checkChoice(optionId: string) {
+    if (!question || !choice || feedback) return;
+    setChosenOption(optionId);
+    finishAnswer(isReactionProductsAnswerCorrect(choice, optionId), null);
+  }
+
   function checkProAnswer() {
     if (!question) return;
     const result = gradeApprovedEquations(equationAnswer, proQuestions, symbols);
@@ -185,12 +245,10 @@ export function ReactionEquationPractice({
   }
 
   function advance() {
-    if (feedback === "correct") {
-      setQuestionIndex((index) => index + 1);
-      setRetrying(false);
-    } else {
-      setRetrying(true);
-    }
+    const nextIndex = feedback === "correct" ? questionIndex + 1 : questionIndex;
+    setQuestionIndex(nextIndex);
+    setRetrying(feedback !== "correct");
+    drawChoice(level, questions?.[nextIndex]);
     setProductAnswer("");
     setCoefficients({});
     setEquationAnswer("");
@@ -206,7 +264,7 @@ export function ReactionEquationPractice({
     setCoefficients((current) => ({ ...current, [key]: value }));
   }
 
-  if (questions.length === 0) {
+  if (questionCount === 0) {
     return (
       <p className="mt-6 rounded-2xl border border-line bg-surface p-5">
         Pro tuto úroveň nejsou připravena zadání.
@@ -221,9 +279,9 @@ export function ReactionEquationPractice({
     <section className="w-full">
       <nav
         aria-label="Obtížnost chemických rovnic"
-        className="grid grid-cols-3 gap-1 rounded-xl border border-line-strong bg-surface-3 p-1"
+        className="grid grid-cols-2 gap-1 rounded-xl border border-line-strong bg-surface-3 p-1 sm:grid-cols-4"
       >
-        {(["beginner", "advanced", "pro"] as const).map((option) => (
+        {LEVELS.map((option) => (
           <button
             aria-pressed={level === option}
             className={`min-h-11 rounded-lg px-3 font-semibold ${
@@ -238,15 +296,17 @@ export function ReactionEquationPractice({
         ))}
       </nav>
       <p className="mt-3 text-sm leading-6 text-ink-2">
-        {level === "beginner"
-          ? "Vzorce reaktantů i produktů jsou uvedené. Doplňte koeficienty na obou stranách tlačítky − a + nebo číslem; prázdné pole znamená 1."
-          : level === "advanced"
-            ? "Doplňte nejprve produkty na pravé straně. Potom vyčíslete reaktanty i produkty."
-            : "Podle názvu a vzorce produktu napište jednu správnou rovnici výroby. Pokud znáte více ověřených možností, oddělte je středníkem."}
+        {level === "easy"
+          ? "Vyberte produkty, které z uvedených výchozích látek vzniknou. Rovnici není třeba vyčíslovat. Výsledky této úrovně se zatím do pokroku nezapočítávají."
+          : level === "beginner"
+            ? "Vzorce reaktantů i produktů jsou uvedené. Doplňte koeficienty na obou stranách tlačítky − a + nebo číslem; prázdné pole znamená 1."
+            : level === "advanced"
+              ? "Doplňte nejprve produkty na pravé straně. Potom vyčíslete reaktanty i produkty."
+              : "Podle názvu a vzorce produktu napište jednu správnou rovnici výroby. Pokud znáte více ověřených možností, oddělte je středníkem."}
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
         <span className="inline-flex min-h-8 items-center rounded-full bg-surface-2 px-3 font-semibold text-ink tabular-nums">
-          Otázka {Math.min(questionIndex + 1, questions.length)} z {questions.length}
+          Otázka {Math.min(questionIndex + 1, questionCount)} z {questionCount}
         </span>
         <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-good-soft px-3 font-semibold text-good">
           <CheckIcon />
@@ -258,7 +318,7 @@ export function ReactionEquationPractice({
         </span>
       </div>
 
-      {!question ? (
+      {!questions ? null : !question ? (
         <section className="mt-4 rounded-2xl border border-line bg-surface p-5 sm:p-6">
           <h2 className="font-display text-2xl font-bold">Tato série je hotová</h2>
           <p className="mt-2">
@@ -276,15 +336,30 @@ export function ReactionEquationPractice({
         <section
           aria-labelledby="equation-heading"
           className="mt-4 rounded-2xl border border-line bg-surface p-5 sm:p-7"
+          data-route-id={question.route.id}
         >
           <p className="text-sm font-semibold text-ink-3">
             {question.route.kind === "preparation" ? "Příprava" : "Výroba"}
           </p>
-          <h2 className="mt-1 font-display text-2xl font-bold text-ink" id="equation-heading">
-            {level === "pro" ? "Vyrobte" : "Reakce produktu"}: {question.product.nameCs} (
-            <Formula formula={question.product.formula} />)
-          </h2>
-          {level === "pro" ? (
+          {level === "easy" ? (
+            <h2 className="mt-1 font-display text-2xl font-bold text-ink" id="equation-heading">
+              Které produkty vzniknou?
+            </h2>
+          ) : (
+            <h2 className="mt-1 font-display text-2xl font-bold text-ink" id="equation-heading">
+              {level === "pro" ? "Vyrobte" : "Reakce produktu"}: {question.product.nameCs} (
+              <Formula formula={question.product.formula} />)
+            </h2>
+          )}
+          {level === "easy" ? (
+            <ProductChoice
+              chosen={chosenOption}
+              disabled={Boolean(feedback)}
+              onChoose={checkChoice}
+              question={choice}
+              route={question.route}
+            />
+          ) : level === "pro" ? (
             <form
               className="mt-5 grid gap-3"
               onSubmit={(event) => {
@@ -381,6 +456,15 @@ export function ReactionEquationPractice({
                 {feedback === "correct" ? <CheckIcon /> : <CrossIcon />}
                 <span>{feedback === "correct" ? "Správně." : "To není správné řešení."}</span>
               </p>
+              {feedback === "correct" && level === "easy" ? (
+                <p className="mt-2 text-ink">
+                  Celá rovnice:{" "}
+                  <Equation
+                    products={question.route.products}
+                    reactants={question.route.reactants}
+                  />
+                </p>
+              ) : null}
               {feedback === "incorrect" ? (
                 <div className="mt-2 grid gap-2 text-ink">
                   {unreduced ? (
@@ -389,7 +473,7 @@ export function ReactionEquationPractice({
                     </p>
                   ) : null}
                   <p>
-                    Správně:{" "}
+                    {level === "easy" ? "Celá rovnice: " : "Správně: "}
                     <Equation
                       products={question.route.products}
                       reactants={question.route.reactants}
@@ -432,6 +516,72 @@ export function ReactionEquationPractice({
         </section>
       )}
     </section>
+  );
+}
+
+/** Reactants without coefficients and four product sets to choose from, marked a) to d). */
+function ProductChoice({
+  route,
+  question,
+  chosen,
+  disabled,
+  onChoose,
+}: Readonly<{
+  route: Route;
+  question: ReactionProductsQuestion | null;
+  chosen: string | null;
+  disabled: boolean;
+  onChoose: (optionId: string) => void;
+}>) {
+  return (
+    <>
+      <p className="mt-5 rounded-xl bg-surface-2 p-4 text-center text-xl leading-9 font-semibold text-ink">
+        <span className="sr-only">Výchozí látky: </span>
+        <EquationSide terms={route.reactants} withCoefficients={false} />{" "}
+        <span aria-hidden="true">→ ?</span>
+      </p>
+      {route.conditionsCs ? (
+        <p className="mt-2 text-center text-sm text-ink-2">Podmínky: {route.conditionsCs}</p>
+      ) : null}
+      {question && question.id === route.id ? (
+        <fieldset className="mt-4">
+          <legend className="sr-only">Produkty reakce</legend>
+          <ul className="grid list-none gap-2 p-0 sm:grid-cols-2">
+            {question.options.map((option, index) => {
+              const isChosen = chosen === option.id;
+              const isAnswer = disabled && option.id === question.answerId;
+              return (
+                <li key={option.id}>
+                  <button
+                    aria-pressed={isChosen}
+                    className={`flex min-h-14 w-full items-center gap-3 rounded-xl border px-4 py-2 text-left text-lg font-semibold text-ink ${
+                      isAnswer
+                        ? "border-good bg-good-soft"
+                        : isChosen
+                          ? "border-bad bg-bad-soft"
+                          : "border-line-strong bg-surface hover:border-accent hover:bg-accent-soft"
+                    } disabled:cursor-default`}
+                    disabled={disabled}
+                    onClick={() => onChoose(option.id)}
+                    type="button"
+                  >
+                    <span aria-hidden="true" className="shrink-0 text-base font-normal text-ink-2">
+                      {OPTION_LETTERS[index] ?? ""})
+                    </span>
+                    <span>
+                      <EquationSide
+                        terms={option.formulas.map((formula) => ({ formula }))}
+                        withCoefficients={false}
+                      />
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </fieldset>
+      ) : null}
+    </>
   );
 }
 

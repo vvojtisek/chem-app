@@ -29,7 +29,8 @@ export const practiceCategories: readonly PracticeCategory[] = [
   {
     area: "equations",
     title: "Chemické rovnice, příprava a výroba",
-    description: "Vyčíslování reakcí a kvíz o přípravě a průmyslové výrobě látek.",
+    description:
+      "Určování produktů reakcí, vyčíslování a kvíz o přípravě a průmyslové výrobě látek.",
     links: [
       { href: "/procvicovani/rovnice", label: "Procvičit rovnice", primary: true },
       { href: "/procvicovani/priprava-vyroba", label: "Kvíz: Příprava a výroba látek" },
