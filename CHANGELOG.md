@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.24.2](https://github.com/vvojtisek/chem-app/compare/v1.24.1...v1.24.2) (2026-11-04)
+
+
+### Bug Fixes
+
+* **deps:** bump next to 16.4.5 and zod to 4.6.7 for security advisories ([c39286c](https://github.com/vvojtisek/chem-app/commit/c39286cbfdfa0c1aad63867638f407bb0ad74e3a))
+* **deps:** bump next to 16.4.5 and zod to 4.6.7 for security advisories ([21ba3c0](https://github.com/vvojtisek/chem-app/commit/21ba3c0163b60ca8b06807397255914603ef19b4))
+
 ## [1.24.1](https://github.com/vvojtisek/chem-app/compare/v1.24.0...v1.24.1) (2026-10-21)
 
 
