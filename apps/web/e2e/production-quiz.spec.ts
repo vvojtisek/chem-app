@@ -42,7 +42,7 @@ async function currentQuestion(page: Page) {
   const reactants = (/Výchozí látky: (.+?) → \?/u.exec(text)?.[1] ?? "").replace(/\s/gu, " ");
   const options = card.getByRole("button");
   const names = await options.evaluateAll((buttons) =>
-    buttons.map((button) => button.firstElementChild?.textContent ?? ""),
+    buttons.map((button) => button.querySelector("[data-option-name]")?.textContent ?? ""),
   );
   const correctIndex = names.findIndex((name) => makes(name, kind, reactants));
   expect(
@@ -63,6 +63,9 @@ for (const correctFinal of [true, false]) {
       "Kvíz: Příprava a výroba látek",
     );
 
+    // The radio input is visually hidden; its label takes the click.
+    await page.getByText("Co vzniká", { exact: true }).click();
+    await expect(page.getByRole("radio", { name: "Co vzniká" })).toBeChecked();
     await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
 
     const first = await currentQuestion(page);
@@ -93,3 +96,48 @@ for (const correctFinal of [true, false]) {
     await expect(page.getByRole("heading", { name: "K zopakování" })).toBeVisible();
   });
 }
+
+test("asks how to make a substance and accepts the reviewed reactants", async ({ page }) => {
+  await page.goto("/procvicovani/priprava-vyroba");
+  await expect(page.getByRole("radio", { name: "Jak látku získat" })).toBeChecked();
+  await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
+
+  const card = page.getByRole("region", { name: /^Ze kterých výchozích látek/u });
+  await expect(card).toBeVisible();
+  const [productId, kind] = ((await card.getAttribute("data-question-id")) ?? "").split("|");
+  const product = collection.products.find((candidate) => candidate.id === productId);
+  if (!product) throw new Error(`Unknown product ${productId}`);
+  const reviewed = new Set(
+    product.routes
+      .filter(
+        (route) =>
+          route.status === "owner-approved" &&
+          route.kind === kind &&
+          route.products.some((term) => term.formula === product.formula),
+      )
+      .map((route) => [...new Set(route.reactants.map((term) => term.formula))].sort().join("+")),
+  );
+  const options = card.getByRole("button");
+  await expect(options).toHaveCount(4);
+  const reactantSets = await options.evaluateAll((buttons) =>
+    buttons.map((button) =>
+      [
+        ...new Set(
+          [...button.querySelectorAll("[role=img]")].map(
+            (formula) => formula.getAttribute("aria-label") ?? "",
+          ),
+        ),
+      ]
+        .sort()
+        .join("+"),
+    ),
+  );
+  const correctIndex = reactantSets.findIndex((set) => reviewed.has(set));
+  expect(
+    correctIndex,
+    JSON.stringify({ reviewed: [...reviewed], reactantSets }),
+  ).toBeGreaterThanOrEqual(0);
+  await options.nth(correctIndex).click();
+  await expect(page.getByText("Správně", { exact: true })).toBeVisible();
+  await expect(page.getByText(/^Správný postup:/u)).toBeVisible();
+});

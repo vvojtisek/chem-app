@@ -19,8 +19,14 @@ function progress() {
   return screen.getByRole("progressbar", { name: "Postup cvičením" });
 }
 
+/** Starts the „reactants → which substance“ direction, which these tests were written for. */
 function startQuiz() {
+  fireEvent.click(screen.getByRole("radio", { name: "Co vzniká" }));
   fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
+}
+
+function routeCard() {
+  return screen.getByRole("region", { name: /^Ze kterých výchozích látek/u });
 }
 
 describe("ProductionQuiz", () => {
@@ -63,7 +69,7 @@ describe("ProductionQuiz", () => {
     const firstQuestion = questionCard().textContent;
     const wrong = options()[1];
     if (!wrong) throw new Error("missing option");
-    const wrongName = wrong.firstElementChild?.textContent ?? "missing";
+    const wrongName = wrong.querySelector("[data-option-name]")?.textContent ?? "missing";
     fireEvent.click(wrong);
 
     expect(screen.getByText("Špatně", { selector: "p" })).toBeInTheDocument();
@@ -89,6 +95,57 @@ describe("ProductionQuiz", () => {
     fireEvent.click(screen.getByRole("button", { name: "Zobrazit výsledky" }));
     expect(screen.getByRole("heading", { name: "Vyhodnocení cvičení" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "K zopakování" })).toBeInTheDocument();
+  });
+
+  it("asks how to make a substance by default, with reactant options marked a) to d)", () => {
+    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    expect(screen.getByRole("radio", { name: "Jak látku získat" })).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
+
+    const card = routeCard();
+    const buttons = within(card).getAllByRole("button");
+    expect(buttons).toHaveLength(4);
+    expect(buttons.map((button) => button.textContent?.slice(0, 2))).toEqual([
+      "a)",
+      "b)",
+      "c)",
+      "d)",
+    ]);
+    expect(card).toHaveTextContent(/Hledaná látka: /u);
+    const [correct] = buttons;
+    if (!correct) throw new Error("missing option");
+    fireEvent.click(correct);
+    expect(screen.getByText("Správně", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByText(/^Správný postup:/u)).toBeInTheDocument();
+  });
+
+  it("reorders the options when a missed route question comes back", () => {
+    // Keeps the quiz order, then reverses the options of the returning question.
+    let reverse = false;
+    const random = () => (reverse ? 0 : 0.999);
+    render(<ProductionQuiz products={curatedPreparationProduction} random={random} />);
+    fireEvent.click(screen.getByRole("radio", { name: "10" }));
+    fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
+    const before = within(routeCard())
+      .getAllByRole("button")
+      .map((button) => button.textContent?.slice(3));
+    const firstQuestion = routeCard().getAttribute("data-question-id");
+    const wrong = within(routeCard()).getAllByRole("button")[1];
+    if (!wrong) throw new Error("missing option");
+    fireEvent.click(wrong);
+    expect(screen.getByText(/^Vaše odpověď:/u)).toBeInTheDocument();
+    for (let answered = 1; answered <= 9; answered += 1) {
+      const [correct] = within(routeCard()).getAllByRole("button");
+      if (!correct) throw new Error("missing option");
+      if (answered === 9) reverse = true;
+      fireEvent.click(correct);
+    }
+    expect(routeCard().getAttribute("data-question-id")).toBe(firstQuestion);
+    const after = within(routeCard())
+      .getAllByRole("button")
+      .map((button) => button.textContent?.slice(3));
+    expect([...after].sort()).toEqual([...before].sort());
+    expect(after).not.toEqual(before);
   });
 
   it("stops early and returns to the settings", () => {

@@ -1,26 +1,31 @@
 "use client";
 
 import type { PreparationProductionRuntimeProduct } from "@inorganic/content/preparation-production";
-import { type Ref, useEffect, useId, useMemo, useRef, useState } from "react";
+import { type ReactNode, type Ref, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { AnswerFeedback } from "@/components/answer-feedback";
 import { FinalAnswerReview } from "@/components/final-answer-review";
 import { Equation, EquationSide, Formula } from "@/components/formula";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
 import { czechCount } from "@/lib/czech-plural";
+import { drawSeries } from "@/lib/periodic-table-scope";
 import {
   answerPracticeQueue,
   createPracticeQueue,
   type PracticeQueueState,
 } from "@/lib/practice-queue";
 import {
+  countProductionQuizQuestions,
   createProductionQuiz,
   isProductionQuizAnswerCorrect,
-  listProductionQuizRoutes,
+  type ProductionQuizDirection,
+  type ProductionQuizItem,
   type ProductionQuizKind,
   type ProductionQuizOption,
   type ProductionQuizQuestion,
   type ProductionQuizSettings,
+  type ProductionRouteOption,
+  type ProductionRouteQuestion,
 } from "@/lib/preparation-production-quiz";
 
 const QUESTION_FORMS = ["otázka", "otázky", "otázek"] as const;
@@ -34,17 +39,37 @@ const COUNT_OPTIONS: readonly { readonly count: number | null; readonly label: s
   { count: 20, label: "20" },
   { count: null, label: "Všechny" },
 ];
+const DIRECTION_OPTIONS: readonly {
+  readonly direction: ProductionQuizDirection;
+  readonly label: string;
+}[] = [
+  { direction: "choose-route", label: "Jak látku získat" },
+  { direction: "identify-product", label: "Co vzniká" },
+];
 const KIND_LABELS = { preparation: "Příprava", manufacture: "Výroba" } as const;
+const ROUTE_KIND_LABELS = {
+  preparation: "Laboratorní příprava",
+  manufacture: "Průmyslová výroba",
+} as const;
+const OPTION_LETTERS = ["a", "b", "c", "d"] as const;
+const KINDS: readonly ProductionQuizKind[] = ["all", "preparation", "manufacture"];
 
-interface Feedback {
-  readonly question: ProductionQuizQuestion;
-  readonly chosen: ProductionQuizOption;
-  readonly isCorrect: boolean;
-}
+type Feedback =
+  | {
+      readonly question: ProductionQuizQuestion;
+      readonly chosen: ProductionQuizOption;
+      readonly isCorrect: boolean;
+    }
+  | {
+      readonly question: ProductionRouteQuestion;
+      readonly chosen: ProductionRouteOption;
+      readonly isCorrect: boolean;
+    };
 
 /**
- * Multiple-choice recall of preparation and industrial production: the reactants and
- * conditions of a reviewed route are shown, the learner picks the substance it makes.
+ * Multiple-choice recall of preparation and industrial production, in two directions: the
+ * learner picks the reactants that make a given substance, or the substance that a given
+ * route makes. Options are shuffled each time a question is shown.
  * Results stay in this session; the quiz does not record attempts.
  */
 export function ProductionQuiz({
@@ -54,8 +79,12 @@ export function ProductionQuiz({
   products: readonly PreparationProductionRuntimeProduct[];
   random?: () => number;
 }>) {
-  const [settings, setSettings] = useState<ProductionQuizSettings>({ kind: "all", count: 10 });
-  const [session, setSession] = useState<PracticeQueueState<ProductionQuizQuestion> | null>(null);
+  const [settings, setSettings] = useState<ProductionQuizSettings>({
+    kind: "all",
+    count: 10,
+    direction: "choose-route",
+  });
+  const [session, setSession] = useState<PracticeQueueState<ProductionQuizItem> | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [missed, setMissed] = useState<readonly Feedback[]>([]);
@@ -63,14 +92,15 @@ export function ProductionQuiz({
   const stopwatch = useStopwatch();
   const firstOptionRef = useRef<HTMLButtonElement>(null);
 
-  const availableByKind = useMemo(
-    (): Readonly<Record<ProductionQuizKind, number>> => ({
-      all: listProductionQuizRoutes(products, "all").length,
-      preparation: listProductionQuizRoutes(products, "preparation").length,
-      manufacture: listProductionQuizRoutes(products, "manufacture").length,
-    }),
-    [products],
-  );
+  const direction = settings.direction ?? "identify-product";
+  const availableByDirection = useMemo(() => {
+    const count = (target: ProductionQuizDirection) =>
+      Object.fromEntries(
+        KINDS.map((kind) => [kind, countProductionQuizQuestions(products, kind, target)]),
+      ) as Record<ProductionQuizKind, number>;
+    return { "choose-route": count("choose-route"), "identify-product": count("identify-product") };
+  }, [products]);
+  const availableByKind = availableByDirection[direction];
   const available = availableByKind[settings.kind];
   const plannedCount = Math.min(settings.count ?? available, available);
 
@@ -96,13 +126,22 @@ export function ProductionQuiz({
     );
   }
 
-  function answer(option: ProductionQuizOption) {
+  function answer(optionId: string) {
     if (!session?.current) return;
     const question = session.current;
-    const isCorrect = isProductionQuizAnswerCorrect(question, option.id);
+    const isCorrect = isProductionQuizAnswerCorrect(question, optionId);
     const result = answerPracticeQueue(session, isCorrect);
     if (!result) return;
-    const entry = { question, chosen: option, isCorrect };
+    let entry: Feedback;
+    if (question.direction === "choose-route") {
+      const chosen = question.options.find((option) => option.id === optionId);
+      if (!chosen) return;
+      entry = { question, chosen, isCorrect };
+    } else {
+      const chosen = question.options.find((option) => option.id === optionId);
+      if (!chosen) return;
+      entry = { question, chosen, isCorrect };
+    }
     setSession(result.state);
     setFeedback(entry);
     if (!isCorrect) {
@@ -146,6 +185,7 @@ export function ProductionQuiz({
           key={`${question.id}-${runId}`}
           onAnswer={answer}
           question={question}
+          random={random}
         />
       ) : feedback && !showResults ? (
         <FinalAnswerReview onShowResults={() => setShowResults(true)}>
@@ -210,6 +250,7 @@ function QuizSetup({
   onChange: (settings: ProductionQuizSettings) => void;
   onStart: () => void;
 }>) {
+  const directionName = useId();
   const kindName = useId();
   const countName = useId();
   return (
@@ -218,10 +259,19 @@ function QuizSetup({
       className="grid gap-5 rounded-2xl border border-line bg-surface p-5 sm:p-6"
     >
       <p className="leading-7 text-ink-2">
-        U každé otázky uvidíte výchozí látky a podmínky reakce. Vyberte, která látka takto vzniká.
-        Chybně zodpovězená otázka se jednou vrátí na konec. Výsledek se zobrazí na konci kvízu; do
-        pokroku se zatím nezapočítává.
+        {settings.direction === "choose-route"
+          ? "U každé otázky uvidíte látku, kterou je třeba připravit nebo vyrobit. Vyberte výchozí látky a podmínky, které k ní vedou."
+          : "U každé otázky uvidíte výchozí látky a podmínky reakce. Vyberte, která látka takto vzniká."}{" "}
+        Možnosti a otázky jsou pokaždé v jiném pořadí. Chybně zodpovězená otázka se jednou vrátí na
+        konec. Výsledek se zobrazí na konci kvízu; do pokroku se zatím nezapočítává.
       </p>
+      <SegmentedChoice
+        legend="Typ otázky"
+        name={directionName}
+        onSelect={(direction) => onChange({ ...settings, direction })}
+        options={DIRECTION_OPTIONS.map(({ direction, label }) => ({ value: direction, label }))}
+        value={settings.direction ?? "identify-product"}
+      />
       <SegmentedChoice
         legend="Postupy"
         name={kindName}
@@ -295,12 +345,75 @@ function QuestionCard({
   question,
   onAnswer,
   firstOptionRef,
+  random,
+}: Readonly<{
+  question: ProductionQuizItem;
+  onAnswer: (optionId: string) => void;
+  firstOptionRef: Ref<HTMLButtonElement>;
+  random: () => number;
+}>) {
+  return question.direction === "choose-route" ? (
+    <RouteQuestionCard
+      firstOptionRef={firstOptionRef}
+      onAnswer={onAnswer}
+      question={question}
+      random={random}
+    />
+  ) : (
+    <ProductQuestionCard
+      firstOptionRef={firstOptionRef}
+      onAnswer={onAnswer}
+      question={question}
+      random={random}
+    />
+  );
+}
+
+/** Shuffles once per shown question, so a returning question has its options reordered. */
+function useShuffled<Item>(items: readonly Item[], random: () => number): readonly Item[] {
+  const [shuffled] = useState(() => drawSeries(items, items.length, random));
+  return shuffled;
+}
+
+function OptionButton({
+  index,
+  onClick,
+  buttonRef,
+  children,
+}: Readonly<{
+  index: number;
+  onClick: () => void;
+  buttonRef: Ref<HTMLButtonElement> | undefined;
+  children: ReactNode;
+}>) {
+  return (
+    <button
+      className="flex min-h-14 w-full items-center gap-3 rounded-xl border border-line-strong bg-surface px-4 py-2 text-left font-semibold text-ink hover:border-accent hover:bg-accent-soft"
+      onClick={onClick}
+      ref={buttonRef}
+      type="button"
+    >
+      <span aria-hidden="true" className="shrink-0 font-normal text-ink-2">
+        {OPTION_LETTERS[index] ?? ""})
+      </span>
+      {children}
+    </button>
+  );
+}
+
+function ProductQuestionCard({
+  question,
+  onAnswer,
+  firstOptionRef,
+  random,
 }: Readonly<{
   question: ProductionQuizQuestion;
-  onAnswer: (option: ProductionQuizOption) => void;
+  onAnswer: (optionId: string) => void;
   firstOptionRef: Ref<HTMLButtonElement>;
+  random: () => number;
 }>) {
   const headingId = useId();
+  const options = useShuffled(question.options, random);
   const verb = question.kind === "preparation" ? "připravit" : "vyrobit";
   return (
     <section
@@ -322,19 +435,20 @@ function QuestionCard({
         Kterou látku lze takto {verb}?
       </h2>
       <ul className="mt-4 grid list-none gap-2 p-0 sm:grid-cols-2">
-        {question.options.map((option, index) => (
+        {options.map((option, index) => (
           <li key={option.id}>
-            <button
-              className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-line-strong bg-surface px-4 py-2 text-left font-semibold text-ink hover:border-accent hover:bg-accent-soft"
-              onClick={() => onAnswer(option)}
-              ref={index === 0 ? firstOptionRef : undefined}
-              type="button"
+            <OptionButton
+              buttonRef={index === 0 ? firstOptionRef : undefined}
+              index={index}
+              onClick={() => onAnswer(option.id)}
             >
-              <span>{option.nameCs}</span>
-              <span className="font-normal text-ink-2">
-                <Formula formula={option.formula} />
+              <span className="flex flex-1 items-center justify-between gap-3">
+                <span data-option-name="">{option.nameCs}</span>
+                <span className="font-normal text-ink-2">
+                  <Formula formula={option.formula} />
+                </span>
               </span>
-            </button>
+            </OptionButton>
           </li>
         ))}
       </ul>
@@ -342,8 +456,100 @@ function QuestionCard({
   );
 }
 
+function RouteQuestionCard({
+  question,
+  onAnswer,
+  firstOptionRef,
+  random,
+}: Readonly<{
+  question: ProductionRouteQuestion;
+  onAnswer: (optionId: string) => void;
+  firstOptionRef: Ref<HTMLButtonElement>;
+  random: () => number;
+}>) {
+  const headingId = useId();
+  const options = useShuffled(question.options, random);
+  return (
+    <section
+      aria-labelledby={headingId}
+      className="mt-4 rounded-2xl border border-line bg-surface p-5 sm:p-7"
+      data-question-id={question.id}
+    >
+      <p className="text-center text-sm font-semibold text-ink-3">
+        {ROUTE_KIND_LABELS[question.kind]}
+      </p>
+      <p className="mt-3 text-center font-display text-2xl leading-10 font-bold text-ink sm:text-3xl">
+        <span aria-hidden="true">?</span> <span aria-hidden="true">→</span>{" "}
+        <span className="sr-only">Hledaná látka: </span>
+        {question.product.nameCs} (<Formula formula={question.product.formula} />)
+      </p>
+      <h2 className="mt-5 text-center text-lg font-semibold text-ink" id={headingId}>
+        {question.kind === "preparation"
+          ? "Ze kterých výchozích látek tuto látku laboratorně připravíme?"
+          : "Ze kterých výchozích látek se tato látka průmyslově vyrábí?"}
+      </h2>
+      <ul className="mt-4 grid list-none gap-2 p-0">
+        {options.map((option, index) => (
+          <li key={option.id}>
+            <OptionButton
+              buttonRef={index === 0 ? firstOptionRef : undefined}
+              index={index}
+              onClick={() => onAnswer(option.id)}
+            >
+              <RouteReactants route={option.route} />
+            </OptionButton>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function RouteReactants({ route }: Readonly<{ route: ProductionRouteOption["route"] }>) {
+  return (
+    <span className="grid gap-0.5">
+      <span>
+        <EquationSide terms={route.reactants} withCoefficients={false} />
+      </span>
+      {route.conditionsCs ? (
+        <span className="text-sm font-normal text-ink-2">Podmínky: {route.conditionsCs}</span>
+      ) : null}
+    </span>
+  );
+}
+
+function RouteLine({ route }: Readonly<{ route: ProductionRouteOption["route"] }>) {
+  return (
+    <>
+      <Equation products={route.products} reactants={route.reactants} />
+      {route.conditionsCs ? `; podmínky: ${route.conditionsCs}` : null}
+    </>
+  );
+}
+
 function FeedbackDetail({ feedback }: Readonly<{ feedback: Feedback }>) {
-  const { question, chosen, isCorrect } = feedback;
+  if (feedback.question.direction === "choose-route") {
+    const { question, chosen, isCorrect } = feedback as Extract<
+      Feedback,
+      { question: ProductionRouteQuestion }
+    >;
+    return (
+      <>
+        {isCorrect ? null : (
+          <p>
+            Vaše odpověď: <RouteLine route={chosen.route} />
+          </p>
+        )}
+        <p>
+          Správný postup: <RouteLine route={question.route} />
+        </p>
+      </>
+    );
+  }
+  const { question, chosen, isCorrect } = feedback as Extract<
+    Feedback,
+    { question: ProductionQuizQuestion }
+  >;
   return (
     <>
       {isCorrect ? null : (
@@ -355,8 +561,7 @@ function FeedbackDetail({ feedback }: Readonly<{ feedback: Feedback }>) {
         Hledaná látka: {question.answer.nameCs} (<Formula formula={question.answer.formula} />)
       </p>
       <p className="text-ink-2">
-        <Equation products={question.route.products} reactants={question.route.reactants} />
-        {question.route.conditionsCs ? `; podmínky: ${question.route.conditionsCs}` : null}
+        <RouteLine route={question.route} />
       </p>
     </>
   );
@@ -367,17 +572,20 @@ function MissedList({ missed }: Readonly<{ missed: readonly Feedback[] }>) {
     <section className="mt-5 border-t border-line pt-4">
       <h3 className="font-semibold text-ink">K zopakování</h3>
       <ul className="mt-2 grid list-none gap-2 p-0">
-        {missed.map(({ question }) => (
-          <li className="rounded-xl bg-surface-2 p-3 text-sm leading-6" key={question.id}>
-            <span className="font-semibold text-ink">
-              {question.answer.nameCs} (<Formula formula={question.answer.formula} />)
-            </span>{" "}
-            <span className="text-ink-3">· {KIND_LABELS[question.kind]}</span>
-            <span className="block text-ink-2">
-              <Equation products={question.route.products} reactants={question.route.reactants} />
-            </span>
-          </li>
-        ))}
+        {missed.map(({ question }) => {
+          const target = question.direction === "choose-route" ? question.product : question.answer;
+          return (
+            <li className="rounded-xl bg-surface-2 p-3 text-sm leading-6" key={question.id}>
+              <span className="font-semibold text-ink">
+                {target.nameCs} (<Formula formula={target.formula} />)
+              </span>{" "}
+              <span className="text-ink-3">· {KIND_LABELS[question.kind]}</span>
+              <span className="block text-ink-2">
+                <Equation products={question.route.products} reactants={question.route.reactants} />
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
