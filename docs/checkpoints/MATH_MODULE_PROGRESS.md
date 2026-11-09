@@ -15,9 +15,9 @@ Design: `docs/decisions/0015-subject-modules-and-mathematics.md` (Proposed).
 ## Milestones
 
 - [x] ADR 0015 (Proposed)
-- [ ] Safe expression parser (no eval) + tests
-- [ ] BaseSubjectModule, registry, mathematics module
-- [ ] Step solvers: limits, derivatives (incl. implicit), integrals, multivariable
+- [x] Safe expression parser (no eval) + tests (`tests/test_math_parser.py`)
+- [x] BaseSubjectModule, registry, mathematics module (`apps/api/src/inorganic_api/subjects/`)
+- [x] Step solvers: limits, derivatives (incl. implicit), integrals, multivariable (`tests/test_math_solvers.py`)
 - [ ] API endpoints, process sandbox, rate limits, auth
 - [ ] SceneSpec, fixed Manim scenes, file-queue render worker, render image
 - [ ] LLM explanation adapter (Claude, JSON schema), disabled without key
