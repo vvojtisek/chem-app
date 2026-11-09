@@ -1,5 +1,6 @@
 import json
 from collections.abc import Iterator
+from datetime import timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -34,10 +35,10 @@ def session(role: str = "user") -> SimpleNamespace:
 class Limiter:
     def __init__(self, allow: bool = True) -> None:
         self.allow = allow
-        self.calls: list[tuple[str, str, int]] = []
+        self.calls: list[tuple[str, str, int, timedelta]] = []
 
-    def __call__(self, kind: str, value: str, limit: int) -> bool:
-        self.calls.append((kind, value, limit))
+    def __call__(self, kind: str, value: str, limit: int, window: timedelta) -> bool:
+        self.calls.append((kind, value, limit, window))
         return self.allow
 
 
@@ -91,7 +92,8 @@ async def test_solve_returns_steps_and_scene(overrides) -> None:
     assert body["resultLatex"] == "1"
     assert body["steps"][0]["rule"] == "lhopital"
     assert body["scene"]["kind"] == "limit_2d"
-    assert overrides["limiter"].calls[0][0] == "subject-solve"
+    kind, _, limit, window = overrides["limiter"].calls[0]
+    assert (kind, limit, window) == ("subject-solve", 60, timedelta(minutes=10))
 
 
 @pytest.mark.anyio
@@ -185,6 +187,10 @@ async def test_render_queue_round_trip(overrides, tmp_path: Path) -> None:
     assert again.json() == first.json()
     render_calls = [c for c in overrides["limiter"].calls if c[0] == "subject-render"]
     assert len(render_calls) == 2  # per account and global, only for the first request
+    assert [(c[1] == "all", c[2], c[3]) for c in render_calls] == [
+        (False, 10, timedelta(hours=1)),
+        (True, 100, timedelta(hours=1)),
+    ]
 
     (tmp_path / "out").mkdir(exist_ok=True)
     (tmp_path / "out" / f"{key}.mp4").write_bytes(b"\x00\x00\x00\x18ftypmp42")

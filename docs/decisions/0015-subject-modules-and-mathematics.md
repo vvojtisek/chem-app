@@ -88,13 +88,21 @@ would break ADR 0003.
   definite integrals finished by the fundamental theorem; partial
   derivatives, gradient, directional derivative and iterated double and
   triple integrals over regions given by bounds. Each final result is checked
-  against SymPy's own `diff`/`limit`/`integrate`; a mismatch is an error,
-  never a silently wrong answer.
+  against SymPy's own `diff`/`limit`/`integrate` (antiderivatives by
+  differentiating them back). When the step engine and SymPy disagree, the
+  answer shown is SymPy's, with a step and a note that say the step-by-step
+  derivation was not used; a wrong step chain is never shown as the answer.
 - SymPy can run for an unbounded time (`integrate`, `limit`). Every solve
-  runs in a separate process with a 10 s wall-clock timeout, a 512 MB
+  runs in a separate process (forked from a forkserver that has SymPy and
+  the catalog preloaded) with a 10 s wall-clock timeout, a 768 MB
   address-space limit (applied in the child before solving), and a global
   cap of 2 concurrent solves, mirroring the Argon2 concurrency cap. A
-  timeout returns `422 problem_too_complex`.
+  timeout returns `422 problem_too_complex`; a full queue returns
+  `503 solver_busy` after 5 s. Measured RSS: the forkserver about 65 MB,
+  each forked solve shares its pages, so the API's 512 MB `mem_limit` is
+  unchanged.
+- `POST /subjects/{id}/preview` parses fields for the live LaTeX preview. It
+  only parses (no solving) and has its own, higher rate limit.
 
 ### 3. Rendering worker (Manim)
 
@@ -111,7 +119,7 @@ would break ADR 0003.
   to LaTeX. Manim's TeX template does not enable `-shell-escape`.
 - Queue: a directory on a dedicated volume, not the database. The API writes
   `queue/<key>.json` atomically; the worker claims a job by renaming it to
-  `work/`, renders with `manim -qm` (720p30) under a 120 s timeout and CPU
+  `work/`, renders with `manim -qm` (720p30) under a 180 s timeout and CPU
   and memory rlimits, and writes `out/<key>.mp4` (and `.gif` on request).
   `key` is the SHA-256 of the canonical spec plus the renderer version, so
   identical requests are rendered once and later requests are served from
@@ -128,20 +136,22 @@ would break ADR 0003.
 ### 4. LLM explanations
 
 - Provider: Anthropic Claude through the Messages API with structured
-  output (JSON schema). Called with `urllib` behind an adapter, like the
-  GitHub and Watchtower integrations, with a 30 s timeout.
+  output (`output_config.format` JSON schema), through the official
+  `anthropic` Python SDK behind a small adapter (`services/explanations.py`)
+  with a 30 s timeout and one retry. Default model `claude-opus-5-5`
+  (`MATH_LLM_MODEL`), low effort, server-side fallback enabled.
 - Input: only the structured problem and SymPy steps (no user identity, no
   free text beyond the parsed expression). Output schema: per-step Czech
-  narrative ("why this rule applies"), alternative methods, and optional
-  scene parameters limited to enums and bounded numbers (which step to
-  emphasise, x-range, tangent point). The response is validated with
+  narrative ("why this rule applies"), a summary, alternative methods and
+  common mistakes. Scene parameters are not taken from the LLM in this
+  increment: scenes are built only from the solver output. The response is validated with
   Pydantic; anything invalid is dropped and the deterministic steps are
   still shown. LLM output is displayed as text and never executed, never
   fed to LaTeX, never trusted for correctness.
 - Off unless `MATH_LLM_API_KEY` is set. The key comes from
   `.env.production` like other secrets. Requires outbound HTTPS from the API
   container to `api.anthropic.com` (the API already has egress for GitHub).
-- Results are cached by the same canonical key to bound cost.
+- Results are cached in memory (LRU) by the canonical problem to bound cost.
 
 ### 5. Access, limits and offline
 
@@ -150,7 +160,9 @@ would break ADR 0003.
   CSRF and same-origin like every other mutation.
 - Rate limits through the existing `consume_rate_limit`: solve 60 / 10 min per
   account, render 10 / hour per account and 100 / hour globally, explain
-  20 / hour per account.
+  20 / hour per account, field preview 600 / 10 min per account. A render or
+  explanation request also counts as a solve, because the server recomputes
+  the solution instead of trusting the client's copy.
 - The mathematics page is online-only. It shows an explicit offline state
   and is not precached. No attempt events are written in this increment.
 

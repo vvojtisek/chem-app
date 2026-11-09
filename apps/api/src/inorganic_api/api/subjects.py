@@ -7,6 +7,7 @@ change this file.
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import timedelta
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Path
@@ -29,11 +30,12 @@ from inorganic_api.subjects.registry import SubjectRegistry
 from inorganic_api.subjects.rendering.spec import SceneSpec
 
 LEARNER_ROLES = frozenset({"user", "tester", "admin"})
-SOLVE_LIMIT = 60
-PREVIEW_LIMIT = 600
-RENDER_LIMIT_PER_ACCOUNT = 10
-RENDER_LIMIT_GLOBAL = 100
-EXPLAIN_LIMIT = 20
+# (requests, window) per key; ADR 0015 section 5.
+SOLVE_LIMIT = (60, timedelta(minutes=10))
+PREVIEW_LIMIT = (600, timedelta(minutes=10))
+RENDER_LIMIT_PER_ACCOUNT = (10, timedelta(hours=1))
+RENDER_LIMIT_GLOBAL = (100, timedelta(hours=1))
+EXPLAIN_LIMIT = (20, timedelta(hours=1))
 
 SubjectId = Annotated[str, Path(pattern=r"^[a-z][a-z0-9-]{1,31}$")]
 RenderKey = Annotated[str, Path(pattern=r"^[0-9a-f]{64}$")]
@@ -169,7 +171,7 @@ def require_learner_csrf(
     return current
 
 
-RateLimiter = Callable[[str, str, int], bool]
+RateLimiter = Callable[[str, str, int, timedelta], bool]
 
 
 def rate_limiter_dependency(
@@ -177,8 +179,8 @@ def rate_limiter_dependency(
 ) -> RateLimiter:
     settings = get_settings()
 
-    def consume(kind: str, value: str, limit: int) -> bool:
-        return auth.consume_rate_limit(db, settings, kind, value, limit=limit)
+    def consume(kind: str, value: str, limit: int, window: timedelta) -> bool:
+        return auth.consume_rate_limit(db, settings, kind, value, limit=limit, window=window)
 
     return consume
 
@@ -255,8 +257,8 @@ def _validated(
         raise AppError(status, error.code, error.message) from error
 
 
-def _rate_limit(limiter: RateLimiter, kind: str, user_id: str, limit: int) -> None:
-    if not limiter(kind, user_id, limit):
+def _rate_limit(limiter: RateLimiter, kind: str, key: str, limit: tuple[int, timedelta]) -> None:
+    if not limiter(kind, key, *limit):
         raise AppError(429, "too_many_attempts", "Too many requests. Try again later.")
 
 
