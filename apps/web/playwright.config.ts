@@ -35,7 +35,7 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: `pnpm start --port ${webPort}`,
+      command: `cp -R .next/static .next/standalone/apps/web/.next/static && cp -R public .next/standalone/apps/web/public && PORT=${webPort} HOSTNAME=127.0.0.1 node .next/standalone/apps/web/server.js`,
       url: `${webOrigin}/login`,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { mathTopic01 } from "@inorganic/content/higher-mathematics";
 import { expect, type Page, test } from "@playwright/test";
 
 async function expectWcag22Aa(page: Page): Promise<void> {
@@ -62,6 +63,14 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   // Focus moves to the next question's options, which can scroll the breadcrumb under the
   // sticky mobile header; axe would then report the hidden link as an obscured target.
   await page.evaluate(() => window.scrollTo(0, 0));
+  await expectWcag22Aa(page);
+
+  await page.goto("/procvicovani/matematika");
+  await expect(page.getByRole("heading", { level: 1, name: "Vyšší matematika" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Limity a spojitost/ })).toBeVisible();
+  await expectWcag22Aa(page);
+  await page.goto(`/procvicovani/matematika/${mathTopic01.id}`);
+  await expect(page.getByRole("heading", { level: 1, name: mathTopic01.title })).toBeVisible();
   await expectWcag22Aa(page);
 
   await page.goto("/flashcards/prvky");
