@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.27.0](https://github.com/vvojtisek/chem-app/compare/v1.26.0...v1.27.0) (2026-11-09)
+
+
+### Features
+
+* **math:** add extensible mathematics module ([2c3ddae](https://github.com/vvojtisek/chem-app/commit/2c3ddae7ef6983056f95da2356515566fa494351))
+* **math:** add Manim scenes, file-queue render worker and render image ([78dc0c5](https://github.com/vvojtisek/chem-app/commit/78dc0c5065ebeeb145f2fb828887d314bd389142))
+* **math:** add mathematics workspace page ([81c06f9](https://github.com/vvojtisek/chem-app/commit/81c06f9959df2e25d44e04ea0080489600d3deb0))
+* **math:** add subject API with sandboxed solving and Claude explanations ([14626e9](https://github.com/vvojtisek/chem-app/commit/14626e982c8cb8eabb057cce78e360f492d0a64d))
+* **math:** add subject registry and SymPy step solvers ([bd06b8f](https://github.com/vvojtisek/chem-app/commit/bd06b8ff0d100d9f30b098dbd7b0761c2351b2a1))
+* **math:** add subject switcher and mathematics sections ([edb1751](https://github.com/vvojtisek/chem-app/commit/edb1751974cc0c23eaab9d42d194672671e356c4))
+* **math:** make the explanation provider configurable ([f4e0076](https://github.com/vvojtisek/chem-app/commit/f4e0076c73d57d32db80b547940ff044410f36ea))
+
+
+### Bug Fixes
+
+* **math:** ignore solves that finish after switching problem type ([a2b1ad0](https://github.com/vvojtisek/chem-app/commit/a2b1ad0e5d6331bfde953276a24a1d320f50baf3))
+
 ## [1.26.0](https://github.com/vvojtisek/chem-app/compare/v1.25.0...v1.26.0) (2026-11-04)
 
 
