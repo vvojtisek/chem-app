@@ -99,9 +99,17 @@ services:
       CURRICULUM_GITHUB_REPOSITORY: ${CURRICULUM_GITHUB_REPOSITORY:-}
       CURRICULUM_GITHUB_TOKEN: ${CURRICULUM_GITHUB_TOKEN:-}
       CURRICULUM_SME_REVIEWERS: ${CURRICULUM_SME_REVIEWERS:-}
+      # Mathematics module (ADR 0015). Off unless set; rendering also needs the
+      # math-render service (profile "math").
+      MATH_RENDER_ENABLED: ${MATH_RENDER_ENABLED:-false}
+      MATH_LLM_PROVIDER: ${MATH_LLM_PROVIDER:-none}
+      MATH_LLM_API_KEY: ${MATH_LLM_API_KEY:-}
+      MATH_LLM_MODEL: ${MATH_LLM_MODEL:-}
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
+    volumes:
+      - math-render:/var/lib/chem-app/math-render
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 512m
@@ -319,6 +327,33 @@ services:
       migrate:
         condition: service_healthy
 
+  # Mathematics animations (ADR 0015). Opt-in: `--profile math`. Built on the
+  # host from apps/api/render.Dockerfile; not published to GHCR yet. No
+  # network, no database, no secrets; only the shared render volume is writable.
+  math-render:
+    profiles: [math]
+    image: chem-app-math-render:local
+    build:
+      context: .
+      dockerfile: apps/api/render.Dockerfile
+    restart: unless-stopped
+    network_mode: none
+    environment:
+      MATH_RENDER_DIR: /var/lib/chem-app/math-render
+      MATH_RENDER_TIMEOUT_SECONDS: ${MATH_RENDER_TIMEOUT_SECONDS:-180}
+      MATH_RENDER_CACHE_BYTES: ${MATH_RENDER_CACHE_BYTES:-2147483648}
+    volumes:
+      - math-render:/var/lib/chem-app/math-render
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 1.0
+    mem_limit: 1g
+    pids_limit: 64
+    logging: *default-logging
+
 networks:
   public-net:
     ipam:
@@ -335,6 +370,7 @@ networks:
   update-net:
 
 volumes:
+  math-render:
   pg-data:
   caddy-data:
   caddy-config:

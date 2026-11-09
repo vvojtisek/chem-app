@@ -1,0 +1,274 @@
+/* Same palette and spacing as the balancing lesson panel, so subjects look
+   like the existing step-by-step chemistry page. */
+.workspace {
+  --muted: #a9bcc4;
+  --amber: #f2b84b;
+  --panel: #12232b;
+  --panel-2: #19323e;
+  --edge: #405761;
+  --good: #7fd1a5;
+  --bad: #ff9b8a;
+  --curve: #5bb8e8;
+  --tangent: #f29b4b;
+  background: var(--panel);
+  color: #f1f4f5;
+  border-radius: 1rem;
+  padding: 0.625rem 1rem 1rem;
+  min-width: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.typeList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+.typeButton {
+  border: 1px solid var(--edge);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: var(--muted);
+  text-align: left;
+  min-height: 3rem;
+  overflow-wrap: anywhere;
+}
+.typeButtonActive {
+  color: var(--amber);
+  border-color: var(--amber);
+  font-weight: 700;
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+}
+.field {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.fieldWide {
+  grid-column: 1 / -1;
+}
+.label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.input {
+  min-height: 2.75rem;
+  border: 1px solid var(--edge);
+  border-radius: 0.5rem;
+  background: #0d1b21;
+  color: #f1f4f5;
+  padding: 0.4rem 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.95rem;
+}
+.input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+.input[aria-invalid="true"] {
+  border-color: var(--bad);
+}
+.preview {
+  min-height: 1.75rem;
+  font-size: 1rem;
+  overflow-x: auto;
+}
+.fieldError {
+  color: var(--bad);
+  font-size: 0.8rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.primaryButton {
+  min-height: 2.75rem;
+  border-radius: 0.6rem;
+  padding: 0 1.1rem;
+  background: var(--amber);
+  color: #12232b;
+  font-weight: 700;
+}
+.primaryButton:disabled {
+  opacity: 0.55;
+}
+.secondaryButton {
+  min-height: 2.75rem;
+  border: 1px solid var(--edge);
+  border-radius: 0.6rem;
+  padding: 0 0.9rem;
+  color: #f1f4f5;
+  font-size: 0.9rem;
+}
+.secondaryButton:hover,
+.primaryButton:hover {
+  filter: brightness(1.08);
+}
+.alert {
+  border: 1px solid var(--bad);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  color: var(--bad);
+  font-size: 0.9rem;
+}
+.result {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 1rem;
+  align-items: start;
+}
+.equation {
+  background: var(--panel-2);
+  border: 1px solid var(--edge);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 1.15rem;
+}
+.answer {
+  color: var(--good);
+  font-weight: 700;
+}
+.meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.step {
+  border: 1px solid var(--edge);
+  border-radius: 0.6rem;
+  background: #0f1f26;
+}
+.step[open] {
+  border-color: var(--amber);
+}
+.stepSummary {
+  cursor: pointer;
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.55rem 0.75rem;
+  min-height: 2.75rem;
+}
+.stepNumber {
+  color: var(--amber);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stepBody {
+  padding: 0 0.75rem 0.7rem;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+}
+.substeps {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0.75rem;
+  border-left: 2px solid var(--edge);
+  display: grid;
+  gap: 0.35rem;
+}
+.narrative {
+  border-left: 3px solid var(--amber);
+  padding-left: 0.6rem;
+  color: #f1f4f5;
+  font-size: 0.9rem;
+}
+.side {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.card {
+  background: var(--panel-2);
+  border: 1px solid var(--edge);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.video {
+  width: 100%;
+  border-radius: 0.5rem;
+  background: #000;
+}
+.plot {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  background: #0d1b21;
+}
+.axis {
+  stroke: var(--edge);
+}
+.axisLabel {
+  fill: var(--muted);
+  font-size: 16px;
+}
+.curve {
+  fill: none;
+  stroke: var(--curve);
+  stroke-width: 2.5;
+}
+.tangent {
+  stroke: var(--tangent);
+  stroke-width: 2;
+}
+.tangentPoint {
+  fill: var(--tangent);
+}
+.guide {
+  stroke: var(--good);
+  stroke-dasharray: 5 4;
+}
+.riemann {
+  fill: rgb(242 184 75 / 0.3);
+  stroke: var(--amber);
+}
+.generatedLabel {
+  display: inline-block;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+@media (max-width: 900px) {
+  .result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .typeList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

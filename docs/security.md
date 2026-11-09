@@ -93,6 +93,13 @@ Authorization and session tests must include missing, expired, malformed, wrong-
 - Apply migrations through a controlled release process and back up before destructive transformations.
 - Logs use structured redaction and retention appropriate to the sensitivity of account/progress data.
 
+## Subject modules (ADR 0015)
+
+- Learner input is parsed by a whitelist tokenizer that builds SymPy objects directly; `eval`, `sympify` on raw text and `parse_expr` are not used. Input length, nesting, digits and exponents are bounded.
+- Each solve runs in a forked child with a wall-clock timeout, an address-space limit and a cap of 2 concurrent solves; endpoints need a signed-in non-guest account, CSRF for `POST`, and per-account rate limits.
+- The Manim worker runs fixed scene classes from a validated `SceneSpec`; it never runs generated or LLM-written code, and LaTeX in a spec comes only from SymPy's printer and passes an allowlist and a command denylist. The worker container has no network, no secrets, a read-only root and dropped capabilities. The API serves only files named by a 64-hex key.
+- Claude output is validated against a schema and shown as text labelled as generated. It never reaches LaTeX, the renderer or the answer. Only the parsed problem and computed steps are sent; no account data.
+
 ## Supply chain and content
 
 - Pin dependencies with committed lockfiles and review additions for maintenance, license, install scripts, and necessity.

@@ -42,6 +42,11 @@ const STUDY_MATERIALS = [
     title: "Vyčíslování rovnic",
     description: "Krokový výklad bilance atomů, náboje a elektronů.",
   },
+  {
+    href: "/predmety/matematika",
+    title: "Matematika",
+    description: "Limity, derivace a integrály krok za krokem (vyžaduje připojení).",
+  },
 ] as const;
 
 export default function ElementLearningPage() {

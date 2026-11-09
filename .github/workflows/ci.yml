@@ -199,6 +199,40 @@ jobs:
       - name: Audit Python dependencies
         run: uv --directory apps/api run --with pip-audit pip-audit
 
+  # Real Manim renders of the mathematics scenes (ADR 0015). Needs LaTeX and
+  # ffmpeg, so it runs apart from the quality job.
+  math-render:
+    if: >-
+      ${{
+        !(
+          (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please--branches--')) ||
+          (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(main): release '))
+        )
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.12.9"
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
+
+      - name: Install LaTeX, ffmpeg and Cairo/Pango
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg dvisvgm \
+            texlive-latex-base texlive-latex-extra texlive-fonts-recommended \
+            libcairo2-dev libpango1.0-dev pkg-config fonts-dejavu-core
+
+      - name: Install Python dependencies with the render extra
+        run: uv --directory apps/api sync --frozen --extra test --extra render
+
+      - name: Render scenes and check the videos
+        run: uv --directory apps/api run pytest -q -m render tests/test_math_rendering.py
+
   docker:
     if: >-
       ${{
@@ -223,6 +257,7 @@ jobs:
       - name: Build production images
         run: |
           docker build --file apps/api/Dockerfile .
+          docker build --file apps/api/render.Dockerfile .
           docker build --file apps/web/Dockerfile --build-arg API_PROXY_TARGET=http://api:8000 .
           docker build --file deploy/aws/Caddy.Dockerfile --tag chem-app-caddy-route53:2.10.2 .
           docker run --rm \

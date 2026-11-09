@@ -100,6 +100,16 @@ flashcard edits, and other learning state remain local. User preferences that
 can conflict need an explicit version or updated timestamp and a documented
 resolution rule.
 
+### Subject modules
+
+Mathematics (ADR 0015) is computed on the server, unlike chemistry. The API
+holds a registry of `BaseSubjectModule` implementations under
+`apps/api/src/inorganic_api/subjects/`; the web route `/predmety/[subject]`
+renders any of them from the API description. Solving runs in a sandboxed
+child process; optional videos come from a separate `math-render` worker
+through a file queue on a shared volume. The page is online-only. See
+[subjects.md](subjects.md).
+
 ## Rendering and state ownership
 
 - Next.js Server Components provide route shells and online server-rendered content where useful.

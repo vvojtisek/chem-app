@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository contains an offline-capable learning application for inorganic chemistry.
+This repository contains an offline-capable learning application for inorganic chemistry, built to support learning at VŠCHT Praha. Chemistry is the main focus; other VŠCHT subjects may be added as server-side subject modules (ADR 0015, mathematics first). The project is open source and non-commercial.
 
 Agents working in this repository must optimize for:
 
@@ -46,7 +46,7 @@ Do not silently resolve a material conflict. Record the resolution in an ADR or 
 
 ## Product invariants
 
-The application is a Czech-language inorganic chemistry learning product.
+The application is a Czech-language learning product for VŠCHT Praha students. Inorganic chemistry is its main focus and the only offline part; other subjects (ADR 0015) are online-only, computed on the server and labelled as computed rather than SME-reviewed. Subject modules must not weaken chemistry correctness, offline behavior, or the security properties listed under Security.
 
 The core learning modes are:
 

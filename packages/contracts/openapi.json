@@ -347,6 +347,33 @@
         "title": "AttemptStats",
         "type": "object"
       },
+      "Axes2D": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "$ref": "#/components/schemas/Range"
+          },
+          "xLabel": {
+            "default": "x",
+            "title": "Xlabel",
+            "type": "string"
+          },
+          "y": {
+            "$ref": "#/components/schemas/Range"
+          },
+          "yLabel": {
+            "default": "y",
+            "title": "Ylabel",
+            "type": "string"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "Axes2D",
+        "type": "object"
+      },
       "BatchRequest": {
         "additionalProperties": false,
         "properties": {
@@ -444,6 +471,25 @@
         "title": "ChangePasswordRequest",
         "type": "object"
       },
+      "ChoiceOptionModel": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "ChoiceOptionModel",
+        "type": "object"
+      },
       "ConfirmResetRequest": {
         "additionalProperties": false,
         "properties": {
@@ -489,6 +535,47 @@
           "locator"
         ],
         "title": "ContentSource",
+        "type": "object"
+      },
+      "Curve": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              ],
+              "type": "array"
+            },
+            "maxItems": 401,
+            "minItems": 2,
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "points"
+        ],
+        "title": "Curve",
         "type": "object"
       },
       "DailyTrend": {
@@ -792,6 +879,83 @@
         "title": "ErrorEnvelope",
         "type": "object"
       },
+      "ExplanationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "alternativeMethods": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Alternativemethods",
+            "type": "array"
+          },
+          "commonMistakes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Commonmistakes",
+            "type": "array"
+          },
+          "generated": {
+            "const": true,
+            "default": true,
+            "title": "Generated",
+            "type": "boolean"
+          },
+          "stepNarratives": {
+            "items": {
+              "$ref": "#/components/schemas/StepNarrativeModel"
+            },
+            "title": "Stepnarratives",
+            "type": "array"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "summary",
+          "stepNarratives",
+          "alternativeMethods",
+          "commonMistakes"
+        ],
+        "title": "ExplanationResponse",
+        "type": "object"
+      },
+      "FieldPreviewModel": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "latex": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latex"
+          }
+        },
+        "required": [
+          "latex",
+          "error"
+        ],
+        "title": "FieldPreviewModel",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -829,6 +993,74 @@
           "timestamp"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "InputFieldModel": {
+        "additionalProperties": false,
+        "properties": {
+          "default": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default"
+          },
+          "help": {
+            "title": "Help",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "expression",
+              "equation",
+              "constant",
+              "bound",
+              "vector",
+              "variable",
+              "choice"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ChoiceOptionModel"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "placeholder": {
+            "title": "Placeholder",
+            "type": "string"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "kind",
+          "required",
+          "placeholder",
+          "help",
+          "default",
+          "options"
+        ],
+        "title": "InputFieldModel",
         "type": "object"
       },
       "LatestReleaseResponse": {
@@ -1806,6 +2038,87 @@
         "title": "PreparationProductionResponse",
         "type": "object"
       },
+      "PreviewResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldPreviewModel"
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "fields"
+        ],
+        "title": "PreviewResponse",
+        "type": "object"
+      },
+      "ProblemRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "problemType": {
+            "pattern": "^[a-z][a-z_]{1,39}$",
+            "title": "Problemtype",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "maxProperties": 12,
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "problemType",
+          "values"
+        ],
+        "title": "ProblemRequest",
+        "type": "object"
+      },
+      "ProblemTypeModel": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "example": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Example",
+            "type": "object"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/InputFieldModel"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "description",
+          "fields",
+          "example"
+        ],
+        "title": "ProblemTypeModel",
+        "type": "object"
+      },
       "ProductInput": {
         "additionalProperties": false,
         "properties": {
@@ -2089,6 +2402,25 @@
         "title": "Progression",
         "type": "object"
       },
+      "Range": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "title": "Max",
+            "type": "number"
+          },
+          "min": {
+            "title": "Min",
+            "type": "number"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "title": "Range",
+        "type": "object"
+      },
       "Rank": {
         "additionalProperties": false,
         "properties": {
@@ -2173,6 +2505,76 @@
         "title": "RejectedAttempt",
         "type": "object"
       },
+      "RenderRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "format": {
+            "default": "mp4",
+            "enum": [
+              "mp4",
+              "gif"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "problemType": {
+            "pattern": "^[a-z][a-z_]{1,39}$",
+            "title": "Problemtype",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "maxProperties": 12,
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "problemType",
+          "values"
+        ],
+        "title": "RenderRequest",
+        "type": "object"
+      },
+      "RenderStatusResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "rendering",
+              "done",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "videoUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Videourl"
+          }
+        },
+        "required": [
+          "key",
+          "status",
+          "videoUrl"
+        ],
+        "title": "RenderStatusResponse",
+        "type": "object"
+      },
       "ReviewerProfileRequest": {
         "additionalProperties": false,
         "properties": {
@@ -2244,6 +2646,31 @@
           "managedByConfiguration"
         ],
         "title": "ReviewerProfileResponse",
+        "type": "object"
+      },
+      "RiemannRectangle": {
+        "additionalProperties": false,
+        "properties": {
+          "height": {
+            "title": "Height",
+            "type": "number"
+          },
+          "width": {
+            "exclusiveMinimum": 0.0,
+            "title": "Width",
+            "type": "number"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "width",
+          "height"
+        ],
+        "title": "RiemannRectangle",
         "type": "object"
       },
       "RouteInput": {
@@ -2432,6 +2859,305 @@
           "pullRequestUrl"
         ],
         "title": "SaveProductResponse",
+        "type": "object"
+      },
+      "SceneSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "axes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Axes2D"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "curve": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Curve"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "enum": [
+              "derivative_2d",
+              "limit_2d",
+              "integral_2d",
+              "surface_3d",
+              "steps_only"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "limitPoint": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitpoint"
+          },
+          "limitValue": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitvalue"
+          },
+          "problem": {
+            "title": "Problem",
+            "type": "string"
+          },
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "riemann": {
+            "items": {
+              "$ref": "#/components/schemas/RiemannRectangle"
+            },
+            "maxItems": 64,
+            "title": "Riemann",
+            "type": "array"
+          },
+          "secantPoints": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "maxItems": 6,
+            "title": "Secantpoints",
+            "type": "array"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepFrame"
+            },
+            "maxItems": 12,
+            "title": "Steps",
+            "type": "array"
+          },
+          "surface": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Surface"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tangent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Tangent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tangentPlane": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TangentPlane"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "maxLength": 120,
+            "pattern": "^[^\\\\{}$%#&~^_]*$",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "title",
+          "problem",
+          "result"
+        ],
+        "title": "SceneSpec",
+        "type": "object"
+      },
+      "SolveResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "problemLatex": {
+            "title": "Problemlatex",
+            "type": "string"
+          },
+          "problemType": {
+            "title": "Problemtype",
+            "type": "string"
+          },
+          "resultLatex": {
+            "title": "Resultlatex",
+            "type": "string"
+          },
+          "scene": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SceneSpec"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepModel"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "subjectId": {
+            "title": "Subjectid",
+            "type": "string"
+          },
+          "verifiedBy": {
+            "title": "Verifiedby",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subjectId",
+          "problemType",
+          "problemLatex",
+          "resultLatex",
+          "steps",
+          "verifiedBy",
+          "notes",
+          "scene"
+        ],
+        "title": "SolveResponse",
+        "type": "object"
+      },
+      "StepFrame": {
+        "additionalProperties": false,
+        "properties": {
+          "latex": {
+            "title": "Latex",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 120,
+            "pattern": "^[^\\\\{}$%#&~^_]*$",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "latex"
+        ],
+        "title": "StepFrame",
+        "type": "object"
+      },
+      "StepModel": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "title": "After",
+            "type": "string"
+          },
+          "before": {
+            "title": "Before",
+            "type": "string"
+          },
+          "justification": {
+            "title": "Justification",
+            "type": "string"
+          },
+          "rewritten": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rewritten"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "substeps": {
+            "items": {
+              "$ref": "#/components/schemas/StepModel"
+            },
+            "title": "Substeps",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule",
+          "title",
+          "before",
+          "after",
+          "justification",
+          "rewritten",
+          "substeps"
+        ],
+        "title": "StepModel",
+        "type": "object"
+      },
+      "StepNarrativeModel": {
+        "additionalProperties": false,
+        "properties": {
+          "narrative": {
+            "title": "Narrative",
+            "type": "string"
+          },
+          "stepIndex": {
+            "title": "Stepindex",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "stepIndex",
+          "narrative"
+        ],
+        "title": "StepNarrativeModel",
         "type": "object"
       },
       "StoredNomenclatureRecord": {
@@ -2929,6 +3655,178 @@
           "formula"
         ],
         "title": "StoredTerm",
+        "type": "object"
+      },
+      "SubjectListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectModel"
+            },
+            "title": "Subjects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "subjects"
+        ],
+        "title": "SubjectListResponse",
+        "type": "object"
+      },
+      "SubjectModel": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "explanationsEnabled": {
+            "title": "Explanationsenabled",
+            "type": "boolean"
+          },
+          "exportFormats": {
+            "items": {
+              "enum": [
+                "mp4",
+                "gif",
+                "svg",
+                "web"
+              ],
+              "type": "string"
+            },
+            "title": "Exportformats",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "problemTypes": {
+            "items": {
+              "$ref": "#/components/schemas/ProblemTypeModel"
+            },
+            "title": "Problemtypes",
+            "type": "array"
+          },
+          "renderingEnabled": {
+            "title": "Renderingenabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "description",
+          "problemTypes",
+          "exportFormats",
+          "renderingEnabled",
+          "explanationsEnabled"
+        ],
+        "title": "SubjectModel",
+        "type": "object"
+      },
+      "Surface": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "$ref": "#/components/schemas/Range"
+          },
+          "y": {
+            "$ref": "#/components/schemas/Range"
+          },
+          "z": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "maxItems": 31,
+            "minItems": 2,
+            "title": "Z",
+            "type": "array"
+          },
+          "zRange": {
+            "$ref": "#/components/schemas/Range"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "z",
+          "zRange"
+        ],
+        "title": "Surface",
+        "type": "object"
+      },
+      "Tangent": {
+        "additionalProperties": false,
+        "properties": {
+          "slope": {
+            "title": "Slope",
+            "type": "number"
+          },
+          "x0": {
+            "title": "X0",
+            "type": "number"
+          },
+          "y0": {
+            "title": "Y0",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x0",
+          "y0",
+          "slope"
+        ],
+        "title": "Tangent",
+        "type": "object"
+      },
+      "TangentPlane": {
+        "additionalProperties": false,
+        "properties": {
+          "fx": {
+            "title": "Fx",
+            "type": "number"
+          },
+          "fy": {
+            "title": "Fy",
+            "type": "number"
+          },
+          "x0": {
+            "title": "X0",
+            "type": "number"
+          },
+          "y0": {
+            "title": "Y0",
+            "type": "number"
+          },
+          "z0": {
+            "title": "Z0",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x0",
+          "y0",
+          "z0",
+          "fx",
+          "fy"
+        ],
+        "title": "TangentPlane",
         "type": "object"
       },
       "UpdateDailyGoalRequest": {
@@ -5937,6 +6835,871 @@
         "summary": "My Stats",
         "tags": [
           "attempts"
+        ]
+      }
+    },
+    "/api/v1/subjects": {
+      "get": {
+        "operationId": "listSubjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "List subject modules and their problem types",
+        "tags": [
+          "subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{subject_id}/explanations": {
+      "post": {
+        "operationId": "explainSubjectSolution",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9-]{1,31}$",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Generate a narrative explanation of the solution",
+        "tags": [
+          "subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{subject_id}/preview": {
+      "post": {
+        "operationId": "previewSubjectInput",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9-]{1,31}$",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Parse raw input fields and return their LaTeX form",
+        "tags": [
+          "subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{subject_id}/renders": {
+      "post": {
+        "operationId": "requestSubjectRender",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9-]{1,31}$",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RenderStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Queue an animation of the solution",
+        "tags": [
+          "subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{subject_id}/renders/{key}": {
+      "get": {
+        "operationId": "getSubjectRender",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9-]{1,31}$",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RenderStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Show the state of a queued animation",
+        "tags": [
+          "subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{subject_id}/renders/{key}/video": {
+      "get": {
+        "operationId": "getSubjectRenderVideo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9-]{1,31}$",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/gif": {},
+              "video/mp4": {}
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Download a finished animation",
+        "tags": [
+          "subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{subject_id}/solve": {
+      "post": {
+        "operationId": "solveSubjectProblem",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z][a-z0-9-]{1,31}$",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolveResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "InorganicSessionCookie": []
+          }
+        ],
+        "summary": "Solve a problem step by step",
+        "tags": [
+          "subjects"
         ]
       }
     }

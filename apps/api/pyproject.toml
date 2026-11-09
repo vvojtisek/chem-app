@@ -5,16 +5,22 @@ description = "FastAPI service for inorganic chemistry learning progress and syn
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "alembic>=1.16,<2",
+  "anthropic>=1,<2",
   "argon2-cffi>=25.1,<26",
   "cryptography>=50,<51",
   "fastapi>=0.118,<1",
   "psycopg[binary]>=3.2,<4",
   "pydantic-settings>=2.10,<3",
   "sqlalchemy>=2.0,<3",
+  "sympy>=1.14,<2",
   "uvicorn[standard]>=0.37,<1",
 ]
 
 [project.optional-dependencies]
+# Render worker image only (ADR 0015); never installed in the API image.
+render = [
+  "manim>=0.19,<0.20",
+]
 test = [
   "httpx>=0.28,<1",
   "pytest>=8.4,<10",
@@ -30,7 +36,10 @@ build-backend = "hatchling.build"
 packages = ["src/inorganic_api"]
 
 [tool.pytest.ini_options]
-addopts = "--strict-config --strict-markers"
+addopts = "--strict-config --strict-markers -m 'not render'"
+markers = [
+  "render: needs Manim, LaTeX and ffmpeg; run with `pytest -m render` (CI job math-render)",
+]
 testpaths = ["tests"]
 
 [tool.ruff]
