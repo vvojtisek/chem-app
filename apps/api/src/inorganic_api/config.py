@@ -63,7 +63,15 @@ class Settings(BaseSettings):
         ),
     )
 
+    math_render_enabled: bool = False
+    math_render_dir: str = Field(default="/var/lib/chem-app/math-render", max_length=255)
+    math_llm_api_key: str | None = Field(default=None, max_length=512)
+    math_llm_model: str = Field(default="claude-opus-5-5", pattern=r"^[a-z0-9.-]{3,64}$")
+    math_solve_timeout_seconds: float = Field(default=10.0, gt=0, le=60)
+    math_solve_memory_mb: int = Field(default=768, ge=128, le=4096)
+
     @field_validator(
+        "math_llm_api_key",
         "release_check_repository",
         "watchtower_update_url",
         "watchtower_http_api_token",
@@ -116,6 +124,9 @@ class Settings(BaseSettings):
             github_token = self.curriculum_github_token
             if github_token and any(m in github_token.lower() for m in ("replace", "placeholder")):
                 raise ValueError("production CURRICULUM_GITHUB_TOKEN must be a real token")
+            llm_key = self.math_llm_api_key
+            if llm_key and any(m in llm_key.lower() for m in ("replace", "placeholder")):
+                raise ValueError("production MATH_LLM_API_KEY must be a real key")
             if self.database_url == DEFAULT_DATABASE_URL:
                 raise ValueError("production DATABASE_URL must be configured")
             if self.public_origin.scheme != "https":
