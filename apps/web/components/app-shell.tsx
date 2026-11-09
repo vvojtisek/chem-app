@@ -43,6 +43,81 @@ export const PRIMARY_DESTINATIONS: readonly Destination[] = [
   { href: "/pokrok", label: "Pokrok", icon: ChartIcon, matches: (path) => path === "/pokrok" },
 ];
 
+/** Učivo, Procvičovat and Pokrok of a server-side subject module (ADR 0015). */
+function subjectDestinations(id: string): readonly Destination[] {
+  const base = `/predmety/${id}`;
+  return [
+    { href: base, label: "Učivo", icon: BookIcon, matches: (path) => path === base },
+    {
+      href: `${base}/procvicovani`,
+      label: "Procvičovat",
+      icon: FlaskIcon,
+      matches: (path) => path.startsWith(`${base}/procvicovani`),
+    },
+    {
+      href: `${base}/pokrok`,
+      label: "Pokrok",
+      icon: ChartIcon,
+      matches: (path) => path.startsWith(`${base}/pokrok`),
+    },
+  ];
+}
+
+interface SubjectArea {
+  readonly id: string;
+  readonly label: string;
+  readonly href: string;
+  readonly destinations: readonly Destination[];
+}
+
+/** Chemistry is the default area; other subjects own everything under /predmety/<id>. */
+export const SUBJECT_AREAS: readonly SubjectArea[] = [
+  { id: "anorganika", label: "Anorganika", href: "/", destinations: PRIMARY_DESTINATIONS },
+  {
+    id: "matematika",
+    label: "Matematika",
+    href: "/predmety/matematika",
+    destinations: subjectDestinations("matematika"),
+  },
+];
+
+export function subjectAreaFor(pathname: string): SubjectArea {
+  return (
+    SUBJECT_AREAS.find(
+      (area) =>
+        area.href !== "/" && (pathname === area.href || pathname.startsWith(`${area.href}/`)),
+    ) ?? (SUBJECT_AREAS[0] as SubjectArea)
+  );
+}
+
+function SubjectSwitcher({
+  current,
+  className,
+}: Readonly<{ current: SubjectArea; className: string }>) {
+  return (
+    <nav aria-label="Předmět" className={className}>
+      <ul className="m-0 grid list-none grid-cols-2 gap-1 rounded-lg bg-surface-2 p-1">
+        {SUBJECT_AREAS.map((area) => {
+          const active = area.id === current.id;
+          return (
+            <li key={area.id}>
+              <Link
+                aria-current={active ? "true" : undefined}
+                className={`flex min-h-10 items-center justify-center rounded-md px-2 text-sm font-semibold ${
+                  active ? "bg-surface text-accent-strong shadow-sm" : "text-ink-2 hover:text-ink"
+                }`}
+                href={area.href}
+              >
+                {area.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
 export function BrandMark({ size = "sm" }: Readonly<{ size?: "sm" | "md" }>) {
   const box = size === "md" ? "h-12 w-12 rounded-[10px]" : "h-9 w-9 rounded-lg";
   return (
@@ -99,6 +174,7 @@ export function AppShell({
   notice,
 }: Readonly<{ children: ReactNode; notice?: ReactNode }>) {
   const pathname = usePathname();
+  const area = subjectAreaFor(pathname);
   const account = useAccount();
   const { canSync, isGuest } = useCapabilities();
   const signOut = useSignOut();
@@ -128,12 +204,17 @@ export function AppShell({
           <BrandMark />
           Anorganika
         </Link>
+        <SubjectSwitcher className="hidden md:block md:pb-2" current={area} />
         <nav
           aria-label="Hlavní navigace"
           className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur md:static md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none"
         >
-          <ul className="m-0 grid list-none grid-cols-4 p-0 md:flex md:flex-col md:gap-1">
-            {PRIMARY_DESTINATIONS.map(({ href, label, icon: Icon, matches }) => {
+          <ul
+            className={`m-0 grid list-none p-0 md:flex md:flex-col md:gap-1 ${
+              area.destinations.length === 3 ? "grid-cols-3" : "grid-cols-4"
+            }`}
+          >
+            {area.destinations.map(({ href, label, icon: Icon, matches }) => {
               const active = matches(pathname);
               return (
                 <li key={href}>
@@ -255,6 +336,10 @@ export function AppShell({
             </button>
           </div>
         </header>
+        <SubjectSwitcher
+          className="border-b border-line bg-surface px-4 py-2 sm:px-6 md:hidden"
+          current={area}
+        />
         {signOutError ? (
           <p className="border-b border-bad/40 bg-surface px-4 py-2 text-sm text-bad" role="alert">
             {signOutError}

@@ -99,6 +99,43 @@ describe("AppShell", () => {
     expect(current.map((link) => link.textContent)).toEqual([label]);
   });
 
+  it("switches between subjects and keeps chemistry the default", () => {
+    render(<AppShell>obsah</AppShell>);
+    const switcher = screen.getAllByRole("navigation", { name: "Předmět" })[0] as HTMLElement;
+    expect(within(switcher).getByRole("link", { name: "Anorganika" })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+    expect(within(switcher).getByRole("link", { name: "Matematika" })).toHaveAttribute(
+      "href",
+      "/predmety/matematika",
+    );
+  });
+
+  it.each([
+    ["/predmety/matematika", "Učivo"],
+    ["/predmety/matematika/procvicovani", "Procvičovat"],
+    ["/predmety/matematika/pokrok", "Pokrok"],
+  ])("shows the mathematics sections on %s", (pathname, label) => {
+    hooks.pathname = pathname;
+    render(<AppShell>obsah</AppShell>);
+
+    const links = within(mainNavigation()).getAllByRole("link");
+    expect(links.map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
+      ["Učivo", "/predmety/matematika"],
+      ["Procvičovat", "/predmety/matematika/procvicovani"],
+      ["Pokrok", "/predmety/matematika/pokrok"],
+    ]);
+    const current = links.filter((link) => link.getAttribute("aria-current") === "page");
+    expect(current.map((link) => link.textContent)).toEqual([label]);
+    for (const switcher of screen.getAllByRole("navigation", { name: "Předmět" })) {
+      expect(within(switcher).getByRole("link", { name: "Matematika" })).toHaveAttribute(
+        "aria-current",
+        "true",
+      );
+    }
+  });
+
   it("marks no primary destination on help and profile screens", () => {
     hooks.pathname = "/napoveda";
     render(<AppShell>obsah</AppShell>);
