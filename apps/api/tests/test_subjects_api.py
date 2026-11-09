@@ -268,3 +268,25 @@ def test_isolated_solver_times_out() -> None:
             SolveLimits(timeout_seconds=0.001, memory_mb=1024),
         )
     assert (error.value.status_code, error.value.code) == (422, "problem_too_complex")
+
+
+@pytest.mark.anyio
+async def test_preview_returns_latex_and_field_errors(overrides) -> None:
+    as_user(overrides)
+    response = await call(
+        "POST",
+        "/matematika/preview",
+        {
+            "problemType": "limit",
+            "values": {"expression": "sin(x)/x", "point": "oo", "variable": "x"},
+        },
+    )
+    assert response.status_code == 200, response.text
+    fields = response.json()["fields"]
+    assert fields["expression"]["latex"] == r"\frac{\sin{\left(x \right)}}{x}"
+    assert fields["point"]["latex"] == r"\infty"
+    assert "variable" not in fields
+    broken = await call(
+        "POST", "/matematika/preview", {"problemType": "limit", "values": {"expression": "x +"}}
+    )
+    assert broken.json()["fields"]["expression"] == {"latex": None, "error": "Výraz je neúplný."}

@@ -15,6 +15,14 @@ export type PreparationProductionCurriculum =
 export type SavedCurriculumProduct = components["schemas"]["SaveProductResponse"];
 export type NomenclatureCurriculum = components["schemas"]["NomenclatureCurriculumResponse"];
 export type CurriculumReviewerProfile = components["schemas"]["ReviewerProfileResponse"];
+export type Subject = components["schemas"]["SubjectModel"];
+export type SubjectProblemType = components["schemas"]["ProblemTypeModel"];
+export type SubjectInputField = components["schemas"]["InputFieldModel"];
+export type SubjectStep = components["schemas"]["StepModel"];
+export type SubjectPreview = components["schemas"]["PreviewResponse"];
+export type SubjectRenderStatus = components["schemas"]["RenderStatusResponse"];
+export type SubjectExplanation = components["schemas"]["ExplanationResponse"];
+export type SubjectProblemRequest = components["schemas"]["ProblemRequest"];
 
 export class ApiError extends Error {
   constructor(
@@ -238,4 +246,73 @@ export async function getMyAttemptStats(): Promise<UserAttemptStats> {
 export async function resetMyProgress(): Promise<string> {
   const response = unwrapApiResponse(await apiClient.POST("/api/v1/me/progress-reset"));
   return response.progressGeneration;
+}
+
+export async function listSubjects(): Promise<Subject[]> {
+  const body = unwrapApiResponse(await apiClient.GET("/api/v1/subjects", { cache: "no-store" }));
+  return body.subjects;
+}
+
+export async function previewSubjectInput(
+  subjectId: string,
+  request: SubjectProblemRequest,
+): Promise<SubjectPreview> {
+  return unwrapApiResponse(
+    await apiClient.POST("/api/v1/subjects/{subject_id}/preview", {
+      params: { path: { subject_id: subjectId } },
+      body: request,
+    }),
+  );
+}
+
+export async function solveSubjectProblem(subjectId: string, request: SubjectProblemRequest) {
+  return unwrapApiResponse(
+    await apiClient.POST("/api/v1/subjects/{subject_id}/solve", {
+      params: { path: { subject_id: subjectId } },
+      body: request,
+    }),
+  );
+}
+
+/**
+ * Derived from the client response rather than the schema: openapi-fetch widens
+ * tuples (curve points) to arrays, so the schema type is stricter than the data.
+ */
+export type SubjectSolution = Awaited<ReturnType<typeof solveSubjectProblem>>;
+export type SubjectScene = NonNullable<SubjectSolution["scene"]>;
+
+export async function requestSubjectRender(
+  subjectId: string,
+  request: SubjectProblemRequest & { format: "mp4" | "gif" },
+): Promise<SubjectRenderStatus> {
+  return unwrapApiResponse(
+    await apiClient.POST("/api/v1/subjects/{subject_id}/renders", {
+      params: { path: { subject_id: subjectId } },
+      body: request,
+    }),
+  );
+}
+
+export async function getSubjectRender(
+  subjectId: string,
+  key: string,
+): Promise<SubjectRenderStatus> {
+  return unwrapApiResponse(
+    await apiClient.GET("/api/v1/subjects/{subject_id}/renders/{key}", {
+      params: { path: { subject_id: subjectId, key } },
+      cache: "no-store",
+    }),
+  );
+}
+
+export async function explainSubjectSolution(
+  subjectId: string,
+  request: SubjectProblemRequest,
+): Promise<SubjectExplanation> {
+  return unwrapApiResponse(
+    await apiClient.POST("/api/v1/subjects/{subject_id}/explanations", {
+      params: { path: { subject_id: subjectId } },
+      body: request,
+    }),
+  );
 }

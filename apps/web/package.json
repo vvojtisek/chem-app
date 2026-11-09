@@ -19,6 +19,7 @@
     "@inorganic/contracts": "workspace:*",
     "@inorganic/ui": "workspace:*",
     "@tanstack/react-query": "5.103.1",
+    "katex": "0.16.47",
     "next": "16.4.5",
     "openapi-fetch": "0.17.0",
     "react": "19.3.0",

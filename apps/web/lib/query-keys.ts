@@ -7,6 +7,10 @@ export const queryKeys = {
     periodicMastery: (userId: string) => ["me", "periodic-mastery", userId] as const,
     practiceCheckpoints: (userId: string) => ["me", "practice-checkpoints", userId] as const,
   },
+  subjects: {
+    list: ["subjects", "list"] as const,
+    render: (subjectId: string, key: string) => ["subjects", subjectId, "render", key] as const,
+  },
   admin: {
     users: ["admin", "users"] as const,
     stats: ["admin", "stats"] as const,

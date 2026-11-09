@@ -35,7 +35,7 @@ from inorganic_api.subjects.mathematics.parser import (
     parse_point,
     symbol,
 )
-from inorganic_api.subjects.mathematics.steps import Solution
+from inorganic_api.subjects.mathematics.steps import Solution, tex
 from inorganic_api.subjects.rendering.spec import SceneSpec
 
 ProblemKind = Literal[
@@ -342,6 +342,21 @@ class MathematicsModule(BaseSubjectModule[MathProblem, Solution]):
                 source=values,
             )
         raise SubjectError("unknown_problem_type", "Neznámý typ úlohy.")
+
+    def preview_field(self, field: InputField, value: str) -> str | None:
+        try:
+            if field.kind == "expression":
+                return tex(parse_expression(value))
+            if field.kind == "equation":
+                left, right = parse_equation(value)
+                return f"{tex(left)} = {tex(right)}"
+            if field.kind in ("constant", "bound"):
+                return tex(parse_expression(value))
+            if field.kind == "vector":
+                return r"\left(" + ", ".join(tex(item) for item in _vector(value)) + r"\right)"
+        except MathParseError as error:
+            raise SubjectError(error.code, error.message) from error
+        return None
 
     def solve(self, problem: MathProblem) -> Solution:
         expr = problem.expression

@@ -30,6 +30,7 @@ from inorganic_api.subjects.rendering.spec import SceneSpec
 
 LEARNER_ROLES = frozenset({"user", "tester", "admin"})
 SOLVE_LIMIT = 60
+PREVIEW_LIMIT = 600
 RENDER_LIMIT_PER_ACCOUNT = 10
 RENDER_LIMIT_GLOBAL = 100
 EXPLAIN_LIMIT = 20
@@ -114,6 +115,15 @@ class SolveResponse(_Model):
     verified_by: str
     notes: list[str]
     scene: SceneSpec | None
+
+
+class FieldPreviewModel(_Model):
+    latex: str | None
+    error: str | None
+
+
+class PreviewResponse(_Model):
+    fields: dict[str, FieldPreviewModel]
 
 
 class RenderRequest(ProblemRequest):
@@ -297,6 +307,35 @@ def solve_problem(
         verified_by=solution.verified_by,
         notes=list(solution.notes),
         scene=solution.scene,
+    )
+
+
+@router.post(
+    "/{subject_id}/preview",
+    operation_id="previewSubjectInput",
+    response_model=PreviewResponse,
+    responses=_ERRORS,
+    summary="Parse raw input fields and return their LaTeX form",
+)
+def preview_input(
+    subject_id: SubjectId,
+    request: ProblemRequest,
+    current: Annotated[auth.AuthenticatedSession, Depends(require_learner_csrf)],
+    registry: Annotated[SubjectRegistry, Depends(registry_dependency)],
+    limiter: Annotated[RateLimiter, Depends(rate_limiter_dependency)],
+) -> PreviewResponse:
+    try:
+        module = registry.get(subject_id)
+        _rate_limit(limiter, "subject-preview", str(current.user.id), PREVIEW_LIMIT)
+        previews = module.preview(request.problem_type, request.values)
+    except SubjectError as error:
+        status = 404 if error.code == "unknown_subject" else 422
+        raise AppError(status, error.code, error.message) from error
+    return PreviewResponse(
+        fields={
+            name: FieldPreviewModel(latex=item.latex, error=item.error)
+            for name, item in previews.items()
+        }
     )
 
 

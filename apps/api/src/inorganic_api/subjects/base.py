@@ -88,6 +88,12 @@ class SubjectDescription:
 
 
 @dataclass(frozen=True, slots=True)
+class FieldPreview:
+    latex: str | None
+    error: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class SubjectSolution:
     """Transport-neutral solution returned by every subject."""
 
@@ -133,6 +139,34 @@ class BaseSubjectModule[ProblemT, SolutionT](ABC):
     def explanation_context(self, problem: ProblemT, solution: SolutionT) -> Mapping[str, Any]:
         """Structured facts the explanation layer may use. No user identity."""
         return {}
+
+    def preview_field(self, field: InputField, value: str) -> str | None:
+        """LaTeX for one raw field value, or None when the field has no preview.
+
+        Must be cheap and bounded; it runs in the API process. Raise
+        SubjectError for invalid input.
+        """
+        return None
+
+    def preview(self, problem_type: str, values: Mapping[str, str]) -> dict[str, FieldPreview]:
+        definition = self.problem_type(problem_type)
+        known = {item.name: item for item in definition.fields}
+        unknown = set(values) - set(known)
+        if unknown:
+            raise SubjectError("unknown_field", f"Neznámé pole: {', '.join(sorted(unknown))}.")
+        previews: dict[str, FieldPreview] = {}
+        for name, raw in values.items():
+            value = raw.strip()
+            if not value or len(value) > MAX_FIELD_LENGTH:
+                continue
+            try:
+                latex = self.preview_field(known[name], value)
+            except SubjectError as error:
+                previews[name] = FieldPreview(latex=None, error=error.message)
+                continue
+            if latex is not None:
+                previews[name] = FieldPreview(latex=latex, error=None)
+        return previews
 
     def describe(self) -> SubjectDescription:
         return SubjectDescription(
