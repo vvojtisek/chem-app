@@ -151,3 +151,37 @@ describe("SubjectWorkspace", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Předmět neexistuje.");
   });
 });
+
+describe("SubjectWorkspace type switching", () => {
+  it("drops a solve that finishes after the learner switched problem type", async () => {
+    const limit: SubjectProblemType = {
+      ...derivative,
+      id: "limit",
+      label: "Limita",
+      example: { expression: "(1 - cos(x))/x^2" },
+    };
+    api.list.mockResolvedValue([{ ...subject, problemTypes: [limit, derivative] }]);
+    let finish: (value: SubjectSolution) => void = () => undefined;
+    api.solve.mockReturnValue(
+      new Promise<SubjectSolution>((resolve) => {
+        finish = resolve;
+      }),
+    );
+    renderWorkspace();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Vyřešit" }));
+    expect(await screen.findByRole("button", { name: "Počítám…" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Derivace" }));
+    expect(screen.getByRole("button", { name: "Vyřešit" })).toBeEnabled();
+
+    finish({ ...solution, problemType: "limit", verifiedBy: "sympy.limit" });
+    await waitFor(() => expect(api.solve).toHaveBeenCalledTimes(1));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(screen.queryByText(/sympy\.limit/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Derivace" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByLabelText("Funkce f(x)")).toHaveValue("x^2*sin(x)");
+  });
+});

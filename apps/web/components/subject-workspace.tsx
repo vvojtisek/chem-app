@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useCapabilities } from "@/components/auth-gate";
 import { MathTex } from "@/components/math-tex";
 import { ScenePlot } from "@/components/scene-plot";
@@ -437,10 +437,22 @@ export function SubjectWorkspace({ subjectId }: Readonly<{ subjectId: string }>)
     return () => window.clearTimeout(timer);
   }, [subject, problemType, values, online]);
 
+  // Each submit and each problem-type switch starts a new generation; a
+  // response from an older generation is dropped, so a slow solve cannot
+  // replace the form the learner has moved on to.
+  const generation = useRef(0);
   const solve = useMutation({
-    mutationFn: (request: { problemType: string; values: Values }) =>
-      solveSubjectProblem(subjectId, request),
-    onSuccess: (solution, request) => setSolved({ solution, request }),
+    mutationFn: ({
+      request,
+    }: {
+      request: { problemType: string; values: Values };
+      generation: number;
+    }) => solveSubjectProblem(subjectId, request),
+    onSuccess: (solution, variables) => {
+      if (variables.generation === generation.current) {
+        setSolved({ solution, request: variables.request });
+      }
+    },
   });
 
   if (!online) {
@@ -484,7 +496,11 @@ export function SubjectWorkspace({ subjectId }: Readonly<{ subjectId: string }>)
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!problemType) return;
-    solve.mutate({ problemType: problemType.id, values: requestValues(problemType, values) });
+    generation.current += 1;
+    solve.mutate({
+      request: { problemType: problemType.id, values: requestValues(problemType, values) },
+      generation: generation.current,
+    });
   }
 
   return (
@@ -500,6 +516,7 @@ export function SubjectWorkspace({ subjectId }: Readonly<{ subjectId: string }>)
               )}
               key={item.id}
               onClick={() => {
+                generation.current += 1;
                 setTypeId(item.id);
                 setSolved(null);
                 solve.reset();
