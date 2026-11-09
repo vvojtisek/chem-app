@@ -17,6 +17,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Render worker image only (ADR 0015); never installed in the API image.
+render = [
+  "manim>=0.19,<0.20",
+]
 test = [
   "httpx>=0.28,<1",
   "pytest>=8.4,<10",
@@ -32,7 +36,10 @@ build-backend = "hatchling.build"
 packages = ["src/inorganic_api"]
 
 [tool.pytest.ini_options]
-addopts = "--strict-config --strict-markers"
+addopts = "--strict-config --strict-markers -m 'not render'"
+markers = [
+  "render: needs Manim, LaTeX and ffmpeg; run with `pytest -m render` (CI job math-render)",
+]
 testpaths = ["tests"]
 
 [tool.ruff]

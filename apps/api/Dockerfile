@@ -19,6 +19,10 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+# Shared with the math render worker (ADR 0015); a named volume mounted here
+# inherits this ownership.
+RUN mkdir -p /var/lib/chem-app/math-render && chown 10001:10001 /var/lib/chem-app/math-render
+
 WORKDIR /app
 COPY --from=builder --chown=10001:10001 /app/.venv /app/.venv
 COPY --chown=10001:10001 apps/api/alembic.ini ./alembic.ini
