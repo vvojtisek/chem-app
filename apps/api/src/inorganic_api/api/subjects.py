@@ -243,7 +243,7 @@ def _subject_model(module: Any, settings: Settings) -> SubjectModel:
         ],
         export_formats=list(description.export_formats),
         rendering_enabled=settings.math_render_enabled and "mp4" in description.export_formats,
-        explanations_enabled=settings.math_llm_api_key is not None,
+        explanations_enabled=_explanations_enabled(settings),
     )
 
 
@@ -435,11 +435,17 @@ def get_render_video(
     )
 
 
+def _explanations_enabled(settings: Settings) -> bool:
+    return settings.math_llm_provider != "none" and settings.math_llm_api_key is not None
+
+
 def explainer_dependency() -> explanation_service.Explainer | None:
     settings = get_settings()
-    if settings.math_llm_api_key is None:
+    if not _explanations_enabled(settings) or settings.math_llm_api_key is None:
         return None
-    return explanation_service.cached_explainer(settings.math_llm_api_key, settings.math_llm_model)
+    return explanation_service.cached_explainer(
+        settings.math_llm_provider, settings.math_llm_api_key, settings.math_llm_model
+    )
 
 
 @router.post(

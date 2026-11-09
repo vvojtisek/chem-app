@@ -31,13 +31,13 @@ Design: `docs/decisions/0015-subject-modules-and-mathematics.md` (Proposed).
 - Rendering on arm64 / t4g.small, and anything on the production host.
 - A real Claude call (no API key used); the adapter is tested with a fake completion.
 
-## Open questions for the owner
+## Owner decisions (2026-11-09)
 
-1. LLM provider: Claude (`claude-opus-5-5`) assumed; needs an API key and egress to api.anthropic.com.
-2. UI language: Czech assumed for UI and steps.
-3. Capacity: whether to enable the `math` profile on the t4g.small or move to a larger instance.
-4. Product scope: AGENTS.md and product-spec still describe a chemistry-only product.
-5. Publishing the render image to GHCR (arm64 build under QEMU is slow) or keeping the local build.
+1. LLM provider: not chosen (Claude or OpenAI). `MATH_LLM_PROVIDER=none` by default; only the `anthropic` adapter exists.
+2. UI language: Czech.
+3. Capacity: stay on t4g.small; upgrade only if monitoring shows high CPU.
+4. Scope: supports learning at VŠCHT Praha, chemistry first, other subjects may follow; open source, non-commercial. AGENTS.md and product-spec updated.
+5. Render image goes to GHCR only when the module is ready to merge to `main`.
 
 ## Resuming
 

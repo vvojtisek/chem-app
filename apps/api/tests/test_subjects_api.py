@@ -296,3 +296,14 @@ async def test_preview_returns_latex_and_field_errors(overrides) -> None:
         "POST", "/matematika/preview", {"problemType": "limit", "values": {"expression": "x +"}}
     )
     assert broken.json()["fields"]["expression"] == {"latex": None, "error": "Výraz je neúplný."}
+
+
+def test_explanations_need_provider_and_key() -> None:
+    from inorganic_api.config import Settings
+
+    off = Settings(math_llm_api_key="sk-test")
+    assert subjects_api._explanations_enabled(off) is False
+    no_key = Settings(math_llm_provider="anthropic")
+    assert subjects_api._explanations_enabled(no_key) is False
+    on = Settings(math_llm_provider="anthropic", math_llm_api_key="sk-test")
+    assert subjects_api._explanations_enabled(on) is True

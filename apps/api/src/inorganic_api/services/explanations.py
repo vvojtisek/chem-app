@@ -170,6 +170,15 @@ class Explainer:
         return explanation
 
 
+# Provider adapters. Each returns a `Completion` that must honour OUTPUT_SCHEMA;
+# the Explainer validates the result either way. Adding a provider (for example
+# OpenAI) means one adapter here, one Literal value in config, and its SDK.
+PROVIDERS: dict[str, tuple[Callable[[str, str], Completion], str]] = {
+    "anthropic": (_claude_completion, "claude-opus-5-5"),
+}
+
+
 @lru_cache(maxsize=2)
-def cached_explainer(api_key: str, model: str) -> Explainer:
-    return Explainer(_claude_completion(api_key, model))
+def cached_explainer(provider: str, api_key: str, model: str | None) -> Explainer:
+    factory, default_model = PROVIDERS[provider]
+    return Explainer(factory(api_key, model or default_model))

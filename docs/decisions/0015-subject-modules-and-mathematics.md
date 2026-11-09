@@ -135,11 +135,17 @@ would break ADR 0003.
 
 ### 4. LLM explanations
 
-- Provider: Anthropic Claude through the Messages API with structured
-  output (`output_config.format` JSON schema), through the official
-  `anthropic` Python SDK behind a small adapter (`services/explanations.py`)
-  with a 30 s timeout and one retry. Default model `claude-opus-5-5`
-  (`MATH_LLM_MODEL`), low effort, server-side fallback enabled.
+- Provider: not chosen yet (owner, 2026-11-09: Claude and OpenAI are the
+  candidates). `MATH_LLM_PROVIDER` selects an adapter in
+  `services/explanations.py`; the default `none` keeps explanations off.
+  Every adapter must return JSON for the same output schema, which the API
+  validates regardless of provider.
+- Implemented adapter: `anthropic`, Claude through the Messages API with
+  structured output (`output_config.format` JSON schema) via the official
+  `anthropic` Python SDK, 30 s timeout, one retry, low effort, server-side
+  fallback. Default model `claude-opus-5-5` (`MATH_LLM_MODEL` overrides).
+  An OpenAI adapter is not written; adding one is a function, a config
+  value and its SDK dependency.
 - Input: only the structured problem and SymPy steps (no user identity, no
   free text beyond the parsed expression). Output schema: per-step Czech
   narrative ("why this rule applies"), a summary, alternative methods and
@@ -148,9 +154,10 @@ would break ADR 0003.
   Pydantic; anything invalid is dropped and the deterministic steps are
   still shown. LLM output is displayed as text and never executed, never
   fed to LaTeX, never trusted for correctness.
-- Off unless `MATH_LLM_API_KEY` is set. The key comes from
-  `.env.production` like other secrets. Requires outbound HTTPS from the API
-  container to `api.anthropic.com` (the API already has egress for GitHub).
+- Off unless `MATH_LLM_PROVIDER` is not `none` and `MATH_LLM_API_KEY` is set.
+  The key comes from `.env.production` like other secrets. Requires
+  outbound HTTPS from the API container to the provider (`api.anthropic.com`
+  for Claude; the API already has egress for GitHub).
 - Results are cached in memory (LRU) by the canonical problem to bound cost.
 
 ### 5. Access, limits and offline
@@ -168,9 +175,11 @@ would break ADR 0003.
 
 ## Consequences
 
-- The product is no longer chemistry-only. `AGENTS.md` product invariants
-  and `docs/product-spec.md` need an owner decision on wording and on the UI
-  language (this ADR assumes Czech UI and Czech step text).
+- The product is no longer chemistry-only. Owner decision (2026-11-09): the
+  app supports learning at VŠCHT Praha; chemistry stays the main focus and
+  other VŠCHT subjects may follow, possibly other universities later. It
+  stays open source and non-commercial. UI and step text are Czech.
+  `AGENTS.md` and `docs/product-spec.md` are updated accordingly.
 - New dependencies: `sympy` (API), `manim` and system TeX/ffmpeg (render
   image only), `katex` (web, for the LaTeX preview).
 - Security properties: read-only containers, least-privilege DB role,
@@ -180,9 +189,12 @@ would break ADR 0003.
   secret and outbound call to a third party, and a writable shared volume.
 - Capacity: a `t4g.small` has 2 GB RAM in total. A 1 GB render worker next to
   PostgreSQL, API and web may cause memory pressure and CPU credit
-  exhaustion. Enabling the `math` profile on production needs either a
-  larger instance or accepting slow renders; this is unverified until
-  measured on the host.
+  exhaustion. Owner decision (2026-11-09): stay on `t4g.small` and upgrade
+  only if monitoring shows sustained high CPU. Render time and memory on
+  arm64 are unmeasured until the profile runs on the host.
+- The render image is published to GHCR only once this work is ready to
+  merge to `main` (owner decision, 2026-11-09); until then it is built
+  locally.
 - Mathematics answers are computed, not SME-reviewed curriculum. The UI
   labels them as computed by SymPy, and LLM text as generated.
 

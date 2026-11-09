@@ -4,6 +4,8 @@
 
 Build a Czech-language, offline-capable learning application for inorganic chemistry. The product should help learners practice recall, receive immediate unambiguous feedback, revisit errors, and understand their mastery without requiring a continuous network connection.
 
+The application supports learning at VŠCHT Praha and is open source with no commercial aims. Inorganic chemistry is the main focus. Further subjects may be added as online-only subject modules (ADR 0015); the first is mathematics at `/predmety/matematika`: limits, derivatives, integrals and multivariable calculus solved step by step, each result checked by SymPy, with an SVG plot and optional animations and generated explanations.
+
 The detailed delivery sequence is maintained in [`../SPRINT_PLAN.md`](../SPRINT_PLAN.md). This document is the stable behavioral baseline; implementation plans may split it into smaller increments but must not silently change it.
 
 ## Core learning modes

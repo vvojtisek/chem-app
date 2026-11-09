@@ -221,10 +221,11 @@ Claude explanations are off until configured:
   `math-render` image is built on the host and is not updated by Watchtower;
   rebuild it after releases that change `apps/api/src/inorganic_api/subjects/rendering/`.
   The worker reserves 1 CPU and 1 GB RAM. On a `t4g.small` (2 GB) this
-  competes with PostgreSQL, the API and the web container; measure before
-  enabling it in production.
-- Explanations: `MATH_LLM_API_KEY` (and optionally `MATH_LLM_MODEL`). The API
-  needs outbound HTTPS to `api.anthropic.com`.
+  competes with PostgreSQL, the API and the web container. The plan is to
+  stay on `t4g.small` and upgrade only if monitoring shows sustained high CPU.
+- Explanations: `MATH_LLM_PROVIDER=anthropic` plus `MATH_LLM_API_KEY` (and
+  optionally `MATH_LLM_MODEL`). The API needs outbound HTTPS to
+  `api.anthropic.com`. The default `none` keeps explanations off.
 
 Details, system packages and local setup: [subjects.md](subjects.md).
 

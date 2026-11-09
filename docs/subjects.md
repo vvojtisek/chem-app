@@ -117,13 +117,17 @@ Everything is off by default; the solver page works without any of this.
 
   The image carries TeX Live and ffmpeg (expected well over 1 GB; not measured,
   because it was only built in CI) and is not published to
-  GHCR, so Watchtower does not update it; rebuild it after a release that
-  changes `subjects/rendering/`. The worker has no network, no secrets, a
+  GHCR yet (planned once the module is ready to merge to `main`), so
+  Watchtower does not update it; rebuild it after a release that changes
+  `subjects/rendering/`. The worker has no network, no secrets, a
   read-only root, 1 CPU, 1 GB RAM and 64 processes.
-- Explanations: set `MATH_LLM_API_KEY` (Anthropic API key) and optionally
+- Explanations: the provider is not chosen yet. To enable Claude, set
+  `MATH_LLM_PROVIDER=anthropic`, `MATH_LLM_API_KEY` and optionally
   `MATH_LLM_MODEL` (default `claude-opus-5-5`). The API then calls
   `api.anthropic.com`; only the parsed problem and the computed steps are
-  sent, never user identity.
+  sent, never user identity. Another provider (for example OpenAI) needs an
+  adapter in `services/explanations.py` (`PROVIDERS`), a value in the
+  `math_llm_provider` setting and its SDK.
 
 ## Known limitations
 

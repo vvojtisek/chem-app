@@ -102,8 +102,9 @@ services:
       # Mathematics module (ADR 0015). Off unless set; rendering also needs the
       # math-render service (profile "math").
       MATH_RENDER_ENABLED: ${MATH_RENDER_ENABLED:-false}
+      MATH_LLM_PROVIDER: ${MATH_LLM_PROVIDER:-none}
       MATH_LLM_API_KEY: ${MATH_LLM_API_KEY:-}
-      MATH_LLM_MODEL: ${MATH_LLM_MODEL:-claude-opus-5-5}
+      MATH_LLM_MODEL: ${MATH_LLM_MODEL:-}
     read_only: true
     tmpfs:
       - /tmp:size=32m,mode=1777
