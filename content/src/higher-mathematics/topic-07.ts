@@ -59,6 +59,10 @@ export const mathTopic07 = {
   exercises: [
     {
       id: "math.definite.power",
+      solver: {
+        problemType: "integral",
+        values: { expression: "x^2", variable: "x", lower: "0", upper: "1" },
+      },
       prompt: "Vypočtěte $\\int_0^1x^2\\,dx$.",
       answer: "1/3",
       answerLabel: "$\\frac13$",
@@ -71,6 +75,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.sin",
+      solver: {
+        problemType: "integral",
+        values: { expression: "sin(x)", variable: "x", lower: "0", upper: "pi" },
+      },
       prompt: "Vypočtěte $\\int_0^\\pi\\sin x\\,dx$.",
       answer: "2",
       hints: ["Primitivní funkce k sinu je $-\\cos x$."],
@@ -82,6 +90,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.log",
+      solver: {
+        problemType: "integral",
+        values: { expression: "1/x", variable: "x", lower: "1", upper: "e" },
+      },
       prompt: "Vypočtěte $\\int_1^e\\frac1x\\,dx$.",
       answer: "1",
       hints: ["Použijte $F(x)=\\ln x$."],
@@ -93,6 +105,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.exp",
+      solver: {
+        problemType: "integral",
+        values: { expression: "e^x", variable: "x", lower: "0", upper: "1" },
+      },
       prompt: "Vypočtěte $\\int_0^1 e^x\\,dx$.",
       answer: "e-1",
       answerLabel: "$e-1$",
@@ -101,6 +117,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.linear",
+      solver: {
+        problemType: "integral",
+        values: { expression: "2x+1", variable: "x", lower: "0", upper: "2" },
+      },
       prompt: "Vypočtěte $\\int_0^2(2x+1)\\,dx$.",
       answer: "6",
       hints: ["Integrujte jednotlivé členy."],
@@ -112,6 +132,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.odd",
+      solver: {
+        problemType: "integral",
+        values: { expression: "x^3", variable: "x", lower: "-1", upper: "1" },
+      },
       prompt: "Vypočtěte $\\int_{-1}^1x^3\\,dx$.",
       answer: "0",
       hints: ["Integrand je lichá funkce na souměrném intervalu."],
@@ -123,6 +147,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.even",
+      solver: {
+        problemType: "integral",
+        values: { expression: "x^2", variable: "x", lower: "-1", upper: "1" },
+      },
       prompt: "Vypočtěte $\\int_{-1}^1x^2\\,dx$.",
       answer: "2/3",
       answerLabel: "$\\frac23$",
@@ -135,6 +163,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.cos",
+      solver: {
+        problemType: "integral",
+        values: { expression: "cos(x)", variable: "x", lower: "0", upper: "pi/2" },
+      },
       prompt: "Vypočtěte $\\int_0^{\\pi/2}\\cos x\\,dx$.",
       answer: "1",
       hints: ["Primitivní funkce je sinus."],
@@ -146,6 +178,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.substitution",
+      solver: {
+        problemType: "integral",
+        values: { expression: "x e^(x^2)", variable: "x", lower: "0", upper: "1" },
+      },
       prompt: "Vypočtěte $\\int_0^1 xe^{x^2}\\,dx$.",
       answer: "(e-1)/2",
       answerLabel: "$\\frac{e-1}{2}$",
@@ -158,6 +194,10 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.improper-log",
+      solver: {
+        problemType: "integral",
+        values: { expression: "ln(x)", variable: "x", lower: "0", upper: "1" },
+      },
       prompt: "Vypočtěte nevlastní integrál $\\int_0^1\\ln x\\,dx$.",
       answer: "-1",
       hints: ["Dolní mez nahraďte $a>0$ a nechte $a\\to0^+$."],
@@ -169,6 +209,17 @@ export const mathTopic07 = {
     },
     {
       id: "math.definite.double",
+      solver: {
+        problemType: "multiple_integral",
+        values: {
+          expression: "x y",
+          order: "dy dx",
+          lower_1: "0",
+          upper_1: "x",
+          lower_2: "0",
+          upper_2: "1",
+        },
+      },
       prompt: "Vypočtěte dvojný integrál $\\int_0^1\\int_0^x xy\\,dy\\,dx$.",
       answer: "1/8",
       answerLabel: "$\\frac18$",

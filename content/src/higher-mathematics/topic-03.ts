@@ -64,6 +64,10 @@ export const mathTopic03 = {
   exercises: [
     {
       id: "math.analysis.minimum",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^2-4x", variable: "x", order: "1", point: "2" },
+      },
       prompt: "Určete $x$ lokálního minima funkce $f(x)=x^2-4x$.",
       answer: "2",
       hints: ["Najděte nulový bod první derivace."],
@@ -75,6 +79,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.maximum",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "-x^2+6x", variable: "x", order: "1", point: "3" },
+      },
       prompt: "Určete $x$ lokálního maxima funkce $f(x)=-x^2+6x$.",
       answer: "3",
       hints: ["Parabola je otevřená dolů."],
@@ -86,6 +94,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.increasing-cubic",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^3-3x", variable: "x", order: "1", point: "1" },
+      },
       prompt: "Na kterých intervalech roste $f(x)=x^3-3x$? Odpovězte intervaly.",
       answer: "(-inf,-1) U (1,inf)",
       answerLabel: "$(-\\infty,-1)\\cup(1,\\infty)$",
@@ -98,6 +110,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.cubic-extrema",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^3-3x", variable: "x", order: "1", point: "-1" },
+      },
       prompt: "Určete lokální maximum a minimum funkce $f(x)=x^3-3x$ ve tvaru $(x,y)$.",
       answer: "maximum (-1,2), minimum (1,-2)",
       answerLabel: "maximum $(-1,2)$, minimum $(1,-2)$",
@@ -110,6 +126,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.higher-derivative",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^5", variable: "x", order: "3", point: "1" },
+      },
       prompt: "Určete $f'''(1)$ pro $f(x)=x^5$.",
       answer: "60",
       hints: ["Derivujte třikrát."],
@@ -117,6 +137,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.convex",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^2", variable: "x", order: "2" },
+      },
       prompt: "Je $f(x)=x^2$ konvexní na celé $\\mathbb R$? Odpovězte ano nebo ne.",
       answer: "ano",
       acceptedAnswers: ["Ano"],
@@ -129,6 +153,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.concave",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "-x^2", variable: "x", order: "2" },
+      },
       prompt: "Je $f(x)=-x^2$ konkávní na celé $\\mathbb R$? Odpovězte ano nebo ne.",
       answer: "ano",
       acceptedAnswers: ["Ano"],
@@ -141,6 +169,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.inflection",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^3", variable: "x", order: "2", point: "0" },
+      },
       prompt: "Určete inflexní bod grafu $f(x)=x^3$.",
       answer: "(0,0)",
       answerLabel: "$(0,0)$",
@@ -153,6 +185,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.stationary-no-extremum",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^3", variable: "x", order: "1", point: "0" },
+      },
       prompt: "Má $f(x)=x^3$ v $x=0$ lokální extrém? Odpovězte ano nebo ne.",
       answer: "ne",
       acceptedAnswers: ["Ne"],
@@ -165,6 +201,10 @@ export const mathTopic03 = {
     },
     {
       id: "math.analysis.quadratic-curve",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^2-4x+3", variable: "x", order: "1", point: "2" },
+      },
       prompt: "Určete souřadnice vrcholu $f(x)=x^2-4x+3$.",
       answer: "(2,-1)",
       answerLabel: "$(2,-1)$",

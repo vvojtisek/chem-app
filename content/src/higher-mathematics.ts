@@ -35,6 +35,7 @@ export {
 };
 export type {
   MathExercise,
+  MathSolverProblem,
   MathSolverType,
   MathTheoryBlock,
   MathTopic,

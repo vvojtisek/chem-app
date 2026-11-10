@@ -56,6 +56,7 @@ export const mathTopic06 = {
   exercises: [
     {
       id: "math.integrals.arctan",
+      solver: { problemType: "integral", values: { expression: "1/(1+x^2)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac1{1+x^2}\\,dx$.",
       answer: "arctan x+C",
       answerLabel: "$\\arctan x+C$",
@@ -68,6 +69,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.arcsin",
+      solver: { problemType: "integral", values: { expression: "1/sqrt(1-x^2)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac1{\\sqrt{1-x^2}}\\,dx$ na $(-1,1)$.",
       answer: "arcsin x+C",
       answerLabel: "$\\arcsin x+C$",
@@ -80,6 +82,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.partial-fractions-square",
+      solver: { problemType: "integral", values: { expression: "1/(x^2-1)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac1{x^2-1}\\,dx$ pro $|x|>1$.",
       answer: "1/2 ln|(x-1)/(x+1)|+C",
       answerLabel: "$\\frac12\\ln\\left|\\frac{x-1}{x+1}\\right|+C$",
@@ -92,6 +95,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.partial-fractions-linear",
+      solver: { problemType: "integral", values: { expression: "1/(x(x+1))", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac1{x(x+1)}\\,dx$ pro $x>0$.",
       answer: "ln(x/(x+1))+C",
       answerLabel: "$\\ln\\frac{x}{x+1}+C$",
@@ -104,6 +108,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.sin-squared",
+      solver: { problemType: "integral", values: { expression: "sin(x)^2", variable: "x" } },
       prompt: "Vypočtěte $\\int\\sin^2x\\,dx$.",
       answer: "x/2-sin(2x)/4+C",
       answerLabel: "$\\frac x2-\\frac{\\sin(2x)}4+C$",
@@ -116,6 +121,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.cos-squared",
+      solver: { problemType: "integral", values: { expression: "cos(x)^2", variable: "x" } },
       prompt: "Vypočtěte $\\int\\cos^2x\\,dx$.",
       answer: "x/2+sin(2x)/4+C",
       answerLabel: "$\\frac x2+\\frac{\\sin(2x)}4+C$",
@@ -128,6 +134,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.tangent",
+      solver: { problemType: "integral", values: { expression: "tan(x)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\tan x\\,dx$ na intervalu, kde $\\cos x\\ne0$.",
       answer: "-ln|cos x|+C",
       answerLabel: "$-\\ln|\\cos x|+C$",
@@ -152,6 +159,10 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.shifted-quadratic",
+      solver: {
+        problemType: "integral",
+        values: { expression: "(x+1)/(x^2+2x+2)", variable: "x" },
+      },
       prompt: "Vypočtěte $\\int\\frac{x+1}{x^2+2x+2}\\,dx$.",
       answer: "1/2 ln(x^2+2x+2)+C",
       answerLabel: "$\\frac12\\ln(x^2+2x+2)+C$",
@@ -164,6 +175,7 @@ export const mathTopic06 = {
     },
     {
       id: "math.integrals.scaled-arctan",
+      solver: { problemType: "integral", values: { expression: "1/(x^2+4)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac1{x^2+4}\\,dx$.",
       answer: "1/2 arctan(x/2)+C",
       answerLabel: "$\\frac12\\arctan(x/2)+C$",
