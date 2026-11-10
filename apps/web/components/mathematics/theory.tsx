@@ -25,9 +25,12 @@ export function MathTheory({ topic }: Readonly<{ topic: MathTopic }>) {
               </p>
             ))}
             {block.formulas?.map((formula) => (
-              <div className={styles.formula} key={formula}>
-                <MathTex display latex={formula} />
-              </div>
+              // A long formula scrolls horizontally on phones; the region is
+              // focusable so keyboard users can scroll it too (WCAG 2.1.1).
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region must be keyboard reachable.
+              <figure aria-label="Vzorec" className={styles.formula} key={formula} tabIndex={0}>
+                <MathTex latex={`\\displaystyle ${formula}`} />
+              </figure>
             ))}
             {block.items && block.items.length > 0 ? (
               <ul>

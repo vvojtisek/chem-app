@@ -118,7 +118,7 @@ export function MathPracticeSession({ topic }: Readonly<{ topic: MathTopic }>) {
 
       <article aria-labelledby="math-exercise-prompt" className={workspace.equation}>
         <p className={workspace.label}>Zadání</p>
-        <h3 className={cn(styles.prompt, styles.scrollable)} id="math-exercise-prompt">
+        <h3 className={styles.prompt} id="math-exercise-prompt">
           <MathText>{exercise.prompt}</MathText>
         </h3>
       </article>
@@ -145,7 +145,7 @@ export function MathPracticeSession({ topic }: Readonly<{ topic: MathTopic }>) {
           {revealedHints > 0 ? (
             <ol className={styles.hintList}>
               {exercise.hints.slice(0, revealedHints).map((hint) => (
-                <li className={styles.scrollable} key={`${exercise.id}-hint-${hint}`}>
+                <li key={`${exercise.id}-hint-${hint}`}>
                   <MathText>{hint}</MathText>
                 </li>
               ))}
@@ -221,13 +221,13 @@ export function MathPracticeSession({ topic }: Readonly<{ topic: MathTopic }>) {
             {exercise.solutionSteps.map((step, stepIndex) => (
               <li className={styles.stepRow} key={`${exercise.id}-step-${step}`}>
                 <span className={workspace.stepNumber}>{stepIndex + 1}</span>
-                <span className={styles.scrollable}>
+                <span className="min-w-0">
                   <MathText>{step}</MathText>
                 </span>
               </li>
             ))}
           </ol>
-          <p className={cn(workspace.answer, styles.scrollable)}>
+          <p className={workspace.answer}>
             Výsledek: <MathText>{exercise.answerLabel ?? exercise.answer}</MathText>
           </p>
         </section>

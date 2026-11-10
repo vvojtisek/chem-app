@@ -101,7 +101,15 @@
 }
 .formula {
   overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0;
+  text-align: center;
+  white-space: nowrap;
   color: #f1f4f5;
+}
+.formula:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }
 .progress {
   display: flex;
@@ -192,12 +200,6 @@
 }
 .linkButton:hover {
   border-color: var(--amber);
-}
-/* Inline KaTeX is kept on one line by MathText; let long formulas scroll
-   inside the panel instead of widening the page on phones. */
-.scrollable {
-  overflow-x: auto;
-  max-width: 100%;
 }
 @media (max-width: 900px) {
   .sectionGrid {
