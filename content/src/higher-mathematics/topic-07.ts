@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic07 = {
   id: "urcity-integral",
+  number: 7,
   title: "Určitý a Newtonův integrál",
+  shortTitle: "Určitý a Newtonův integrál",
   description: "Newtonova–Leibnizova věta, substituce, symetrie a nevlastní integrál.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z Newtonovy–Leibnizovy věty."],
   verificationNote: "Primitivní funkce a dosazení mezí byly ověřeny přímým výpočtem.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.definite.power",

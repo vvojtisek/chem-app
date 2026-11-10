@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic05 = {
   id: "primitivni-funkce",
+  number: 5,
   title: "Primitivní funkce a neurčitý integrál",
+  shortTitle: "Primitivní funkce a neurčitý integrál",
   description: "Základní primitivní funkce, substituce a integrace per partes.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy ze standardních integračních pravidel."],
   verificationNote: "Každá primitivní funkce byla zkontrolována derivováním výsledku.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.antiderivative.power",

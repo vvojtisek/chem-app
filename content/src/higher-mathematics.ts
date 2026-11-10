@@ -33,4 +33,9 @@ export {
   mathTopic08,
   mathTopic09,
 };
-export type { MathExercise, MathTopic } from "./higher-mathematics/types";
+export type {
+  MathExercise,
+  MathSolverType,
+  MathTheoryBlock,
+  MathTopic,
+} from "./higher-mathematics/types";

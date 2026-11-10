@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic09 = {
   id: "linearni-homogenni-rovnice",
+  number: 9,
   title: "Homogenní lineární diferenciální rovnice",
+  shortTitle: "Homogenní lineární diferenciální rovnice",
   description: "Rovnice prvního a druhého řádu s konstantními koeficienty.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z metody charakteristické rovnice."],
   verificationNote: "Řešení byla ověřena dosazením do diferenciální rovnice a případných podmínek.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.ode2.first-decay",

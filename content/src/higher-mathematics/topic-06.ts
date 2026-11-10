@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic06 = {
   id: "integrace-typu-funkci",
+  number: 6,
   title: "Integrace vybraných typů funkcí",
+  shortTitle: "Integrace vybraných typů funkcí",
   description: "Racionální, goniometrické a odmocninové integrandy.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy ze standardních integračních identit."],
   verificationNote: "Výsledky byly ověřeny derivováním a kontrolou definičních oborů.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.integrals.arctan",

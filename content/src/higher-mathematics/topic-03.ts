@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic03 = {
   id: "prubeh-funkce",
+  number: 3,
   title: "Průběh funkce",
+  shortTitle: "Průběh funkce",
   description: "Monotonie, lokální extrémy, vyšší derivace, konvexita, konkávnost a inflexe.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z testu první a druhé derivace."],
   verificationNote: "Znaménkové intervaly a hodnoty extrémů byly zkontrolovány dosazením.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.analysis.minimum",

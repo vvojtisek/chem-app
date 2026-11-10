@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic08 = {
   id: "separovatelne-rovnice",
+  number: 8,
   title: "Diferenciální rovnice prvního řádu",
+  shortTitle: "Diferenciální rovnice prvního řádu",
   description: "Separované a separovatelné rovnice s počáteční podmínkou.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z metody separace proměnných."],
   verificationNote: "Každé řešení bylo dosazeno do rovnice i počáteční podmínky.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.ode1.direct",

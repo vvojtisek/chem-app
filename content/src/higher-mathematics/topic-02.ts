@@ -2,13 +2,18 @@ import type { MathTopic } from "./types";
 
 export const mathTopic02 = {
   id: "derivace-tecny-asymptoty",
+  number: 2,
   title: "Derivace, tečny a asymptoty",
+  shortTitle: "Derivace, tečny a asymptoty",
   description:
     "Derivační pravidla, geometrický význam derivace, L’Hospitalovo pravidlo a asymptoty.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy ze standardních pravidel diferenciálního počtu."],
   verificationNote: "Derivace a limity byly ověřeny přímým výpočtem a zpětným dosazením.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.derivatives.polynomial",

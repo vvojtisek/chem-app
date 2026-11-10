@@ -2,12 +2,17 @@ import type { MathTopic } from "./types";
 
 export const mathTopic04 = {
   id: "diferencial-krivky",
+  number: 4,
   title: "Diferenciál a křivky",
+  shortTitle: "Diferenciál a křivky",
   description: "Lineární aproximace diferenciálem a výpočty s parametrizovanými křivkami.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z diferenciálu a elementární parametrizace křivek."],
   verificationNote: "Parametrické derivace, body a délky byly přepočteny přímo ze zadání.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.differential.square",

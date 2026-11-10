@@ -2,14 +2,19 @@ import type { MathTopic } from "./types";
 
 export const mathTopic01 = {
   id: "limity-spojitost",
+  number: 1,
   title: "Limity a spojitost",
+  shortTitle: "Limity a spojitost",
   description: "Základní techniky výpočtu limit, jednostranné limity a spojitost funkce.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: [
     "Samostatně odvozené úlohy z definice limity a standardních vět diferenciálního počtu.",
   ],
   verificationNote: "Každý výsledek byl nezávisle dosazen nebo odvozen algebraickou úpravou.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.limits.factor",
