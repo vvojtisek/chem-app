@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.29.0](https://github.com/vvojtisek/chem-app/compare/v1.28.0...v1.29.0) (2026-11-10)
+
+
+### Features
+
+* **math:** link 64 practice exercises to the server solver ([3b0f9dd](https://github.com/vvojtisek/chem-app/commit/3b0f9ddda36e1fafbb16a0a9cc23617b5427bb56))
+* **math:** nine sections in Učivo and solver-backed practice solutions ([a251ff3](https://github.com/vvojtisek/chem-app/commit/a251ff3def6e32cc2649fc3190ce970bf9928f8e))
+* **math:** nine sections in Učivo with solver-backed step-by-step solutions ([6f87da8](https://github.com/vvojtisek/chem-app/commit/6f87da848581436ae9b74fc94b83f4bb869df1f2))
+
+
+### Bug Fixes
+
+* **math:** render formulas in solver step justifications ([ba02aa3](https://github.com/vvojtisek/chem-app/commit/ba02aa3426f258ea38706b6cf2529b7124daf4f3))
+
 ## [1.28.0](https://github.com/vvojtisek/chem-app/compare/v1.27.0...v1.28.0) (2026-11-10)
 
 
