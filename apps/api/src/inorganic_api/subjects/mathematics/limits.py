@@ -81,7 +81,7 @@ def _engine(
                     "Dosazení",
                     here,
                     tex(value),
-                    f"Funkce je v bodě {tex(point)} spojitá, proto limitu získáme dosazením.",
+                    f"Funkce je v bodě ${tex(point)}$ spojitá, proto limitu získáme dosazením.",
                 )
             ]
 
@@ -160,7 +160,7 @@ def _quotient(
                 "Typ c/0",
                 here,
                 tex(value),
-                f"Čitatel se blíží {tex(top)} ≠ 0 a jmenovatel 0. {sided}",
+                f"Čitatel se blíží ${tex(top)}$ ≠ 0 a jmenovatel 0. {sided}",
             )
         ]
     if top.is_finite and _is_infinite(bottom):
@@ -170,7 +170,7 @@ def _quotient(
                 "Typ c/∞",
                 here,
                 "0",
-                f"Čitatel se blíží {tex(top)}, jmenovatel roste nade všechny meze.",
+                f"Čitatel se blíží ${tex(top)}$, jmenovatel roste nade všechny meze.",
             )
         ]
     if top.is_finite and bottom.is_finite and not _is_zero(bottom):
@@ -181,7 +181,7 @@ def _quotient(
                 "Limita podílu",
                 here,
                 tex(value),
-                f"Limita čitatele je {tex(top)}, limita jmenovatele {tex(bottom)} ≠ 0.",
+                f"Limita čitatele je ${tex(top)}$, limita jmenovatele ${tex(bottom)}$ ≠ 0.",
             )
         ]
     return None
@@ -300,7 +300,7 @@ def solve_limit(
                 "Jednostranné limity",
                 problem,
                 r"\text{neexistuje}",
-                f"Limita zleva je {tex(left)}, zprava {tex(right)}. "
+                f"Limita zleva je ${tex(left)}$, zprava ${tex(right)}$. "
                 "Protože se liší, oboustranná limita neexistuje.",
             )
             return Solution(problem, sp.nan, r"\text{neexistuje}", (step,), "sympy.limit")

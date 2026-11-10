@@ -112,7 +112,7 @@ def _product_like(expr: sp.Mul, variable: sp.Symbol, before: str) -> tuple[sp.Ex
             "Konstanta před derivací",
             before,
             tex(result),
-            f"Konstantní násobek {tex(constant)} lze vytknout před derivaci.",
+            f"Konstantní násobek ${tex(constant)}$ lze vytknout před derivaci.",
             rewritten=f"{tex(constant)} \\cdot {_derivative_tex(rest, variable)}",
             substeps=(step,),
         )
@@ -136,7 +136,7 @@ def _product_like(expr: sp.Mul, variable: sp.Symbol, before: str) -> tuple[sp.Ex
         "Derivace součinu",
         before,
         tex(result),
-        f"Součin u·v, kde u = {tex(first)} a v = {tex(second)}: (uv)' = u'v + uv'.",
+        f"Součin u·v, kde u = ${tex(first)}$ a v = ${tex(second)}$: (uv)' = u'v + uv'.",
         rewritten=rewritten,
         substeps=(first_step, second_step),
     )
@@ -158,7 +158,7 @@ def _quotient_rule(
         "Derivace podílu",
         before,
         tex(result),
-        f"Podíl u/v, kde u = {tex(numerator)} a v = {tex(denominator)}: (u/v)' = (u'v − uv')/v².",
+        f"Podíl u/v, kde u = ${tex(numerator)}$ a v = ${tex(denominator)}$: (u/v)' = (u'v − uv')/v².",
         rewritten=rewritten,
         substeps=(numerator_step, denominator_step),
     )
@@ -182,7 +182,7 @@ def _with_chain(
         f"{title} a řetízkové pravidlo",
         before,
         tex(result),
-        f"{justification} Vnitřní funkce je u = {tex(inner)}, "
+        f"{justification} Vnitřní funkce je u = ${tex(inner)}$, "
         "proto výsledek násobíme její derivací u' (řetízkové pravidlo).",
         rewritten=f"{tex(outer_derivative)} \\cdot {_derivative_tex(inner, variable)}",
         substeps=(inner_step,),
@@ -200,7 +200,7 @@ def _power_like(expr: sp.Pow, variable: sp.Symbol, before: str) -> tuple[sp.Expr
             "power",
             "Derivace mocniny",
             before,
-            f"Pro konstantní exponent n = {tex(exponent)} platí (uⁿ)' = n·uⁿ⁻¹.",
+            f"Pro konstantní exponent n = ${tex(exponent)}$ platí (uⁿ)' = n·uⁿ⁻¹.",
         )
     if not base.has(variable):
         outer = expr * sp.log(base)
@@ -211,7 +211,7 @@ def _power_like(expr: sp.Pow, variable: sp.Symbol, before: str) -> tuple[sp.Expr
             "exponential",
             "Derivace exponenciály",
             before,
-            f"Pro konstantní základ a = {tex(base)} platí (aᵘ)' = aᵘ·ln a.",
+            f"Pro konstantní základ a = ${tex(base)}$ platí (aᵘ)' = aᵘ·ln a.",
         )
     # f(x)^g(x): logarithmic differentiation.
     rewritten_expr = sp.exp(exponent * sp.log(base))

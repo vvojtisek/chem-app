@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useCapabilities } from "@/components/auth-gate";
-import { MathTex } from "@/components/math-tex";
+import { MathTex, TextWithTex } from "@/components/math-tex";
 import { ScenePlot } from "@/components/scene-plot";
 import {
   ApiError,
@@ -175,7 +175,9 @@ function StepItem({
             <MathTex display latex={`= ${step.rewritten}`} />
           ) : null}
           <MathTex display latex={step.before ? `= ${step.after}` : step.after} />
-          <p className={styles.hint}>{step.justification}</p>
+          <p className={styles.hint}>
+            <TextWithTex text={step.justification} />
+          </p>
           {narrative ? (
             <p className={styles.narrative}>
               <span className={styles.generatedLabel}>AI</span> {narrative}
