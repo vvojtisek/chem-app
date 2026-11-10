@@ -1,15 +1,26 @@
-# Higher mathematics exercise source
+# Higher mathematics practice source
 
-This separate mathematics collection contains nine topics and 90 worked exercises. Each topic
-inherits draft status, Codex as responsible editor, a source description, and a verification note.
-No human reviewer or chemistry SME approval is implied.
+This collection holds the nine syllabus sections of the mathematics practice at
+`/predmety/matematika/procvicovani` and 95 worked exercises. It is separate from the chemistry
+curriculum and is not imported by chemistry code. Every section is draft content: exercises
+have Codex as responsible editor, theory blocks have Claude as editor. No human reviewer or
+chemistry SME approval is implied.
 
-Prompts, hints, and worked steps are Czech text with inline TeX between dollar signs. The answer
-field is short canonical text for deterministic grading; answerLabel is optional display notation.
-The client must not interpret algebraically equivalent free-form answers as correct unless an
-explicit acceptedAnswers entry exists.
+Each section has its official syllabus `title`, a `shortTitle` for tiles, `theory` blocks and
+`solverTypes`, which link the server-side solver problem types (ADR 0015) for own examples.
+The theory carries over the rule explanations the solver gives for the former topics (Limita,
+Derivace, Implicitní derivace, Integrál, Parciální derivace, Gradient, Směrová derivace,
+Dvojný a trojný integrál): limits to section 1, derivatives and implicit derivatives to 2,
+partial derivatives, gradient and directional derivative to 4, integrals to 5 to 7, multiple
+integrals to 7.
 
-The author checked each derivation directly (substitution, differentiation, sign analysis, or
-characteristic roots). The automated catalog test checks record structure and coverage, not a
-human mathematical review. Before a scientific release, an independent mathematics reviewer
-should review the set and record approval through a dedicated workflow.
+Prompts, hints, worked steps and theory are Czech text with inline TeX between dollar signs;
+`formulas` are display TeX without dollar signs. The answer field is short canonical text for
+deterministic grading; answerLabel is optional display notation. The client must not interpret
+algebraically equivalent free-form answers as correct unless an explicit acceptedAnswers entry
+exists.
+
+Exercise answers were checked by substitution, differentiation, sign analysis or characteristic
+roots, and spot-checked with SymPy. The automated catalog test checks structure and coverage,
+not a human mathematical review. Before a scientific release, an independent mathematics
+reviewer should review the set and record approval through a dedicated workflow.
