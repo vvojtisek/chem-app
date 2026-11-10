@@ -3,16 +3,60 @@ import type { MathTopic } from "./types";
 export const mathTopic04 = {
   id: "diferencial-krivky",
   number: 4,
-  title: "Diferenciál a křivky",
+  title: "Diferenciál funkce. Křivky a jejich parametrizace.",
   shortTitle: "Diferenciál a křivky",
-  description: "Lineární aproximace diferenciálem a výpočty s parametrizovanými křivkami.",
+  description:
+    "Diferenciál a lineární aproximace, totální diferenciál funkce více proměnných s gradientem a směrovou derivací, parametrizace křivek.",
   status: "draft",
   responsibleEditor: "Codex",
   theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z diferenciálu a elementární parametrizace křivek."],
   verificationNote: "Parametrické derivace, body a délky byly přepočteny přímo ze zadání.",
-  theory: [],
-  solverTypes: [],
+  theory: [
+    {
+      heading: "Diferenciál funkce jedné proměnné",
+      paragraphs: [
+        "Má-li $f$ v bodě $x_0$ derivaci, je přírůstek funkce pro malé $h=dx$ dobře přiblížen lineární funkcí $df=f'(x_0)\\,dx$. Diferenciál je přírůstek na tečně, nikoli na grafu; chyba aproximace jde k nule rychleji než $dx$.",
+        "Lineární aproximace se používá k odhadům: $\\sqrt{4{,}04}\\approx\\sqrt4+\\frac{1}{2\\sqrt4}\\cdot0{,}04=2{,}01$. Pravidla pro diferenciál odpovídají derivačním pravidlům, např. $d(uv)=v\\,du+u\\,dv$.",
+      ],
+      formulas: ["df(x_0)=f'(x_0)\\,dx,\\qquad f(x_0+dx)\\approx f(x_0)+f'(x_0)\\,dx"],
+    },
+    {
+      heading: "Parciální derivace a totální diferenciál",
+      paragraphs: [
+        "U funkce více proměnných derivujeme podle jedné proměnné a ostatní proměnné se chovají jako konstanty: pro $f(x,y)=x^2y$ je $\\frac{\\partial f}{\\partial x}=2xy$ a $\\frac{\\partial f}{\\partial y}=x^2$.",
+        "Totální diferenciál sčítá příspěvky všech proměnných. Má-li $f$ spojité parciální derivace, platí $f(x_0+dx,y_0+dy)\\approx f(x_0,y_0)+df$; geometricky jde o tečnou rovinu ke grafu. Totální diferenciál se používá i k odhadu chyby měření.",
+      ],
+      formulas: ["df=\\frac{\\partial f}{\\partial x}\\,dx+\\frac{\\partial f}{\\partial y}\\,dy"],
+    },
+    {
+      heading: "Gradient a směrová derivace",
+      paragraphs: [
+        "Gradient je vektor parciálních derivací podle všech proměnných. Ukazuje směr nejrychlejšího růstu funkce a jeho velikost je tato největší rychlost růstu.",
+        "Směrová derivace ve směru $\\mathbf u$ je skalární součin gradientu a jednotkového směru, proto směr nejprve vydělíme jeho velikostí. Ve směru kolmém ke gradientu je nulová (směr vrstevnice).",
+      ],
+      formulas: [
+        "\\nabla f=\\left(\\frac{\\partial f}{\\partial x},\\frac{\\partial f}{\\partial y}\\right),\\qquad \\frac{\\partial f}{\\partial\\mathbf u}(P)=\\nabla f(P)\\cdot\\frac{\\mathbf u}{\\|\\mathbf u\\|}",
+      ],
+    },
+    {
+      heading: "Parametrizace křivek",
+      paragraphs: [
+        "Rovinná křivka je zadána dvojicí funkcí $x=\\varphi(t)$, $y=\\psi(t)$ pro $t\\in[\\alpha,\\beta]$. Parametr $t$ lze chápat jako čas a bod $[\\varphi(t),\\psi(t)]$ jako polohu. Jedna křivka má mnoho parametrizací.",
+        "Tečný vektor je $(\\varphi'(t),\\psi'(t))$, jeho velikost je rychlost. Je-li $\\varphi'(t)\\ne0$, má tečna směrnici $\\frac{dy}{dx}=\\frac{\\psi'(t)}{\\varphi'(t)}$. Délka křivky je integrál rychlosti.",
+      ],
+      formulas: [
+        "\\frac{dy}{dx}=\\frac{\\psi'(t)}{\\varphi'(t)},\\qquad \\ell=\\int_\\alpha^\\beta\\sqrt{\\varphi'(t)^2+\\psi'(t)^2}\\,dt",
+      ],
+      items: [
+        "Přímka bodem $A$ se směrem $\\mathbf v$: $X=A+t\\mathbf v$, $t\\in\\mathbb R$.",
+        "Kružnice se středem $[m,n]$ a poloměrem $r$: $x=m+r\\cos t$, $y=n+r\\sin t$, $t\\in[0,2\\pi)$.",
+        "Elipsa s poloosami $a$, $b$: $x=a\\cos t$, $y=b\\sin t$.",
+        "Graf funkce $y=f(x)$: $x=t$, $y=f(t)$.",
+      ],
+    },
+  ],
+  solverTypes: ["derivative", "partial", "gradient", "directional"],
   exercises: [
     {
       id: "math.differential.square",
@@ -119,6 +163,45 @@ export const mathTopic04 = {
       answerLabel: "$(3,0)$",
       hints: ["Použijte $\\cos0=1$ a $\\sin0=0$."],
       solutionSteps: ["$x(0)=3\\cos0=3$.", "$y(0)=2\\sin0=0$.", "Bod má souřadnice $(3,0)$."],
+    },
+    {
+      id: "math.differential.partial",
+      prompt: "Pro $f(x,y)=x^2y+y^3$ určete $\\frac{\\partial f}{\\partial x}$ v bodě $[1,2]$.",
+      answer: "4",
+      hints: ["Při derivování podle $x$ je $y$ konstanta."],
+      solutionSteps: [
+        "$\\frac{\\partial}{\\partial x}(x^2y)=2xy$ a $\\frac{\\partial}{\\partial x}y^3=0$.",
+        "Tedy $\\frac{\\partial f}{\\partial x}=2xy$.",
+        "V bodě $[1,2]$: $2\\cdot1\\cdot2=4$.",
+      ],
+    },
+    {
+      id: "math.differential.total",
+      prompt:
+        "Pro $f(x,y)=xy$ vypočtěte totální diferenciál $df$ v bodě $[2,3]$ při $dx=0{,}1$ a $dy=-0{,}2$.",
+      answer: "-0,1",
+      answerLabel: "$-0{,}1$",
+      acceptedAnswers: ["-0.1", "-1/10"],
+      hints: ["$df=f_x\\,dx+f_y\\,dy$."],
+      solutionSteps: [
+        "$f_x=y$, $f_y=x$.",
+        "V bodě $[2,3]$: $df=3\\,dx+2\\,dy$.",
+        "Dosadíme: $3\\cdot0{,}1+2\\cdot(-0{,}2)=0{,}3-0{,}4=-0{,}1$.",
+      ],
+    },
+    {
+      id: "math.differential.directional",
+      prompt:
+        "Určete směrovou derivaci funkce $f(x,y)=x^2y$ v bodě $[1,2]$ ve směru $\\mathbf u=(3,4)$.",
+      answer: "16/5",
+      answerLabel: "$\\frac{16}{5}$",
+      acceptedAnswers: ["3,2", "3.2"],
+      hints: ["Spočtěte gradient a směr znormujte.", "$\\|(3,4)\\|=5$."],
+      solutionSteps: [
+        "$\\nabla f=(2xy,\\,x^2)$, v bodě $[1,2]$ je $\\nabla f=(4,1)$.",
+        "Jednotkový směr: $\\frac{\\mathbf u}{\\|\\mathbf u\\|}=\\left(\\frac35,\\frac45\\right)$.",
+        "$\\frac{\\partial f}{\\partial\\mathbf u}=4\\cdot\\frac35+1\\cdot\\frac45=\\frac{16}{5}$.",
+      ],
     },
   ],
 } as const satisfies MathTopic;
