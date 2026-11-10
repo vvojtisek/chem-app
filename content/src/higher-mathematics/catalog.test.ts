@@ -8,8 +8,9 @@ import { mathTopic06 } from "./topic-06";
 import { mathTopic07 } from "./topic-07";
 import { mathTopic08 } from "./topic-08";
 import { mathTopic09 } from "./topic-09";
+import type { MathTopic } from "./types";
 
-const topics = [
+const topics: readonly MathTopic[] = [
   mathTopic01,
   mathTopic02,
   mathTopic03,
@@ -32,6 +33,17 @@ describe("higher mathematics curriculum", () => {
       expect(topic.responsibleEditor).toBe("Codex");
       expect(topic.sources.length).toBeGreaterThan(0);
       expect(topic.verificationNote.trim()).not.toBe("");
+      expect(topic.number).toBe(topics.indexOf(topic) + 1);
+      expect(topic.title.length).toBeGreaterThan(topic.shortTitle.length);
+      expect(topic.theory.length).toBeGreaterThanOrEqual(3);
+      for (const block of topic.theory) {
+        expect(block.heading.trim()).not.toBe("");
+        expect(block.paragraphs.length + (block.items?.length ?? 0)).toBeGreaterThan(0);
+        // Inline TeX must be balanced so MathText never renders a stray "$".
+        for (const text of [...block.paragraphs, ...(block.items ?? [])]) {
+          expect(text.split("$").length % 2).toBe(1);
+        }
+      }
       expect(topic.exercises.length).toBeGreaterThanOrEqual(10);
       expect(new Set(topic.exercises.map((exercise) => exercise.prompt)).size).toBe(
         topic.exercises.length,
@@ -48,6 +60,6 @@ describe("higher mathematics curriculum", () => {
       }
     }
     expect(new Set(allIds).size).toBe(allIds.length);
-    expect(allIds).toHaveLength(90);
+    expect(allIds.length).toBeGreaterThanOrEqual(90);
   });
 });

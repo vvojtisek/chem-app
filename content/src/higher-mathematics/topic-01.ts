@@ -2,14 +2,76 @@ import type { MathTopic } from "./types";
 
 export const mathTopic01 = {
   id: "limity-spojitost",
-  title: "Limity a spojitost",
-  description: "Základní techniky výpočtu limit, jednostranné limity a spojitost funkce.",
+  number: 1,
+  title:
+    "Limita funkce a základní techniky jejího výpočtu. Spojitost funkce. Vlastnosti spojitých funkcí.",
+  shortTitle: "Limita a spojitost",
+  description:
+    "Definice limity, jednostranné limity, úpravy neurčitých výrazů, spojitost a věty o spojitých funkcích.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: [
     "Samostatně odvozené úlohy z definice limity a standardních vět diferenciálního počtu.",
   ],
   verificationNote: "Každý výsledek byl nezávisle dosazen nebo odvozen algebraickou úpravou.",
+  theory: [
+    {
+      heading: "Co je limita",
+      paragraphs: [
+        "Číslo $L$ je limitou funkce $f$ v bodě $a$, jestliže se hodnoty $f(x)$ blíží k $L$, když se $x$ blíží k $a$ (přitom $x\\ne a$). Hodnota $f(a)$ samotná limitu neovlivňuje a funkce v bodě $a$ ani nemusí být definovaná.",
+        "Jednostranné limity sledují jen $x>a$ (zprava, $x\\to a^+$) nebo $x<a$ (zleva, $x\\to a^-$). Oboustranná limita existuje právě tehdy, když existují obě jednostranné a jsou si rovny. Pokud se liší, oboustranná limita neexistuje.",
+        "Limita může být i nevlastní ($\\pm\\infty$) a lze ji počítat i v nekonečnu ($x\\to\\pm\\infty$).",
+      ],
+      formulas: [
+        "\\lim_{x\\to a} f(x)=L \\iff \\forall\\varepsilon>0\\ \\exists\\delta>0:\\ 0<|x-a|<\\delta \\Rightarrow |f(x)-L|<\\varepsilon",
+      ],
+    },
+    {
+      heading: "Postup výpočtu",
+      paragraphs: [
+        "Vždy začněte dosazením. Je-li funkce v bodě spojitá, limitu získáme dosazením. Vyjde-li neurčitý výraz ($\\frac00$, $\\frac{\\infty}{\\infty}$, $0\\cdot\\infty$, $\\infty-\\infty$, $1^\\infty$, $0^0$, $\\infty^0$), výraz upravíme:",
+      ],
+      items: [
+        "Krácení: čitatel a jmenovatel mají společný činitel, např. $\\frac{x^2-1}{x-1}=x+1$ pro $x\\ne1$.",
+        "Rozšíření sdruženým výrazem u odmocnin: $(\\sqrt{A}-B)(\\sqrt{A}+B)=A-B^2$.",
+        "Racionální funkce v nekonečnu: vydělíme nejvyšší mocninou jmenovatele.",
+        "Základní limity (viz vzorce níže), po substituci $u=g(x)\\to0$.",
+        "Nenulové číslo děleno nulou: čitatel se blíží $c\\ne0$ a jmenovatel $0$; znaménko výsledku určíme z chování jmenovatele u bodu (jednostranné limity).",
+        "Typy $1^\\infty$, $0^0$, $\\infty^0$: přepis $f^g=e^{g\\ln f}$; exponenciála je spojitá, proto stačí spočítat limitu exponentu.",
+        "Typ $0\\cdot\\infty$ zapíšeme jako podíl, typ $\\frac00$ nebo $\\frac\\infty\\infty$ lze řešit L’Hospitalovým pravidlem (okruh 2).",
+      ],
+    },
+    {
+      heading: "Základní limity",
+      paragraphs: [
+        "Tyto limity se používají jako stavební kameny; ostatní na ně převádíme substitucí.",
+      ],
+      formulas: [
+        "\\lim_{x\\to0}\\frac{\\sin x}{x}=1,\\qquad \\lim_{x\\to0}\\frac{1-\\cos x}{x^2}=\\frac12",
+        "\\lim_{x\\to0}\\frac{e^x-1}{x}=1,\\qquad \\lim_{x\\to0}\\frac{\\ln(1+x)}{x}=1,\\qquad \\lim_{x\\to\\infty}\\left(1+\\frac{a}{x}\\right)^x=e^a",
+      ],
+    },
+    {
+      heading: "Spojitost funkce",
+      paragraphs: [
+        "Funkce $f$ je spojitá v bodě $a$, je-li v něm definovaná a platí $\\lim_{x\\to a}f(x)=f(a)$. Spojitost zprava a zleva se definuje pomocí jednostranných limit. Funkce je spojitá na intervalu, je-li spojitá v každém jeho bodě (v krajních bodech jednostranně).",
+        "Mnohočleny, $e^x$, $\\sin x$, $\\cos x$ jsou spojité na $\\mathbb R$; racionální funkce, $\\ln x$, $\\sqrt x$, $\\tan x$ jsou spojité na svém definičním oboru. Součet, součin, podíl (se jmenovatelem $\\ne0$) a složení spojitých funkcí jsou spojité.",
+        "Body nespojitosti: odstranitelná (limita existuje, ale $\\ne f(a)$ nebo $f(a)$ není definováno), skok (jednostranné limity jsou různé), nespojitost 2. druhu (některá jednostranná limita neexistuje nebo je nevlastní).",
+      ],
+    },
+    {
+      heading: "Vlastnosti spojitých funkcí na uzavřeném intervalu",
+      paragraphs: ["Nechť je $f$ spojitá na $[a,b]$. Pak platí:"],
+      items: [
+        "Weierstrassova věta: $f$ je na $[a,b]$ omezená a nabývá na něm své největší i nejmenší hodnoty.",
+        "Bolzanova věta: je-li $f(a)\\cdot f(b)<0$, existuje $c\\in(a,b)$ s $f(c)=0$. Používá se k důkazu existence kořene a k metodě půlení intervalu.",
+        "Darbouxova vlastnost: $f$ nabývá všech hodnot mezi $f(a)$ a $f(b)$.",
+        "Je-li $f$ navíc ryze monotónní, je prostá a inverzní funkce $f^{-1}$ je také spojitá.",
+      ],
+    },
+  ],
+  solverTypes: ["limit"],
   exercises: [
     {
       id: "math.limits.factor",

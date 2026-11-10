@@ -2,12 +2,54 @@ import type { MathTopic } from "./types";
 
 export const mathTopic09 = {
   id: "linearni-homogenni-rovnice",
-  title: "Homogenní lineární diferenciální rovnice",
-  description: "Rovnice prvního a druhého řádu s konstantními koeficienty.",
+  number: 9,
+  title:
+    "Homogenní lineární diferenciální rovnice prvního a druhého řádu s konstantními koeficienty a jejich řešení.",
+  shortTitle: "Lineární DR s konst. koef.",
+  description:
+    "Charakteristická rovnice, fundamentální systém pro reálné, dvojnásobné a komplexní kořeny a počáteční úlohy.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z metody charakteristické rovnice."],
   verificationNote: "Řešení byla ověřena dosazením do diferenciální rovnice a případných podmínek.",
+  theory: [
+    {
+      heading: "Lineární homogenní rovnice",
+      paragraphs: [
+        "Rovnice je lineární, vystupuje-li v ní $y$ a jeho derivace jen v první mocnině a nenásobí se navzájem; homogenní, je-li pravá strana nulová. Pro konstantní koeficienty $a$, $b$ jde o rovnice níže.",
+        "Princip superpozice: jsou-li $y_1$, $y_2$ řešení homogenní rovnice, je řešením i každá kombinace $C_1y_1+C_2y_2$. Obecné řešení rovnice 2. řádu tvoří dvě lineárně nezávislá řešení (fundamentální systém).",
+      ],
+      formulas: ["y'+ay=0,\\qquad y''+ay'+by=0"],
+    },
+    {
+      heading: "Rovnice prvního řádu",
+      paragraphs: [
+        "Rovnice $y'+ay=0$ je separovatelná (okruh 8): $\\frac{dy}{y}=-a\\,dx$. Stejný výsledek dá dosazení $y=e^{\\lambda x}$, kdy $\\lambda+a=0$.",
+      ],
+      formulas: ["y=Ce^{-ax},\\qquad y(x_0)=y_0\\ \\Rightarrow\\ y=y_0e^{-a(x-x_0)}"],
+    },
+    {
+      heading: "Charakteristická rovnice pro druhý řád",
+      paragraphs: [
+        "Dosadíme $y=e^{\\lambda x}$. Protože $e^{\\lambda x}\\ne0$, dostaneme charakteristickou rovnici $\\lambda^2+a\\lambda+b=0$. Podle jejích kořenů:",
+      ],
+      formulas: ["\\lambda^2+a\\lambda+b=0,\\qquad \\lambda_{1,2}=\\frac{-a\\pm\\sqrt{a^2-4b}}{2}"],
+      items: [
+        "Dva různé reálné kořeny $\\lambda_1\\ne\\lambda_2$: $y=C_1e^{\\lambda_1x}+C_2e^{\\lambda_2x}$.",
+        "Dvojnásobný kořen $\\lambda$: $y=(C_1+C_2x)e^{\\lambda x}$. Druhé řešení $xe^{\\lambda x}$ vzniká proto, že samotné $e^{\\lambda x}$ je jen jedno.",
+        "Komplexně sdružené kořeny $\\alpha\\pm\\beta i$: $y=e^{\\alpha x}(C_1\\cos\\beta x+C_2\\sin\\beta x)$, podle Eulerova vzorce $e^{i\\beta x}=\\cos\\beta x+i\\sin\\beta x$.",
+      ],
+    },
+    {
+      heading: "Počáteční úloha a interpretace",
+      paragraphs: [
+        "U rovnice 2. řádu zadáváme dvě podmínky $y(x_0)=y_0$ a $y'(x_0)=y_1$. Obecné řešení zderivujeme, dosadíme obě podmínky a vyřešíme soustavu pro $C_1$, $C_2$.",
+        "Rovnice $y''+2\\delta y'+\\omega^2y=0$ popisuje tlumený oscilátor: komplexní kořeny znamenají tlumené kmity, reálné kořeny aperiodický pohyb, dvojnásobný kořen kritické tlumení. Pro $\\delta=0$ vychází harmonický pohyb $C_1\\cos\\omega x+C_2\\sin\\omega x$.",
+      ],
+    },
+  ],
+  solverTypes: [],
   exercises: [
     {
       id: "math.ode2.first-decay",

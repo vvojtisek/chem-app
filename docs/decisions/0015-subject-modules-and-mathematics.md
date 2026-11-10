@@ -210,3 +210,21 @@ would break ADR 0003.
   migration for a cache that is disposable. The file queue keeps the worker
   without network or credentials.
 - **Prerender only (CI)**: safest, but cannot render problems a learner types.
+
+## Addendum (2026-11-10): mathematics practice inside the subject area
+
+- The nine static practice sections (PR #133, `content/src/higher-mathematics`)
+  moved from `/procvicovani/matematika` (chemistry area) to
+  `/predmety/matematika/procvicovani/<section>`, the subject's own
+  "Procvičovat" destination. Old URLs answer with permanent redirects, and
+  the chemistry practice hub no longer links mathematics.
+- Isolation: mathematics UI lives in `apps/web/components/mathematics/` and
+  imports no chemistry code or stores; its content is a separate export of
+  `@inorganic/content`. The app shell, auth gate and design tokens stay
+  shared. Practice pages reuse the subject workspace styles of `/predmety/matematika`.
+- Practice is client-side static content with deterministic answer
+  comparison, not computed by SymPy; it needs no server call and keeps no
+  attempt records. Each section links to the matching solver problem types
+  (`/predmety/matematika?typ=<id>`), which stay online-only and signed-in.
+- Section theory and exercises are draft content (`status: "draft"`), not
+  reviewed by a mathematics SME.

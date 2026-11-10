@@ -1,21 +1,26 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/math-text", () => ({
+vi.mock("./math-text", () => ({
   MathText: ({ children }: Readonly<{ children: string }>) => <span>{children}</span>,
 }));
 
 import type { MathTopic } from "@inorganic/content/higher-mathematics";
-import { HigherMathematicsPractice } from "./higher-mathematics-practice";
+import { MathPracticeSession } from "./practice-session";
 
 const topic = {
   id: "test-limits",
-  title: "Limity a spojitost",
+  number: 1,
+  title: "Limita funkce a spojitost",
+  shortTitle: "Limity a spojitost",
   description: "Základní limity.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Testovací úloha."],
   verificationNote: "Ověřeno dosazením.",
+  theory: [],
+  solverTypes: [],
   exercises: [
     {
       id: "math.test.limit",
@@ -37,9 +42,9 @@ const topic = {
 
 afterEach(cleanup);
 
-describe("HigherMathematicsPractice", () => {
+describe("MathPracticeSession", () => {
   it("offers hints, retries a wrong answer, checks a correct answer and reveals steps", () => {
-    render(<HigherMathematicsPractice topic={topic} />);
+    render(<MathPracticeSession topic={topic} />);
 
     expect(screen.getAllByRole("heading", { level: 2 })[0]).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Zobrazit nápovědu" }));
@@ -58,7 +63,7 @@ describe("HigherMathematicsPractice", () => {
   });
 
   it("completes the topic and starts a fresh run", () => {
-    render(<HigherMathematicsPractice topic={topic} />);
+    render(<MathPracticeSession topic={topic} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Zobrazit řešení" }));
     const nextButton = screen
@@ -80,7 +85,7 @@ describe("HigherMathematicsPractice", () => {
       ...topic,
       exercises: [{ ...topic.exercises[0], answer: "1/2", answerLabel: "$\\frac12$" }],
     } as const satisfies MathTopic;
-    render(<HigherMathematicsPractice topic={fractionTopic} />);
+    render(<MathPracticeSession topic={fractionTopic} />);
 
     fireEvent.change(screen.getByLabelText("Vaše odpověď"), {
       target: { value: "\\frac{1}{2}" },

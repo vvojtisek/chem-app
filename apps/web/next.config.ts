@@ -56,6 +56,22 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    // Mathematics practice moved from the chemistry area into the subject
+    // area (ADR 0015: other subjects own everything under /predmety/<id>).
+    return [
+      {
+        source: "/procvicovani/matematika",
+        destination: "/predmety/matematika/procvicovani",
+        permanent: true,
+      },
+      {
+        source: "/procvicovani/matematika/:sectionId",
+        destination: "/predmety/matematika/procvicovani/:sectionId",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     const apiProxyTarget = process.env.API_PROXY_TARGET;
     return apiProxyTarget

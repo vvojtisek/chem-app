@@ -399,7 +399,10 @@ function SolutionView({
   );
 }
 
-export function SubjectWorkspace({ subjectId }: Readonly<{ subjectId: string }>) {
+export function SubjectWorkspace({
+  subjectId,
+  initialTypeId,
+}: Readonly<{ subjectId: string; initialTypeId?: string | undefined }>) {
   const online = useOnline();
   const { isGuest } = useCapabilities();
   const subjects = useQuery({
@@ -409,7 +412,8 @@ export function SubjectWorkspace({ subjectId }: Readonly<{ subjectId: string }>)
     staleTime: 5 * 60_000,
   });
   const subject = subjects.data?.find((item) => item.id === subjectId);
-  const [typeId, setTypeId] = useState<string | null>(null);
+  // An unknown ?typ= value falls back to the first problem type.
+  const [typeId, setTypeId] = useState<string | null>(initialTypeId ?? null);
   const problemType =
     subject?.problemTypes.find((item) => item.id === typeId) ?? subject?.problemTypes[0];
   const [values, setValues] = useState<Values>({});

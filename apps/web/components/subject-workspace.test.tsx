@@ -98,11 +98,11 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-function renderWorkspace() {
+function renderWorkspace(initialTypeId?: string) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <SubjectWorkspace subjectId="matematika" />
+      <SubjectWorkspace initialTypeId={initialTypeId} subjectId="matematika" />
     </QueryClientProvider>,
   );
 }
@@ -183,5 +183,33 @@ describe("SubjectWorkspace type switching", () => {
       "true",
     );
     expect(screen.getByLabelText("Funkce f(x)")).toHaveValue("x^2*sin(x)");
+  });
+});
+
+describe("SubjectWorkspace preselected type", () => {
+  const limit: SubjectProblemType = {
+    ...derivative,
+    id: "limit",
+    label: "Limita",
+    example: { expression: "(1 - cos(x))/x^2" },
+  };
+
+  it("opens the problem type named by ?typ= from a practice section", async () => {
+    api.list.mockResolvedValue([{ ...subject, problemTypes: [derivative, limit] }]);
+    renderWorkspace("limit");
+    expect(await screen.findByRole("button", { name: "Limita" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByLabelText("Funkce f(x)")).toHaveValue("(1 - cos(x))/x^2");
+  });
+
+  it("falls back to the first type for an unknown value", async () => {
+    api.list.mockResolvedValue([{ ...subject, problemTypes: [derivative, limit] }]);
+    renderWorkspace("neexistuje");
+    expect(await screen.findByRole("button", { name: "Derivace" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 });

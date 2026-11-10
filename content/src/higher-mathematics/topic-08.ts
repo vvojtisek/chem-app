@@ -2,12 +2,55 @@ import type { MathTopic } from "./types";
 
 export const mathTopic08 = {
   id: "separovatelne-rovnice",
-  title: "Diferenciální rovnice prvního řádu",
-  description: "Separované a separovatelné rovnice s počáteční podmínkou.",
+  number: 8,
+  title: "Diferenciální rovnice prvního řádu. Rovnice separované a separovatelné a jejich řešení.",
+  shortTitle: "DR 1. řádu",
+  description:
+    "Pojem řešení a počáteční úlohy, rovnice separované a separovatelné, stacionární řešení a ověření dosazením.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z metody separace proměnných."],
   verificationNote: "Každé řešení bylo dosazeno do rovnice i počáteční podmínky.",
+  theory: [
+    {
+      heading: "Diferenciální rovnice a její řešení",
+      paragraphs: [
+        "Diferenciální rovnice prvního řádu je vztah mezi neznámou funkcí $y(x)$, její derivací a proměnnou $x$, typicky ve tvaru $y'=f(x,y)$. Řešením je funkce definovaná na intervalu, která rovnici splňuje v každém jeho bodě.",
+        "Obecné řešení obsahuje jednu konstantu $C$. Počáteční (Cauchyova) úloha přidává podmínku $y(x_0)=y_0$, která konstantu určí. Je-li $f$ spojitá a má spojitou $\\frac{\\partial f}{\\partial y}$, má počáteční úloha v okolí $x_0$ právě jedno řešení.",
+        "Řešení vždy ověřte dosazením do rovnice i do počáteční podmínky a uveďte interval, na kterém platí.",
+      ],
+    },
+    {
+      heading: "Separovaná a separovatelná rovnice",
+      paragraphs: [
+        "Rovnice je separovatelná, lze-li pravou stranu zapsat jako součin funkce $x$ a funkce $y$. Separovaná rovnice má proměnné již oddělené: $q(y)\\,dy=p(x)\\,dx$.",
+        "Postup: přepíšeme $y'=\\frac{dy}{dx}$, převedeme vše s $y$ na jednu stranu a vše s $x$ na druhou, obě strany integrujeme a je-li to možné, vyjádříme $y$. Konstantu z obou integrací spojíme do jedné.",
+      ],
+      formulas: [
+        "y'=g(x)\\,h(y)\\quad\\Longrightarrow\\quad\\int\\frac{dy}{h(y)}=\\int g(x)\\,dx+C\\qquad(h(y)\\ne0)",
+      ],
+    },
+    {
+      heading: "Stacionární řešení a ztracená řešení",
+      paragraphs: [
+        "Dělení $h(y)$ je dovoleno jen tam, kde $h(y)\\ne0$. Každý kořen $h(y_0)=0$ dává konstantní (stacionární) řešení $y\\equiv y_0$, které je třeba ověřit a doplnit zvlášť; například $y'=y^2$ má kromě $y=\\frac{-1}{x+C}$ i řešení $y\\equiv0$.",
+        "Po integraci typu $\\ln|y|=G(x)+C$ dostaneme $y=Ke^{G(x)}$, kde $K=\\pm e^C$; volba $K=0$ vrací stacionární řešení $y\\equiv0$.",
+      ],
+    },
+    {
+      heading: "Typické aplikace",
+      paragraphs: [
+        "U fyzikálních úloh vyberte větev řešení, která odpovídá počáteční podmínce (kladná koncentrace, správné znaménko odmocniny).",
+      ],
+      items: [
+        "Exponenciální růst a rozpad $y'=ky$: $y=y_0e^{kx}$ (radioaktivní rozpad, reakce 1. řádu).",
+        "Kinetika 2. řádu $c'=-kc^2$: $\\frac1c=\\frac1{c_0}+kt$.",
+        "Newtonův zákon ochlazování $T'=-k(T-T_0)$: substituce $u=T-T_0$ vede na $u'=-ku$.",
+      ],
+    },
+  ],
+  solverTypes: ["integral"],
   exercises: [
     {
       id: "math.ode1.direct",

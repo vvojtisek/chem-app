@@ -2,12 +2,57 @@ import type { MathTopic } from "./types";
 
 export const mathTopic06 = {
   id: "integrace-typu-funkci",
-  title: "Integrace vybraných typů funkcí",
-  description: "Racionální, goniometrické a odmocninové integrandy.",
+  number: 6,
+  title: "Integrace vybraných typů funkcí.",
+  shortTitle: "Integrace typů funkcí",
+  description:
+    "Racionální funkce a parciální zlomky, goniometrické funkce a vybrané iracionální integrandy.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy ze standardních integračních identit."],
   verificationNote: "Výsledky byly ověřeny derivováním a kontrolou definičních oborů.",
+  theory: [
+    {
+      heading: "Racionální funkce",
+      paragraphs: [
+        "Je-li stupeň čitatele větší nebo roven stupni jmenovatele, nejprve mnohočleny vydělíme. Zbylou ryze racionální funkci rozložíme na součet jednodušších (parciálních) zlomků podle rozkladu jmenovatele:",
+      ],
+      formulas: [
+        "\\frac{1}{x^2-1}=\\frac12\\left(\\frac1{x-1}-\\frac1{x+1}\\right)",
+        "\\int\\frac{dx}{(x+m)^2+n^2}=\\frac1n\\arctan\\frac{x+m}{n}+C",
+      ],
+      items: [
+        "Jednoduchý reálný kořen $a$: zlomek $\\frac{A}{x-a}$, integrál $A\\ln|x-a|$.",
+        "Násobný kořen $(x-a)^k$: zlomky $\\frac{A_1}{x-a}+\\dots+\\frac{A_k}{(x-a)^k}$.",
+        "Nerozložitelný kvadratický činitel $x^2+px+q$: zlomek $\\frac{Bx+C}{x^2+px+q}$. Rozdělíme jej na část $\\frac{(x^2+px+q)'}{x^2+px+q}$ (dá logaritmus) a zbytek, který po doplnění na čtverec dá $\\arctan$.",
+      ],
+    },
+    {
+      heading: "Goniometrické funkce",
+      paragraphs: [
+        "Součiny typu $\\sin ax\\cos bx$ převedeme na součty vzorci pro součet a rozdíl argumentů.",
+      ],
+      items: [
+        "Sudé mocniny snížíme vzorci $\\sin^2x=\\frac{1-\\cos2x}2$, $\\cos^2x=\\frac{1+\\cos2x}2$.",
+        "Lichá mocnina $\\sin$ nebo $\\cos$: oddělíme jeden činitel a substituujeme druhou funkci, např. $\\int\\sin^3x\\,dx$ přes $u=\\cos x$.",
+        "$\\int\\tan x\\,dx=-\\ln|\\cos x|+C$ (substituce $u=\\cos x$, tvar $-\\frac{u'}{u}$).",
+        "Racionální funkce $\\sin x$ a $\\cos x$: univerzální substituce $t=\\tan\\frac x2$, kdy $\\sin x=\\frac{2t}{1+t^2}$, $\\cos x=\\frac{1-t^2}{1+t^2}$, $dx=\\frac{2\\,dt}{1+t^2}$. Vede vždy na racionální funkci, často ale zdlouhavě.",
+      ],
+    },
+    {
+      heading: "Vybrané iracionální funkce",
+      paragraphs: [
+        "Po každé substituci nezapomeňte vrátit původní proměnnou a výsledek ověřit derivováním.",
+      ],
+      items: [
+        "$\\int\\frac{dx}{\\sqrt{a^2-x^2}}=\\arcsin\\frac xa+C$ pro $|x|<a$.",
+        "$\\sqrt{a^2-x^2}$: substituce $x=a\\sin t$; $\\sqrt{x^2+a^2}$: substituce $x=a\\sinh t$ nebo Eulerova substituce.",
+        "$\\sqrt[n]{ax+b}$: substituce $t=\\sqrt[n]{ax+b}$ převede integrand na racionální funkci.",
+      ],
+    },
+  ],
+  solverTypes: ["integral"],
   exercises: [
     {
       id: "math.integrals.arctan",

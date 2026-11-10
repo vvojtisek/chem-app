@@ -2,12 +2,60 @@ import type { MathTopic } from "./types";
 
 export const mathTopic07 = {
   id: "urcity-integral",
-  title: "Určitý a Newtonův integrál",
-  description: "Newtonova–Leibnizova věta, substituce, symetrie a nevlastní integrál.",
+  number: 7,
+  title: "Určitý integrál. Newtonův integrál a jeho výpočet.",
+  shortTitle: "Určitý integrál",
+  description:
+    "Riemannův a Newtonův integrál, Newtonova–Leibnizova formule, substituce a per partes v mezích, symetrie, nevlastní a dvojný integrál.",
   status: "draft",
   responsibleEditor: "Codex",
+  theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z Newtonovy–Leibnizovy věty."],
   verificationNote: "Primitivní funkce a dosazení mezí byly ověřeny přímým výpočtem.",
+  theory: [
+    {
+      heading: "Určitý (Riemannův) integrál",
+      paragraphs: [
+        "Interval $[a,b]$ rozdělíme na malé části, na každé vezmeme hodnotu funkce a sečteme obsahy obdélníků. Limita těchto součtů při zjemňování dělení je určitý integrál. Pro $f\\ge0$ je to obsah plochy pod grafem; části pod osou $x$ se počítají záporně.",
+        "Každá spojitá funkce na $[a,b]$ je integrovatelná. Integrál je lineární, aditivní vzhledem k intervalu a zachovává nerovnosti.",
+      ],
+      formulas: [
+        "\\int_a^b f(x)\\,dx=\\int_a^c f(x)\\,dx+\\int_c^b f(x)\\,dx,\\qquad \\int_b^a f=-\\int_a^b f",
+      ],
+    },
+    {
+      heading: "Newtonův integrál a Newtonova–Leibnizova formule",
+      paragraphs: [
+        "Má-li $f$ na $(a,b)$ primitivní funkci $F$ a existují-li vlastní limity $F(a^+)$ a $F(b^-)$, definujeme Newtonův integrál jako jejich rozdíl. Pro spojitou funkci na $[a,b]$ se shoduje s Riemannovým integrálem.",
+        "Primitivní funkce musí být spojitá na celém intervalu integrace. Leží-li v intervalu bod, kde $F$ spojitá není (např. $\\int_{-1}^1\\frac{dx}{x^2}$), dosazení mezí nelze použít.",
+      ],
+      formulas: ["\\int_a^b f(x)\\,dx=\\bigl[F(x)\\bigr]_a^b=F(b)-F(a)"],
+    },
+    {
+      heading: "Metody výpočtu v mezích",
+      paragraphs: ["Výsledek je číslo bez konstanty $C$."],
+      items: [
+        "Substituce: při $u=g(x)$ přepočteme i meze, $\\int_a^b f(g(x))g'(x)\\,dx=\\int_{g(a)}^{g(b)}f(u)\\,du$; zpětné dosazení pak není potřeba.",
+        "Per partes: $\\int_a^b uv'\\,dx=\\bigl[uv\\bigr]_a^b-\\int_a^b u'v\\,dx$.",
+        "Symetrie na $[-a,a]$: lichá funkce dává $0$, sudá funkce $2\\int_0^a f(x)\\,dx$.",
+      ],
+    },
+    {
+      heading: "Nevlastní integrál",
+      paragraphs: [
+        "Je-li mez nekonečná nebo funkce u meze neomezená, hodnoty $F$ v problematickém bodě nahradíme limitami. Integrál konverguje, je-li limita vlastní, jinak diverguje. Například $\\int_1^\\infty\\frac{dx}{x^p}$ konverguje právě pro $p>1$ a $\\int_0^1\\ln x\\,dx=-1$.",
+      ],
+      formulas: ["\\int_a^\\infty f(x)\\,dx=\\lim_{t\\to\\infty}\\bigl(F(t)-F(a)\\bigr)"],
+    },
+    {
+      heading: "Rozšíření: dvojný a trojný integrál",
+      paragraphs: [
+        "Přes oblast zadanou mezemi počítáme postupně: nejprve vnitřní integrál, při kterém jsou ostatní proměnné konstanty (Fubiniova věta), pak vnější. Meze vnitřního integrálu smí záviset jen na vnějších proměnných.",
+      ],
+      formulas: ["\\iint_D f\\,dA=\\int_a^b\\left(\\int_{g_1(x)}^{g_2(x)}f(x,y)\\,dy\\right)dx"],
+    },
+  ],
+  solverTypes: ["integral", "multiple_integral"],
   exercises: [
     {
       id: "math.definite.power",
@@ -117,6 +165,19 @@ export const mathTopic07 = {
         "Pro $a>0$ je $\\int_a^1\\ln x\\,dx=[x\\ln x-x]_a^1$.",
         "To je $-1-(a\\ln a-a)$.",
         "Protože $a\\ln a\\to0$ a $a\\to0$, limita je $-1$.",
+      ],
+    },
+    {
+      id: "math.definite.double",
+      prompt: "Vypočtěte dvojný integrál $\\int_0^1\\int_0^x xy\\,dy\\,dx$.",
+      answer: "1/8",
+      answerLabel: "$\\frac18$",
+      acceptedAnswers: ["0,125", "0.125"],
+      hints: ["Nejprve integrujte podle $y$; $x$ je při tom konstanta."],
+      solutionSteps: [
+        "Vnitřní integrál: $\\int_0^x xy\\,dy=x\\left[\\frac{y^2}2\\right]_0^x=\\frac{x^3}2$.",
+        "Vnější integrál: $\\int_0^1\\frac{x^3}2\\,dx=\\left[\\frac{x^4}8\\right]_0^1$.",
+        "Výsledek je $\\frac18$.",
       ],
     },
   ],
