@@ -7,6 +7,7 @@ import { useState } from "react";
 import type { MathTopic } from "@inorganic/content/higher-mathematics";
 import workspace from "@/components/subject-workspace.module.css";
 import { cn } from "@/lib/class-names";
+import { ExerciseSolution } from "./exercise-solution";
 import { MathText } from "./math-text";
 import styles from "./practice.module.css";
 import { MATH_PRACTICE_PATH } from "./routes";
@@ -212,26 +213,7 @@ export function MathPracticeSession({ topic }: Readonly<{ topic: MathTopic }>) {
         ) : null}
       </div>
 
-      {showSolution ? (
-        <section aria-labelledby="math-solution-title" className="grid gap-2">
-          <h3 className={workspace.cardTitle} id="math-solution-title">
-            Řešení krok za krokem
-          </h3>
-          <ol aria-label="Kroky řešení" className={workspace.steps}>
-            {exercise.solutionSteps.map((step, stepIndex) => (
-              <li className={styles.stepRow} key={`${exercise.id}-step-${step}`}>
-                <span className={workspace.stepNumber}>{stepIndex + 1}</span>
-                <span className="min-w-0">
-                  <MathText>{step}</MathText>
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className={workspace.answer}>
-            Výsledek: <MathText>{exercise.answerLabel ?? exercise.answer}</MathText>
-          </p>
-        </section>
-      ) : null}
+      {showSolution ? <ExerciseSolution exercise={exercise} key={exercise.id} /> : null}
     </section>
   );
 }

@@ -217,3 +217,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.stepText {
+  min-width: 0;
+  font-size: 1.02rem;
+  line-height: 2.1;
+  overflow-wrap: anywhere;
+}

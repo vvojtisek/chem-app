@@ -13,7 +13,7 @@ test("higher mathematics supports a wrong answer, correction, hints and solution
   await expect(
     page.getByRole("heading", { level: 1, name: `${topic.number}. ${topic.title}` }),
   ).toBeVisible();
-  await expect(page.locator(".katex").first()).toBeVisible();
+  await expect(page.locator("#math-exercise-prompt .katex").first()).toBeVisible();
 
   await page.getByRole("button", { name: "Zobrazit nápovědu" }).click();
   await expect(page.getByText(exercise.hints[0] ?? "")).toBeVisible();
@@ -68,8 +68,12 @@ test("every section shows theory, passes WCAG checks and never widens the page",
   page,
 }) => {
   test.setTimeout(240_000);
+  // 64 linked exercises would exceed the per-account solve limit (60 / 10 min);
+  // the sweep covers the authored steps and the fallback note instead.
+  await page.route("**/api/v1/subjects/matematika/solve", (route) => route.abort());
   for (const topic of mathTopics) {
     await page.goto(`/predmety/matematika/procvicovani/${topic.id}`);
+    await page.getByText("Výklad k okruhu").click();
     await expect(page.getByRole("heading", { level: 2, name: "Výklad" })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: topic.theory[0]?.heading ?? "", exact: true }),
@@ -83,6 +87,9 @@ test("every section shows theory, passes WCAG checks and never widens the page",
       const hint = page.getByRole("button", { name: /nápověd/i });
       while (await hint.isEnabled()) await hint.click();
       await page.getByRole("button", { name: "Zobrazit řešení" }).click();
+      await expect(page.getByText("Počítám řešení…")).toHaveCount(0, { timeout: 15_000 });
+      const full = page.getByRole("button", { name: "Celé řešení" });
+      while ((await full.count()) > 0) await full.first().click();
       const width = await page.evaluate(() => document.documentElement.scrollWidth);
       expect(width, `${topic.id} exercise ${index + 1}`).toBeLessThanOrEqual(
         page.viewportSize()?.width ?? 0,
@@ -95,4 +102,41 @@ test("every section shows theory, passes WCAG checks and never widens the page",
     }
     await expect(page.getByRole("heading", { name: "Okruh dokončen" })).toBeVisible();
   }
+});
+
+test("Učivo lists the nine sections and a section shows theory with its own solver types", async ({
+  page,
+}) => {
+  await page.goto("/predmety/matematika");
+  await expect(page.getByRole("heading", { level: 1, name: "Matematika: Učivo" })).toBeVisible();
+  const tiles = page.getByRole("main").getByRole("link", { name: /^Okruh \d/ });
+  await expect(tiles).toHaveCount(9);
+  await tiles.nth(1).click();
+
+  const topic = mathTopics[1];
+  if (!topic) throw new Error("Missing section 2.");
+  await expect(page).toHaveURL(`/predmety/matematika/${topic.id}`);
+  await expect(
+    page.getByRole("heading", { level: 1, name: `${topic.number}. ${topic.title}` }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Výklad" })).toBeVisible();
+  const types = page.getByRole("navigation", { name: "Typ úlohy" }).getByRole("button");
+  await expect(types).toHaveText(["Limita", "Derivace", "Implicitní derivace"]);
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+});
+
+test("a linked exercise shows the solver's steps one by one", async ({ page }) => {
+  await page.goto(`/predmety/matematika/procvicovani/${mathTopic01.id}`);
+  await page.getByRole("button", { name: "Zobrazit řešení" }).click();
+  const sympy = page.getByRole("region", { name: "Výpočet ověřený SymPy" });
+  const steps = sympy.getByRole("list", { name: "Kroky řešení" });
+  await expect(steps.locator(":scope > li")).toHaveCount(1);
+  await expect(sympy.getByText("Ověřeno: sympy.limit")).toBeVisible();
+  await sympy.getByRole("button", { name: /^Další krok/ }).click();
+  await expect(steps.locator(":scope > li")).toHaveCount(2);
+  const width = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(width).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0);
 });
