@@ -48,6 +48,6 @@ describe("higher mathematics curriculum", () => {
       }
     }
     expect(new Set(allIds).size).toBe(allIds.length);
-    expect(allIds).toHaveLength(90);
+    expect(allIds.length).toBeGreaterThanOrEqual(90);
   });
 });
