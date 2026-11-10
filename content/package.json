@@ -13,7 +13,8 @@
     "./preparation-production-validation": "./src/preparation-production-validation.ts",
     "./review-fingerprint": "./src/review-fingerprint.ts",
     "./nomenclature-schema": "./src/nomenclature-schema.ts",
-    "./nomenclature-snapshot": "./src/nomenclature-snapshot.ts"
+    "./nomenclature-snapshot": "./src/nomenclature-snapshot.ts",
+    "./higher-mathematics": "./src/higher-mathematics.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

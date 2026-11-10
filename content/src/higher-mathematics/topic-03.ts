@@ -1,0 +1,126 @@
+import type { MathTopic } from "./types";
+
+export const mathTopic03 = {
+  id: "prubeh-funkce",
+  title: "Průběh funkce",
+  description: "Monotonie, lokální extrémy, vyšší derivace, konvexita, konkávnost a inflexe.",
+  status: "draft",
+  responsibleEditor: "Codex",
+  sources: ["Samostatně odvozené úlohy z testu první a druhé derivace."],
+  verificationNote: "Znaménkové intervaly a hodnoty extrémů byly zkontrolovány dosazením.",
+  exercises: [
+    {
+      id: "math.analysis.minimum",
+      prompt: "Určete $x$ lokálního minima funkce $f(x)=x^2-4x$.",
+      answer: "2",
+      hints: ["Najděte nulový bod první derivace."],
+      solutionSteps: [
+        "$f'(x)=2x-4$ a $f'(x)=0$ právě pro $x=2$.",
+        "Derivace se mění ze záporné na kladnou.",
+        "V $x=2$ je lokální minimum.",
+      ],
+    },
+    {
+      id: "math.analysis.maximum",
+      prompt: "Určete $x$ lokálního maxima funkce $f(x)=-x^2+6x$.",
+      answer: "3",
+      hints: ["Parabola je otevřená dolů."],
+      solutionSteps: [
+        "$f'(x)=-2x+6$ má nulu $x=3$.",
+        "Před $3$ je derivace kladná, za $3$ záporná.",
+        "Lokální maximum nastává při $x=3$.",
+      ],
+    },
+    {
+      id: "math.analysis.increasing-cubic",
+      prompt: "Na kterých intervalech roste $f(x)=x^3-3x$? Odpovězte intervaly.",
+      answer: "(-inf,-1) U (1,inf)",
+      answerLabel: "$(-\\infty,-1)\\cup(1,\\infty)$",
+      hints: ["Vyřešte nerovnici $f'(x)>0$."],
+      solutionSteps: [
+        "$f'(x)=3x^2-3=3(x-1)(x+1)$.",
+        "Součin je kladný pro $x<-1$ a $x>1$.",
+        "Funkce roste na $(-\\infty,-1)$ a $(1,\\infty)$.",
+      ],
+    },
+    {
+      id: "math.analysis.cubic-extrema",
+      prompt: "Určete lokální maximum a minimum funkce $f(x)=x^3-3x$ ve tvaru $(x,y)$.",
+      answer: "maximum (-1,2), minimum (1,-2)",
+      answerLabel: "maximum $(-1,2)$, minimum $(1,-2)$",
+      hints: ["Kritické body jsou $x=-1$ a $x=1$."],
+      solutionSteps: [
+        "$f'(x)=3(x-1)(x+1)$ mění v $-1$ znaménko z $+$ na $-$.",
+        "V $1$ se mění z $-$ na $+$.",
+        "$f(-1)=2$ a $f(1)=-2$, tedy maximum $(-1,2)$ a minimum $(1,-2)$.",
+      ],
+    },
+    {
+      id: "math.analysis.higher-derivative",
+      prompt: "Určete $f'''(1)$ pro $f(x)=x^5$.",
+      answer: "60",
+      hints: ["Derivujte třikrát."],
+      solutionSteps: ["$f'(x)=5x^4$.", "$f''(x)=20x^3$ a $f'''(x)=60x^2$.", "$f'''(1)=60$."],
+    },
+    {
+      id: "math.analysis.convex",
+      prompt: "Je $f(x)=x^2$ konvexní na celé $\\mathbb R$? Odpovězte ano nebo ne.",
+      answer: "ano",
+      acceptedAnswers: ["Ano"],
+      hints: ["Znaménko druhé derivace určuje zakřivení."],
+      solutionSteps: [
+        "$f'(x)=2x$.",
+        "$f''(x)=2>0$ pro každé reálné $x$.",
+        "Funkce je na $\\mathbb R$ konvexní.",
+      ],
+    },
+    {
+      id: "math.analysis.concave",
+      prompt: "Je $f(x)=-x^2$ konkávní na celé $\\mathbb R$? Odpovězte ano nebo ne.",
+      answer: "ano",
+      acceptedAnswers: ["Ano"],
+      hints: ["Vypočtěte druhou derivaci."],
+      solutionSteps: [
+        "$f'(x)=-2x$.",
+        "$f''(x)=-2<0$ pro každé $x$.",
+        "Funkce je na $\\mathbb R$ konkávní.",
+      ],
+    },
+    {
+      id: "math.analysis.inflection",
+      prompt: "Určete inflexní bod grafu $f(x)=x^3$.",
+      answer: "(0,0)",
+      answerLabel: "$(0,0)$",
+      hints: ["Zkontrolujte změnu znaménka druhé derivace."],
+      solutionSteps: [
+        "$f''(x)=6x$ má nulu v $x=0$.",
+        "Druhá derivace je vlevo záporná a vpravo kladná.",
+        "$f(0)=0$, proto inflexní bod je $(0,0)$.",
+      ],
+    },
+    {
+      id: "math.analysis.stationary-no-extremum",
+      prompt: "Má $f(x)=x^3$ v $x=0$ lokální extrém? Odpovězte ano nebo ne.",
+      answer: "ne",
+      acceptedAnswers: ["Ne"],
+      hints: ["Samotné $f'(0)=0$ nestačí."],
+      solutionSteps: [
+        "$f'(x)=3x^2$ a $f'(0)=0$.",
+        "Derivace je na obou stranách bodu $0$ nezáporná a funkce roste.",
+        "V $x=0$ je stacionární inflexe, nikoli extrém.",
+      ],
+    },
+    {
+      id: "math.analysis.quadratic-curve",
+      prompt: "Určete souřadnice vrcholu $f(x)=x^2-4x+3$.",
+      answer: "(2,-1)",
+      answerLabel: "$(2,-1)$",
+      hints: ["Doplňte na čtverec nebo použijte derivaci."],
+      solutionSteps: [
+        "Úpravou dostaneme $f(x)=(x-2)^2-1$.",
+        "Čtverec je nejmenší pro $x=2$.",
+        "Tehdy $f(2)=-1$, tedy vrchol je $(2,-1)$.",
+      ],
+    },
+  ],
+} as const satisfies MathTopic;

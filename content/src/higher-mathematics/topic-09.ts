@@ -1,0 +1,133 @@
+import type { MathTopic } from "./types";
+
+export const mathTopic09 = {
+  id: "linearni-homogenni-rovnice",
+  title: "Homogenní lineární diferenciální rovnice",
+  description: "Rovnice prvního a druhého řádu s konstantními koeficienty.",
+  status: "draft",
+  responsibleEditor: "Codex",
+  sources: ["Samostatně odvozené úlohy z metody charakteristické rovnice."],
+  verificationNote: "Řešení byla ověřena dosazením do diferenciální rovnice a případných podmínek.",
+  exercises: [
+    {
+      id: "math.ode2.first-decay",
+      prompt: "Řešte $y'+2y=0$, $y(0)=3$.",
+      answer: "y=3e^(-2x)",
+      answerLabel: "$y=3e^{-2x}$",
+      hints: ["Charakteristická hodnota je $-2$."],
+      solutionSteps: [
+        "Rovnici přepíšeme jako $y'=-2y$.",
+        "Obecné řešení je $y=Ce^{-2x}$.",
+        "Z $y(0)=3$ vyplývá $C=3$.",
+      ],
+    },
+    {
+      id: "math.ode2.first-growth",
+      prompt: "Řešte $y'-y=0$, $y(0)=2$.",
+      answer: "y=2e^x",
+      answerLabel: "$y=2e^x$",
+      hints: ["Hledejte exponenciální řešení."],
+      solutionSteps: [
+        "Rovnice znamená $y'=y$.",
+        "Obecně $y=Ce^x$.",
+        "Podmínka $y(0)=2$ dává $C=2$.",
+      ],
+    },
+    {
+      id: "math.ode2.two-real-roots",
+      prompt: "Najděte obecné řešení $y''-3y'+2y=0$.",
+      answer: "y=C1 e^x+C2 e^(2x)",
+      answerLabel: "$y=C_1e^x+C_2e^{2x}$",
+      hints: ["Vyřešte $r^2-3r+2=0$."],
+      solutionSteps: [
+        "Charakteristický polynom se rozloží na $(r-1)(r-2)$.",
+        "Dva různé kořeny jsou $r_1=1$, $r_2=2$.",
+        "Obecné řešení je $y=C_1e^x+C_2e^{2x}$.",
+      ],
+    },
+    {
+      id: "math.ode2.oscillator",
+      prompt: "Najděte obecné řešení $y''+y=0$.",
+      answer: "y=C1 cos x+C2 sin x",
+      answerLabel: "$y=C_1\\cos x+C_2\\sin x$",
+      hints: ["Charakteristické kořeny jsou imaginární."],
+      solutionSteps: [
+        "Charakteristická rovnice je $r^2+1=0$.",
+        "Kořeny jsou $r=\\pm i$.",
+        "Reálný tvar řešení je $y=C_1\\cos x+C_2\\sin x$.",
+      ],
+    },
+    {
+      id: "math.ode2.symmetric-roots",
+      prompt: "Najděte obecné řešení $y''-4y=0$.",
+      answer: "y=C1 e^(2x)+C2 e^(-2x)",
+      answerLabel: "$y=C_1e^{2x}+C_2e^{-2x}$",
+      hints: ["Vyřešte $r^2-4=0$."],
+      solutionSteps: [
+        "Charakteristická rovnice $r^2-4=0$ se rozloží na $(r-2)(r+2)=0$.",
+        "Kořeny jsou $2$ a $-2$.",
+        "Obecné řešení je $y=C_1e^{2x}+C_2e^{-2x}$.",
+      ],
+    },
+    {
+      id: "math.ode2.double-root",
+      prompt: "Najděte obecné řešení $y''+4y'+4y=0$.",
+      answer: "y=(C1+C2 x)e^(-2x)",
+      answerLabel: "$y=(C_1+C_2x)e^{-2x}$",
+      hints: ["Charakteristický polynom má dvojnásobný kořen."],
+      solutionSteps: [
+        "$r^2+4r+4=(r+2)^2$.",
+        "Dvojnásobný kořen je $r=-2$; druhé nezávislé řešení je $xe^{-2x}$.",
+        "Proto $y=(C_1+C_2x)e^{-2x}$.",
+      ],
+    },
+    {
+      id: "math.ode2.complex-roots",
+      prompt: "Najděte obecné řešení $y''+2y'+5y=0$.",
+      answer: "y=e^(-x)(C1 cos(2x)+C2 sin(2x))",
+      answerLabel: "$y=e^{-x}(C_1\\cos2x+C_2\\sin2x)$",
+      hints: ["Kořeny mají tvar $-1\\pm2i$."],
+      solutionSteps: [
+        "Charakteristická rovnice je $r^2+2r+5=0$.",
+        "Diskriminant je $4-20=-16$, tedy $r=-1\\pm2i$.",
+        "Reálné řešení je $y=e^{-x}(C_1\\cos2x+C_2\\sin2x)$.",
+      ],
+    },
+    {
+      id: "math.ode2.zero-roots",
+      prompt: "Najděte obecné řešení $y''=0$.",
+      answer: "y=C1+C2 x",
+      answerLabel: "$y=C_1+C_2x$",
+      hints: ["Integrujte dvakrát nebo zvažte dvojnásobný kořen $0$."],
+      solutionSteps: [
+        "Jednou integrací $y''=0$ dostaneme $y'=C_2$.",
+        "Druhá integrace dává $y=C_2x+C_1$.",
+        "Řešení tedy tvoří všechny afinní funkce.",
+      ],
+    },
+    {
+      id: "math.ode2.oscillator-initial",
+      prompt: "Řešte $y''+y=0$, $y(0)=0$, $y'(0)=1$.",
+      answer: "y=sin x",
+      answerLabel: "$y=\\sin x$",
+      hints: ["Začněte obecným řešením s kosinem a sinem."],
+      solutionSteps: [
+        "Obecné řešení je $y=C_1\\cos x+C_2\\sin x$.",
+        "Z $y(0)=0$ plyne $C_1=0$; derivace $y'=-C_1\\sin x+C_2\\cos x$.",
+        "Z $y'(0)=1$ plyne $C_2=1$, tedy $y=\\sin x$.",
+      ],
+    },
+    {
+      id: "math.ode2.hyperbolic-initial",
+      prompt: "Řešte $y''-y=0$, $y(0)=1$, $y'(0)=0$.",
+      answer: "y=(e^x+e^(-x))/2",
+      answerLabel: "$y=\\frac{e^x+e^{-x}}2$",
+      hints: ["Charakteristické kořeny jsou $1$ a $-1$."],
+      solutionSteps: [
+        "Obecně $y=C_1e^x+C_2e^{-x}$.",
+        "Podmínky dávají $C_1+C_2=1$ a $C_1-C_2=0$.",
+        "Proto $C_1=C_2=1/2$ a $y=(e^x+e^{-x})/2$.",
+      ],
+    },
+  ],
+} as const satisfies MathTopic;

@@ -7,6 +7,7 @@ import { ServiceWorkerRegistration } from "@/components/service-worker-registrat
 
 import "@fontsource-variable/atkinson-hyperlegible-next";
 import "@fontsource-variable/bricolage-grotesque";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

@@ -1,0 +1,123 @@
+import type { MathTopic } from "./types";
+
+export const mathTopic02 = {
+  id: "derivace-tecny-asymptoty",
+  title: "Derivace, tečny a asymptoty",
+  description:
+    "Derivační pravidla, geometrický význam derivace, L’Hospitalovo pravidlo a asymptoty.",
+  status: "draft",
+  responsibleEditor: "Codex",
+  sources: ["Samostatně odvozené úlohy ze standardních pravidel diferenciálního počtu."],
+  verificationNote: "Derivace a limity byly ověřeny přímým výpočtem a zpětným dosazením.",
+  exercises: [
+    {
+      id: "math.derivatives.polynomial",
+      prompt: "Určete $f'(1)$ pro $f(x)=x^3-2x$.",
+      answer: "1",
+      hints: ["Derivujte každý člen zvlášť."],
+      solutionSteps: ["Derivace je $f'(x)=3x^2-2$.", "Dosadíme $x=1$.", "Získáme $f'(1)=3-2=1$."],
+    },
+    {
+      id: "math.derivatives.log",
+      prompt: "Určete $f'(e)$ pro $f(x)=\\ln x$.",
+      answer: "1/e",
+      answerLabel: "$\\frac1e$",
+      hints: ["Použijte derivaci přirozeného logaritmu."],
+      solutionSteps: [
+        "Na $(0,\\infty)$ platí $(\\ln x)'=1/x$.",
+        "Dosadíme $x=e$.",
+        "Výsledek je $1/e$.",
+      ],
+    },
+    {
+      id: "math.derivatives.trigonometric",
+      prompt: "Určete $f'(\\pi/3)$ pro $f(x)=\\sin x$.",
+      answer: "1/2",
+      answerLabel: "$\\frac12$",
+      hints: ["Derivace sinu je kosinus."],
+      solutionSteps: ["$f'(x)=\\cos x$.", "Dosadíme $x=\\pi/3$.", "$\\cos(\\pi/3)=1/2$."],
+    },
+    {
+      id: "math.derivatives.product",
+      prompt: "Určete $f'(1)$ pro $f(x)=x^2e^x$.",
+      answer: "3e",
+      answerLabel: "$3e$",
+      hints: ["Použijte pravidlo pro derivaci součinu."],
+      solutionSteps: [
+        "$f'(x)=2xe^x+x^2e^x=e^x(2x+x^2)$.",
+        "Pro $x=1$ dostáváme $e(2+1)$.",
+        "Tedy $f'(1)=3e$.",
+      ],
+    },
+    {
+      id: "math.derivatives.quotient",
+      prompt: "Určete $f'(2)$ pro $f(x)=\\frac{x+1}{x-1}$.",
+      answer: "-2",
+      hints: ["Použijte pravidlo pro podíl nebo přepište funkci jako $1+2/(x-1)$."],
+      solutionSteps: [
+        "Přepis $f(x)=1+2/(x-1)$ platí pro $x\\ne1$.",
+        "Derivace je $f'(x)=-2/(x-1)^2$.",
+        "Při $x=2$ je $f'(2)=-2$.",
+      ],
+    },
+    {
+      id: "math.derivatives.tangent",
+      prompt: "Napište rovnici tečny ke grafu $y=x^2$ v bodě s $x=1$.",
+      answer: "y=2x-1",
+      answerLabel: "$y=2x-1$",
+      hints: ["Směrnice tečny je hodnota derivace v bodě."],
+      solutionSteps: [
+        "Bod dotyku je $(1,1)$ a derivace $f'(x)=2x$.",
+        "Směrnice v $x=1$ je $2$.",
+        "Bodová rovnice $y-1=2(x-1)$ dává $y=2x-1$.",
+      ],
+    },
+    {
+      id: "math.derivatives.hospital-log",
+      prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}$ pomocí L’Hospitalova pravidla.",
+      answer: "1",
+      hints: ["Tvar je $0/0$."],
+      solutionSteps: [
+        "Čitatel i jmenovatel konvergují k $0$.",
+        "Derivace čitatele je $1/(1+x)$, derivace jmenovatele je $1$.",
+        "Limita jejich podílu pro $x\\to0$ je $1$.",
+      ],
+    },
+    {
+      id: "math.derivatives.hospital-exp",
+      prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{e^x-1-x}{x^2}$.",
+      answer: "1/2",
+      answerLabel: "$\\frac12$",
+      hints: ["L’Hospitalovo pravidlo lze použít dvakrát."],
+      solutionSteps: [
+        "Po prvním použití dostaneme limitu $(e^x-1)/(2x)$, opět typu $0/0$.",
+        "Po druhém použití je výraz $e^x/2$.",
+        "Při $x\\to0$ vyjde $1/2$.",
+      ],
+    },
+    {
+      id: "math.derivatives.vertical-asymptote",
+      prompt: "Určete svislou asymptotu funkce $f(x)=1/(x-2)$.",
+      answer: "x=2",
+      answerLabel: "$x=2$",
+      hints: ["Hledejte nulový jmenovatel a nevlastní jednostrannou limitu."],
+      solutionSteps: [
+        "Jmenovatel se rovná nule v $x=2$.",
+        "Zprava $1/(x-2)\\to+\\infty$, zleva $\\to-\\infty$.",
+        "Svislá asymptota je $x=2$.",
+      ],
+    },
+    {
+      id: "math.derivatives.oblique-asymptote",
+      prompt: "Určete šikmou asymptotu funkce $f(x)=\\frac{x^2+1}{x}$ pro $x\\to\\infty$.",
+      answer: "y=x",
+      answerLabel: "$y=x$",
+      hints: ["Proveďte dělení polynomů."],
+      solutionSteps: [
+        "Pro $x\\ne0$ píšeme $f(x)=x+1/x$.",
+        "Rozdíl $f(x)-x=1/x$ pro $x\\to\\infty$ mizí.",
+        "Šikmá asymptota má rovnici $y=x$.",
+      ],
+    },
+  ],
+} as const satisfies MathTopic;
