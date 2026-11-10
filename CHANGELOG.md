@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.28.0](https://github.com/vvojtisek/chem-app/compare/v1.27.0...v1.28.0) (2026-11-10)
+
+
+### Features
+
+* **math:** add higher mathematics practice modules ([785aeb0](https://github.com/vvojtisek/chem-app/commit/785aeb01dd3c1bf5d72013e0b7c6f949cebc4dcf))
+* **math:** add nine higher mathematics practice modules ([cbfa914](https://github.com/vvojtisek/chem-app/commit/cbfa9148fa59859509b09ff924ae605ace063296))
+
 ## [1.27.0](https://github.com/vvojtisek/chem-app/compare/v1.26.0...v1.27.0) (2026-11-09)
 
 
