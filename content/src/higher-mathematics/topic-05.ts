@@ -3,16 +3,57 @@ import type { MathTopic } from "./types";
 export const mathTopic05 = {
   id: "primitivni-funkce",
   number: 5,
-  title: "Primitivní funkce a neurčitý integrál",
-  shortTitle: "Primitivní funkce a neurčitý integrál",
-  description: "Základní primitivní funkce, substituce a integrace per partes.",
+  title:
+    "Primitivní funkce. Neurčitý integrál a jeho výpočet pomocí metody per partes a substituce.",
+  shortTitle: "Primitivní funkce",
+  description:
+    "Primitivní funkce a neurčitý integrál, tabulkové integrály, linearita, metoda per partes a substituce.",
   status: "draft",
   responsibleEditor: "Codex",
   theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy ze standardních integračních pravidel."],
   verificationNote: "Každá primitivní funkce byla zkontrolována derivováním výsledku.",
-  theory: [],
-  solverTypes: [],
+  theory: [
+    {
+      heading: "Primitivní funkce a neurčitý integrál",
+      paragraphs: [
+        "Funkce $F$ je primitivní k $f$ na intervalu $I$, platí-li $F'(x)=f(x)$ pro každé $x\\in I$. Primitivní funkce se liší jen o konstantu, proto píšeme $\\int f(x)\\,dx=F(x)+C$. Každá spojitá funkce na intervalu má primitivní funkci.",
+        "Výsledek vždy ověříte derivováním. Vztah platí na intervalu: například $\\int\\frac1x\\,dx=\\ln|x|+C$ zvlášť na $(-\\infty,0)$ a na $(0,\\infty)$. Některé primitivní funkce nejsou elementární (např. k $e^{-x^2}$).",
+      ],
+      formulas: ["\\int\\bigl(af(x)+bg(x)\\bigr)\\,dx=a\\int f(x)\\,dx+b\\int g(x)\\,dx"],
+    },
+    {
+      heading: "Tabulkové integrály",
+      paragraphs: [
+        "Integrál součtu je součet integrálů a konstantu lze vytknout. Integrál součinu ani podílu ale obecně není součinem či podílem integrálů; na to slouží metody níže.",
+      ],
+      items: [
+        "$\\int x^n\\,dx=\\frac{x^{n+1}}{n+1}+C$ pro $n\\ne-1$; $\\int\\frac1x\\,dx=\\ln|x|+C$",
+        "$\\int e^x\\,dx=e^x+C$; $\\int a^x\\,dx=\\frac{a^x}{\\ln a}+C$",
+        "$\\int\\sin x\\,dx=-\\cos x+C$; $\\int\\cos x\\,dx=\\sin x+C$; $\\int\\frac{dx}{\\cos^2x}=\\tan x+C$",
+        "$\\int\\frac{dx}{1+x^2}=\\arctan x+C$; $\\int\\frac{dx}{\\sqrt{1-x^2}}=\\arcsin x+C$",
+      ],
+    },
+    {
+      heading: "Substituce",
+      paragraphs: [
+        "Obsahuje-li integrand složenou funkci $f(g(x))$ spolu s derivací vnitřní funkce $g'(x)$, zvolíme $u=g(x)$, $du=g'(x)\\,dx$. Po integraci podle $u$ dosadíme zpět $u=g(x)$.",
+        "Častý speciální případ: $\\int\\frac{g'(x)}{g(x)}\\,dx=\\ln|g(x)|+C$ a $\\int f(ax+b)\\,dx=\\frac1aF(ax+b)+C$.",
+      ],
+      formulas: ["\\int f(g(x))\\,g'(x)\\,dx=\\int f(u)\\,du\\Big|_{u=g(x)}"],
+    },
+    {
+      heading: "Metoda per partes",
+      paragraphs: [
+        "Vychází z derivace součinu. Za $u$ volíme část, která se derivováním zjednoduší (mnohočlen, $\\ln x$, $\\arctan x$), za $dv$ část, kterou umíme integrovat ($e^x$, $\\sin x$, $\\cos x$, $x^n$).",
+        "U $\\int\\ln x\\,dx$ volíme $u=\\ln x$, $dv=dx$. U integrálů typu $\\int e^x\\sin x\\,dx$ se po dvojím použití per partes původní integrál objeví znovu; rovnici pak vyřešíme pro hledaný integrál.",
+      ],
+      formulas: [
+        "\\int u\\,dv=uv-\\int v\\,du,\\qquad\\text{tj.}\\qquad\\int u v'\\,dx=uv-\\int u'v\\,dx",
+      ],
+    },
+  ],
+  solverTypes: ["integral"],
   exercises: [
     {
       id: "math.antiderivative.power",
