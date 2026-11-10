@@ -3,16 +3,64 @@ import type { MathTopic } from "./types";
 export const mathTopic03 = {
   id: "prubeh-funkce",
   number: 3,
-  title: "Průběh funkce",
+  title:
+    "Vyšetřování monotonie a lokálních extrémů funkce na základě první derivace. Derivace vyšších řádů. Konvexní a konkávní funkce. Inflexní body. Vyšetřování průběhu funkce.",
   shortTitle: "Průběh funkce",
-  description: "Monotonie, lokální extrémy, vyšší derivace, konvexita, konkávnost a inflexe.",
+  description:
+    "Monotonie a lokální extrémy z první derivace, vyšší derivace, konvexita, konkávnost, inflexní body a celkový průběh funkce.",
   status: "draft",
   responsibleEditor: "Codex",
   theoryEditor: "Claude",
   sources: ["Samostatně odvozené úlohy z testu první a druhé derivace."],
   verificationNote: "Znaménkové intervaly a hodnoty extrémů byly zkontrolovány dosazením.",
-  theory: [],
-  solverTypes: [],
+  theory: [
+    {
+      heading: "Monotonie z první derivace",
+      paragraphs: [
+        "Nechť je $f$ spojitá na intervalu $I$ a má derivaci v jeho vnitřních bodech. Je-li $f'(x)>0$ na vnitřku $I$, je $f$ na $I$ rostoucí; je-li $f'(x)<0$, je klesající. Postup: najdeme body, kde $f'(x)=0$ nebo $f'$ neexistuje, rozdělíme jimi definiční obor a na každém intervalu určíme znaménko $f'$.",
+      ],
+    },
+    {
+      heading: "Lokální extrémy",
+      paragraphs: [
+        "Nutná podmínka (Fermatova věta): má-li $f$ v bodě $x_0$ lokální extrém a existuje-li $f'(x_0)$, pak $f'(x_0)=0$. Body s $f'(x_0)=0$ jsou stacionární. Extrém může nastat i v bodě, kde derivace neexistuje ($|x|$ v $0$).",
+        "Postačující podmínka z první derivace: mění-li $f'$ v $x_0$ znaménko z $+$ na $-$, je v $x_0$ lokální maximum; z $-$ na $+$ lokální minimum; nemění-li znaménko, extrém tam není (např. $x^3$ v $0$).",
+        "Test druhou derivací: je-li $f'(x_0)=0$ a $f''(x_0)>0$, je v $x_0$ ostré lokální minimum; při $f''(x_0)<0$ ostré lokální maximum; při $f''(x_0)=0$ test nerozhoduje.",
+        "Globální extrémy spojité funkce na $[a,b]$ hledáme mezi stacionárními body, body bez derivace a krajními body $a$, $b$ (Weierstrassova věta, okruh 1).",
+      ],
+    },
+    {
+      heading: "Derivace vyšších řádů",
+      paragraphs: [
+        "Druhá derivace je derivace první derivace, $f''=(f')'$, obecně $f^{(n)}=(f^{(n-1)})'$. Pro mnohočlen stupně $n$ je $f^{(n+1)}=0$.",
+      ],
+      formulas: [
+        "(x^k)^{(n)}=\\frac{k!}{(k-n)!}x^{k-n}\\ (n\\le k),\\qquad (e^{ax})^{(n)}=a^ne^{ax},\\qquad (\\sin x)^{(n)}=\\sin\\!\\left(x+\\frac{n\\pi}{2}\\right)",
+      ],
+    },
+    {
+      heading: "Konvexita, konkávnost a inflexní body",
+      paragraphs: [
+        "Funkce je na intervalu konvexní, leží-li graf nad každou svou tečnou (sečna leží nad grafem); konkávní, leží-li pod tečnami. Má-li $f$ druhou derivaci: $f''>0$ znamená ryze konvexní, $f''<0$ ryze konkávní.",
+        "Inflexní bod je bod, kde se konvexita mění v konkávnost nebo naopak a graf v něm má tečnu. Nutnou podmínkou (pokud $f''(x_0)$ existuje) je $f''(x_0)=0$; postačuje, aby $f''$ v $x_0$ změnila znaménko. Pozor: $f''(x_0)=0$ nestačí, $x^4$ v $0$ inflexi nemá.",
+      ],
+    },
+    {
+      heading: "Postup vyšetřování průběhu funkce",
+      paragraphs: [
+        "Každý bod postupu kontrolujte proti předchozím: například lichá funkce má extrémy symetricky a funkce rostoucí na celém $\\mathbb R$ nemá lokální extrém.",
+      ],
+      items: [
+        "Definiční obor, sudost/lichost, periodicita, průsečíky s osami.",
+        "Spojitost a limity v krajních bodech definičního oboru (okruh 1).",
+        "Asymptoty svislé i se směrnicí (okruh 2).",
+        "První derivace: stacionární body, intervaly monotonie, lokální extrémy a jejich hodnoty.",
+        "Druhá derivace: intervaly konvexity a konkávnosti, inflexní body.",
+        "Tabulka znamének a náčrt grafu; obor hodnot odečteme z grafu.",
+      ],
+    },
+  ],
+  solverTypes: ["derivative", "limit"],
   exercises: [
     {
       id: "math.analysis.minimum",
