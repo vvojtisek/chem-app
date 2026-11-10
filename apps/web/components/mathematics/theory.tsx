@@ -1,11 +1,8 @@
-import Link from "next/link";
-
 import type { MathTopic } from "@inorganic/content/higher-mathematics";
 import { MathTex } from "@/components/math-tex";
 import workspace from "@/components/subject-workspace.module.css";
 import { MathText } from "./math-text";
 import styles from "./practice.module.css";
-import { MATH_SOLVER_LABELS, mathSolverPath } from "./routes";
 
 /** Section theory: authored text with inline and display TeX. */
 export function MathTheory({ topic }: Readonly<{ topic: MathTopic }>) {
@@ -44,22 +41,6 @@ export function MathTheory({ topic }: Readonly<{ topic: MathTopic }>) {
           </div>
         </article>
       ))}
-      {topic.solverTypes.length > 0 ? (
-        <aside aria-label="Vlastní příklad" className={workspace.card}>
-          <h3 className={workspace.cardTitle}>Vlastní příklad krok za krokem</h3>
-          <p className={workspace.hint}>
-            Řešič v učivu spočítá libovolné zadání a ukáže použitá pravidla (jen pro přihlášené,
-            potřebuje připojení).
-          </p>
-          <div className={workspace.actions}>
-            {topic.solverTypes.map((type) => (
-              <Link className={styles.linkButton} href={mathSolverPath(type)} key={type}>
-                {MATH_SOLVER_LABELS[type]}
-              </Link>
-            ))}
-          </div>
-        </aside>
-      ) : null}
     </section>
   );
 }

@@ -5,6 +5,7 @@ from inorganic_api.subjects.base import Step, SubjectError
 from inorganic_api.subjects.mathematics.derivatives import solve_derivative, solve_implicit
 from inorganic_api.subjects.mathematics.integrals import solve_integral, solve_iterated_integral
 from inorganic_api.subjects.mathematics.limits import solve_limit
+from inorganic_api.subjects.mathematics.module import MathematicsModule
 from inorganic_api.subjects.mathematics.multivariable import (
     solve_directional,
     solve_gradient,
@@ -222,3 +223,16 @@ def test_gradient_and_directional_derivative() -> None:
     assert rules(directional.steps)[-1] == "dot_product"
     three = solve_gradient(parse_expression("x y z"), (x, y, z))
     assert list(three.result) == [y * z, x * z, x * y]
+
+
+def test_justifications_delimit_inline_tex_with_dollars() -> None:
+    """The web renders `$...$` in justifications with KaTeX; bare TeX would show raw."""
+    module = MathematicsModule()
+    solution = module.run("derivative", {"expression": "x^2 sin(x)", "variable": "x", "order": "1"})
+    product = solution.steps[0]
+    assert "$x^{2}$" in product.justification
+    assert "\\sin" in product.justification
+    assert product.justification.count("$") % 2 == 0
+    for step in solution.steps:
+        for child in step.substeps:
+            assert child.justification.count("$") % 2 == 0

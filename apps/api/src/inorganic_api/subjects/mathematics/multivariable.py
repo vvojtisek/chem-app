@@ -18,9 +18,9 @@ def solve_partial(expr: sp.Expr, variable: sp.Symbol) -> Solution:
         "Parciální derivace",
         tex(sp.Derivative(expr, variable, evaluate=False)),
         tex(sp.Derivative(expr, variable, evaluate=False)),
-        f"Derivujeme podle {tex(variable)}; "
+        f"Derivujeme podle ${tex(variable)}$; "
         + (
-            f"{', '.join(tex(item) for item in others)} považujeme za konstanty."
+            f"${', '.join(tex(item) for item in others)}$ považujeme za konstanty."
             if others
             else "jiné proměnné výraz neobsahuje."
         ),
@@ -78,7 +78,7 @@ def solve_gradient(
                 "Dosazení bodu",
                 _vector_tex(components),
                 _vector_tex(result),
-                f"Dosadíme bod {_vector_tex(point)}.",
+                f"Dosadíme bod ${_vector_tex(point)}$.",
             )
         )
     reference = [sp.diff(expr, variable) for variable in variables]
@@ -112,7 +112,7 @@ def solve_directional(
             "Jednotkový směr",
             _vector_tex(direction),
             _vector_tex(unit),
-            f"Směr vydělíme jeho velikostí {tex(norm)}.",
+            f"Směr vydělíme jeho velikostí ${tex(norm)}$.",
         ),
         Step(
             "dot_product",

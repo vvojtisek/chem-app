@@ -37,3 +37,26 @@ export function MathTex({
     />
   );
 }
+
+/**
+ * Plain text with inline `$...$` TeX, as the server writes step
+ * justifications. Text outside the dollars is rendered as text, never HTML.
+ */
+export function TextWithTex({ text }: Readonly<{ text: string }>) {
+  const parts = text.split(/(\$[^$]+\$)/g);
+  const seen = new Map<string, number>();
+  return (
+    <>
+      {parts.map((part) => {
+        const count = seen.get(part) ?? 0;
+        seen.set(part, count + 1);
+        const key = `${part}-${count}`;
+        return part.length > 2 && part.startsWith("$") && part.endsWith("$") ? (
+          <MathTex key={key} latex={part.slice(1, -1)} />
+        ) : (
+          <span key={key}>{part}</span>
+        );
+      })}
+    </>
+  );
+}

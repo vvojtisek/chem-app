@@ -1,7 +1,7 @@
 import { mathTopics } from "@inorganic/content/higher-mathematics";
-import { MathPracticeCatalog } from "@/components/mathematics/practice-catalog";
-import { MathPracticeHeader } from "@/components/mathematics/practice-header";
+import { MathHeader } from "@/components/mathematics/header";
 import { MATH_SUBJECT_ID } from "@/components/mathematics/routes";
+import { MathSectionCatalog } from "@/components/mathematics/section-catalog";
 import { SubjectComingSoon } from "@/components/subject-coming-soon";
 import { SubjectHeader } from "@/components/subject-header";
 
@@ -12,11 +12,12 @@ export default async function SubjectPracticePage({
   if (subject === MATH_SUBJECT_ID) {
     return (
       <main className="mx-auto w-full max-w-6xl px-4 py-2 sm:px-8">
-        <MathPracticeHeader
-          description="Devět okruhů podle sylabu: výklad, úlohy s nápovědou a postup řešení."
+        <MathHeader
+          area="practice"
+          description="Devět okruhů podle sylabu: úlohy s nápovědou, kontrolou odpovědi a postupem řešení."
           title="Matematika: Procvičovat"
         />
-        <MathPracticeCatalog topics={mathTopics} />
+        <MathSectionCatalog area="practice" topics={mathTopics} />
       </main>
     );
   }

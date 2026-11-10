@@ -228,3 +228,19 @@ would break ADR 0003.
   (`/predmety/matematika?typ=<id>`), which stay online-only and signed-in.
 - Section theory and exercises are draft content (`status: "draft"`), not
   reviewed by a mathematics SME.
+
+## Addendum (2026-11-10, evening): sections in Učivo, solver-backed solutions
+
+- Owner decision (2026-11-10): Učivo (`/predmety/matematika`) shows the nine
+  syllabus sections instead of the eight solver problem types. A section
+  page (`/predmety/matematika/<section>`) shows the theory, then the solver
+  limited to that section's problem types (`solverTypes`). The solver,
+  parser, limits and access rules are unchanged.
+- Practice exercises may carry a `solver` problem. For a signed-in learner
+  online, "Zobrazit řešení" sends it to the existing solve endpoint and shows
+  the SymPy steps, graph and render button, revealed step by step. Each view
+  is one solve and counts against the existing per-account solve limit; the
+  result is cached for the session. Authored steps remain the guest and
+  offline fallback. An API test solves every linked exercise.
+- Step justifications now delimit TeX with `$...$`; the web renders those
+  fragments with KaTeX (`trust: false`) and the rest as text.

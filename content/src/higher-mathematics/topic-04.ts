@@ -60,6 +60,10 @@ export const mathTopic04 = {
   exercises: [
     {
       id: "math.differential.square",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^2", variable: "x", order: "1", point: "3" },
+      },
       prompt: "Pro $f(x)=x^2$ vypočtěte diferenciál $df$ v $x=3$ při $dx=0{,}1$.",
       answer: "0,6",
       acceptedAnswers: ["0.6", "3/5"],
@@ -69,6 +73,10 @@ export const mathTopic04 = {
     },
     {
       id: "math.differential.sin",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "sin(x)", variable: "x", order: "1", point: "0" },
+      },
       prompt: "Pro $f(x)=\\sin x$ v $x=0$ určete koeficient u $dx$ v diferenciálu $df$.",
       answer: "1",
       hints: ["Derivace sinu je kosinus."],
@@ -80,6 +88,10 @@ export const mathTopic04 = {
     },
     {
       id: "math.differential.root-approximation",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "sqrt(x)", variable: "x", order: "1", point: "4" },
+      },
       prompt: "Pomocí diferenciálu odhadněte $\\sqrt{4{,}04}$ na dvě desetinná místa.",
       answer: "2,01",
       acceptedAnswers: ["2.01"],
@@ -166,6 +178,10 @@ export const mathTopic04 = {
     },
     {
       id: "math.differential.partial",
+      solver: {
+        problemType: "partial",
+        values: { expression: "x^2 y + y^3", variable: "x", point: "1, 2" },
+      },
       prompt: "Pro $f(x,y)=x^2y+y^3$ určete $\\frac{\\partial f}{\\partial x}$ v bodě $[1,2]$.",
       answer: "4",
       hints: ["Při derivování podle $x$ je $y$ konstanta."],
@@ -177,6 +193,10 @@ export const mathTopic04 = {
     },
     {
       id: "math.differential.total",
+      solver: {
+        problemType: "gradient",
+        values: { expression: "x y", variables: "x,y", point: "2, 3" },
+      },
       prompt:
         "Pro $f(x,y)=xy$ vypočtěte totální diferenciál $df$ v bodě $[2,3]$ při $dx=0{,}1$ a $dy=-0{,}2$.",
       answer: "-0,1",
@@ -191,6 +211,10 @@ export const mathTopic04 = {
     },
     {
       id: "math.differential.directional",
+      solver: {
+        problemType: "directional",
+        values: { expression: "x^2 y", variables: "x,y", point: "1, 2", direction: "3, 4" },
+      },
       prompt:
         "Určete směrovou derivaci funkce $f(x,y)=x^2y$ v bodě $[1,2]$ ve směru $\\mathbf u=(3,4)$.",
       answer: "16/5",

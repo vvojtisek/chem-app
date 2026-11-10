@@ -10,6 +10,8 @@ export const queryKeys = {
   subjects: {
     list: ["subjects", "list"] as const,
     render: (subjectId: string, key: string) => ["subjects", subjectId, "render", key] as const,
+    practiceSolution: (subjectId: string, exerciseId: string) =>
+      ["subjects", subjectId, "practice-solution", exerciseId] as const,
   },
   admin: {
     users: ["admin", "users"] as const,

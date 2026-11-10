@@ -56,13 +56,13 @@ def _describe(rule: mi.Rule) -> tuple[str, str, str]:
         return (
             "constant_multiple",
             "Vytknutí konstanty",
-            f"Konstantu {tex(rule.constant)} vytkneme před integrál.",
+            f"Konstantu ${tex(rule.constant)}$ vytkneme před integrál.",
         )
     if isinstance(rule, mi.PowerRule):
         return (
             "power",
             "Integrál mocniny",
-            f"∫uⁿ du = uⁿ⁺¹/(n+1) + C pro n = {tex(rule.exp)} ≠ −1.",
+            f"∫uⁿ du = uⁿ⁺¹/(n+1) + C pro n = ${tex(rule.exp)}$ ≠ −1.",
         )
     if isinstance(rule, mi.AddRule):
         return "sum", "Integrál součtu", "Integrál součtu je součet integrálů."
@@ -71,14 +71,14 @@ def _describe(rule: mi.Rule) -> tuple[str, str, str]:
         return (
             "substitution",
             "Substituce",
-            f"Zvolíme {tex(rule.u_var)} = {tex(rule.u_func)}, "
-            f"potom d{tex(rule.u_var)} = {tex(du)}\\,d{v}.",
+            f"Zvolíme ${tex(rule.u_var)} = {tex(rule.u_func)}$, "
+            f"potom $d{tex(rule.u_var)} = {tex(du)}\\,d{v}$.",
         )
     if isinstance(rule, mi.PartsRule):
         return (
             "parts",
             "Integrace per partes",
-            f"∫u dv = uv − ∫v du, kde u = {tex(rule.u)} a dv = {tex(rule.dv)}\\,d{v}.",
+            f"∫u dv = uv − ∫v du, kde u = ${tex(rule.u)}$ a dv = ${tex(rule.dv)}\\,d{v}$.",
         )
     if isinstance(rule, mi.CyclicPartsRule):
         return (
@@ -91,7 +91,7 @@ def _describe(rule: mi.Rule) -> tuple[str, str, str]:
         return (
             "rewrite",
             "Úprava integrandu",
-            f"Integrand přepíšeme na {tex(rule.rewritten)}.",
+            f"Integrand přepíšeme na ${tex(rule.rewritten)}$.",
         )
     if isinstance(rule, mi.ExpRule):
         return "exponential", "Integrál exponenciály", "∫aᵘ du = aᵘ/ln a + C."
@@ -103,7 +103,7 @@ def _describe(rule: mi.Rule) -> tuple[str, str, str]:
         return (
             "trig_substitution",
             "Goniometrická substituce",
-            f"Substituce {tex(rule.variable)} = {tex(rule.func)}.",
+            f"Substituce ${tex(rule.variable)} = {tex(rule.func)}$.",
         )
     if isinstance(rule, mi.AlternativeRule):
         return "alternatives", "Více možných postupů", "Integrál lze spočítat více způsoby."
@@ -156,7 +156,7 @@ def _cyclic_step(rule: mi.CyclicPartsRule) -> Step:
         title,
         _integral_tex(rule.integrand, rule.variable),
         tex(rule.eval()),
-        justification + f" Původní integrál se vrátí s koeficientem {tex(rule.coefficient)}.",
+        justification + f" Původní integrál se vrátí s koeficientem ${tex(rule.coefficient)}$.",
         substeps=parts,
     )
 

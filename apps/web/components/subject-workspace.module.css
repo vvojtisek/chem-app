@@ -272,3 +272,22 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* Steps fade in as they are revealed one by one. */
+.steps > li {
+  animation: stepIn 320ms ease-out both;
+}
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .steps > li {
+    animation: none;
+  }
+}

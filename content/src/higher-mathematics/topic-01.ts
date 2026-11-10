@@ -75,6 +75,10 @@ export const mathTopic01 = {
   exercises: [
     {
       id: "math.limits.factor",
+      solver: {
+        problemType: "limit",
+        values: { expression: "(x^2-1)/(x-1)", variable: "x", point: "1", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to1}\\frac{x^2-1}{x-1}$.",
       answer: "2",
       hints: ["Rozložte rozdíl čtverců."],
@@ -86,6 +90,10 @@ export const mathTopic01 = {
     },
     {
       id: "math.limits.sin",
+      solver: {
+        problemType: "limit",
+        values: { expression: "sin(3x)/x", variable: "x", point: "0", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{\\sin(3x)}{x}$.",
       answer: "3",
       hints: ["Převeďte výraz na základní limitu $\\sin u/u$."],
@@ -97,6 +105,10 @@ export const mathTopic01 = {
     },
     {
       id: "math.limits.root",
+      solver: {
+        problemType: "limit",
+        values: { expression: "(sqrt(x+4)-2)/x", variable: "x", point: "0", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{\\sqrt{x+4}-2}{x}$.",
       answer: "1/4",
       answerLabel: "$\\frac14$",
@@ -109,6 +121,10 @@ export const mathTopic01 = {
     },
     {
       id: "math.limits.cos",
+      solver: {
+        problemType: "limit",
+        values: { expression: "(1-cos(x))/x^2", variable: "x", point: "0", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{1-\\cos x}{x^2}$.",
       answer: "1/2",
       answerLabel: "$\\frac12$",
@@ -121,6 +137,10 @@ export const mathTopic01 = {
     },
     {
       id: "math.limits.rational-infinity",
+      solver: {
+        problemType: "limit",
+        values: { expression: "(2x^2+1)/(x^2-3)", variable: "x", point: "oo", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to\\infty}\\frac{2x^2+1}{x^2-3}$.",
       answer: "2",
       hints: ["Vydělte čitatele i jmenovatele $x^2$."],
@@ -132,6 +152,10 @@ export const mathTopic01 = {
     },
     {
       id: "math.limits.exponential",
+      solver: {
+        problemType: "limit",
+        values: { expression: "(1+2/x)^x", variable: "x", point: "oo", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to\\infty}(1+2/x)^x$.",
       answer: "e^2",
       answerLabel: "$e^2$",
@@ -144,6 +168,10 @@ export const mathTopic01 = {
     },
     {
       id: "math.limits.one-sided",
+      solver: {
+        problemType: "limit",
+        values: { expression: "abs(x)/x", variable: "x", point: "0", direction: "+-" },
+      },
       prompt: "Existuje $\\lim_{x\\to0}\\frac{|x|}{x}$? Odpovězte ano nebo ne.",
       answer: "ne",
       acceptedAnswers: ["Ne"],

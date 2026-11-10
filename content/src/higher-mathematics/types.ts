@@ -8,6 +8,17 @@ export interface MathExercise {
   readonly hints: readonly string[];
   readonly solutionSteps: readonly string[];
   readonly notation?: readonly string[];
+  /**
+   * The same problem for the server solver (ADR 0015). When present and the
+   * learner is signed in and online, the solution shows the solver's verified
+   * steps; the authored solutionSteps stay the offline fallback.
+   */
+  readonly solver?: MathSolverProblem;
+}
+
+export interface MathSolverProblem {
+  readonly problemType: MathSolverType;
+  readonly values: Readonly<Record<string, string>>;
 }
 
 /**

@@ -75,6 +75,10 @@ export const mathTopic02 = {
   exercises: [
     {
       id: "math.derivatives.polynomial",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^3-2x", variable: "x", order: "1", point: "1" },
+      },
       prompt: "Určete $f'(1)$ pro $f(x)=x^3-2x$.",
       answer: "1",
       hints: ["Derivujte každý člen zvlášť."],
@@ -82,6 +86,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.log",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "ln(x)", variable: "x", order: "1", point: "e" },
+      },
       prompt: "Určete $f'(e)$ pro $f(x)=\\ln x$.",
       answer: "1/e",
       answerLabel: "$\\frac1e$",
@@ -94,6 +102,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.trigonometric",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "sin(x)", variable: "x", order: "1", point: "pi/3" },
+      },
       prompt: "Určete $f'(\\pi/3)$ pro $f(x)=\\sin x$.",
       answer: "1/2",
       answerLabel: "$\\frac12$",
@@ -102,6 +114,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.product",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^2 e^x", variable: "x", order: "1", point: "1" },
+      },
       prompt: "Určete $f'(1)$ pro $f(x)=x^2e^x$.",
       answer: "3e",
       answerLabel: "$3e$",
@@ -114,6 +130,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.quotient",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "(x+1)/(x-1)", variable: "x", order: "1", point: "2" },
+      },
       prompt: "Určete $f'(2)$ pro $f(x)=\\frac{x+1}{x-1}$.",
       answer: "-2",
       hints: ["Použijte pravidlo pro podíl nebo přepište funkci jako $1+2/(x-1)$."],
@@ -125,6 +145,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.tangent",
+      solver: {
+        problemType: "derivative",
+        values: { expression: "x^2", variable: "x", order: "1", point: "1" },
+      },
       prompt: "Napište rovnici tečny ke grafu $y=x^2$ v bodě s $x=1$.",
       answer: "y=2x-1",
       answerLabel: "$y=2x-1$",
@@ -137,6 +161,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.hospital-log",
+      solver: {
+        problemType: "limit",
+        values: { expression: "ln(1+x)/x", variable: "x", point: "0", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}$ pomocí L’Hospitalova pravidla.",
       answer: "1",
       hints: ["Tvar je $0/0$."],
@@ -148,6 +176,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.hospital-exp",
+      solver: {
+        problemType: "limit",
+        values: { expression: "(e^x-1-x)/x^2", variable: "x", point: "0", direction: "+-" },
+      },
       prompt: "Vypočtěte $\\lim_{x\\to0}\\frac{e^x-1-x}{x^2}$.",
       answer: "1/2",
       answerLabel: "$\\frac12$",
@@ -160,6 +192,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.vertical-asymptote",
+      solver: {
+        problemType: "limit",
+        values: { expression: "1/(x-2)", variable: "x", point: "2", direction: "+" },
+      },
       prompt: "Určete svislou asymptotu funkce $f(x)=1/(x-2)$.",
       answer: "x=2",
       answerLabel: "$x=2$",
@@ -172,6 +208,10 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.oblique-asymptote",
+      solver: {
+        problemType: "limit",
+        values: { expression: "((x^2+1)/x)/x", variable: "x", point: "oo", direction: "+-" },
+      },
       prompt: "Určete šikmou asymptotu funkce $f(x)=\\frac{x^2+1}{x}$ pro $x\\to\\infty$.",
       answer: "y=x",
       answerLabel: "$y=x$",
@@ -184,6 +224,7 @@ export const mathTopic02 = {
     },
     {
       id: "math.derivatives.implicit-circle",
+      solver: { problemType: "implicit", values: { equation: "x^2 + y^2 = 25", x: "x", y: "y" } },
       prompt: "Křivka je zadána rovnicí $x^2+y^2=25$. Určete $y'$ v bodě $[3,4]$.",
       answer: "-3/4",
       answerLabel: "$-\\frac34$",

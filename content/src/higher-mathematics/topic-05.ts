@@ -57,6 +57,7 @@ export const mathTopic05 = {
   exercises: [
     {
       id: "math.antiderivative.power",
+      solver: { problemType: "integral", values: { expression: "2x", variable: "x" } },
       prompt: "Vypočtěte $\\int 2x\\,dx$.",
       answer: "x^2+C",
       answerLabel: "$x^2+C$",
@@ -69,6 +70,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.cos",
+      solver: { problemType: "integral", values: { expression: "cos(x)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\cos x\\,dx$.",
       answer: "sin x+C",
       answerLabel: "$\\sin x+C$",
@@ -81,6 +83,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.reciprocal",
+      solver: { problemType: "integral", values: { expression: "1/x", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac1x\\,dx$ pro $x\\ne0$.",
       answer: "ln|x|+C",
       answerLabel: "$\\ln|x|+C$",
@@ -93,6 +96,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.log-substitution",
+      solver: { problemType: "integral", values: { expression: "2x/(x^2+1)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac{2x}{x^2+1}\\,dx$.",
       answer: "ln(x^2+1)+C",
       answerLabel: "$\\ln(x^2+1)+C$",
@@ -105,6 +109,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.power-substitution",
+      solver: { problemType: "integral", values: { expression: "3(3x+1)^4", variable: "x" } },
       prompt: "Vypočtěte $\\int3(3x+1)^4\\,dx$.",
       answer: "(3x+1)^5/5+C",
       answerLabel: "$\\frac{(3x+1)^5}{5}+C$",
@@ -117,6 +122,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.exp-parts",
+      solver: { problemType: "integral", values: { expression: "x e^x", variable: "x" } },
       prompt: "Vypočtěte $\\int xe^x\\,dx$ metodou per partes.",
       answer: "(x-1)e^x+C",
       answerLabel: "$(x-1)e^x+C$",
@@ -129,6 +135,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.trig-parts",
+      solver: { problemType: "integral", values: { expression: "x cos(x)", variable: "x" } },
       prompt: "Vypočtěte $\\int x\\cos x\\,dx$ metodou per partes.",
       answer: "x sin x+cos x+C",
       answerLabel: "$x\\sin x+\\cos x+C$",
@@ -141,6 +148,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.log-parts",
+      solver: { problemType: "integral", values: { expression: "ln(x)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\ln x\\,dx$ pro $x>0$.",
       answer: "x ln x-x+C",
       answerLabel: "$x\\ln x-x+C$",
@@ -153,6 +161,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.half-log",
+      solver: { problemType: "integral", values: { expression: "x/(x^2+4)", variable: "x" } },
       prompt: "Vypočtěte $\\int\\frac{x}{x^2+4}\\,dx$.",
       answer: "1/2 ln(x^2+4)+C",
       answerLabel: "$\\frac12\\ln(x^2+4)+C$",
@@ -165,6 +174,7 @@ export const mathTopic05 = {
     },
     {
       id: "math.antiderivative.exp-chain",
+      solver: { problemType: "integral", values: { expression: "e^(2x)", variable: "x" } },
       prompt: "Vypočtěte $\\int e^{2x}\\,dx$.",
       answer: "1/2 e^(2x)+C",
       answerLabel: "$\\frac12e^{2x}+C$",

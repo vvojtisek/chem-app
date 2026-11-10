@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useCapabilities } from "@/components/auth-gate";
-import { MathTex } from "@/components/math-tex";
+import { MathTex, TextWithTex } from "@/components/math-tex";
 import { ScenePlot } from "@/components/scene-plot";
 import {
   ApiError,
@@ -175,7 +175,9 @@ function StepItem({
             <MathTex display latex={`= ${step.rewritten}`} />
           ) : null}
           <MathTex display latex={step.before ? `= ${step.after}` : step.after} />
-          <p className={styles.hint}>{step.justification}</p>
+          <p className={styles.hint}>
+            <TextWithTex text={step.justification} />
+          </p>
           {narrative ? (
             <p className={styles.narrative}>
               <span className={styles.generatedLabel}>AI</span> {narrative}
@@ -315,15 +317,20 @@ function ExplanationCard({
   );
 }
 
-function SolutionView({
+export function SolutionView({
   subject,
   solution,
   request,
+  reveal = false,
 }: Readonly<{
   subject: Subject;
   solution: SubjectSolution;
   request: { problemType: string; values: Values };
+  /** Start with the first step and reveal the rest one by one. */
+  reveal?: boolean;
 }>) {
+  const [shown, setShown] = useState(1);
+  const visibleSteps = reveal ? solution.steps.slice(0, shown) : solution.steps;
   const explain = useMutation({
     mutationFn: () => explainSubjectSolution(subject.id, request),
   });
@@ -353,7 +360,7 @@ function SolutionView({
           ))}
         </div>
         <ol aria-label="Kroky řešení" className={styles.steps}>
-          {solution.steps.map((step, index) => (
+          {visibleSteps.map((step, index) => (
             <StepItem
               indices={indices}
               // biome-ignore lint/suspicious/noArrayIndexKey: steps are an ordered, immutable list.
@@ -364,6 +371,24 @@ function SolutionView({
             />
           ))}
         </ol>
+        {reveal && shown < solution.steps.length ? (
+          <div className={styles.actions}>
+            <button
+              className={styles.primaryButton}
+              onClick={() => setShown((count) => count + 1)}
+              type="button"
+            >
+              Další krok ({shown + 1}/{solution.steps.length})
+            </button>
+            <button
+              className={styles.secondaryButton}
+              onClick={() => setShown(solution.steps.length)}
+              type="button"
+            >
+              Celé řešení
+            </button>
+          </div>
+        ) : null}
       </section>
       <aside className={styles.side}>
         {solution.scene ? (
@@ -402,7 +427,13 @@ function SolutionView({
 export function SubjectWorkspace({
   subjectId,
   initialTypeId,
-}: Readonly<{ subjectId: string; initialTypeId?: string | undefined }>) {
+  problemTypeIds,
+}: Readonly<{
+  subjectId: string;
+  initialTypeId?: string | undefined;
+  /** Show only these problem types (a mathematics section); all when omitted. */
+  problemTypeIds?: readonly string[] | undefined;
+}>) {
   const online = useOnline();
   const { isGuest } = useCapabilities();
   const subjects = useQuery({
@@ -411,7 +442,17 @@ export function SubjectWorkspace({
     enabled: online && !isGuest,
     staleTime: 5 * 60_000,
   });
-  const subject = subjects.data?.find((item) => item.id === subjectId);
+  const listed = subjects.data?.find((item) => item.id === subjectId);
+  const subject = useMemo(
+    () =>
+      listed && problemTypeIds
+        ? {
+            ...listed,
+            problemTypes: listed.problemTypes.filter((item) => problemTypeIds.includes(item.id)),
+          }
+        : listed,
+    [listed, problemTypeIds],
+  );
   // An unknown ?typ= value falls back to the first problem type.
   const [typeId, setTypeId] = useState<string | null>(initialTypeId ?? null);
   const problemType =
