@@ -84,7 +84,9 @@ test("opens cached learning after a verified session goes offline", async ({ pag
   await page.reload();
   await context.setOffline(true);
   await page.goto("/procvicovani/nazvoslovi", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Procvičování: Názvosloví" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Názvosloví", exact: true }),
+  ).toBeVisible();
   await expect(page.getByText(/Offline · čeká/)).toBeVisible();
 });
 

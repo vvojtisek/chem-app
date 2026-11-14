@@ -100,7 +100,7 @@ test("practices a shuffled element and opens the editable card library under Uč
   await keepQuestionOrder(page);
   await page.goto("/flashcards/prvky");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Karty prvků · kvíz");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Pětiminutový kvíz prvků");
   await page.getByRole("button", { name: /^Přejít na cvičení/ }).click();
   await expect(page.getByRole("timer")).toHaveText("05:00");
   const card = page.getByRole("article", { name: /^Karta 1 z/ });
@@ -556,11 +556,11 @@ test("returns from an exercise to the practice categories and to the dashboard",
   await expect(page).toHaveURL(/\/procvicovani$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Procvičovat");
 
-  await expect(page.getByRole("link", { name: "Procvičit názvosloví" })).toHaveCSS(
+  await expect(page.getByRole("link", { name: "Názvosloví", exact: true })).toHaveCSS(
     "color",
     "rgb(255, 255, 255)",
   );
-  await page.getByRole("link", { name: "Procvičit názvosloví" }).click();
+  await page.getByRole("link", { name: "Názvosloví", exact: true }).click();
   await expect(page).toHaveURL(/\/procvicovani\/nazvoslovi$/);
   await mainNavigation.getByRole("link", { name: "Domů" }).click();
   await expect(page).toHaveURL(/\/$/);

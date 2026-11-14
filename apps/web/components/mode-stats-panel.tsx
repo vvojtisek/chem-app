@@ -58,7 +58,6 @@ export function ModeStatsPanel({
           })}
         </ul>
       )}
-      <p className="mt-4 text-xs text-ink-2">Souhrn vychází ze synchronizovaných pokusů.</p>
     </section>
   );
 }

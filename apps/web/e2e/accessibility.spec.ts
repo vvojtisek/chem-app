@@ -41,11 +41,13 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await expectWcag22Aa(page);
 
   await page.goto("/procvicovani/nazvoslovi");
-  await expect(page.getByRole("heading", { name: "Procvičování: Názvosloví" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Názvosloví", exact: true }),
+  ).toBeVisible();
   await expectWcag22Aa(page);
 
   await page.goto("/procvicovani/rovnice");
-  await expect(page.getByRole("heading", { name: "Chemické rovnice" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Vyčíslování rovnic" })).toBeVisible();
   await expectWcag22Aa(page);
 
   await page.goto("/procvicovani/priprava-vyroba");
@@ -80,7 +82,9 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await expectWcag22Aa(page);
 
   await page.goto("/flashcards/prvky");
-  await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Pětiminutový kvíz prvků" }),
+  ).toBeVisible();
   await expectWcag22Aa(page);
   await page.goto("/uceni/prvky");
   await expect(

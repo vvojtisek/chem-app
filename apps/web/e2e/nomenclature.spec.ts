@@ -55,6 +55,8 @@ async function answerCurrent(page: Page): Promise<Compound> {
 async function chooseOnly(page: Page, category: RegExp): Promise<void> {
   await page.getByRole("button", { name: "Zrušit výběr" }).click();
   await page.getByRole("button", { name: category }).click();
+  // Ask every matching compound, as these tests walk the whole filtered set.
+  await page.getByText(/^✓?\s*Vše \(\d+\)$/u).click();
 }
 
 function countLabel(count: number): string {
@@ -68,11 +70,11 @@ test("opens the compact nomenclature filters at 360 px", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link", { name: /Procvičit názvosloví/i }).click();
   await expect(page).toHaveURL(/\/procvicovani\/nazvoslovi$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Procvičování: Názvosloví");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Názvosloví");
   await expect(page.getByText(/Chyby se na konci série|zkontroloval orientačně/)).toHaveCount(0);
   await expect(
     page.getByRole("button", {
-      name: `Spustit cvičení (${countLabel(snapshot.compounds.filter((compound) => compound.directions.includes("formula-to-name")).length)})`,
+      name: `Spustit cvičení (${countLabel(Math.min(20, snapshot.compounds.filter((compound) => compound.directions.includes("formula-to-name")).length))})`,
     }),
   ).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
@@ -274,7 +276,7 @@ test("starts nomenclature offline after opening only the home page", async ({ co
   await page.reload();
   await context.setOffline(true);
   await page.goto("/procvicovani/nazvoslovi", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Procvičování: Názvosloví");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Názvosloví");
   await page.getByRole("button", { name: /^Spustit cvičení/ }).click();
   await expect(page.getByRole("heading", { name: /^Zadání:/ })).toBeVisible();
 });

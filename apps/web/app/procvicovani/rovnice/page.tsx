@@ -8,8 +8,8 @@ export default function EquationPracticePage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
-        breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Chemické rovnice" }]}
-        title="Chemické rovnice"
+        breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Vyčíslování rovnic" }]}
+        title="Vyčíslování rovnic"
       />
       <ReactionEquationPractice
         products={curatedPreparationProduction}

@@ -62,7 +62,7 @@ export default function ElementLearningPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
-        description="Vyhledejte prvek nebo ho vyberte z přehledu podle kategorie. Učivo je bez otázek a nezaznamenává pokusy."
+        description="Vyhledejte prvek nebo ho vyberte z přehledu podle kategorie."
         title="Prvky a jejich skupiny"
       />
       <nav aria-label="Studijní materiály" className="mb-8">

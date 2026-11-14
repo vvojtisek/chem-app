@@ -4,6 +4,7 @@ import { evaluateElementAnswer } from "@inorganic/chemistry";
 import type { ElementFlashcardData } from "@inorganic/content/runtime";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ElementCategoryBadge } from "@/components/element-category-badge";
+import { HowItWorks } from "@/components/how-it-works";
 import {
   PeriodicTableSelectionStep,
   useSharedElementSelection,
@@ -46,7 +47,7 @@ export function ElementFlashcardPractice({
   readonly random?: () => number;
 }) {
   const layout = useMemo(() => createPeriodicTableLayout(elements), [elements]);
-  const [selection, setSelection] = useSharedElementSelection(layout);
+  const [selection, setSelection, selectionRestored] = useSharedElementSelection(layout);
   const selectedElements = useMemo(() => selectElements(layout, selection), [layout, selection]);
   const [phase, setPhase] = useState<"selection" | "running" | "summary">("selection");
   const [questions, setQuestions] = useState<readonly ElementFlashcardData[]>([]);
@@ -199,16 +200,16 @@ export function ElementFlashcardPractice({
   return (
     <section aria-labelledby="flashcard-practice-heading" className="mx-auto w-full max-w-5xl">
       <header>
-        <p className="text-sm font-semibold text-ink-3">Pětiminutový kvíz</p>
         <h1
-          className="mt-1 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
+          className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
           id="flashcard-practice-heading"
         >
-          Karty prvků · kvíz
+          Pětiminutový kvíz prvků
         </h1>
-        <p className="mt-3 max-w-2xl leading-7 text-ink-2">
-          Vyberte prvky a údaje, které si chcete vybavit. Na každou kartu máte jeden pokus.
-        </p>
+        <HowItWorks className="mt-2 max-w-2xl" id="element-flashcards">
+          Vyberte prvky a údaje, které si chcete vybavit. Na každou kartu máte jeden pokus a na celý
+          kvíz pět minut.
+        </HowItWorks>
       </header>
 
       {phase === "selection" ? (
@@ -267,6 +268,7 @@ export function ElementFlashcardPractice({
             layout={layout}
             onChange={setSelection}
             onStart={startRound}
+            restored={selectionRestored}
             selection={selection}
           />
         </div>

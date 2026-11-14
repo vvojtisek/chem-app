@@ -9,7 +9,6 @@ export default function PeriodicTableNamePracticePage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-10">
       <PageHeader
         breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Názvy a značky prvků" }]}
-        description="Vyberte prvky kliknutím na prvek, číslo skupiny nebo řadu lanthanidů či aktinidů."
         title="Názvy a značky prvků"
       />
       <PeriodicTableNamePractice elements={curatedElements} />

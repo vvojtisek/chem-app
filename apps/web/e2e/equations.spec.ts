@@ -109,8 +109,8 @@ async function localEquationIds(page: Page, since: string, questionId: string): 
 test("beginner sees atom counts, retries, and synchronizes the saved answer", async ({ page }) => {
   const since = new Date().toISOString();
   await page.goto("/procvicovani/rovnice");
-  await expect(page.getByRole("heading", { name: "Chemické rovnice" })).toBeVisible();
-  await page.getByRole("button", { name: "Začátečník" }).click();
+  await expect(page.getByRole("heading", { name: "Vyčíslování rovnic" })).toBeVisible();
+  await page.getByRole("button", { name: "Střední" }).click();
   const firstRoute = await currentRoute(page);
   // The questions are shuffled; a blank entry would be right for an equation of ones.
   const [firstReactant] = firstRoute.reactants;
@@ -154,7 +154,7 @@ test("advanced retries product entry and then completes coefficient balancing", 
   page,
 }) => {
   await page.goto("/procvicovani/rovnice");
-  await page.getByRole("button", { name: "Pokročilý" }).click();
+  await page.getByRole("button", { name: "Pokročilá" }).click();
   const firstRoute = await currentRoute(page);
   const products = page.getByRole("textbox", { name: /Produkty na pravé straně/ });
   await products.fill("Ne");
@@ -175,7 +175,7 @@ test("advanced retries product entry and then completes coefficient balancing", 
 
 test("pro retries and accepts an approved complete manufacturing equation", async ({ page }) => {
   await page.goto("/procvicovani/rovnice");
-  await page.getByRole("button", { name: "Profík" }).click();
+  await page.getByRole("button", { name: "Pro", exact: true }).click();
   const manufacture = await currentRoute(page);
   const equation = page.getByRole("textbox", { name: "Chemická rovnice" });
   await equation.fill("H2 -> H2O");
@@ -189,10 +189,7 @@ test("pro retries and accepts an approved complete manufacturing equation", asyn
 
 test("easy level asks for products only, as a choice of four", async ({ page }) => {
   await page.goto("/procvicovani/rovnice");
-  await expect(page.getByRole("button", { name: "Snadný" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  await expect(page.getByRole("button", { name: "Lehká" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("heading", { name: "Které produkty vzniknou?" })).toBeVisible();
   await expect(page.getByRole("textbox")).toHaveCount(0);
 

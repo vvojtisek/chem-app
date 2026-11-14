@@ -188,6 +188,10 @@ describe("PeriodicTableNamePractice selection", () => {
     cleanup();
     renderPractice();
 
+    // A saved selection opens collapsed to a summary; the matrix is one click away.
+    expect(screen.getByText(/Vybráno 2 prvky z \d+, stejně jako minule\./u)).toBeInTheDocument();
+    expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");
+    fireEvent.click(screen.getByRole("button", { name: "Změnit výběr" }));
     expect(cell("Helium (He)")).toHaveAttribute("aria-pressed", "false");
     expect(cell("Vodík (H)")).toHaveAttribute("aria-pressed", "true");
     expect(startButton()).toHaveTextContent("Přejít na cvičení (2 prvky)");

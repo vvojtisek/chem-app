@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { type ReportedQuestion, reportQuestionUrl } from "@/lib/report-question";
+
 import { CheckIcon, CrossIcon } from "./icons";
 
 /**
@@ -9,7 +11,8 @@ import { CheckIcon, CrossIcon } from "./icons";
 export function AnswerFeedback({
   isCorrect,
   children,
-}: Readonly<{ isCorrect: boolean; children: ReactNode }>) {
+  report,
+}: Readonly<{ isCorrect: boolean; children: ReactNode; report?: ReportedQuestion }>) {
   return (
     <div
       className={`mt-4 rounded-2xl border p-4 sm:p-5 ${
@@ -21,6 +24,16 @@ export function AnswerFeedback({
         {isCorrect ? "Správně" : "Špatně"}
       </p>
       <div className="mt-1 grid gap-1 leading-7 text-ink">{children}</div>
+      {report ? (
+        <a
+          className="mt-2 inline-flex min-h-9 items-center text-sm text-ink-2 underline underline-offset-4 hover:text-ink"
+          href={reportQuestionUrl(report)}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Nahlásit chybu v otázce
+        </a>
+      ) : null}
     </div>
   );
 }

@@ -1,7 +1,10 @@
 "use client";
 
 import type { NomenclatureRuntimeRecord } from "@inorganic/content/nomenclature-schema";
-import { useId, useMemo } from "react";
+import { useId, useMemo, useState } from "react";
+
+import { RoundLengthChoice } from "@/components/round-length-choice";
+import { SetupStartBar } from "@/components/setup-start-bar";
 
 import {
   type ElementCountFilter,
@@ -12,6 +15,7 @@ import {
   type NomenclatureCategory,
   type NomenclatureFilters,
 } from "@/lib/nomenclature-session";
+import { plannedRoundSize, type RoundLength } from "@/lib/round-length";
 
 export const CATEGORY_LABELS: Readonly<Record<NomenclatureCategory, string>> = {
   "element-ion": "Prvky a jednoduché ionty",
@@ -52,6 +56,10 @@ interface NomenclatureFilterStepProps {
   readonly filters: NomenclatureFilters;
   readonly onChange: (filters: NomenclatureFilters) => void;
   readonly onStart: () => void;
+  /** Filters saved on an earlier visit: the step starts collapsed to a summary line. */
+  readonly restored?: boolean;
+  readonly roundLength?: RoundLength;
+  readonly onRoundLengthChange?: (length: RoundLength) => void;
 }
 
 export function NomenclatureFilterStep({
@@ -59,7 +67,11 @@ export function NomenclatureFilterStep({
   filters,
   onChange,
   onStart,
+  restored = false,
+  roundLength,
+  onRoundLengthChange,
 }: NomenclatureFilterStepProps) {
+  const [expanded, setExpanded] = useState(false);
   const headingId = useId();
   const countGroupName = useId();
   const selected = new Set(filters.categories);
@@ -68,6 +80,8 @@ export function NomenclatureFilterStep({
     compounds.some((record) => record.category === category),
   );
   const matching = filterCompounds(compounds, filters).length;
+  const planned = roundLength === undefined ? matching : plannedRoundSize(matching, roundLength);
+  const collapsed = restored && !expanded && matching > 0;
   const quickFamilies = useMemo(
     () =>
       new Map(
@@ -105,7 +119,16 @@ export function NomenclatureFilterStep({
         <h2 className="text-2xl font-semibold text-ink" id={headingId}>
           Výběr látek
         </h2>
-        <div className="flex flex-wrap gap-2">
+        {collapsed ? (
+          <button
+            className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
+            onClick={() => setExpanded(true)}
+            type="button"
+          >
+            Změnit výběr
+          </button>
+        ) : null}
+        <div className={collapsed ? "hidden" : "flex flex-wrap gap-2"}>
           <button
             className="min-h-11 rounded-xl border border-line-strong px-4 text-sm font-semibold text-ink"
             onClick={() => onChange({ ...filters, categories: [...available], families: [] })}
@@ -123,7 +146,12 @@ export function NomenclatureFilterStep({
         </div>
       </div>
 
-      <fieldset className="mt-5">
+      {collapsed ? (
+        <p className="mt-3 text-ink-2" data-selection-summary="">
+          {summarizeFilters(filters, available)}, stejně jako minule.
+        </p>
+      ) : null}
+      <fieldset className={collapsed ? "hidden" : "mt-5"}>
         <legend className="font-semibold text-ink">Kategorie</legend>
         <div className="mt-3 flex flex-wrap gap-2">
           {available.map((category) => {
@@ -178,7 +206,7 @@ export function NomenclatureFilterStep({
         )}
       </fieldset>
 
-      <fieldset className="mt-6">
+      <fieldset className={collapsed ? "hidden" : "mt-6"}>
         <legend className="font-semibold text-ink">Počet prvků ve sloučenině</legend>
         <div className="mt-3 inline-flex flex-wrap rounded-xl border border-line-strong bg-surface-3 p-1">
           {ELEMENT_COUNT_OPTIONS.map((option) => (
@@ -200,14 +228,25 @@ export function NomenclatureFilterStep({
         </div>
       </fieldset>
 
-      <button
-        className="mt-6 min-h-11 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
-        disabled={matching === 0}
-        onClick={onStart}
-        type="button"
-      >
-        Spustit cvičení ({czechCount(matching)})
-      </button>
+      {roundLength !== undefined && onRoundLengthChange ? (
+        <div className="mt-6">
+          <RoundLengthChoice
+            available={matching}
+            onChange={onRoundLengthChange}
+            value={roundLength}
+          />
+        </div>
+      ) : null}
+      <SetupStartBar summary={planned < matching ? `Náhodně z ${czechCount(matching)}` : undefined}>
+        <button
+          className="min-h-11 rounded-xl bg-accent px-5 font-semibold text-on-fill disabled:cursor-not-allowed disabled:bg-ink-3"
+          disabled={matching === 0}
+          onClick={onStart}
+          type="button"
+        >
+          Spustit cvičení ({czechCount(planned)})
+        </button>
+      </SetupStartBar>
       {matching === 0 ? (
         <p className="mt-2 text-sm text-warn" role="status">
           Této kombinaci filtrů neodpovídá žádná látka. Upravte kategorie nebo počet prvků.
@@ -215,6 +254,31 @@ export function NomenclatureFilterStep({
       ) : null}
     </section>
   );
+}
+
+/** One line naming the saved selection, e.g. „Oxidy, Hydroxidy · počet prvků: 2“. */
+function summarizeFilters(
+  filters: NomenclatureFilters,
+  available: readonly NomenclatureCategory[],
+): string {
+  const chosen = new Set(filters.categories);
+  const left = available.filter((category) => !chosen.has(category));
+  const label = (list: readonly NomenclatureCategory[]) =>
+    list.map((category) => CATEGORY_LABELS[category]).join(", ");
+  const categories =
+    left.length === 0
+      ? "Všechny kategorie"
+      : left.length < filters.categories.length
+        ? `Všechny kategorie kromě: ${label(left)}`
+        : label(filters.categories);
+  const families = filters.families.map((key) => familyLabel(key.split(":")[1] ?? key));
+  const count = ELEMENT_COUNT_OPTIONS.find((option) => option.value === filters.elementCount);
+  return [
+    families.length > 0 ? `${categories} (${families.join(", ")})` : categories,
+    filters.elementCount === "all" || !count ? null : `počet prvků: ${count.label}`,
+  ]
+    .filter((part): part is string => part !== null)
+    .join(" · ");
 }
 
 function familyLabel(family: string): string {

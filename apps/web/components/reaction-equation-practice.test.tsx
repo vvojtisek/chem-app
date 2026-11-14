@@ -45,7 +45,7 @@ const fixture: PreparationProductionRuntimeProduct = {
 };
 
 /** Opens a balancing level; the practice starts at the easy choice level. */
-function renderPractice(level = "Začátečník") {
+function renderPractice(level = "Střední") {
   render(<ReactionEquationPractice products={[fixture]} allowedSymbols={["Zn", "H", "Cl"]} />);
   fireEvent.click(screen.getByRole("button", { name: level }));
 }
@@ -81,7 +81,7 @@ afterEach(() => {
 describe("reaction equation practice", () => {
   it("starts at the easy level with four product options and no coefficients", () => {
     renderChoice();
-    expect(screen.getByRole("button", { name: "Snadný" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Lehká" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("heading", { name: "Které produkty vzniknou?" })).toBeInTheDocument();
     expect(screen.queryByRole("textbox")).toBeNull();
     const options = choiceOptions();
@@ -143,7 +143,7 @@ describe("reaction equation practice", () => {
 
   it("offers skipping at the balancing levels too", () => {
     renderChoice();
-    fireEvent.click(screen.getByRole("button", { name: "Začátečník" }));
+    fireEvent.click(screen.getByRole("button", { name: "Střední" }));
     expect(screen.getByRole("button", { name: "Přeskočit" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Nápověda" })).toBeNull();
   });
@@ -192,7 +192,7 @@ describe("reaction equation practice", () => {
   });
 
   it("accepts reordered products and then balanced coefficients at advanced level", () => {
-    renderPractice("Pokročilý");
+    renderPractice("Pokročilá");
     fireEvent.change(screen.getByRole("textbox", { name: /Produkty na pravé straně/ }), {
       target: { value: "Zn(Cl)2 + H2" },
     });
@@ -211,7 +211,7 @@ describe("reaction equation practice", () => {
   });
 
   it("accepts a complete approved production equation at pro level", () => {
-    renderPractice("Profík");
+    renderPractice("Pro");
     fireEvent.change(screen.getByRole("textbox", { name: "Chemická rovnice" }), {
       target: { value: "Zn + 2 HCl -> H2 + Zn(Cl)2" },
     });

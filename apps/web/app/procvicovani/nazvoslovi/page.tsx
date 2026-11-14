@@ -10,10 +10,7 @@ import { PRACTICE_BREADCRUMB } from "@/components/practice-breadcrumb";
 export default function NomenclaturePage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
-      <PageHeader
-        breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Názvosloví" }]}
-        title="Procvičování: Názvosloví"
-      />
+      <PageHeader breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Názvosloví" }]} title="Názvosloví" />
       <NomenclaturePractice
         compounds={curatedNomenclature}
         contentVersion={nomenclatureContentVersion}

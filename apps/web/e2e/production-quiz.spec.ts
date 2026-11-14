@@ -45,9 +45,7 @@ for (const correctFinal of [true, false]) {
     await page.goto("/procvicovani");
     await page.getByRole("link", { name: "Příprava a výroba", exact: true }).click();
     await expect(page).toHaveURL(/\/procvicovani\/priprava-vyroba$/u);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Kvíz: Příprava a výroba látek",
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Příprava a výroba");
     await expect(page.getByRole("radio", { name: "Lehká" })).toBeChecked();
     await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
     const first = await currentQuestion(page);
