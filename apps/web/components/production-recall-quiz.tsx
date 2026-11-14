@@ -1,25 +1,45 @@
 "use client";
 
 import {
-  type EquationRecallResult,
-  gradeEquationRecall,
-  gradeProductRecall,
-  type ProductRecallResult,
-  type RecallSideMatch,
+  gradeProductSlots,
+  gradeRouteSlots,
+  type ProductSlotsResult,
+  type RecallTerm,
+  type RouteSlotsResult,
+  type SlotSideResult,
 } from "@inorganic/chemistry";
-import type {
-  PreparationProductionRuntimeProduct,
-  PreparationProductionRuntimeRoute,
-} from "@inorganic/content/preparation-production";
-import { Fragment, type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
+import type { PreparationProductionRuntimeProduct } from "@inorganic/content/preparation-production";
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { Formula } from "@/components/formula";
 import { CheckIcon, CrossIcon } from "@/components/icons";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import {
+  BalancedEquation,
+  ByproductHintText,
+  Coefficient,
+  Conditions,
+  EquationTerms,
+  KIND_LABELS,
+  KINDS,
+  type MissedQuestion,
+  MissedList,
+  PRODUCT_FORMS,
+  QuizSetup,
+  ROUTE_KIND_LABELS,
+  type Route,
+} from "@/components/production-quiz-parts";
 import { NamedSubstance, QuestionTools } from "@/components/question-tools";
-import { SegmentedChoice } from "@/components/segmented-choice";
 import { czechCount } from "@/lib/czech-plural";
-import { formulaNames, type ProductsHint, reactionByproductHint } from "@/lib/practice-hints";
+import { formulaNames, reactionByproductHint } from "@/lib/practice-hints";
 import {
   answerPracticeQueue,
   createPracticeQueue,
@@ -37,46 +57,24 @@ import {
   type ProductionRecallSettings,
 } from "@/lib/production-recall";
 
-type Route = PreparationProductionRuntimeRoute;
-type Term = Route["reactants"][number];
-
-const QUESTION_FORMS = ["otázka", "otázky", "otázek"] as const;
-const PRODUCT_FORMS = ["produkt", "produkty", "produktů"] as const;
 const ROUTE_FORMS = ["ověřený postup", "ověřené postupy", "ověřených postupů"] as const;
-const KINDS: readonly ProductionQuizKind[] = ["all", "preparation", "manufacture"];
-const KIND_OPTIONS: readonly { readonly kind: ProductionQuizKind; readonly label: string }[] = [
-  { kind: "all", label: "Vše" },
-  { kind: "preparation", label: "Příprava" },
-  { kind: "manufacture", label: "Výroba" },
-];
-const COUNT_OPTIONS: readonly { readonly value: number | null; readonly label: string }[] = [
-  { value: 10, label: "10" },
-  { value: 20, label: "20" },
-  { value: null, label: "Všechny" },
-];
-const KIND_LABELS = { preparation: "Příprava", manufacture: "Výroba" } as const;
-const ROUTE_KIND_LABELS = {
-  preparation: "Laboratorní příprava",
-  manufacture: "Průmyslová výroba",
-} as const;
-
-/** What the summary lists for a question whose first answer was not correct. */
-interface MissedQuestion {
-  readonly id: string;
-  readonly kind: Route["kind"];
-  readonly product: ProductionRecallQuestion["product"];
-  readonly routes: readonly Route[];
-}
+const MAX_SLOTS = 6;
+const COMMON_RULES =
+  "Vzorce pište s velkými a malými písmeny přesně (Co je kobalt, CO oxid uhelnatý). Hodnotí se první kontrola; po chybě můžete odpověď opravit nebo zobrazit řešení a otázka se jednou vrátí na konec. Výsledek se do pokroku zatím nezapočítává.";
+const DESCRIPTIONS: Readonly<Record<ProductionRecallMode, string>> = {
+  products: `U každé otázky uvidíte výchozí látky s koeficienty. Za šipku napište do políček vzorce produktů, v libovolném pořadí a bez koeficientů. Po správné odpovědi se koeficienty doplní. ${COMMON_RULES}`,
+  equation: `U každé otázky uvidíte jen látku a to, zda se připravuje v laboratoři, nebo vyrábí v průmyslu. Do políček vlevo od šipky napište výchozí látky, vpravo produkty, bez koeficientů. Uznává se kterýkoli ověřený postup; políčka lze přidat i odebrat. ${COMMON_RULES}`,
+};
 
 function routesOf(question: ProductionRecallQuestion): readonly Route[] {
   return question.mode === "products" ? [question.route] : question.routes;
 }
 
 /**
- * Typed recall of preparation and production. Only the first check of a question is scored;
- * after a wrong check the learner may correct the answer or reveal the solution, and the
- * question then returns once at the end, as in the choice quiz. Coefficients are never
- * required: a correct answer is shown with the reviewed coefficients filled in.
+ * Typed recall of preparation and production, one formula per slot. Only the first check of a
+ * question is scored; after a wrong check the learner may correct the answer or reveal the
+ * solution, and the question then returns once at the end, as in the choice quiz.
+ * Coefficients are never required: a correct answer gets the reviewed coefficients filled in.
  * Results stay in this session; the quiz does not record attempts.
  */
 export function ProductionRecallQuiz({
@@ -174,9 +172,9 @@ export function ProductionRecallQuiz({
 
   if (!session) {
     return (
-      <RecallSetup
+      <QuizSetup
         available={available}
-        mode={mode}
+        description={DESCRIPTIONS[mode]}
         onChange={onSettingsChange}
         onStart={start}
         plannedCount={plannedCount}
@@ -246,67 +244,6 @@ export function ProductionRecallQuiz({
   );
 }
 
-function RecallSetup({
-  mode,
-  settings,
-  available,
-  plannedCount,
-  onChange,
-  onStart,
-}: Readonly<{
-  mode: ProductionRecallMode;
-  settings: ProductionRecallSettings;
-  available: Readonly<Record<ProductionQuizKind, number>>;
-  plannedCount: number;
-  onChange: (settings: ProductionRecallSettings) => void;
-  onStart: () => void;
-}>) {
-  const kindName = useId();
-  const countName = useId();
-  return (
-    <section
-      aria-label="Nastavení kvízu"
-      className="grid gap-5 rounded-2xl border border-line bg-surface p-5 sm:p-6"
-    >
-      <p className="leading-7 text-ink-2">
-        {mode === "products"
-          ? "U každé otázky uvidíte výchozí látky s koeficienty. Napište vzorce produktů oddělené znakem +, v libovolném pořadí a bez koeficientů. Po správné odpovědi se doplní celá vyčíslená rovnice."
-          : "U každé otázky uvidíte jen látku a to, zda se připravuje v laboratoři, nebo vyrábí v průmyslu. Napište celou rovnici, například Zn + HCl -> ZnCl2 + H2. Koeficienty můžete vynechat; po správné odpovědi se doplní. Uznává se kterýkoli ověřený postup."}{" "}
-        Vzorce pište s velkými a malými písmeny přesně (Co je kobalt, CO oxid uhelnatý). Hodnotí se
-        první kontrola; po chybě můžete odpověď opravit nebo zobrazit řešení a otázka se jednou
-        vrátí na konec. Výsledek se do pokroku zatím nezapočítává.
-      </p>
-      <SegmentedChoice
-        legend="Postupy"
-        name={kindName}
-        onSelect={(kind) => onChange({ ...settings, kind })}
-        options={KIND_OPTIONS.map(({ kind, label }) => ({
-          value: kind,
-          label: `${label} (${available[kind]})`,
-        }))}
-        value={settings.kind}
-      />
-      <SegmentedChoice
-        legend="Počet otázek"
-        name={countName}
-        onSelect={(count) => onChange({ ...settings, count })}
-        options={COUNT_OPTIONS}
-        value={settings.count}
-      />
-      <div>
-        <button
-          className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill hover:bg-accent-strong disabled:cursor-not-allowed disabled:bg-surface-3 disabled:text-ink-3"
-          disabled={plannedCount === 0}
-          onClick={onStart}
-          type="button"
-        >
-          Spustit kvíz ({czechCount(plannedCount, QUESTION_FORMS)})
-        </button>
-      </div>
-    </section>
-  );
-}
-
 interface CardProps<Question> {
   readonly question: Question;
   readonly names: ReadonlyMap<string, string>;
@@ -319,50 +256,29 @@ interface CardProps<Question> {
 
 type CardStatus = "open" | "solved" | "revealed";
 
-/**
- * The shared state of a typed question: the answer, the first-check result that is scored,
- * and whether the question is still open, solved or revealed.
- */
-function useRecallCard<Result>(
-  grade: (answer: string) => Result | null,
-  isCorrect: (result: Result) => boolean,
-) {
-  const [answer, setAnswer] = useState("");
+/** The scored first check, the latest result and whether the question is open or done. */
+function useCheck<Result>() {
   const [result, setResult] = useState<Result | null>(null);
   const [firstCorrect, setFirstCorrect] = useState<boolean | null>(null);
   const [status, setStatus] = useState<CardStatus>("open");
-  const [unreadable, setUnreadable] = useState(false);
-
-  function check() {
-    if (status !== "open") return;
-    const graded = grade(answer);
-    if (graded === null) {
-      setUnreadable(true);
-      return;
-    }
-    setUnreadable(false);
-    const correct = isCorrect(graded);
-    setResult(graded);
-    setFirstCorrect((current) => current ?? correct);
-    if (correct) setStatus("solved");
-  }
-
   return {
-    answer,
-    setAnswer: (value: string) => {
-      setAnswer(value);
-      setUnreadable(false);
-    },
     result,
     firstCorrect,
     status,
-    unreadable,
-    check,
-    reveal: () => {
+    record(graded: Result, correct: boolean) {
+      setResult(graded);
+      setFirstCorrect((current) => current ?? correct);
+      if (correct) setStatus("solved");
+    },
+    reveal() {
       setFirstCorrect((current) => current ?? false);
       setStatus("revealed");
     },
   };
+}
+
+function setAt(values: readonly string[], index: number, value: string): string[] {
+  return values.map((current, position) => (position === index ? value : current));
 }
 
 function ProductsCard({
@@ -373,15 +289,25 @@ function ProductsCard({
   onSkip,
 }: CardProps<ProductionProductsQuestion>) {
   const headingId = useId();
-  const card = useRecallCard<Extract<ProductRecallResult, { status: "graded" }>>(
-    (answer) => {
-      const graded = gradeProductRecall(answer, question.route.products, symbols);
-      return graded.status === "graded" ? graded : null;
-    },
-    (graded) => graded.correct,
-  );
+  const productCount = new Set(question.route.products.map((term) => term.formula)).size;
+  const [slots, setSlots] = useState<readonly string[]>(() => Array(productCount).fill(""));
+  const [unreadable, setUnreadable] = useState<readonly number[]>([]);
+  const check = useCheck<Extract<ProductSlotsResult, { status: "graded" }>>();
   const hint = reactionByproductHint(question.route, question.product.formula, names);
-  const done = card.status !== "open";
+  const done = check.status !== "open";
+  const graded = check.result;
+
+  function submit() {
+    if (done) return;
+    const result = gradeProductSlots(slots, question.route.products, symbols);
+    if (result.status === "unreadable") {
+      setUnreadable(result.unreadable);
+      return;
+    }
+    setUnreadable([]);
+    check.record(result, result.correct);
+  }
+
   return (
     <section
       aria-labelledby={headingId}
@@ -391,59 +317,65 @@ function ProductsCard({
       <p className="text-center text-sm font-semibold text-ink-3">
         {ROUTE_KIND_LABELS[question.kind]}
       </p>
-      <p className="mt-3 text-center font-display text-2xl leading-10 font-bold text-ink sm:text-3xl">
-        {done ? (
-          <BalancedEquation animate="products" route={question.route} />
-        ) : (
-          <>
-            <span className="sr-only">Výchozí látky: </span>
-            <EquationTerms terms={question.route.reactants} /> <span aria-hidden="true">→</span>{" "}
-            <span aria-hidden="true">?</span>
-          </>
-        )}
-      </p>
-      {question.route.conditionsCs ? (
-        <p className="mt-2 text-center text-sm text-ink-2">
-          Podmínky nad šipkou: {question.route.conditionsCs}
-        </p>
-      ) : null}
-      <h2 className="mt-5 text-center text-lg font-semibold text-ink" id={headingId}>
+      <h2 className="mt-2 text-center text-lg font-semibold text-ink" id={headingId}>
         Které produkty vzniknou?
       </h2>
       {done ? null : (
         <QuestionTools
           hint={<ByproductHintText hint={hint} />}
-          onSkip={card.firstCorrect === null ? onSkip : undefined}
+          onSkip={check.firstCorrect === null ? onSkip : undefined}
         />
       )}
-      <AnswerForm
-        disabled={done}
-        label="Produkty (vzorce oddělte znakem +, bez koeficientů)"
-        onChange={card.setAnswer}
-        onSubmit={card.check}
-        placeholder="např. ZnCl2 + H2"
-        unreadable={card.unreadable}
-        value={card.answer}
-      />
-      {card.status === "open" && card.result ? (
-        <WrongAnswer onReveal={card.reveal}>
-          <SideVerdicts match={card.result} />
-          {card.result.missingCount > 0 ? (
-            <p>
-              {card.result.missingCount === 1 ? "Chybí ještě " : "Chybějí ještě "}
-              {czechCount(card.result.missingCount, PRODUCT_FORMS)}.
-            </p>
-          ) : null}
+      <SlotForm
+        canSubmit={slots.some((slot) => slot.trim() !== "")}
+        done={done}
+        onSubmit={submit}
+        unreadable={unreadable.length > 0}
+      >
+        <span className="flex min-h-12 items-center font-display text-2xl font-bold text-ink sm:text-3xl">
+          <span className="sr-only">Výchozí látky: </span>
+          <EquationTerms terms={question.route.reactants} />
+        </span>
+        <Arrow />
+        <SlotGroup
+          coefficients={
+            check.status === "solved"
+              ? coefficientsFor(graded?.slots, question.route.products)
+              : null
+          }
+          disabled={done}
+          label="Produkt"
+          matches={graded && !done ? graded.slots : null}
+          onChange={(index, value) => {
+            setSlots((current) => setAt(current, index, value));
+            setUnreadable([]);
+          }}
+          unreadable={unreadable}
+          values={slots}
+        />
+      </SlotForm>
+      {question.route.conditionsCs ? (
+        <p className="mt-2 text-center text-sm text-ink-2">
+          Podmínky nad šipkou: {question.route.conditionsCs}
+        </p>
+      ) : null}
+      {check.status === "open" && graded ? (
+        <WrongAnswer onReveal={check.reveal}>
+          <MissingText count={graded.missingCount} forms={PRODUCT_FORMS} />
         </WrongAnswer>
       ) : null}
       {done ? (
         <Outcome
-          firstCorrect={card.firstCorrect === true}
-          onContinue={() => onComplete(card.firstCorrect === true)}
-          status={card.status}
+          firstCorrect={check.firstCorrect === true}
+          onContinue={() => onComplete(check.firstCorrect === true)}
+          status={check.status}
         >
           <p>
-            Celá rovnice: <BalancedEquation route={question.route} />
+            Celá rovnice:{" "}
+            <BalancedEquation
+              animate={check.status === "solved" ? "products" : "none"}
+              route={question.route}
+            />
           </p>
           <p className="text-ink-2">
             {KIND_LABELS[question.kind]}: <NamedSubstance {...question.product} />
@@ -461,16 +393,35 @@ function EquationCard({
   onSkip,
 }: CardProps<ProductionEquationQuestion>) {
   const headingId = useId();
-  const card = useRecallCard<Extract<EquationRecallResult<Route>, { status: "graded" }>>(
-    (answer) => {
-      const graded = gradeEquationRecall(answer, question.routes, symbols);
-      return graded.status === "graded" ? graded : null;
-    },
-    (graded) => graded.correct,
+  const distinct = (terms: Route["reactants"]) => new Set(terms.map((term) => term.formula)).size;
+  const [reactants, setReactants] = useState<readonly string[]>(() =>
+    Array(distinct(question.hintRoute.reactants)).fill(""),
   );
-  const done = card.status !== "open";
-  const solvedRoute = card.status === "solved" ? (card.result?.route ?? null) : null;
+  const [products, setProducts] = useState<readonly string[]>(() =>
+    Array(distinct(question.hintRoute.products)).fill(""),
+  );
+  const [unreadable, setUnreadable] = useState<{
+    reactants: readonly number[];
+    products: readonly number[];
+  }>({ reactants: [], products: [] });
+  const check = useCheck<Extract<RouteSlotsResult<Route>, { status: "graded" }>>();
+  const done = check.status !== "open";
+  const graded = check.result;
+  const solvedRoute = check.status === "solved" ? (graded?.route ?? null) : null;
   const others = question.routes.filter((route) => route.id !== solvedRoute?.id);
+  const filled = (values: readonly string[]) => values.some((value) => value.trim() !== "");
+
+  function submit() {
+    if (done) return;
+    const result = gradeRouteSlots(reactants, products, question.routes, symbols);
+    if (result.status === "unreadable") {
+      setUnreadable({ reactants: result.reactants, products: result.products });
+      return;
+    }
+    setUnreadable({ reactants: [], products: [] });
+    check.record(result, result.correct);
+  }
+
   return (
     <section
       aria-labelledby={headingId}
@@ -481,7 +432,7 @@ function EquationCard({
         {ROUTE_KIND_LABELS[question.kind]}
       </p>
       <h2
-        className="mt-3 text-center font-display text-2xl leading-10 font-bold text-ink sm:text-3xl"
+        className="mt-2 text-center font-display text-2xl leading-10 font-bold text-ink sm:text-3xl"
         id={headingId}
       >
         {question.kind === "preparation"
@@ -510,28 +461,80 @@ function EquationCard({
               <EquationTerms terms={question.hintRoute.products} withCoefficients={false} />
             </>,
           ]}
-          onSkip={card.firstCorrect === null ? onSkip : undefined}
+          onSkip={check.firstCorrect === null ? onSkip : undefined}
         />
       )}
-      <AnswerForm
-        disabled={done}
-        label="Rovnice (šipku napište jako -> nebo =)"
-        onChange={card.setAnswer}
-        onSubmit={card.check}
-        placeholder="např. Zn + HCl -> ZnCl2 + H2"
-        unreadable={card.unreadable}
-        value={card.answer}
-      />
-      {card.status === "open" && card.result ? (
-        <WrongAnswer onReveal={card.reveal}>
-          <EquationMistake product={question.product} result={card.result} />
+      <SlotForm
+        below={
+          done ? null : (
+            <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+              <SlotCountButtons
+                label="výchozí látka"
+                onChange={(count) => setReactants((current) => resize(current, count))}
+                value={reactants.length}
+              />
+              <SlotCountButtons
+                label="produkt"
+                onChange={(count) => setProducts((current) => resize(current, count))}
+                value={products.length}
+              />
+            </div>
+          )
+        }
+        canSubmit={filled(reactants) && filled(products)}
+        done={done}
+        onSubmit={submit}
+        unreadable={unreadable.reactants.length + unreadable.products.length > 0}
+      >
+        <SlotGroup
+          coefficients={
+            solvedRoute ? coefficientsFor(graded?.reactants.slots, solvedRoute.reactants) : null
+          }
+          disabled={done}
+          label="Výchozí látka"
+          matches={graded && !done ? graded.reactants.slots : null}
+          onChange={(index, value) => {
+            setReactants((current) => setAt(current, index, value));
+            setUnreadable({ reactants: [], products: [] });
+          }}
+          unreadable={unreadable.reactants}
+          values={reactants}
+        />
+        <Arrow />
+        <SlotGroup
+          coefficients={
+            solvedRoute ? coefficientsFor(graded?.products.slots, solvedRoute.products) : null
+          }
+          disabled={done}
+          label="Produkt"
+          matches={graded && !done ? graded.products.slots : null}
+          onChange={(index, value) => {
+            setProducts((current) => setAt(current, index, value));
+            setUnreadable({ reactants: [], products: [] });
+          }}
+          unreadable={unreadable.products}
+          values={products}
+        />
+      </SlotForm>
+      {check.status === "open" && graded ? (
+        <WrongAnswer onReveal={check.reveal}>
+          <p>
+            Tato reakce není mezi ověřenými postupy pro látku{" "}
+            <NamedSubstance {...question.product} />. Označení u políček je srovnání s nejbližším z
+            nich.
+          </p>
+          <MissingText
+            count={graded.reactants.missingCount}
+            forms={["výchozí látka", "výchozí látky", "výchozích látek"]}
+          />
+          <MissingText count={graded.products.missingCount} forms={PRODUCT_FORMS} />
         </WrongAnswer>
       ) : null}
       {done ? (
         <Outcome
-          firstCorrect={card.firstCorrect === true}
-          onContinue={() => onComplete(card.firstCorrect === true)}
-          status={card.status}
+          firstCorrect={check.firstCorrect === true}
+          onContinue={() => onComplete(check.firstCorrect === true)}
+          status={check.status}
         >
           {solvedRoute ? (
             <p>
@@ -560,105 +563,82 @@ function EquationCard({
   );
 }
 
-function EquationMistake({
-  result,
-  product,
-}: Readonly<{
-  result: Extract<EquationRecallResult<Route>, { status: "graded" }>;
-  product: ProductionRecallQuestion["product"];
-}>) {
-  if (result.route && result.coefficients) {
-    const reason = {
-      unbalanced: "Látky jsou správně, ale koeficienty rovnici nevyčíslují.",
-      unreduced:
-        "Látky jsou správně a počty atomů souhlasí, ale koeficienty nejsou v nejmenším celočíselném poměru.",
-      different: "Látky jsou správně, ale ověřená rovnice má jiné koeficienty.",
-      omitted: null,
-      matched: null,
-    }[result.coefficients];
-    return <p>{reason} Koeficienty můžete také vynechat; po správné odpovědi se doplní.</p>;
-  }
-  return (
-    <>
-      <p>
-        Tato reakce není mezi ověřenými postupy pro látku <NamedSubstance {...product} />. Ve
-        srovnání s nejbližším z nich:
-      </p>
-      <p>
-        Výchozí látky: <SideVerdicts inline match={result.reactants} />
-        {result.reactants.missingCount > 0 ? ` (chybí ${result.reactants.missingCount})` : null}
-      </p>
-      <p>
-        Produkty: <SideVerdicts inline match={result.products} />
-        {result.products.missingCount > 0 ? ` (chybí ${result.products.missingCount})` : null}
-      </p>
-    </>
+function resize(values: readonly string[], count: number): string[] {
+  return count > values.length
+    ? [...values, ...Array<string>(count - values.length).fill("")]
+    : values.slice(0, count);
+}
+
+/** The reviewed coefficient for each slot that matched a term; null for others. */
+function coefficientsFor(
+  slots: readonly (RecallTerm | null)[] | undefined,
+  terms: Route["reactants"],
+): readonly (number | null)[] | null {
+  if (!slots) return null;
+  return slots.map((slot) =>
+    slot?.expectedIndex === null || slot?.expectedIndex === undefined
+      ? null
+      : (terms[slot.expectedIndex]?.coefficient ?? null),
   );
 }
 
-function AnswerForm({
-  label,
-  placeholder,
-  value,
-  disabled,
+function Arrow() {
+  return (
+    <span
+      aria-hidden="true"
+      className="flex min-h-12 items-center px-1 font-display text-3xl font-bold text-ink"
+    >
+      →
+    </span>
+  );
+}
+
+/** The equation row: Enter in any slot checks the answer. */
+function SlotForm({
+  children,
+  below,
+  done,
+  canSubmit,
   unreadable,
-  onChange,
   onSubmit,
 }: Readonly<{
-  label: string;
-  placeholder: string;
-  value: string;
-  disabled: boolean;
+  children: ReactNode;
+  /** Shown between the equation row and the check button. */
+  below?: ReactNode;
+  /** The question is solved or revealed: the slots are read-only and no check is offered. */
+  done: boolean;
+  canSubmit: boolean;
   unreadable: boolean;
-  onChange: (value: string) => void;
   onSubmit: () => void;
 }>) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const errorId = useId();
-  useEffect(() => inputRef.current?.focus(), []);
+  const rowRef = useRef<HTMLDivElement>(null);
+  useEffect(() => rowRef.current?.querySelector("input")?.focus(), []);
   return (
     <form
-      className="mt-5 grid gap-2"
+      className="mt-5"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit();
+        if (canSubmit && !done) onSubmit();
       }}
     >
-      <label className="grid gap-2 font-medium text-ink">
-        {label}
-        <input
-          aria-describedby={unreadable ? errorId : undefined}
-          aria-invalid={unreadable || undefined}
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          className="min-h-12 w-full rounded-xl border border-line-strong bg-surface px-3 font-mono text-ink disabled:bg-surface-2"
-          disabled={disabled}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={placeholder}
-          ref={inputRef}
-          spellCheck={false}
-          value={value}
-        />
-      </label>
-      <p
-        aria-hidden="true"
-        className="min-h-8 text-lg leading-8 text-ink"
-        data-testid="answer-preview"
+      <div
+        className="flex flex-wrap items-start justify-center gap-x-2 gap-y-3"
+        data-slot-row=""
+        ref={rowRef}
       >
-        <TypedPreview value={value} />
-      </p>
+        {children}
+      </div>
       {unreadable ? (
-        <p className="text-sm text-bad" id={errorId} role="alert">
-          Zápis nelze přečíst. Vzorce oddělte znakem +, u celé rovnice napište jednu šipku (-&gt;
-          nebo =).
+        <p className="mt-3 text-center text-sm text-bad" role="alert">
+          Označené políčko nelze přečíst. Do každého políčka napište jeden vzorec, například H2SO4.
         </p>
       ) : null}
-      {disabled ? null : (
-        <div>
+      {below}
+      {done ? null : (
+        <div className="mt-4 flex justify-center">
           <button
-            className="min-h-11 rounded-xl bg-accent px-4 font-semibold text-on-fill hover:bg-accent-strong disabled:cursor-not-allowed disabled:bg-surface-3 disabled:text-ink-3"
-            disabled={value.trim() === ""}
+            className="min-h-11 rounded-xl bg-accent px-5 font-semibold text-on-fill hover:bg-accent-strong disabled:cursor-not-allowed disabled:bg-surface-3 disabled:text-ink-3"
+            disabled={!canSubmit}
             type="submit"
           >
             Zkontrolovat
@@ -666,6 +646,194 @@ function AnswerForm({
         </div>
       )}
     </form>
+  );
+}
+
+const VERDICT_TEXT = {
+  correct: "správně",
+  duplicate: "dvakrát",
+  wrong: "nepatří sem",
+} as const;
+
+/** One side of the equation as formula slots separated by „+“. */
+function SlotGroup({
+  label,
+  values,
+  disabled,
+  matches,
+  coefficients,
+  unreadable,
+  onChange,
+}: Readonly<{
+  label: string;
+  values: readonly string[];
+  disabled: boolean;
+  /** The verdict per slot after a wrong check; null hides the verdicts. */
+  matches: SlotSideResult["slots"] | null;
+  /** Reviewed coefficients shown in front of the slots after a correct check. */
+  coefficients: readonly (number | null)[] | null;
+  unreadable: readonly number[];
+  onChange: (index: number, value: string) => void;
+}>) {
+  return (
+    <>
+      {values.map((value, index) => {
+        const match = matches?.[index] ?? null;
+        const coefficient = coefficients?.[index] ?? null;
+        const invalid = unreadable.includes(index);
+        return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional; values change as typed.
+          <span className="contents" key={index}>
+            {index > 0 ? (
+              <span
+                aria-hidden="true"
+                className="flex min-h-12 items-center text-2xl font-bold text-ink-2"
+              >
+                +
+              </span>
+            ) : null}
+            <span className="flex items-start gap-1">
+              {coefficient !== null && coefficient !== 1 ? (
+                <span className="flex min-h-12 items-center font-display text-2xl font-bold">
+                  <Coefficient animate value={coefficient} />
+                </span>
+              ) : null}
+              <FormulaSlot
+                disabled={disabled}
+                invalid={invalid}
+                label={`${label} ${index + 1}`}
+                match={match}
+                onChange={(next) => onChange(index, next)}
+                value={value}
+              />
+            </span>
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
+function FormulaSlot({
+  label,
+  value,
+  disabled,
+  invalid,
+  match,
+  onChange,
+}: Readonly<{
+  label: string;
+  value: string;
+  disabled: boolean;
+  invalid: boolean;
+  match: RecallTerm | null;
+  onChange: (value: string) => void;
+}>) {
+  const verdictId = useId();
+  const tone =
+    match === null
+      ? invalid
+        ? "border-bad"
+        : "border-line-strong"
+      : match.verdict === "correct"
+        ? "border-good bg-good-soft"
+        : "border-bad bg-bad-soft";
+
+  /** „+“ (or „,“) moves to the next slot, as Tab does, instead of being typed. */
+  function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "+" && event.key !== ",") return;
+    event.preventDefault();
+    const row = event.currentTarget.closest("[data-slot-row]");
+    const inputs = [...(row?.querySelectorAll<HTMLInputElement>("input:not(:disabled)") ?? [])];
+    inputs[inputs.indexOf(event.currentTarget) + 1]?.focus();
+  }
+
+  return (
+    <span className="flex w-28 flex-col items-center gap-1 sm:w-36">
+      <input
+        aria-describedby={match ? verdictId : undefined}
+        aria-invalid={invalid || match?.verdict === "wrong" || match?.verdict === "duplicate"}
+        aria-label={label}
+        autoCapitalize="off"
+        autoComplete="off"
+        autoCorrect="off"
+        className={`min-h-12 w-full rounded-xl border-2 bg-surface px-2 text-center font-mono text-lg text-ink disabled:opacity-100 ${tone}`}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+        onKeyDown={onKeyDown}
+        spellCheck={false}
+        value={value}
+      />
+      <span aria-hidden="true" className="min-h-6 text-base leading-6 text-ink-2">
+        <SlotPreview value={value} />
+      </span>
+      {match ? (
+        <span
+          className={`flex items-center gap-1 text-xs font-semibold ${
+            match.verdict === "correct" ? "text-good" : "text-bad"
+          }`}
+          id={verdictId}
+        >
+          {match.verdict === "correct" ? <CheckIcon /> : <CrossIcon />}
+          {VERDICT_TEXT[match.verdict]}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+const SUBSCRIPT_DIGITS = /[₀-₉]/gu;
+const TYPED_TERM = /^(\d*)\s*([A-Za-z0-9()[\]]+)$/u;
+
+/** Typeset preview of a slot, so H2SO4 reads as H₂SO₄ while typing. */
+function SlotPreview({ value }: Readonly<{ value: string }>) {
+  const plain = value
+    .trim()
+    .replace(SUBSCRIPT_DIGITS, (digit) => String(digit.charCodeAt(0) - "₀".charCodeAt(0)));
+  if (plain === "") return null;
+  const match = TYPED_TERM.exec(plain);
+  return match ? <Formula formula={match[2] ?? ""} /> : plain;
+}
+
+function SlotCountButtons({
+  label,
+  value,
+  onChange,
+}: Readonly<{ label: string; value: number; onChange: (count: number) => void }>) {
+  const button =
+    "min-h-11 min-w-11 rounded-xl border border-line-strong bg-surface px-3 font-semibold text-ink hover:bg-surface-3 disabled:cursor-not-allowed disabled:text-ink-3";
+  return (
+    <span className="flex items-center gap-2">
+      <button
+        className={button}
+        disabled={value <= 1}
+        onClick={() => onChange(value - 1)}
+        type="button"
+      >
+        − {label}
+      </button>
+      <button
+        className={button}
+        disabled={value >= MAX_SLOTS}
+        onClick={() => onChange(value + 1)}
+        type="button"
+      >
+        + {label}
+      </button>
+    </span>
+  );
+}
+
+function MissingText({
+  count,
+  forms,
+}: Readonly<{ count: number; forms: readonly [string, string, string] }>) {
+  if (count === 0) return null;
+  return (
+    <p>
+      {count === 1 ? "Chybí ještě " : "Chybějí ještě "}
+      {czechCount(count, forms)}.
+    </p>
   );
 }
 
@@ -684,7 +852,9 @@ function WrongAnswer({
         Zatím ne
       </p>
       <div className="mt-1 grid gap-1 leading-7 text-ink">{children}</div>
-      <p className="mt-2 text-sm text-ink-2">Opravte odpověď a zkontrolujte ji znovu, nebo:</p>
+      <p className="mt-2 text-sm text-ink-2">
+        Opravte označená políčka a zkontrolujte znovu, nebo:
+      </p>
       <button
         className="mt-2 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink hover:bg-surface-3"
         onClick={onReveal}
@@ -735,51 +905,6 @@ function Outcome({
   );
 }
 
-const VERDICT_TEXT = {
-  correct: "správně",
-  duplicate: "uvedeno dvakrát",
-  wrong: "nepatří sem",
-} as const;
-
-function SideVerdicts({
-  match,
-  inline = false,
-}: Readonly<{ match: RecallSideMatch; inline?: boolean }>) {
-  const items = match.terms.map((term, index) => (
-    <span
-      className={`inline-flex items-center gap-1 rounded-lg px-2 ${
-        term.verdict === "correct" ? "bg-good-soft text-good" : "bg-surface text-bad"
-      }`}
-      // biome-ignore lint/suspicious/noArrayIndexKey: typed terms may repeat; the position identifies them.
-      key={`${index}-${term.formula}`}
-    >
-      {term.verdict === "correct" ? <CheckIcon /> : <CrossIcon />}
-      <Formula formula={term.formula} />
-      <span className="text-sm">{VERDICT_TEXT[term.verdict]}</span>
-    </span>
-  ));
-  return inline ? (
-    <span className="inline-flex flex-wrap gap-1">{items}</span>
-  ) : (
-    <p className="flex flex-wrap gap-1">{items}</p>
-  );
-}
-
-function ByproductHintText({ hint }: Readonly<{ hint: ProductsHint }>) {
-  if (hint.productCount <= 1) return <>Vzniká jediný produkt.</>;
-  return (
-    <>
-      Vznikají {czechCount(hint.productCount, PRODUCT_FORMS)}.
-      {hint.product ? (
-        <>
-          {" "}
-          Jedním z nich je <NamedSubstance {...hint.product} />.
-        </>
-      ) : null}
-    </>
-  );
-}
-
 /** „Nápověda“ opens the hints one at a time; „Přeskočit“ moves the question to the end. */
 function StagedHints({
   hints,
@@ -822,118 +947,5 @@ function StagedHints({
         ))}
       </ol>
     </div>
-  );
-}
-
-/** One side of a reaction; coefficients of 1 are left out. */
-function EquationTerms({
-  terms,
-  withCoefficients = true,
-  animate = false,
-}: Readonly<{ terms: readonly Term[]; withCoefficients?: boolean; animate?: boolean }>) {
-  return (
-    <>
-      {terms.map((term, index) => (
-        // A formula appears once per side of an equation, so it identifies the term.
-        <Fragment key={term.formula}>
-          {index > 0 ? " + " : null}
-          {withCoefficients && term.coefficient !== 1 ? (
-            <>
-              <span
-                className={animate ? "reaction-coefficient-active text-accent" : undefined}
-                data-coefficient=""
-              >
-                {term.coefficient}
-              </span>{" "}
-            </>
-          ) : null}
-          <Formula formula={term.formula} />
-        </Fragment>
-      ))}
-    </>
-  );
-}
-
-/** The reviewed, balanced reaction; the coefficients filled in for the learner are highlighted. */
-function BalancedEquation({
-  route,
-  animate = "none",
-}: Readonly<{ route: Route; animate?: "none" | "products" | "all" }>) {
-  return (
-    <span data-balanced-equation="">
-      <EquationTerms animate={animate === "all"} terms={route.reactants} /> →{" "}
-      <EquationTerms animate={animate !== "none"} terms={route.products} />
-    </span>
-  );
-}
-
-function Conditions({ route }: Readonly<{ route: Route }>) {
-  return route.conditionsCs ? (
-    <span className="text-ink-2">; podmínky: {route.conditionsCs}</span>
-  ) : null;
-}
-
-const SUBSCRIPT_DIGITS = /[₀-₉]/gu;
-const TYPED_TERM = /^(\d*)\s*([A-Za-z0-9()[\]]+)$/u;
-
-/** Live typeset preview of what the learner types, so H2SO4 reads as H₂SO₄. */
-function TypedPreview({ value }: Readonly<{ value: string }>) {
-  const plain = value.replace(SUBSCRIPT_DIGITS, (digit) =>
-    String(digit.charCodeAt(0) - "₀".charCodeAt(0)),
-  );
-  const sides = plain.split(/->|→|⟶|=>?/u);
-  return (
-    <>
-      {sides.map((side, sideIndex) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: the sides of a typed equation are positional.
-        <Fragment key={sideIndex}>
-          {sideIndex > 0 ? " → " : null}
-          {side
-            .split(/[+,]/u)
-            .map((piece) => piece.trim())
-            .filter((piece) => piece !== "")
-            .map((piece, index) => {
-              const match = TYPED_TERM.exec(piece);
-              return (
-                // biome-ignore lint/suspicious/noArrayIndexKey: typed terms are positional.
-                <Fragment key={`${index}-${piece}`}>
-                  {index > 0 ? " + " : null}
-                  {match ? (
-                    <>
-                      {match[1] ? `${match[1]} ` : null}
-                      <Formula formula={match[2] ?? ""} />
-                    </>
-                  ) : (
-                    piece
-                  )}
-                </Fragment>
-              );
-            })}
-        </Fragment>
-      ))}
-    </>
-  );
-}
-
-function MissedList({ missed }: Readonly<{ missed: readonly MissedQuestion[] }>) {
-  return (
-    <section className="mt-5 border-t border-line pt-4">
-      <h3 className="font-semibold text-ink">K zopakování</h3>
-      <ul className="mt-2 grid list-none gap-2 p-0">
-        {missed.map((item) => (
-          <li className="rounded-xl bg-surface-2 p-3 text-sm leading-6" key={item.id}>
-            <span className="font-semibold text-ink">
-              {item.product.nameCs} (<Formula formula={item.product.formula} />)
-            </span>{" "}
-            <span className="text-ink-3">· {KIND_LABELS[item.kind]}</span>
-            {item.routes.map((route) => (
-              <span className="block text-ink-2" key={route.id}>
-                <BalancedEquation route={route} />
-              </span>
-            ))}
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }

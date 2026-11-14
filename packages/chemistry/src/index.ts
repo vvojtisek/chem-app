@@ -70,15 +70,15 @@ export {
   parseFormula,
 } from "./parse-formula";
 export {
-  type EquationRecallResult,
-  gradeEquationRecall,
-  gradeProductRecall,
+  gradeProductSlots,
+  gradeRouteSlots,
   matchRecallSide,
-  type ProductRecallResult,
-  type RecallCoefficients,
+  type ProductSlotsResult,
   type RecallSideMatch,
   type RecallTerm,
   type RecallTermVerdict,
-  readRecallEquation,
+  type RouteSlotsResult,
+  readRecallSlot,
   readRecallTerms,
+  type SlotSideResult,
 } from "./evaluate-reaction-recall";

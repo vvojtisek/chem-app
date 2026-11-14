@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  gradeEquationRecall,
-  gradeProductRecall,
-  readRecallEquation,
+  gradeProductSlots,
+  gradeRouteSlots,
+  readRecallSlot,
   readRecallTerms,
 } from "./evaluate-reaction-recall";
 import { parseEquationAnswer } from "./parse-equation";
@@ -21,44 +21,14 @@ const zincSulfuric = equation("Zn + H2SO4 -> ZnSO4 + H2");
 const hydride = equation("CaH2 + 2 H2O -> Ca(OH)2 + 2 H2");
 const phosphorus = equation("P + 5 HNO3 -> H3PO4 + 5 NO2 + H2O");
 
-describe("product recall", () => {
-  it("accepts the products in any order, with or without coefficients", () => {
-    for (const input of ["ZnCl2 + H2", "H2 + ZnCl2", "H₂ + ZnCl₂", "ZnCl2 + 1 H2", "H2, ZnCl2"]) {
-      const result = gradeProductRecall(input, zincHcl.products, symbols);
-      expect(result.status === "graded" && result.correct, input).toBe(true);
-    }
-    const nitric = gradeProductRecall("H3PO4 + NO2 + H2O", phosphorus.products, symbols);
-    expect(nitric.status === "graded" && nitric.correct).toBe(true);
-    const withNumbers = gradeProductRecall("H3PO4 + 5 NO2 + H2O", phosphorus.products, symbols);
-    expect(withNumbers.status === "graded" && withNumbers.correct).toBe(true);
-  });
-
-  it("is case-sensitive and compares notation, not atom counts", () => {
-    for (const input of ["zncl2 + H2", "Cl2Zn + H2", "ZnCl2 + h2"]) {
-      const result = gradeProductRecall(input, zincHcl.products, symbols);
-      expect(result.status === "graded" && result.correct, input).toBe(false);
-    }
-  });
-
-  it("marks wrong, duplicate and missing products", () => {
-    const result = gradeProductRecall("ZnCl2 + ZnCl2 + H2O", zincHcl.products, symbols);
-    expect(result).toMatchObject({
-      status: "graded",
-      correct: false,
-      missingCount: 1,
-      terms: [
-        { formula: "ZnCl2", verdict: "correct" },
-        { formula: "ZnCl2", verdict: "duplicate" },
-        { formula: "H2O", verdict: "wrong" },
-      ],
-    });
-  });
-
-  it("asks for a fix instead of grading an unreadable entry", () => {
-    for (const input of ["", "ZnCl2 +", "ZnCl2 + H2 -> x", "ZnCl2 & H2", "Zn(Cl2 + H2"]) {
-      expect(gradeProductRecall(input, zincHcl.products, symbols), input).toEqual({
-        status: "unreadable",
-      });
+describe("slot reading", () => {
+  it("reads one formula per slot and ignores a leading coefficient", () => {
+    expect(readRecallSlot("ZnCl2")).toEqual({ coefficient: 1, formula: "ZnCl2" });
+    expect(readRecallSlot("2 HCl")).toEqual({ coefficient: 2, formula: "HCl" });
+    expect(readRecallSlot("H₂")).toEqual({ coefficient: 1, formula: "H2" });
+    expect(readRecallSlot("  ")).toBe("empty");
+    for (const input of ["ZnCl2 + H2", "Zn&", "Zn(Cl2", "->"]) {
+      expect(readRecallSlot(input), input).toBeNull();
     }
     expect(readRecallTerms("2 HCl + Zn")).toEqual([
       { coefficient: 2, formula: "HCl" },
@@ -67,53 +37,96 @@ describe("product recall", () => {
   });
 });
 
-describe("equation recall", () => {
+describe("product slots", () => {
+  it("accepts the products in any slot order, with or without coefficients", () => {
+    for (const slots of [
+      ["ZnCl2", "H2"],
+      ["H2", "ZnCl2"],
+      ["ZnCl₂", "1 H2"],
+    ]) {
+      const result = gradeProductSlots(slots, zincHcl.products, symbols);
+      expect(result.status === "graded" && result.correct, slots.join("|")).toBe(true);
+    }
+    const nitric = gradeProductSlots(["H2O", "5 NO2", "H3PO4"], phosphorus.products, symbols);
+    expect(nitric.status === "graded" && nitric.correct).toBe(true);
+  });
+
+  it("is case-sensitive and compares notation, not atom counts", () => {
+    for (const slots of [
+      ["zncl2", "H2"],
+      ["Cl2Zn", "H2"],
+      ["ZnCl2", "h2"],
+    ]) {
+      const result = gradeProductSlots(slots, zincHcl.products, symbols);
+      expect(result.status === "graded" && result.correct, slots.join("|")).toBe(false);
+    }
+  });
+
+  it("marks each slot and counts the missing products, ignoring blank slots", () => {
+    const result = gradeProductSlots(["ZnCl2", "", "ZnCl2"], zincHcl.products, symbols);
+    expect(result).toMatchObject({ status: "graded", correct: false, missingCount: 1 });
+    if (result.status !== "graded") throw new Error("expected graded");
+    expect(result.slots.map((slot) => slot?.verdict ?? null)).toEqual([
+      "correct",
+      null,
+      "duplicate",
+    ]);
+    const wrong = gradeProductSlots(["H2O", "H2"], zincHcl.products, symbols);
+    if (wrong.status !== "graded") throw new Error("expected graded");
+    expect(wrong.slots.map((slot) => slot?.verdict)).toEqual(["wrong", "correct"]);
+  });
+
+  it("names the unreadable slots instead of grading", () => {
+    expect(gradeProductSlots(["ZnCl2", "H2 & x"], zincHcl.products, symbols)).toEqual({
+      status: "unreadable",
+      unreadable: [1],
+    });
+  });
+});
+
+describe("route slots", () => {
   const hydrogen = [zincHcl, zincSulfuric, hydride];
 
-  it("reads -> , → and = as the arrow", () => {
-    for (const input of [
-      "Zn + HCl -> ZnCl2 + H2",
-      "Zn + HCl → ZnCl2 + H2",
-      "Zn + HCl = ZnCl2 + H2",
-    ]) {
-      expect(readRecallEquation(input), input).not.toBeNull();
-    }
-    expect(readRecallEquation("Zn + HCl ZnCl2 + H2")).toBeNull();
-    expect(readRecallEquation("Zn -> HCl -> H2")).toBeNull();
-  });
-
-  it("accepts any reviewed route and fills in its coefficients when none are written", () => {
-    const result = gradeEquationRecall("CaH2 + H2O -> H2 + Ca(OH)2", hydrogen, symbols);
-    expect(result).toMatchObject({ status: "graded", correct: true, coefficients: "omitted" });
+  it("accepts any reviewed route, ignoring typed coefficients", () => {
+    const result = gradeRouteSlots(["H2O", "CaH2"], ["H2", "Ca(OH)2"], hydrogen, symbols);
+    expect(result).toMatchObject({ status: "graded", correct: true });
     expect(result.status === "graded" ? result.route : null).toBe(hydride);
-    const sulfuric = gradeEquationRecall("H2SO4 + Zn = ZnSO4 + H2", hydrogen, symbols);
+    const sulfuric = gradeRouteSlots(["2 H2SO4", "Zn"], ["ZnSO4", "H2"], hydrogen, symbols);
     expect(sulfuric.status === "graded" ? sulfuric.route : null).toBe(zincSulfuric);
+    const wrongNumbers = gradeRouteSlots(["Zn", "3 HCl"], ["ZnCl2", "H2"], hydrogen, symbols);
+    expect(wrongNumbers).toMatchObject({ correct: true });
   });
 
-  it("accepts the reviewed coefficients and rejects other written ones", () => {
-    expect(gradeEquationRecall("Zn + 2 HCl -> ZnCl2 + H2", hydrogen, symbols)).toMatchObject({
-      correct: true,
-      coefficients: "matched",
-    });
-    expect(gradeEquationRecall("Zn + 3 HCl -> ZnCl2 + H2", hydrogen, symbols)).toMatchObject({
-      correct: false,
-      coefficients: "unbalanced",
-    });
-    expect(gradeEquationRecall("2 Zn + 4 HCl -> 2 ZnCl2 + 2 H2", hydrogen, symbols)).toMatchObject({
-      correct: false,
-      coefficients: "unreduced",
-    });
+  it("matches routes with a different number of terms through blank or added slots", () => {
+    const three = equation("P + HNO3 -> H3PO4 + NO2 + H2O");
+    const result = gradeRouteSlots(
+      ["P", "HNO3"],
+      ["H3PO4", "NO2", "H2O"],
+      [zincHcl, three],
+      symbols,
+    );
+    expect(result.status === "graded" ? result.route : null).toBe(three);
+    const blanks = gradeRouteSlots(["Zn", "HCl", ""], ["H2", "ZnCl2", ""], hydrogen, symbols);
+    expect(blanks).toMatchObject({ correct: true });
   });
 
-  it("rejects a pathway that is not reviewed for the substance", () => {
-    const result = gradeEquationRecall("Zn + H2O -> ZnO + H2", hydrogen, symbols);
+  it("compares a wrong pathway with the closest reviewed route", () => {
+    const result = gradeRouteSlots(["Zn", "H2O"], ["ZnO", "H2"], hydrogen, symbols);
     expect(result).toMatchObject({ status: "graded", correct: false, route: null });
     if (result.status !== "graded") throw new Error("expected graded");
-    expect(result.reactants.terms.map((term) => term.verdict)).toEqual(["correct", "wrong"]);
+    expect(result.reactants.slots.map((slot) => slot?.verdict)).toEqual(["correct", "wrong"]);
   });
 
   it("does not let a product stand in for a reactant", () => {
-    const result = gradeEquationRecall("ZnCl2 + H2 -> Zn + HCl", hydrogen, symbols);
+    const result = gradeRouteSlots(["ZnCl2", "H2"], ["Zn", "HCl"], hydrogen, symbols);
     expect(result).toMatchObject({ correct: false, route: null });
+  });
+
+  it("reports unreadable slots per side", () => {
+    expect(gradeRouteSlots(["Zn", "H+Cl"], ["ZnCl2"], hydrogen, symbols)).toEqual({
+      status: "unreadable",
+      reactants: [1],
+      products: [],
+    });
   });
 });

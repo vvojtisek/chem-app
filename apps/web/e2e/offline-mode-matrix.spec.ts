@@ -39,7 +39,9 @@ test("starts and hydrates learning modes offline after one home visit", async ({
 
   await page.goto("/procvicovani/priprava-vyroba", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: /^Spustit kvíz/ }).click();
-  await expect(page.getByRole("region", { name: /^Ze kterých výchozích látek/ })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Které produkty touto reakcí vzniknou?" }),
+  ).toBeVisible();
 
   await page.goto("/flashcards/prvky", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();
