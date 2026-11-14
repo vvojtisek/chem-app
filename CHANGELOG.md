@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.32.0](https://github.com/vvojtisek/chem-app/compare/v1.31.0...v1.32.0) (2026-11-14)
+
+
+### Features
+
+* **web:** left-to-right equations with formula slots in the Příprava a výroba quiz ([35068a5](https://github.com/vvojtisek/chem-app/commit/35068a5db44ff9d33ee85cd7a57f184fd6687935))
+* **web:** left-to-right equations with formula slots in the Příprava a výroba quiz ([acd65a1](https://github.com/vvojtisek/chem-app/commit/acd65a1d404b76ceebd8ac5b58904380698bf895))
+
 ## [1.31.0](https://github.com/vvojtisek/chem-app/compare/v1.30.0...v1.31.0) (2026-11-14)
 
 
