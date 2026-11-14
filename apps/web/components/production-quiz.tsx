@@ -7,7 +7,9 @@ import { AnswerFeedback } from "@/components/answer-feedback";
 import { FinalAnswerReview } from "@/components/final-answer-review";
 import { Equation, EquationSide, Formula } from "@/components/formula";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { ProductionRecallQuiz } from "@/components/production-recall-quiz";
 import { NamedSubstance, QuestionTools } from "@/components/question-tools";
+import { SegmentedChoice } from "@/components/segmented-choice";
 import { czechCount } from "@/lib/czech-plural";
 import { drawSeries } from "@/lib/periodic-table-scope";
 import {
@@ -35,6 +37,11 @@ import {
   type ProductionRouteOption,
   type ProductionRouteQuestion,
 } from "@/lib/preparation-production-quiz";
+import {
+  loadProductionQuizMode,
+  type ProductionQuizMode,
+  saveProductionQuizMode,
+} from "@/lib/production-quiz-preferences";
 
 const QUESTION_FORMS = ["otázka", "otázky", "otázek"] as const;
 const KIND_OPTIONS: readonly { readonly kind: ProductionQuizKind; readonly label: string }[] = [
@@ -74,24 +81,111 @@ type Feedback =
       readonly isCorrect: boolean;
     };
 
+const MODE_OPTIONS: readonly { readonly value: ProductionQuizMode; readonly label: string }[] = [
+  { value: "easy", label: "Lehká" },
+  { value: "advanced", label: "Pokročilá" },
+  { value: "pro", label: "Pro" },
+];
+
+/**
+ * The preparation and production quiz in three difficulties: „Lehká“ is the multiple-choice
+ * quiz, „Pokročilá“ asks for the typed products of given reactants and „Pro“ for a whole typed
+ * reaction. The chosen difficulty is remembered on this device. Switching it during a quiz
+ * starts a new quiz in the chosen difficulty with the same kind and number of questions.
+ */
+export function ProductionQuiz({
+  products,
+  allowedSymbols,
+  random = Math.random,
+}: Readonly<{
+  products: readonly PreparationProductionRuntimeProduct[];
+  allowedSymbols: readonly string[];
+  random?: () => number;
+}>) {
+  const [mode, setMode] = useState<ProductionQuizMode>("easy");
+  const [settings, setSettings] = useState<ProductionQuizSettings>({
+    kind: "all",
+    count: 10,
+    direction: "choose-route",
+  });
+  const [active, setActive] = useState(false);
+  const [autoStart, setAutoStart] = useState(false);
+  const modeName = useId();
+
+  // Read after mounting, so the server-rendered page and the first client render agree.
+  useEffect(() => {
+    const stored = loadProductionQuizMode();
+    if (stored) setMode(stored);
+  }, []);
+
+  function changeMode(next: ProductionQuizMode) {
+    if (next === mode) return;
+    setAutoStart(active);
+    setActive(false);
+    setMode(next);
+    saveProductionQuizMode(next);
+  }
+
+  return (
+    <div className="w-full">
+      <div className="mb-4">
+        <SegmentedChoice
+          legend="Obtížnost"
+          name={modeName}
+          onSelect={changeMode}
+          options={MODE_OPTIONS}
+          value={mode}
+        />
+      </div>
+      {mode === "easy" ? (
+        <ChoiceProductionQuiz
+          autoStart={autoStart}
+          key={mode}
+          onActiveChange={setActive}
+          onSettingsChange={setSettings}
+          products={products}
+          random={random}
+          settings={settings}
+        />
+      ) : (
+        <ProductionRecallQuiz
+          allowedSymbols={allowedSymbols}
+          autoStart={autoStart}
+          key={mode}
+          mode={mode === "advanced" ? "products" : "equation"}
+          onActiveChange={setActive}
+          onSettingsChange={(next) => setSettings({ ...settings, ...next })}
+          products={products}
+          random={random}
+          settings={settings}
+        />
+      )}
+    </div>
+  );
+}
+
 /**
  * Multiple-choice recall of preparation and industrial production, in two directions: the
  * learner picks the reactants that make a given substance, or the substance that a given
  * route makes. Options are shuffled each time a question is shown.
  * Results stay in this session; the quiz does not record attempts.
  */
-export function ProductionQuiz({
+function ChoiceProductionQuiz({
   products,
-  random = Math.random,
+  settings,
+  onSettingsChange: setSettings,
+  autoStart,
+  onActiveChange,
+  random,
 }: Readonly<{
   products: readonly PreparationProductionRuntimeProduct[];
-  random?: () => number;
+  settings: ProductionQuizSettings;
+  onSettingsChange: (settings: ProductionQuizSettings) => void;
+  /** Starts a quiz on mounting, after the difficulty was switched during a quiz. */
+  autoStart: boolean;
+  onActiveChange: (active: boolean) => void;
+  random: () => number;
 }>) {
-  const [settings, setSettings] = useState<ProductionQuizSettings>({
-    kind: "all",
-    count: 10,
-    direction: "choose-route",
-  });
   const [session, setSession] = useState<PracticeQueueState<ProductionQuizItem> | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [showResults, setShowResults] = useState(false);
@@ -117,6 +211,14 @@ export function ProductionQuiz({
   useEffect(() => {
     if (runId > 0) firstOptionRef.current?.focus();
   }, [runId]);
+
+  const running = session?.status === "running";
+  useEffect(() => onActiveChange(running), [running, onActiveChange]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once, when the difficulty changed mid-quiz.
+  useEffect(() => {
+    if (autoStart) start();
+  }, []);
 
   function start() {
     setShowResults(false);
@@ -319,44 +421,6 @@ function QuizSetup({
         </button>
       </div>
     </section>
-  );
-}
-
-function SegmentedChoice<Value extends string | number | null>({
-  legend,
-  name,
-  options,
-  value,
-  onSelect,
-}: Readonly<{
-  legend: string;
-  name: string;
-  options: readonly { readonly value: Value; readonly label: string }[];
-  value: Value;
-  onSelect: (value: Value) => void;
-}>) {
-  return (
-    <fieldset>
-      <legend className="mb-2 text-sm font-semibold text-ink-2">{legend}</legend>
-      <div className="inline-flex flex-wrap rounded-xl border border-line-strong bg-surface-3 p-1">
-        {options.map((option) => (
-          <label key={String(option.value)}>
-            <input
-              checked={value === option.value}
-              className="peer sr-only"
-              name={name}
-              onChange={() => onSelect(option.value)}
-              type="radio"
-              value={String(option.value)}
-            />
-            <span className="flex min-h-11 cursor-pointer items-center gap-1 rounded-lg px-4 text-sm font-semibold text-ink-2 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
-              {value === option.value ? <span aria-hidden="true">✓</span> : null}
-              {option.label}
-            </span>
-          </label>
-        ))}
-      </div>
-    </fieldset>
   );
 }
 

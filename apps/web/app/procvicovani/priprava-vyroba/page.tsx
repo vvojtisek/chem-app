@@ -1,4 +1,5 @@
 import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
+import { curatedElements } from "@inorganic/content/runtime";
 import { PageHeader } from "@/components/page-header";
 import { PRACTICE_BREADCRUMB } from "@/components/practice-breadcrumb";
 import { ProductionQuiz } from "@/components/production-quiz";
@@ -10,7 +11,10 @@ export default function ProductionQuizPage() {
         breadcrumbs={[PRACTICE_BREADCRUMB, { label: "Kvíz: Příprava a výroba" }]}
         title="Kvíz: Příprava a výroba látek"
       />
-      <ProductionQuiz products={curatedPreparationProduction} />
+      <ProductionQuiz
+        allowedSymbols={curatedElements.map((element) => element.symbol)}
+        products={curatedPreparationProduction}
+      />
     </main>
   );
 }
