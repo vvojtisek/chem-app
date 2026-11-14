@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.30.0](https://github.com/vvojtisek/chem-app/compare/v1.29.0...v1.30.0) (2026-11-14)
+
+
+### Features
+
+* **web:** subject tabs in the top bar and uniform practice buttons ([9d13aad](https://github.com/vvojtisek/chem-app/commit/9d13aad2caad1aae7b6c0f806732e06cee8e7351))
+* **web:** subject tabs in the top bar and uniform practice buttons ([a3f852a](https://github.com/vvojtisek/chem-app/commit/a3f852a215cd1aa851a192dd1a5935fac0133f58))
+
 ## [1.29.0](https://github.com/vvojtisek/chem-app/compare/v1.28.0...v1.29.0) (2026-11-10)
 
 
