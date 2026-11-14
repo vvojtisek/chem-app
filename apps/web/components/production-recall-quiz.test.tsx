@@ -1,7 +1,4 @@
-import {
-  curatedPreparationProduction,
-  type PreparationProductionRuntimeRoute,
-} from "@inorganic/content/preparation-production";
+import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
 import { curatedElements } from "@inorganic/content/runtime";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -18,15 +15,8 @@ const routes = new Map(
   ),
 );
 const products = new Map(curatedPreparationProduction.map((product) => [product.id, product]));
-
-function side(terms: PreparationProductionRuntimeRoute["products"], coefficients = false) {
-  return terms
-    .map(
-      (term) =>
-        (coefficients && term.coefficient !== 1 ? `${term.coefficient} ` : "") + term.formula,
-    )
-    .join(" + ");
-}
+type Terms = readonly { readonly formula: string }[];
+const formulas = (terms: Terms) => [...new Set(terms.map((term) => term.formula))];
 
 function renderQuiz() {
   render(
@@ -49,9 +39,19 @@ function card() {
   return element;
 }
 
-function answer(text: string) {
-  const input = within(card()).getByRole("textbox");
-  fireEvent.change(input, { target: { value: text } });
+function slots(label: "Produkt" | "Výchozí látka") {
+  return within(card()).getAllByRole("textbox", { name: new RegExp(`^${label} \\d+$`, "u") });
+}
+
+function fill(label: "Produkt" | "Výchozí látka", values: readonly string[]) {
+  for (const [index, value] of values.entries()) {
+    const slot = slots(label)[index];
+    if (!slot) throw new Error(`Missing ${label} slot ${index + 1}`);
+    fireEvent.change(slot, { target: { value } });
+  }
+}
+
+function checkAnswer() {
   fireEvent.click(within(card()).getByRole("button", { name: "Zkontrolovat" }));
 }
 
@@ -83,7 +83,6 @@ describe("ProductionQuiz difficulty modes", () => {
     expect(screen.getByRole("radio", { name: "Lehká" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "Pokročilá" })).not.toBeChecked();
     expect(screen.getByRole("radio", { name: "Pro" })).not.toBeChecked();
-    expect(screen.getByRole("radio", { name: "Jak látku získat" })).toBeChecked();
   });
 
   it("remembers the chosen difficulty", () => {
@@ -98,51 +97,63 @@ describe("ProductionQuiz difficulty modes", () => {
     expect(screen.getByRole("radio", { name: "Pro" })).toBeChecked();
   });
 
-  it("Pokročilá accepts products in any order without coefficients and fills them in", () => {
+  it("Pokročilá shows one slot per product after the arrow and fills in the coefficients", () => {
     renderQuiz();
     startMode("Pokročilá");
     const route = currentRoute();
-    expect(within(card()).getByText("Které produkty vzniknou?")).toBeVisible();
-    answer(
-      [...route.products]
-        .reverse()
-        .map((term) => term.formula)
-        .join(" + "),
-    );
+    const expected = formulas(route.products);
+    expect(slots("Produkt")).toHaveLength(expected.length);
+    expect(slots("Produkt")[0]).toHaveFocus();
+    fill("Produkt", [...expected].reverse());
+    checkAnswer();
     expect(within(card()).getByText("Správně")).toBeVisible();
-    const balanced = card().querySelector("[data-balanced-equation]");
-    expect(balanced?.textContent?.replace(/\s/gu, " ")).toContain(
-      `${side(route.reactants, true)} → ${side(route.products, true)}`.replace(/\s/gu, " "),
+    for (const slot of slots("Produkt")) expect(slot).toBeDisabled();
+    const shownCoefficients = [...card().querySelectorAll("[data-slot-row] [data-coefficient]")]
+      .map((element) => Number(element.textContent))
+      .sort();
+    expect(shownCoefficients).toEqual(
+      [...route.reactants, ...route.products]
+        .map((term) => term.coefficient)
+        .filter((coefficient) => coefficient !== 1)
+        .sort(),
     );
     fireEvent.click(within(card()).getByRole("button", { name: "Pokračovat" }));
     expect(screen.getByText("Správně: 1")).toBeInTheDocument();
   });
 
-  it("Pokročilá marks a wrong product, allows a retry and scores the first check", () => {
+  it("Pokročilá marks a wrong slot, allows a retry and scores the first check", () => {
     renderQuiz();
     startMode("Pokročilá");
-    const route = currentRoute();
-    const [first] = route.products;
-    if (!first) throw new Error("No product");
-    answer(`${first.formula} + Xe`);
+    const expected = formulas(currentRoute().products);
+    fill("Produkt", ["Xe", ...expected.slice(1)]);
+    checkAnswer();
     expect(within(card()).getByText("Zatím ne")).toBeVisible();
     expect(within(card()).getByText("nepatří sem")).toBeVisible();
-    answer(side(route.products));
+    expect(slots("Produkt")[0]).toHaveAttribute("aria-invalid", "true");
+    fill("Produkt", expected);
+    checkAnswer();
     expect(within(card()).getByText("Správně po opravě; počítá se první pokus")).toBeVisible();
     fireEvent.click(within(card()).getByRole("button", { name: "Pokračovat" }));
     expect(screen.getByText("Špatně: 1")).toBeInTheDocument();
   });
 
-  it("does not grade an unreadable entry", () => {
+  it("moves to the next slot on + and does not grade an unreadable slot", () => {
     renderQuiz();
-    startMode("Pokročilá");
-    answer("ZnCl2 & H2");
-    expect(within(card()).getByRole("alert")).toHaveTextContent("Zápis nelze přečíst");
+    startMode("Pro");
+    const [first, second] = slots("Výchozí látka");
+    if (!first || !second) throw new Error("Expected two reactant slots");
+    first.focus();
+    fireEvent.keyDown(first, { key: "+" });
+    expect(second).toHaveFocus();
+    fill("Výchozí látka", ["Zn&", "HCl"]);
+    fill("Produkt", ["H2"]);
+    checkAnswer();
+    expect(within(card()).getByRole("alert")).toHaveTextContent("nelze přečíst");
     expect(screen.getByText("Špatně: 0")).toBeInTheDocument();
     expect(within(card()).queryByText("Zatím ne")).not.toBeInTheDocument();
   });
 
-  it("Pro asks in words, accepts an equation without coefficients and lists the alternatives", () => {
+  it("Pro asks in words and accepts any reviewed route, ignoring typed coefficients", () => {
     renderQuiz();
     startMode("Pro");
     const { product, routes: accepted } = currentTarget();
@@ -151,7 +162,21 @@ describe("ProductionQuiz difficulty modes", () => {
     expect(heading).toHaveTextContent(product.nameCs.toLocaleLowerCase("cs"));
     const route = accepted.at(-1);
     if (!route) throw new Error("No route");
-    answer(`${side(route.reactants)} = ${side(route.products)}`);
+    const resize = (label: string, count: number) => {
+      const group = label === "výchozí látka" ? "Výchozí látka" : "Produkt";
+      while (slots(group).length < count)
+        fireEvent.click(within(card()).getByRole("button", { name: `+ ${label}` }));
+      while (slots(group).length > count)
+        fireEvent.click(within(card()).getByRole("button", { name: `− ${label}` }));
+    };
+    resize("výchozí látka", formulas(route.reactants).length);
+    resize("produkt", formulas(route.products).length);
+    fill(
+      "Výchozí látka",
+      route.reactants.map((term) => `${term.coefficient + 1} ${term.formula}`),
+    );
+    fill("Produkt", formulas(route.products).reverse());
+    checkAnswer();
     expect(within(card()).getByText("Správně")).toBeVisible();
     expect(within(card()).getByText(/^Vyčíslená rovnice:/u)).toBeVisible();
     if (accepted.length > 1) {
@@ -166,16 +191,15 @@ describe("ProductionQuiz difficulty modes", () => {
     expect(within(card()).getByText(/^Výchozí látky:/u)).toBeVisible();
     fireEvent.click(within(card()).getByRole("button", { name: "Další nápověda" }));
     expect(within(card()).getByText(/^Postup bez koeficientů:/u)).toBeVisible();
-    expect(
-      within(card()).queryByRole("button", { name: "Další nápověda" }),
-    ).not.toBeInTheDocument();
   });
 
   it("Pro reveals every reviewed route on request", () => {
     renderQuiz();
     startMode("Pro");
     const { routes: accepted } = currentTarget();
-    answer("H2 -> H2");
+    fill("Výchozí látka", ["H2"]);
+    fill("Produkt", ["H2"]);
+    checkAnswer();
     fireEvent.click(within(card()).getByRole("button", { name: "Ukázat řešení" }));
     expect(within(card()).getByText("Ověřené postupy:")).toBeVisible();
     expect(card().querySelectorAll("li [data-balanced-equation]")).toHaveLength(accepted.length);

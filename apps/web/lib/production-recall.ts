@@ -10,6 +10,11 @@ import {
   type ProductionQuizKind,
   type ProductionQuizOption,
 } from "./preparation-production-quiz";
+import {
+  createReactionProductsQuestion,
+  listProductDistractors,
+  type ReactionProductsOption,
+} from "./reaction-products-quiz";
 
 /**
  * Typed-answer modes of the preparation and production quiz.
@@ -37,7 +42,10 @@ export interface ProductionEquationQuestion {
   readonly product: ProductionQuizOption;
   /** Every reviewed route of this kind listed under the substance; each one is accepted. */
   readonly routes: readonly PreparationProductionRuntimeRoute[];
-  /** The route the hints reveal, drawn from `routes`. */
+  /**
+   * The route drawn from `routes` that sets the number of answer slots and that the hints
+   * reveal. Any route is still accepted; the learner can add or remove slots.
+   */
   readonly hintRoute: PreparationProductionRuntimeRoute;
 }
 
@@ -101,4 +109,66 @@ export function createProductionRecall(
       },
     ];
   });
+}
+
+/**
+ * Lehká: the reactants with coefficients are shown and the learner picks the complete set of
+ * products from four. Distractors follow the „reactants → ?“ rules of the equation practice:
+ * by conservation of atoms none of them can be the product set of these reactants.
+ */
+export interface ProductionChoiceQuestion {
+  /** The route ID. */
+  readonly id: string;
+  readonly kind: PreparationProductionRuntimeRoute["kind"];
+  /** The substance the route is listed under. */
+  readonly product: ProductionQuizOption;
+  readonly route: PreparationProductionRuntimeRoute;
+  readonly answerId: string;
+  /** The answer and up to three distractors. */
+  readonly options: readonly ReactionProductsOption[];
+}
+
+function choiceRoutes(
+  products: readonly PreparationProductionRuntimeProduct[],
+  kind: ProductionQuizKind,
+  allowedSymbols: ReadonlySet<string>,
+) {
+  const allRoutes = products.flatMap((product) => product.routes);
+  return {
+    allRoutes,
+    eligible: listProductionQuizRoutes(products, kind).filter(
+      ({ route }) => listProductDistractors(route, allRoutes, allowedSymbols).length > 0,
+    ),
+  };
+}
+
+/** How many Lehká questions a kind can offer: routes with at least one safe distractor. */
+export function countProductionChoiceQuestions(
+  products: readonly PreparationProductionRuntimeProduct[],
+  kind: ProductionQuizKind,
+  allowedSymbols: ReadonlySet<string>,
+): number {
+  return choiceRoutes(products, kind, allowedSymbols).eligible.length;
+}
+
+export function createProductionChoiceQuiz(
+  products: readonly PreparationProductionRuntimeProduct[],
+  settings: ProductionRecallSettings,
+  allowedSymbols: ReadonlySet<string>,
+  random: () => number,
+): readonly ProductionChoiceQuestion[] {
+  const { allRoutes, eligible } = choiceRoutes(products, settings.kind, allowedSymbols);
+  return drawSeries(eligible, settings.count ?? eligible.length, random).map(
+    ({ product, route }) => {
+      const question = createReactionProductsQuestion(route, allRoutes, allowedSymbols, random);
+      return {
+        id: route.id,
+        kind: route.kind,
+        product: toOption(product),
+        route,
+        answerId: question.answerId,
+        options: question.options,
+      };
+    },
+  );
 }

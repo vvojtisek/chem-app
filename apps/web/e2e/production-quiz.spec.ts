@@ -11,43 +11,29 @@ const collection = preparationProductionCollectionSchema.parse(
   ) as unknown,
 );
 type Route = (typeof collection.products)[number]["routes"][number];
+const routes = new Map(
+  collection.products.flatMap((product) =>
+    product.routes.map((route) => [route.id, route] as const),
+  ),
+);
 
-function side(terms: Route["reactants"]): string {
-  return terms
-    .map((term) => `${term.coefficient === 1 ? "" : `${term.coefficient} `}${term.formula}`)
-    .join(" + ");
-}
-
-/** Whether the product named `name` has a published route of `kind` with these reactants. */
-function makes(name: string, kind: Route["kind"], reactants: string): boolean {
-  return collection.products.some(
-    (product) =>
-      product.nameCs === name &&
-      product.routes.some(
-        (route) =>
-          route.status === "owner-approved" &&
-          route.kind === kind &&
-          side(route.reactants) === reactants &&
-          route.products.some((term) => term.formula === product.formula),
-      ),
-  );
+function productSet(route: Route): string {
+  return [...new Set(route.products.map((term) => term.formula))].sort().join("+");
 }
 
 async function currentQuestion(page: Page) {
-  const card = page.getByRole("region", { name: /^Kterou látku lze takto/u });
+  const card = page.getByRole("region", { name: "Které produkty touto reakcí vzniknou?" });
   await expect(card).toBeVisible();
-  const text = (await card.textContent()) ?? "";
-  const kind: Route["kind"] = text.startsWith("Příprava") ? "preparation" : "manufacture";
-  // Coefficients are joined to formulas with a no-break space on the page.
-  const reactants = (/Výchozí látky: (.+?) → \?/u.exec(text)?.[1] ?? "").replace(/\s/gu, " ");
+  const route = routes.get((await card.getAttribute("data-question-id")) ?? "");
+  if (!route) throw new Error("Unknown route on the question card");
   const options = card.getByRole("list", { name: "Možnosti odpovědi" }).getByRole("button");
-  const names = await options.evaluateAll((buttons) =>
-    buttons.map((button) => button.querySelector("[data-option-name]")?.textContent ?? ""),
+  const ids = await options.evaluateAll((buttons) =>
+    buttons.map((button) => button.getAttribute("data-option-id") ?? ""),
   );
-  const correctIndex = names.findIndex((name) => makes(name, kind, reactants));
+  const correctIndex = ids.indexOf(productSet(route));
   expect(
     correctIndex,
-    `answer for ${kind} ${reactants} in ${JSON.stringify(names)}`,
+    `answer ${productSet(route)} in ${JSON.stringify(ids)}`,
   ).toBeGreaterThanOrEqual(0);
   return { options, correctIndex };
 }
@@ -62,12 +48,8 @@ for (const correctFinal of [true, false]) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Kvíz: Příprava a výroba látek",
     );
-
-    // The radio input is visually hidden; its label takes the click.
-    await page.getByText("Co vzniká", { exact: true }).click();
-    await expect(page.getByRole("radio", { name: "Co vzniká" })).toBeChecked();
+    await expect(page.getByRole("radio", { name: "Lehká" })).toBeChecked();
     await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
-
     const first = await currentQuestion(page);
     await first.options.nth(first.correctIndex === 0 ? 1 : 0).click();
     await expect(page.getByText(/^Vaše odpověď:/u)).toBeVisible();
@@ -97,47 +79,22 @@ for (const correctFinal of [true, false]) {
   });
 }
 
-test("asks how to make a substance and accepts the reviewed reactants", async ({ page }) => {
+test("Pokročilá accepts typed products and fills in the coefficients", async ({ page }) => {
   await page.goto("/procvicovani/priprava-vyroba");
-  await expect(page.getByRole("radio", { name: "Jak látku získat" })).toBeChecked();
+  // The radio input is visually hidden; its label takes the click.
+  await page.getByText("Pokročilá", { exact: true }).click();
   await page.getByRole("button", { name: "Spustit kvíz (10 otázek)" }).click();
 
-  const card = page.getByRole("region", { name: /^Ze kterých výchozích látek/u });
-  await expect(card).toBeVisible();
-  const [productId, kind] = ((await card.getAttribute("data-question-id")) ?? "").split("|");
-  const product = collection.products.find((candidate) => candidate.id === productId);
-  if (!product) throw new Error(`Unknown product ${productId}`);
-  const reviewed = new Set(
-    product.routes
-      .filter(
-        (route) =>
-          route.status === "owner-approved" &&
-          route.kind === kind &&
-          route.products.some((term) => term.formula === product.formula),
-      )
-      .map((route) => [...new Set(route.reactants.map((term) => term.formula))].sort().join("+")),
-  );
-  const options = card.getByRole("list", { name: "Možnosti odpovědi" }).getByRole("button");
-  await expect(options).toHaveCount(4);
-  const reactantSets = await options.evaluateAll((buttons) =>
-    buttons.map((button) =>
-      [
-        ...new Set(
-          [...button.querySelectorAll("[role=img]")].map(
-            (formula) => formula.getAttribute("aria-label") ?? "",
-          ),
-        ),
-      ]
-        .sort()
-        .join("+"),
-    ),
-  );
-  const correctIndex = reactantSets.findIndex((set) => reviewed.has(set));
-  expect(
-    correctIndex,
-    JSON.stringify({ reviewed: [...reviewed], reactantSets }),
-  ).toBeGreaterThanOrEqual(0);
-  await options.nth(correctIndex).click();
-  await expect(page.getByText("Správně", { exact: true })).toBeVisible();
-  await expect(page.getByText(/^Správný postup:/u)).toBeVisible();
+  const card = page.locator("section[data-question-id]");
+  const route = routes.get((await card.getAttribute("data-question-id")) ?? "");
+  if (!route) throw new Error("Unknown route on the question card");
+  const formulas = [...new Set(route.products.map((term) => term.formula))].reverse();
+  const slots = card.getByRole("textbox", { name: /^Produkt \d+$/u });
+  await expect(slots).toHaveCount(formulas.length);
+  for (const [index, formula] of formulas.entries()) {
+    await slots.nth(index).fill(formula);
+  }
+  await slots.first().press("Enter");
+  await expect(card.getByText("Správně", { exact: true })).toBeVisible();
+  await expect(card.getByText(/^Celá rovnice:/u)).toBeVisible();
 });

@@ -1,8 +1,5 @@
-import { countEquationAtoms } from "./evaluate-equation-answer";
 import {
   type EquationTerm,
-  hasReducedEquationCoefficients,
-  isBalancedEquation,
   type ParsedEquation,
   parseEquationFormula,
   parseEquationTerms,
@@ -113,124 +110,114 @@ export function matchRecallSide(
   };
 }
 
-export type ProductRecallResult =
-  | { readonly status: "unreadable" }
-  | ({ readonly status: "graded" } & RecallSideMatch);
-
 /**
- * „Reactants → ?“ with typed products: any order, coefficients optional and ignored, so
- * "H2 + ZnCl2" and "ZnCl2 + 2 H2" both name the products of Zn + 2 HCl.
+ * One typed formula slot. A leading coefficient is allowed and ignored („2 HCl“ reads as HCl).
+ * `empty` for a blank slot, null when the slot holds anything but one readable term.
  */
-export function gradeProductRecall(
-  input: string,
+export function readRecallSlot(input: string): EquationTerm | "empty" | null {
+  if (input.trim() === "") return "empty";
+  if (/[+,]/u.test(input)) return null;
+  const [term] = readRecallTerms(input) ?? [];
+  return term ?? null;
+}
+
+export interface SlotSideResult extends RecallSideMatch {
+  /** The match of each typed slot, aligned with the input; null for a blank slot. */
+  readonly slots: readonly (RecallTerm | null)[];
+}
+
+function matchSlots(
+  terms: readonly (EquationTerm | "empty")[],
   expected: readonly EquationTerm[],
   allowedSymbols: ReadonlySet<string>,
-): ProductRecallResult {
-  const entered = readRecallTerms(input);
-  if (!entered) return { status: "unreadable" };
-  return { status: "graded", ...matchRecallSide(entered, expected, allowedSymbols) };
+): SlotSideResult {
+  const filled = terms.filter((term): term is EquationTerm => term !== "empty");
+  const match = matchRecallSide(filled, expected, allowedSymbols);
+  let next = 0;
+  const slots = terms.map((term) => (term === "empty" ? null : (match.terms[next++] ?? null)));
+  return { ...match, slots };
 }
 
-/** A typed whole reaction; "->", "→" and "=" are accepted as the arrow. */
-export function readRecallEquation(input: string): ParsedEquation | null {
-  const unified = input.replace(/[→⟶]/gu, "->").replace(/=>?/gu, "->");
-  const arrow = unified.indexOf("->");
-  if (arrow < 0 || unified.indexOf("->", arrow + 2) >= 0) return null;
-  const reactants = readRecallTerms(unified.slice(0, arrow));
-  const products = readRecallTerms(unified.slice(arrow + 2));
-  return reactants && products ? { reactants, products } : null;
+function readSlots(
+  inputs: readonly string[],
+):
+  | { readonly ok: true; readonly terms: readonly (EquationTerm | "empty")[] }
+  | { readonly ok: false; readonly unreadable: readonly number[] } {
+  const read = inputs.map(readRecallSlot);
+  const unreadable = read.flatMap((term, index) => (term === null ? [index] : []));
+  if (unreadable.length > 0) return { ok: false, unreadable };
+  return { ok: true, terms: read as readonly (EquationTerm | "empty")[] };
 }
+
+export type ProductSlotsResult =
+  | { readonly status: "unreadable"; readonly unreadable: readonly number[] }
+  | ({ readonly status: "graded" } & SlotSideResult);
 
 /**
- * - `omitted`: no coefficient was written; the reviewed ones are filled in.
- * - `matched`: the written coefficients are the reviewed ones.
- * - `unbalanced`: written coefficients do not conserve atoms.
- * - `unreduced`: they conserve atoms but are not the lowest whole-number ratio.
- * - `different`: they conserve atoms in lowest terms but differ from the reviewed equation.
+ * „Reactants → ?“ with one typed formula per slot: any order, blank slots ignored, coefficients
+ * ignored. Correct when the filled slots name exactly the products of the reaction.
  */
-export type RecallCoefficients = "omitted" | "matched" | "unbalanced" | "unreduced" | "different";
+export function gradeProductSlots(
+  inputs: readonly string[],
+  expected: readonly EquationTerm[],
+  allowedSymbols: ReadonlySet<string>,
+): ProductSlotsResult {
+  const read = readSlots(inputs);
+  if (!read.ok) return { status: "unreadable", unreadable: read.unreadable };
+  return { status: "graded", ...matchSlots(read.terms, expected, allowedSymbols) };
+}
 
-export type EquationRecallResult<Route extends ParsedEquation> =
-  | { readonly status: "unreadable" }
+export type RouteSlotsResult<Route extends ParsedEquation> =
+  | {
+      readonly status: "unreadable";
+      readonly reactants: readonly number[];
+      readonly products: readonly number[];
+    }
   | {
       readonly status: "graded";
       readonly correct: boolean;
-      /** The reviewed route whose formulas the answer uses, or null when none fits. */
+      /** The reviewed route whose formulas the answer names, or the closest one when none fits. */
       readonly route: Route | null;
-      readonly coefficients: RecallCoefficients | null;
-      readonly reactants: RecallSideMatch;
-      readonly products: RecallSideMatch;
+      readonly reactants: SlotSideResult;
+      readonly products: SlotSideResult;
     };
-
-function writtenCoefficients(answer: ParsedEquation): boolean {
-  return [...answer.reactants, ...answer.products].some((term) => term.coefficient !== 1);
-}
-
-function sameCoefficients(entered: RecallSideMatch, expected: readonly EquationTerm[]): boolean {
-  return entered.terms.every(
-    (term) =>
-      term.expectedIndex !== null && expected[term.expectedIndex]?.coefficient === term.coefficient,
-  );
-}
 
 /**
- * A whole reaction for „how is X made“: correct when its formulas are those of one of the
- * reviewed `routes` (any order on each side) and the coefficients are either all left out or
- * exactly the reviewed ones. Any of several reviewed routes is accepted.
+ * A whole reaction typed into reactant and product slots, for „how is X made“. Correct when
+ * the filled slots name the formulas of one of the reviewed `routes` (any order on each side).
+ * Coefficients are never required and typed ones are ignored; the reviewed ones are shown after.
+ * When no route fits, the comparison is with the route that most of the answer matches.
  */
-export function gradeEquationRecall<Route extends ParsedEquation>(
-  input: string,
+export function gradeRouteSlots<Route extends ParsedEquation>(
+  reactantInputs: readonly string[],
+  productInputs: readonly string[],
   routes: readonly Route[],
   allowedSymbols: ReadonlySet<string>,
-): EquationRecallResult<Route> {
-  const answer = readRecallEquation(input);
-  if (!answer) return { status: "unreadable" };
-
-  const attempts = routes.map((route) => ({
-    route,
-    reactants: matchRecallSide(answer.reactants, route.reactants, allowedSymbols),
-    products: matchRecallSide(answer.products, route.products, allowedSymbols),
-  }));
-  const fitting = attempts.filter(
-    (attempt) => attempt.reactants.correct && attempt.products.correct,
-  );
-  const closest =
-    fitting[0] ?? [...attempts].sort((left, right) => score(right) - score(left))[0] ?? null;
-  if (fitting.length === 0) {
+): RouteSlotsResult<Route> {
+  const reactants = readSlots(reactantInputs);
+  const products = readSlots(productInputs);
+  if (!reactants.ok || !products.ok) {
     return {
-      status: "graded",
-      correct: false,
-      route: null,
-      coefficients: null,
-      reactants: closest?.reactants ?? matchRecallSide(answer.reactants, [], allowedSymbols),
-      products: closest?.products ?? matchRecallSide(answer.products, [], allowedSymbols),
+      status: "unreadable",
+      reactants: reactants.ok ? [] : reactants.unreadable,
+      products: products.ok ? [] : products.unreadable,
     };
   }
-
-  if (!writtenCoefficients(answer)) {
-    const [first] = fitting;
-    if (!first) throw new Error("unreachable");
-    return { status: "graded", correct: true, coefficients: "omitted", ...first };
-  }
-
-  const exact = fitting.find(
-    (attempt) =>
-      sameCoefficients(attempt.reactants, attempt.route.reactants) &&
-      sameCoefficients(attempt.products, attempt.route.products),
-  );
-  if (exact) return { status: "graded", correct: true, coefficients: "matched", ...exact };
-
-  const [first] = fitting;
-  if (!first) throw new Error("unreachable");
-  const balanced =
-    countEquationAtoms(answer.reactants, answer.products, allowedSymbols) !== null &&
-    isBalancedEquation(answer.reactants, answer.products, allowedSymbols);
-  const coefficients: RecallCoefficients = !balanced
-    ? "unbalanced"
-    : hasReducedEquationCoefficients(answer.reactants, answer.products)
-      ? "different"
-      : "unreduced";
-  return { status: "graded", correct: false, coefficients, ...first };
+  const attempts = routes.map((route) => ({
+    route,
+    reactants: matchSlots(reactants.terms, route.reactants, allowedSymbols),
+    products: matchSlots(products.terms, route.products, allowedSymbols),
+  }));
+  const fitting = attempts.find((attempt) => attempt.reactants.correct && attempt.products.correct);
+  if (fitting) return { status: "graded", correct: true, ...fitting };
+  const closest = [...attempts].sort((left, right) => score(right) - score(left))[0];
+  return {
+    status: "graded",
+    correct: false,
+    route: null,
+    reactants: closest?.reactants ?? matchSlots(reactants.terms, [], allowedSymbols),
+    products: closest?.products ?? matchSlots(products.terms, [], allowedSymbols),
+  };
 }
 
 function score(attempt: { reactants: RecallSideMatch; products: RecallSideMatch }): number {

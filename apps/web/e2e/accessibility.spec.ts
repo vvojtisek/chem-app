@@ -52,9 +52,11 @@ test("core learner screens meet automated WCAG 2.2 AA checks", async ({ page }) 
   await expect(page.getByRole("region", { name: "Nastavení kvízu" })).toBeVisible();
   await expectWcag22Aa(page);
   await page.getByRole("button", { name: /^Spustit kvíz/ }).click();
-  await expect(page.getByRole("region", { name: /^Ze kterých výchozích látek/ })).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Které produkty touto reakcí vzniknou?" }),
+  ).toBeVisible();
   await page
-    .getByRole("region", { name: /^Ze kterých výchozích látek/ })
+    .getByRole("region", { name: "Které produkty touto reakcí vzniknou?" })
     .getByRole("list", { name: "Možnosti odpovědi" })
     .getByRole("button")
     .first()
