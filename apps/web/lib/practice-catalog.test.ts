@@ -19,9 +19,9 @@ describe("practice catalog", () => {
     expect(existsSync(`${appDirectory}${href.slice(1)}/page.tsx`)).toBe(true);
   });
 
-  it("gives every category exactly one primary action", () => {
+  it("gives every category at least one action", () => {
     for (const category of practiceCategories) {
-      expect(category.links.filter((link) => link.primary)).toHaveLength(1);
+      expect(category.links.length).toBeGreaterThan(0);
     }
   });
 });

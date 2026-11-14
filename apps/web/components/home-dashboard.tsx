@@ -169,7 +169,7 @@ export function HomeDashboard() {
                         className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
                         href={link.href}
                       >
-                        {link.label} <span aria-hidden="true">→</span>
+                        {link.homeLabel ?? link.label} <span aria-hidden="true">→</span>
                       </Link>
                     </li>
                   ))}

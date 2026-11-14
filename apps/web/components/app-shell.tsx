@@ -67,16 +67,25 @@ interface SubjectArea {
   readonly id: string;
   readonly label: string;
   readonly href: string;
+  /** Small caption and large symbol of the subject's tile, styled like a periodic table cell. */
+  readonly mark: { readonly caption: string; readonly symbol: string };
   readonly destinations: readonly Destination[];
 }
 
 /** Chemistry is the default area; other subjects own everything under /predmety/<id>. */
 export const SUBJECT_AREAS: readonly SubjectArea[] = [
-  { id: "anorganika", label: "Anorganika", href: "/", destinations: PRIMARY_DESTINATIONS },
+  {
+    id: "anorganika",
+    label: "Anorganika",
+    href: "/",
+    mark: { caption: "CZ", symbol: "An" },
+    destinations: PRIMARY_DESTINATIONS,
+  },
   {
     id: "matematika",
     label: "Matematika",
     href: "/predmety/matematika",
+    mark: { caption: "∫", symbol: "Ma" },
     destinations: subjectDestinations("matematika"),
   },
 ];
@@ -90,48 +99,66 @@ export function subjectAreaFor(pathname: string): SubjectArea {
   );
 }
 
-function SubjectSwitcher({
-  current,
-  className,
-}: Readonly<{ current: SubjectArea; className: string }>) {
+export function SubjectMark({
+  caption = "CZ",
+  symbol = "An",
+  size = "sm",
+  muted = false,
+}: Readonly<{ caption?: string; symbol?: string; size?: "sm" | "md"; muted?: boolean }>) {
+  const box = size === "md" ? "h-12 w-12 rounded-[10px]" : "h-9 w-9 rounded-lg";
   return (
-    <nav aria-label="Předmět" className={className}>
-      <ul className="m-0 grid list-none grid-cols-2 gap-1 rounded-lg bg-surface-2 p-1">
+    <span
+      aria-hidden="true"
+      className={`grid shrink-0 grid-rows-[auto_1fr] px-1.5 py-1 font-display ${
+        muted ? "bg-surface-3 text-ink-2" : "bg-accent text-on-fill"
+      } ${box}`}
+    >
+      <span className="text-[8px] leading-none font-semibold opacity-85">{caption}</span>
+      <span
+        className={`self-end leading-none font-extrabold ${size === "md" ? "text-2xl" : "text-lg"}`}
+      >
+        {symbol}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Subject tabs at the start of the top bar. Each tab is the subject's tile and name; the
+ * current one is outlined and filled, the others have a grey tile until hovered. Dimming uses
+ * the muted palette, not opacity, so the inactive tab still meets WCAG AA contrast. Below the sm
+ * breakpoint only the tiles show, so the bar still fits the help, profile and sign-out
+ * buttons on a 360 px phone; the names stay for screen readers.
+ */
+function SubjectTabs({ current }: Readonly<{ current: SubjectArea }>) {
+  return (
+    <nav aria-label="Předmět" className="min-w-0 shrink-0">
+      <ul className="m-0 flex list-none items-center gap-1 p-0">
         {SUBJECT_AREAS.map((area) => {
           const active = area.id === current.id;
           return (
             <li key={area.id}>
               <Link
                 aria-current={active ? "true" : undefined}
-                className={`flex min-h-10 items-center justify-center rounded-md px-2 text-sm font-semibold ${
-                  active ? "bg-surface text-accent-strong shadow-sm" : "text-ink-2 hover:text-ink"
+                className={`flex min-h-11 items-center gap-2 rounded-xl border p-1 font-display text-lg font-bold transition sm:pr-3 ${
+                  active
+                    ? "border-accent bg-accent-soft text-ink"
+                    : "border-transparent text-ink-2 hover:border-line hover:bg-surface-2 hover:text-ink"
                 }`}
                 href={area.href}
               >
-                {area.label}
+                <SubjectMark
+                  caption={area.mark.caption}
+                  muted={!active}
+                  symbol={area.mark.symbol}
+                />
+                <span className="max-sm:sr-only">{area.label}</span>
               </Link>
             </li>
           );
         })}
       </ul>
     </nav>
-  );
-}
-
-export function BrandMark({ size = "sm" }: Readonly<{ size?: "sm" | "md" }>) {
-  const box = size === "md" ? "h-12 w-12 rounded-[10px]" : "h-9 w-9 rounded-lg";
-  return (
-    <span
-      aria-hidden="true"
-      className={`grid shrink-0 grid-rows-[auto_1fr] bg-accent px-1.5 py-1 font-display text-on-fill ${box}`}
-    >
-      <span className="text-[8px] leading-none font-semibold opacity-85">CZ</span>
-      <span
-        className={`self-end leading-none font-extrabold ${size === "md" ? "text-2xl" : "text-lg"}`}
-      >
-        An
-      </span>
-    </span>
   );
 }
 
@@ -166,8 +193,9 @@ function QuarantineNotice() {
 }
 
 /**
- * The single navigation frame: a side rail from the md breakpoint, a bottom tab bar on
- * phones, and one sticky top bar that carries the sync status on every screen size.
+ * The single navigation frame: one sticky top bar with the subject tabs and the sync status
+ * on every screen size, below it a side rail from the md breakpoint and a bottom tab bar on
+ * phones.
  */
 export function AppShell({
   children,
@@ -195,159 +223,145 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
-      <div className="contents md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:gap-2 md:border-r md:border-line md:bg-surface md:px-3 md:py-4">
-        <Link
-          className="hidden items-center gap-3 rounded-lg px-2 pb-3 font-display text-lg font-bold text-ink md:flex"
-          href="/"
-        >
-          <BrandMark />
-          Anorganika
-        </Link>
-        <SubjectSwitcher className="hidden md:block md:pb-2" current={area} />
-        <nav
-          aria-label="Hlavní navigace"
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur md:static md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none"
-        >
-          <ul
-            className={`m-0 grid list-none p-0 md:flex md:flex-col md:gap-1 ${
-              area.destinations.length === 3 ? "grid-cols-3" : "grid-cols-4"
-            }`}
-          >
-            {area.destinations.map(({ href, label, icon: Icon, matches }) => {
-              const active = matches(pathname);
-              return (
-                <li key={href}>
-                  <Link
-                    aria-current={active ? "page" : undefined}
-                    className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold md:min-h-11 md:flex-row md:justify-start md:gap-3 md:rounded-lg md:px-3 md:text-[15px] ${
-                      active
-                        ? "text-accent-strong md:bg-accent-soft md:font-bold"
-                        : "text-ink-3 hover:text-ink md:text-ink-2 md:hover:bg-surface-2"
-                    }`}
-                    href={href}
-                  >
-                    <span
-                      className={`grid h-7 w-12 place-items-center rounded-full text-[22px] md:h-auto md:w-auto md:text-xl ${
-                        active ? "bg-accent-soft md:bg-transparent" : ""
-                      }`}
-                    >
-                      <Icon />
-                    </span>
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        <div className="hidden md:mt-auto md:grid md:gap-1 md:border-t md:border-line md:pt-3">
+    <div className="flex min-h-dvh flex-col">
+      <header className="sticky top-0 z-20 flex min-h-14 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line bg-surface/95 px-3 py-1.5 backdrop-blur sm:px-6 md:h-16 md:flex-nowrap md:px-3 md:py-0">
+        <SubjectTabs current={area} />
+        <AppVersionLabel />
+        <div className="ml-auto flex min-w-0 items-center gap-2">
+          <AccountBadge />
+          {canSync ? <SyncStatusChip /> : null}
           <Link
-            className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
+            aria-label="Nápověda"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 md:hidden"
             href="/napoveda"
           >
-            <HelpIcon className="text-xl" />
-            Nápověda
+            <HelpIcon />
           </Link>
-          {account?.role === "admin" ? (
-            <Link
-              className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
-              href="/admin"
-            >
-              <ShieldIcon className="text-xl" />
-              Správa
-            </Link>
-          ) : account?.curriculumSme ? (
-            <Link
-              className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
-              href="/admin/data"
-            >
-              <ShieldIcon className="text-xl" />
-              Data
-            </Link>
-          ) : null}
           <Link
             aria-label="Profil"
-            className="flex min-h-12 items-center gap-3 rounded-lg px-3 hover:bg-surface-2"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 md:hidden"
             href="/ucet"
           >
-            <span
-              aria-hidden="true"
-              className="grid h-8 w-8 place-items-center rounded-full bg-surface-3 text-sm font-bold text-ink"
-            >
-              {(account?.username ?? "?").slice(0, 1).toLocaleUpperCase("cs-CZ")}
-            </span>
-            <span className="grid min-w-0 leading-tight">
-              <span className="truncate text-sm font-semibold text-ink">
-                {account?.role === "guest" ? "Host" : (account?.username ?? "")}
-              </span>
-              <span className="text-xs text-ink-3">Profil a nastavení</span>
-            </span>
+            <UserIcon />
           </Link>
           <button
-            className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-[15px] font-semibold text-ink-2 hover:bg-surface-2 disabled:opacity-50"
+            aria-label={signOutLabel}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 disabled:opacity-50 md:hidden"
             disabled={signingOut}
             onClick={() => void handleSignOut()}
+            title={signOutLabel}
             type="button"
           >
-            <SignOutIcon className="text-xl" />
-            {signOutLabel}
+            <SignOutIcon />
           </button>
         </div>
-      </div>
-
-      <div className="flex min-w-0 flex-col pb-20 md:pb-0">
-        <header className="sticky top-0 z-20 flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur sm:px-6 md:flex-nowrap">
-          <Link
-            className="flex shrink-0 items-center gap-2 font-display text-lg font-bold text-ink md:hidden"
-            href="/"
+      </header>
+      <div className="flex-1 md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
+        <div className="contents md:sticky md:top-16 md:flex md:h-[calc(100dvh-4rem)] md:flex-col md:gap-2 md:border-r md:border-line md:bg-surface md:px-3 md:py-4">
+          <nav
+            aria-label="Hlavní navigace"
+            className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur md:static md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none"
           >
-            <BrandMark />
-            {/* On the narrowest phones the sync status needs the room; the name stays for screen readers. */}
-            <span className="max-[24rem]:sr-only">Anorganika</span>
-          </Link>
-          <AppVersionLabel />
-          <div className="ml-auto flex min-w-0 items-center gap-2 md:ml-0">
-            <AccountBadge />
-            {canSync ? <SyncStatusChip /> : null}
+            <ul
+              className={`m-0 grid list-none p-0 md:flex md:flex-col md:gap-1 ${
+                area.destinations.length === 3 ? "grid-cols-3" : "grid-cols-4"
+              }`}
+            >
+              {area.destinations.map(({ href, label, icon: Icon, matches }) => {
+                const active = matches(pathname);
+                return (
+                  <li key={href}>
+                    <Link
+                      aria-current={active ? "page" : undefined}
+                      className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold md:min-h-11 md:flex-row md:justify-start md:gap-3 md:rounded-lg md:px-3 md:text-[15px] ${
+                        active
+                          ? "text-accent-strong md:bg-accent-soft md:font-bold"
+                          : "text-ink-3 hover:text-ink md:text-ink-2 md:hover:bg-surface-2"
+                      }`}
+                      href={href}
+                    >
+                      <span
+                        className={`grid h-7 w-12 place-items-center rounded-full text-[22px] md:h-auto md:w-auto md:text-xl ${
+                          active ? "bg-accent-soft md:bg-transparent" : ""
+                        }`}
+                      >
+                        <Icon />
+                      </span>
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+          <div className="hidden md:mt-auto md:grid md:gap-1 md:border-t md:border-line md:pt-3">
             <Link
-              aria-label="Nápověda"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 md:hidden"
+              className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
               href="/napoveda"
             >
-              <HelpIcon />
+              <HelpIcon className="text-xl" />
+              Nápověda
             </Link>
+            {account?.role === "admin" ? (
+              <Link
+                className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
+                href="/admin"
+              >
+                <ShieldIcon className="text-xl" />
+                Správa
+              </Link>
+            ) : account?.curriculumSme ? (
+              <Link
+                className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-ink-2 hover:bg-surface-2"
+                href="/admin/data"
+              >
+                <ShieldIcon className="text-xl" />
+                Data
+              </Link>
+            ) : null}
             <Link
               aria-label="Profil"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 md:hidden"
+              className="flex min-h-12 items-center gap-3 rounded-lg px-3 hover:bg-surface-2"
               href="/ucet"
             >
-              <UserIcon />
+              <span
+                aria-hidden="true"
+                className="grid h-8 w-8 place-items-center rounded-full bg-surface-3 text-sm font-bold text-ink"
+              >
+                {(account?.username ?? "?").slice(0, 1).toLocaleUpperCase("cs-CZ")}
+              </span>
+              <span className="grid min-w-0 leading-tight">
+                <span className="truncate text-sm font-semibold text-ink">
+                  {account?.role === "guest" ? "Host" : (account?.username ?? "")}
+                </span>
+                <span className="text-xs text-ink-3">Profil a nastavení</span>
+              </span>
             </Link>
             <button
-              aria-label={signOutLabel}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl text-ink-2 hover:bg-surface-2 disabled:opacity-50 md:hidden"
+              className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-[15px] font-semibold text-ink-2 hover:bg-surface-2 disabled:opacity-50"
               disabled={signingOut}
               onClick={() => void handleSignOut()}
-              title={signOutLabel}
               type="button"
             >
-              <SignOutIcon />
+              <SignOutIcon className="text-xl" />
+              {signOutLabel}
             </button>
           </div>
-        </header>
-        <SubjectSwitcher
-          className="border-b border-line bg-surface px-4 py-2 sm:px-6 md:hidden"
-          current={area}
-        />
-        {signOutError ? (
-          <p className="border-b border-bad/40 bg-surface px-4 py-2 text-sm text-bad" role="alert">
-            {signOutError}
-          </p>
-        ) : null}
-        {notice}
-        {canSync ? <QuarantineNotice /> : null}
-        <div className="flex-1">{children}</div>
+        </div>
+
+        <div className="flex min-w-0 flex-col pb-20 md:pb-0">
+          {signOutError ? (
+            <p
+              className="border-b border-bad/40 bg-surface px-4 py-2 text-sm text-bad"
+              role="alert"
+            >
+              {signOutError}
+            </p>
+          ) : null}
+          {notice}
+          {canSync ? <QuarantineNotice /> : null}
+          <div className="flex-1">{children}</div>
+        </div>
       </div>
     </div>
   );
