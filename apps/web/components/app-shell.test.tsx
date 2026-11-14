@@ -99,9 +99,13 @@ describe("AppShell", () => {
     expect(current.map((link) => link.textContent)).toEqual([label]);
   });
 
-  it("switches between subjects and keeps chemistry the default", () => {
+  it("switches between subjects with tabs in the top bar and keeps chemistry the default", () => {
     render(<AppShell>obsah</AppShell>);
-    const switcher = screen.getAllByRole("navigation", { name: "Předmět" })[0] as HTMLElement;
+    const switchers = screen.getAllByRole("navigation", { name: "Předmět" });
+    expect(switchers).toHaveLength(1);
+    const switcher = switchers[0] as HTMLElement;
+    expect(screen.getByRole("banner")).toContainElement(switcher);
+    expect(within(switcher).getByRole("link", { name: "Anorganika" })).toHaveAttribute("href", "/");
     expect(within(switcher).getByRole("link", { name: "Anorganika" })).toHaveAttribute(
       "aria-current",
       "true",

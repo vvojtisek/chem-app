@@ -4,8 +4,11 @@ export interface PracticeLink {
   readonly href: string;
   readonly label: string;
   readonly target?: "_blank";
-  /** The one main action of the area, shown as the filled button. */
-  readonly primary?: true;
+  /**
+   * Label on the home dashboard when `label` would repeat the name of a study page linked
+   * next to it there (the Učivo card has its own „Vyčíslování rovnic“ and „Příprava a výroba“).
+   */
+  readonly homeLabel?: string;
 }
 
 export interface PracticeCategory {
@@ -21,9 +24,9 @@ export const practiceCategories: readonly PracticeCategory[] = [
     title: "Periodická tabulka",
     description: "Procvičování značek, názvů a pozic prvků.",
     links: [
-      { href: "/procvicovani/periodicka-tabulka", label: "Procvičit pozice", primary: true },
       { href: "/procvicovani/prvky", label: "Procvičit názvy a značky" },
       { href: "/flashcards/prvky", label: "Pětiminutový kvíz prvků" },
+      { href: "/procvicovani/periodicka-tabulka", label: "Procvičit pozice" },
     ],
   },
   {
@@ -32,14 +35,22 @@ export const practiceCategories: readonly PracticeCategory[] = [
     description:
       "Určování produktů reakcí, vyčíslování a kvíz o přípravě a průmyslové výrobě látek.",
     links: [
-      { href: "/procvicovani/rovnice", label: "Procvičit rovnice", primary: true },
-      { href: "/procvicovani/priprava-vyroba", label: "Kvíz: Příprava a výroba látek" },
+      {
+        href: "/procvicovani/rovnice",
+        label: "Vyčíslování rovnic",
+        homeLabel: "Procvičit rovnice",
+      },
+      {
+        href: "/procvicovani/priprava-vyroba",
+        label: "Příprava a výroba",
+        homeLabel: "Kvíz: Příprava a výroba látek",
+      },
     ],
   },
   {
     area: "nomenclature",
     title: "Názvosloví",
     description: "Převod mezi českými názvy a chemickými vzorci.",
-    links: [{ href: "/procvicovani/nazvoslovi", label: "Procvičit názvosloví", primary: true }],
+    links: [{ href: "/procvicovani/nazvoslovi", label: "Procvičit názvosloví" }],
   },
 ];
