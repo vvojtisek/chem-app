@@ -69,3 +69,16 @@ export {
   type FormulaParseResult,
   parseFormula,
 } from "./parse-formula";
+export {
+  type EquationRecallResult,
+  gradeEquationRecall,
+  gradeProductRecall,
+  matchRecallSide,
+  type ProductRecallResult,
+  type RecallCoefficients,
+  type RecallSideMatch,
+  type RecallTerm,
+  type RecallTermVerdict,
+  readRecallEquation,
+  readRecallTerms,
+} from "./evaluate-reaction-recall";

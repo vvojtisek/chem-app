@@ -1,8 +1,11 @@
 import { curatedPreparationProduction } from "@inorganic/content/preparation-production";
+import { curatedElements } from "@inorganic/content/runtime";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ProductionQuiz } from "./production-quiz";
+
+const SYMBOLS = curatedElements.map((element) => element.symbol);
 
 /** Keeps every shuffle in its original order, so the correct option is always listed first. */
 const keepOrder = () => 0.999;
@@ -40,7 +43,13 @@ describe("ProductionQuiz", () => {
       if (!option) throw new Error("Missing option");
       fireEvent.click(option);
     };
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
     startQuiz();
     choose(1);
     for (let index = 0; index < 9; index++) choose(0);
@@ -55,7 +64,13 @@ describe("ProductionQuiz", () => {
   });
 
   it("starts with a settings step that shows the number of questions", () => {
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
 
     expect(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" })).toBeEnabled();
     fireEvent.click(screen.getByRole("radio", { name: /^Výroba \(\d+\)$/u }));
@@ -64,7 +79,13 @@ describe("ProductionQuiz", () => {
   });
 
   it("returns a wrongly answered question at the end and finishes after it is solved", () => {
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
     startQuiz();
 
     expect(options()).toHaveLength(4);
@@ -101,7 +122,13 @@ describe("ProductionQuiz", () => {
   });
 
   it("asks how to make a substance by default, with reactant options marked a) to d)", () => {
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
     expect(screen.getByRole("radio", { name: "Jak látku získat" })).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
 
@@ -128,7 +155,13 @@ describe("ProductionQuiz", () => {
     // Keeps the quiz order, then reverses the options of the returning question.
     let reverse = false;
     const random = () => (reverse ? 0 : 0.999);
-    render(<ProductionQuiz products={curatedPreparationProduction} random={random} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={random}
+      />,
+    );
     fireEvent.click(screen.getByRole("radio", { name: "10" }));
     fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
     const before = within(within(routeCard()).getByRole("list", { name: "Možnosti odpovědi" }))
@@ -158,7 +191,13 @@ describe("ProductionQuiz", () => {
   });
 
   it("shows a hint from the reviewed route and skips without grading", () => {
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "Spustit kvíz (10 otázek)" }));
     const card = routeCard();
     const firstQuestion = card.getAttribute("data-question-id");
@@ -179,7 +218,13 @@ describe("ProductionQuiz", () => {
   });
 
   it("hints the elements of the substance in the „Co vzniká“ direction", () => {
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
     startQuiz();
     fireEvent.click(within(questionCard()).getByRole("button", { name: "Nápověda" }));
     expect(
@@ -188,7 +233,13 @@ describe("ProductionQuiz", () => {
   });
 
   it("stops early and returns to the settings", () => {
-    render(<ProductionQuiz products={curatedPreparationProduction} random={keepOrder} />);
+    render(
+      <ProductionQuiz
+        allowedSymbols={SYMBOLS}
+        products={curatedPreparationProduction}
+        random={keepOrder}
+      />,
+    );
     startQuiz();
     fireEvent.click(screen.getByRole("button", { name: "Ukončit" }));
 

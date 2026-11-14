@@ -83,3 +83,23 @@ export function routeReactantHint(
 export function substanceElementsHint(formula: string): readonly string[] {
   return [...new Set(formula.match(/[A-Z][a-z]?/gu) ?? [])];
 }
+
+/**
+ * For typed products: how many products form and, when there are several, one by-product, that
+ * is a product other than the substance the route is listed under. Naming that substance would
+ * give away the main product. A single product is not named.
+ */
+export function reactionByproductHint(
+  route: PreparationProductionRuntimeRoute,
+  ownerFormula: string,
+  names: ReadonlyMap<string, string>,
+): ProductsHint {
+  const formulas = [...new Set(route.products.map((term) => term.formula))];
+  if (formulas.length <= 1) return { productCount: formulas.length, product: null };
+  const others = formulas.filter((formula) => formula !== ownerFormula);
+  const preferred = others.find((formula) => names.has(formula)) ?? others[0];
+  return {
+    productCount: formulas.length,
+    product: preferred ? named(preferred, names) : null,
+  };
+}
