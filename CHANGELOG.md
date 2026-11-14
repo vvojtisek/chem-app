@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.31.0](https://github.com/vvojtisek/chem-app/compare/v1.30.0...v1.31.0) (2026-11-14)
+
+
+### Features
+
+* **web:** Lehká, Pokročilá and Pro difficulty in the preparation and production quiz ([c2652ed](https://github.com/vvojtisek/chem-app/commit/c2652ed104c86eb4827e4f251ee7dc842d5d9137))
+* **web:** Lehká, Pokročilá and Pro difficulty in the Příprava a výroba quiz ([0059a3d](https://github.com/vvojtisek/chem-app/commit/0059a3d0d3c9233857c702f77e1a6a812921d05e))
+
 ## [1.30.0](https://github.com/vvojtisek/chem-app/compare/v1.29.0...v1.30.0) (2026-11-14)
 
 
