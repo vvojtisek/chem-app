@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.33.0](https://github.com/vvojtisek/chem-app/compare/v1.32.0...v1.33.0) (2026-11-15)
+
+
+### Features
+
+* **web:** practice-first setup screens, shorter rounds and quieter pages ([b33bc14](https://github.com/vvojtisek/chem-app/commit/b33bc14feec05ae4dd33a916279906067f0bc766))
+* **web:** practice-first setup screens, shorter rounds and quieter pages ([6d8583b](https://github.com/vvojtisek/chem-app/commit/6d8583b9689343a334d22ad5a6a1797118a4cd1a))
+
 ## [1.32.0](https://github.com/vvojtisek/chem-app/compare/v1.31.0...v1.32.0) (2026-11-14)
 
 
