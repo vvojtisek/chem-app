@@ -7,15 +7,18 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { ResumePractice } from "@/components/resume-practice";
-import { WeakElements } from "@/components/weak-elements";
+import { ReviewPanel } from "@/components/review-panel";
 import { getMyProfile } from "@/lib/api/client";
-import { createBrowserProgressStore, type AttemptEvent } from "@/lib/browser-progress-store";
+import { type AttemptEvent, createBrowserProgressStore } from "@/lib/browser-progress-store";
 import { czechCount, formatAccuracy } from "@/lib/czech-plural";
 import { cacheDailyGoal, countDailyAnswers, readCachedDailyGoal } from "@/lib/daily-goal";
+import { findLastExercise, type LastExercise } from "@/lib/last-exercise";
 import { summarizeAreas } from "@/lib/learning-summary";
 import { calculatePeriodicTableMastery } from "@/lib/periodic-table-mastery";
 import { practiceCategories } from "@/lib/practice-catalog";
+import { listResumableExercises } from "@/lib/practice-checkpoints";
 import { queryKeys } from "@/lib/query-keys";
+import { summarizeReview } from "@/lib/review-items";
 
 const ANSWER_FORMS = ["odpověď", "odpovědi", "odpovědí"] as const;
 
@@ -44,24 +47,25 @@ function DailyGoal({
       aria-labelledby="daily-goal-heading"
       className="rounded-2xl border border-line bg-surface p-5 sm:p-6"
     >
-      <h2 className="font-display text-xl font-bold text-ink" id="daily-goal-heading">
-        Dnešní cíl
-      </h2>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+        <h2 className="font-display text-lg font-bold text-ink" id="daily-goal-heading">
+          Dnešní cíl
+        </h2>
+        {goal === null ? null : (
+          <p className="text-sm font-semibold tabular-nums text-ink-2">
+            {answers} z {goal} odpovědí
+          </p>
+        )}
+      </div>
       {goal === null ? (
-        <p className="mt-3 text-ink-2">
+        <p className="mt-2 text-sm text-ink-2">
           Dnes {czechCount(answers, ANSWER_FORMS)}.{" "}
           <Link className="font-semibold text-accent-strong underline" href="/ucet">
-            Nastavit denní cíl v profilu
+            Nastavit denní cíl
           </Link>
         </p>
       ) : (
         <>
-          <p className="mt-3 font-display text-2xl font-bold tabular-nums text-ink">
-            {Math.min(Math.round((answers / goal) * 100), 100)} %
-          </p>
-          <p className="text-sm text-ink-2">
-            {answers} z {goal} odpovědí · počítají se i chybné odpovědi
-          </p>
           <progress
             aria-label="Dnešní cíl"
             className="mt-3 h-2 w-full accent-accent"
@@ -73,6 +77,53 @@ function DailyGoal({
           ) : null}
         </>
       )}
+    </section>
+  );
+}
+
+/**
+ * The one primary action of the home page: resume an unfinished round, otherwise open the
+ * exercise practised last (it remembers its selection), otherwise start practising.
+ */
+function TodayAction({ userId, last }: Readonly<{ userId: string; last: LastExercise | null }>) {
+  const checkpoints = useQuery({
+    queryKey: queryKeys.me.practiceCheckpoints(userId),
+    queryFn: () => listResumableExercises(indexedDB, userId),
+    retry: false,
+  });
+  if (!checkpoints.isSuccess) return null;
+  if (checkpoints.data.length > 0) return <ResumePractice userId={userId} />;
+  return (
+    <section
+      aria-labelledby="today-heading"
+      className="rounded-2xl border border-accent/30 bg-accent-soft p-5 sm:p-6"
+    >
+      <h2 className="font-display text-xl font-bold text-ink" id="today-heading">
+        {last ? "Pokračovat v procvičování" : "Začít procvičovat"}
+      </h2>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3">
+        <p className="min-w-48 flex-1 text-ink-2">
+          {last ? (
+            <>
+              Naposledy: <span className="font-semibold text-ink">{last.title}</span>
+            </>
+          ) : (
+            "Vyberte si cvičení. Každé si pamatuje váš poslední výběr."
+          )}
+        </p>
+        <Link
+          className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 font-semibold text-on-fill"
+          href={last?.href ?? "/procvicovani"}
+        >
+          {last ? (
+            <>
+              Pokračovat<span className="sr-only">: {last.title}</span>
+            </>
+          ) : (
+            "Vybrat cvičení"
+          )}
+        </Link>
+      </div>
     </section>
   );
 }
@@ -101,8 +152,19 @@ export function HomeDashboard() {
     const mastered = curatedElements.filter(
       (element) => mastery.get(element.id)?.level === "mastered",
     ).length;
-    return { summary, mastered };
+    return {
+      summary,
+      mastered,
+      last: findLastExercise(all),
+      review: summarizeReview(all),
+    };
   }, [attempts.data]);
+  const checkpoints = useQuery({
+    queryKey: queryKeys.me.practiceCheckpoints(userId ?? ""),
+    queryFn: () => listResumableExercises(indexedDB, userId ?? ""),
+    enabled: Boolean(userId && canSave),
+    retry: false,
+  });
 
   return (
     <>
@@ -113,7 +175,7 @@ export function HomeDashboard() {
           : `, ${profile.data?.displayName?.trim() || account?.username || ""}`}
       </h1>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(17rem,1fr)]">
-        {userId && canSave ? <ResumePractice userId={userId} /> : null}
+        {userId && canSave ? <TodayAction last={progress.last} userId={userId} /> : null}
         {userId && canViewProgress ? (
           <DailyGoal
             attempts={attempts.data ?? []}
@@ -122,11 +184,16 @@ export function HomeDashboard() {
           />
         ) : null}
       </div>
+      {userId && canViewProgress && attempts.data ? (
+        <div className="mt-4">
+          <ReviewPanel inProgress={checkpoints.data ?? []} review={progress.review} />
+        </div>
+      ) : null}
       <section aria-labelledby="areas-heading" className="mt-6">
         <h2 className="sr-only" id="areas-heading">
           Oblasti učení
         </h2>
-        <ul className="grid list-none gap-4 p-0 sm:grid-cols-2 xl:grid-cols-4">
+        <ul className="grid list-none gap-4 p-0 sm:grid-cols-2 xl:grid-cols-3">
           {practiceCategories.map((category) => {
             const stats = progress.summary[category.area];
             const accuracy = formatAccuracy(stats.correct, stats.attempts);
@@ -177,53 +244,8 @@ export function HomeDashboard() {
               </li>
             );
           })}
-          <li className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
-            <h3 className="font-display text-lg font-bold text-ink">Učivo</h3>
-            <p className="mt-3 min-h-14 text-sm leading-6 text-ink-2">
-              Bez otázek a bez hodnocení. Procházejte prvky, jejich přípravu a výrobu.
-            </p>
-            <ul className="list-none p-0">
-              <li>
-                <Link
-                  className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
-                  href="/uceni/karty-prvku"
-                >
-                  Karty prvků <span aria-hidden="true">→</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
-                  href="/uceni/prvky"
-                >
-                  Prvky a skupiny <span aria-hidden="true">→</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
-                  href="/uceni/priprava-vyroba"
-                >
-                  Příprava a výroba <span aria-hidden="true">→</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="inline-flex min-h-9 items-center text-sm font-semibold text-accent-strong hover:underline"
-                  href="/uceni/prvky/vycislovani-rovnic"
-                >
-                  Vyčíslování rovnic <span aria-hidden="true">→</span>
-                </Link>
-              </li>
-            </ul>
-          </li>
         </ul>
       </section>
-      {userId && canViewProgress ? (
-        <div className="mt-6">
-          <WeakElements compact userId={userId} />
-        </div>
-      ) : null}
     </>
   );
 }

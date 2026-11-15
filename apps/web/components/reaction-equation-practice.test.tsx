@@ -17,6 +17,8 @@ vi.mock("@/lib/browser-progress-store", () => ({
   createBrowserProgressStore: () => ({ appendAttempt }),
 }));
 
+import { saveReviewRequest } from "@/lib/review-request";
+
 import { ReactionEquationPractice } from "./reaction-equation-practice";
 
 const fixture: PreparationProductionRuntimeProduct = {
@@ -76,6 +78,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  window.localStorage.clear();
 });
 
 describe("reaction equation practice", () => {
@@ -288,6 +291,22 @@ describe("reaction equation practice", () => {
 
     expect(screen.queryByRole("table", { name: "Počty atomů" })).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("celá čísla od 1 do 999");
+  });
+
+  it("starts a review round requested from the home page at its level", () => {
+    const [first, second] = curatedPreparationProduction.flatMap((product) => product.routes);
+    if (!first || !second) throw new Error("Fixture content has fewer than two routes.");
+    saveReviewRequest({ exercise: "equations", level: "beginner", ids: [second.id] });
+    renderChoice();
+
+    expect(screen.getByRole("button", { name: "Střední" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("Opakování slabých míst")).toBeVisible();
+    expect(screen.getByText("Otázka 1 z 1")).toBeVisible();
+    expect(document.querySelector("[data-route-id]")).toHaveAttribute("data-route-id", second.id);
+    expect(window.localStorage.getItem("inorganic.reviewRequest.equations")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Pokročilá" }));
+    expect(screen.queryByText("Opakování slabých míst")).toBeNull();
   });
 
   it("lets a guest practice without writing attempts", () => {

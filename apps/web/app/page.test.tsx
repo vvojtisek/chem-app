@@ -20,11 +20,11 @@ function renderHome() {
 }
 
 describe("HomePage", () => {
-  it("presents the four dashboard areas", () => {
+  it("presents the three practice areas", () => {
     renderHome();
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Dobrý den");
-    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
     expect(screen.getByText("Periodická tabulka")).toBeInTheDocument();
     expect(screen.getByText("Chemické rovnice, příprava a výroba")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Procvičit rovnice" })).toHaveAttribute(
@@ -48,10 +48,8 @@ describe("HomePage", () => {
     expect(screen.queryByRole("link", { name: "Procvičit názvy" })).toBeNull();
     expect(screen.getByRole("link", { name: "Procvičit pozice" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Pětiminutový kvíz prvků" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Karty prvků" })).toHaveAttribute(
-      "href",
-      "/uceni/karty-prvku",
-    );
+    // Study pages are reached from the Učivo navigation, not from the home page.
+    expect(screen.queryByRole("link", { name: "Karty prvků" })).toBeNull();
     expect(screen.queryByText("Připravujeme obsah")).toBeNull();
   });
 });

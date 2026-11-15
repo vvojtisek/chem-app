@@ -17,11 +17,11 @@ async function keepQuestionOrder(page: Page): Promise<void> {
   });
 }
 
-test("shows the four dashboard areas and app version on desktop and mobile", async ({ page }) => {
+test("shows the three dashboard areas and app version on desktop and mobile", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
-  await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+  await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
   await expect(page.getByTitle("Verze aplikace")).toHaveText(`v${APP_VERSION}`);
   await expect(page.getByText("Offline výuka")).toHaveCount(0);
   await expect(page.getByText("Vyberte, co chcete trénovat")).toHaveCount(0);
@@ -36,7 +36,13 @@ test("keeps the phone shell and first dashboard content usable at 360 px", async
   await expect(page.getByTitle("Verze aplikace")).toBeVisible();
   await expect(page.getByRole("link", { name: "Nápověda" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Profil", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Dnešní cíl" })).toBeInViewport();
+  // The one primary action of the home page is visible without scrolling.
+  await expect(
+    page.getByRole("heading", {
+      level: 2,
+      name: /^(Pokračovat v procvičování|Začít procvičovat|Rozpracované cvičení)$/,
+    }),
+  ).toBeInViewport();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   await page.screenshot({ path: testInfo.outputPath("dashboard-360.png"), fullPage: true });
 });
@@ -70,7 +76,7 @@ test("fits the learning modes in an iPad-sized viewport", async ({ page }, testI
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý den");
-    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(4);
+    await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       viewport.width,
     );

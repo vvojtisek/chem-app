@@ -49,6 +49,7 @@ import {
   finishPracticeQueue,
   type PracticeQueueState,
 } from "@/lib/practice-queue";
+import { takeReviewRequest } from "@/lib/review-request";
 import { plannedRoundSize } from "@/lib/round-length";
 
 interface NomenclaturePracticeProps {
@@ -163,6 +164,19 @@ export function NomenclaturePractice({
     setRunId((previous) => previous + 1);
   });
 
+  /** Starts the review round requested from the home page, unless a checkpoint was restored. */
+  const startRequestedReview = useEffectEvent(() => {
+    const request = takeReviewRequest("nomenclature");
+    if (!request || sessionRef.current?.status === "running") return;
+    const wanted = new Set(request.ids);
+    const questions = compounds.filter(
+      (record) => wanted.has(record.id) && record.directions.includes(request.direction),
+    );
+    if (questions.length === 0) return;
+    setDirection(request.direction);
+    begin(questions, request.direction);
+  });
+
   const handleLoadFailure = useEffectEvent((error: unknown) => {
     if (error instanceof LegacyNomenclatureCheckpointError) {
       setNotice(
@@ -197,7 +211,9 @@ export function NomenclaturePractice({
     browserStore
       .load()
       .then((saved) => {
-        if (mounted) restoreSaved(saved);
+        if (!mounted) return;
+        restoreSaved(saved);
+        startRequestedReview();
       })
       .catch((error: unknown) => {
         if (mounted) handleLoadFailure(error);

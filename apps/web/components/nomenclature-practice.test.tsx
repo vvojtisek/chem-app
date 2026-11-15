@@ -14,6 +14,7 @@ import {
   saveNomenclatureDirection,
 } from "@/lib/nomenclature-preferences";
 import { DEFAULT_NOMENCLATURE_FILTERS } from "@/lib/nomenclature-session";
+import { saveReviewRequest } from "@/lib/review-request";
 import { NomenclaturePractice } from "./nomenclature-practice";
 
 function record(overrides: Partial<NomenclatureRuntimeRecord>): NomenclatureRuntimeRecord {
@@ -170,6 +171,21 @@ describe("NomenclaturePractice filters", () => {
 });
 
 describe("NomenclaturePractice exercise", () => {
+  it("starts a review round requested from the home page in its direction", async () => {
+    saveReviewRequest({
+      exercise: "nomenclature",
+      direction: "name-to-formula",
+      ids: [sodiumChloride.id],
+    });
+    renderPractice();
+
+    expect(await screen.findByRole("heading", { name: /^Zadání:/ })).toHaveAccessibleName(
+      "Zadání: chlorid sodný",
+    );
+    expect(screen.getByRole("textbox", { name: "Chemický vzorec" })).toBeVisible();
+    expect(window.localStorage.getItem("inorganic.reviewRequest.nomenclature")).toBeNull();
+  });
+
   it("keeps the final incorrect retry and its explanation visible until results are requested", async () => {
     renderPractice([silverChloride]);
     fireEvent.click(await startButton());
