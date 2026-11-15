@@ -4,8 +4,10 @@ import type { PreparationProductionRuntimeRoute } from "@inorganic/content/prepa
 import { Fragment, useId } from "react";
 
 import { Formula } from "@/components/formula";
+import { HowItWorks } from "@/components/how-it-works";
 import { NamedSubstance } from "@/components/question-tools";
 import { SegmentedChoice } from "@/components/segmented-choice";
+import { SetupStartBar } from "@/components/setup-start-bar";
 import { czechCount } from "@/lib/czech-plural";
 import type { ProductsHint } from "@/lib/practice-hints";
 import type { ProductionQuizKind, ProductionQuizOption } from "@/lib/preparation-production-quiz";
@@ -37,6 +39,7 @@ const COUNT_OPTIONS: readonly { readonly value: number | null; readonly label: s
 ];
 
 export function QuizSetup({
+  helpId,
   description,
   settings,
   available,
@@ -44,6 +47,7 @@ export function QuizSetup({
   onChange,
   onStart,
 }: Readonly<{
+  helpId: string;
   description: string;
   settings: ProductionRecallSettings;
   available: Readonly<Record<ProductionQuizKind, number>>;
@@ -58,7 +62,7 @@ export function QuizSetup({
       aria-label="Nastavení kvízu"
       className="grid gap-5 rounded-2xl border border-line bg-surface p-5 sm:p-6"
     >
-      <p className="leading-7 text-ink-2">{description}</p>
+      <HowItWorks id={helpId}>{description}</HowItWorks>
       <SegmentedChoice
         legend="Postupy"
         name={kindName}
@@ -76,7 +80,7 @@ export function QuizSetup({
         options={COUNT_OPTIONS}
         value={settings.count}
       />
-      <div>
+      <SetupStartBar>
         <button
           className="min-h-12 rounded-xl bg-accent px-5 font-semibold text-on-fill hover:bg-accent-strong disabled:cursor-not-allowed disabled:bg-surface-3 disabled:text-ink-3"
           disabled={plannedCount === 0}
@@ -85,7 +89,7 @@ export function QuizSetup({
         >
           Spustit kvíz ({czechCount(plannedCount, QUESTION_FORMS)})
         </button>
-      </div>
+      </SetupStartBar>
     </section>
   );
 }

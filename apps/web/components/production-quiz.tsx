@@ -13,8 +13,8 @@ import {
   EquationTerms,
   KIND_LABELS,
   KINDS,
-  type MissedQuestion,
   MissedList,
+  type MissedQuestion,
   QuizSetup,
   ROUTE_KIND_LABELS,
 } from "@/components/production-quiz-parts";
@@ -42,6 +42,7 @@ import {
   type ProductionRecallSettings,
 } from "@/lib/production-recall";
 import type { ReactionProductsOption } from "@/lib/reaction-products-quiz";
+import type { ReportedQuestion } from "@/lib/report-question";
 
 const OPTION_LETTERS = ["a", "b", "c", "d"] as const;
 const MODE_OPTIONS: readonly { readonly value: ProductionQuizMode; readonly label: string }[] = [
@@ -253,6 +254,7 @@ function ChoiceProductionQuiz({
       <QuizSetup
         available={available}
         description={CHOICE_DESCRIPTION}
+        helpId="production-easy"
         onChange={onSettingsChange}
         onStart={start}
         plannedCount={plannedCount}
@@ -287,7 +289,7 @@ function ChoiceProductionQuiz({
         />
       ) : feedback && !showResults ? (
         <FinalAnswerReview onShowResults={() => setShowResults(true)}>
-          <AnswerFeedback isCorrect={feedback.isCorrect}>
+          <AnswerFeedback isCorrect={feedback.isCorrect} report={reportOf(feedback.question)}>
             <FeedbackDetail feedback={feedback} />
           </AnswerFeedback>
         </FinalAnswerReview>
@@ -326,7 +328,7 @@ function ChoiceProductionQuiz({
 
       <div aria-live="polite">
         {feedback && question ? (
-          <AnswerFeedback isCorrect={feedback.isCorrect}>
+          <AnswerFeedback isCorrect={feedback.isCorrect} report={reportOf(feedback.question)}>
             <FeedbackDetail feedback={feedback} />
           </AnswerFeedback>
         ) : null}
@@ -410,6 +412,14 @@ function ChoiceCard({
       </ul>
     </section>
   );
+}
+
+function reportOf(question: ProductionChoiceQuestion): ReportedQuestion {
+  return {
+    exercise: "Příprava a výroba",
+    questionId: question.id,
+    prompt: `${question.route.reactants.map((term) => term.formula).join(" + ")} → ? (${question.product.nameCs})`,
+  };
 }
 
 function FeedbackDetail({ feedback }: Readonly<{ feedback: Feedback }>) {

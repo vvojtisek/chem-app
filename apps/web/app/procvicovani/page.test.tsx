@@ -11,15 +11,15 @@ describe("PracticeHubPage", () => {
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Procvičovat");
     expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
-    expect(screen.getByRole("link", { name: "Procvičit názvy a značky" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Názvy a značky prvků" })).toHaveAttribute(
       "href",
       "/procvicovani/prvky",
     );
-    expect(screen.getByRole("link", { name: "Procvičit pozice" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Slepá periodická tabulka" })).toHaveAttribute(
       "href",
       "/procvicovani/periodicka-tabulka",
     );
-    expect(screen.getByRole("link", { name: "Procvičit názvosloví" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Názvosloví" })).toHaveAttribute(
       "href",
       "/procvicovani/nazvoslovi",
     );
@@ -41,12 +41,12 @@ describe("PracticeHubPage", () => {
       "link",
     );
     expect(links.map((link) => link.textContent)).toEqual([
-      "Procvičit názvy a značky",
+      "Názvy a značky prvků",
       "Pětiminutový kvíz prvků",
-      "Procvičit pozice",
+      "Slepá periodická tabulka",
       "Vyčíslování rovnic",
       "Příprava a výroba",
-      "Procvičit názvosloví",
+      "Názvosloví",
     ]);
     expect(new Set(links.map((link) => link.className)).size).toBe(1);
     for (const link of links) expect(link.querySelector("svg")).toBeNull();

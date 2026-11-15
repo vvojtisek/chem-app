@@ -149,10 +149,6 @@ export function ProgressionPanel({
           </div>
         </div>
       )}
-      <p className="mt-3 text-xs text-ink-2">
-        Souhrn vychází ze synchronizovaných pokusů. Pokusy se ukládají i bez připojení a doplní se
-        po synchronizaci.
-      </p>
     </section>
   );
 }

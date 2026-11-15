@@ -15,6 +15,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useCapabilities } from "@/components/auth-gate";
 import { Equation, EquationSide, Formula } from "@/components/formula";
+import { HowItWorks } from "@/components/how-it-works";
 import { CheckIcon, CrossIcon } from "@/components/icons";
 import { NamedSubstance, QuestionTools } from "@/components/question-tools";
 import { createBrowserProgressStore } from "@/lib/browser-progress-store";
@@ -42,14 +43,14 @@ const LEVELS: readonly Level[] = ["easy", "beginner", "advanced", "pro"];
 const OPTION_LETTERS = ["a", "b", "c", "d"] as const;
 
 const levelLabels: Readonly<Record<Level, string>> = {
-  easy: "Snadný",
-  beginner: "Začátečník",
-  advanced: "Pokročilý",
-  pro: "Profík",
+  easy: "Lehká",
+  beginner: "Střední",
+  advanced: "Pokročilá",
+  pro: "Pro",
 };
 
 /**
- * Equation practice in four levels. „Snadný“ asks only which products the reactants give, as a
+ * Equation practice in four levels. „Lehká“ asks only which products the reactants give, as a
  * choice of four; the other levels ask for coefficients, products and coefficients, or the
  * whole equation. Each start draws the questions in a new random order.
  */
@@ -324,7 +325,7 @@ export function ReactionEquationPractice({
           </button>
         ))}
       </nav>
-      <p className="mt-3 text-sm leading-6 text-ink-2">
+      <HowItWorks className="mt-2" id={`equations-${level}`}>
         {level === "easy"
           ? "Vyberte produkty, které z uvedených výchozích látek vzniknou. Rovnici není třeba vyčíslovat. Výsledky této úrovně se zatím do pokroku nezapočítávají."
           : level === "beginner"
@@ -332,7 +333,7 @@ export function ReactionEquationPractice({
             : level === "advanced"
               ? "Doplňte nejprve produkty na pravé straně. Potom vyčíslete reaktanty i produkty."
               : "Podle názvu a vzorce produktu napište jednu správnou rovnici výroby. Pokud znáte více ověřených možností, oddělte je středníkem."}
-      </p>
+      </HowItWorks>
       <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
         <span className="inline-flex min-h-8 items-center rounded-full bg-surface-2 px-3 font-semibold text-ink tabular-nums">
           Otázka {Math.min(questionIndex + 1, questionCount)} z {questionCount}

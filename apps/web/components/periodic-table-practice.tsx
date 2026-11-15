@@ -17,6 +17,8 @@ import {
   useSharedElementSelection,
 } from "@/components/periodic-table-selection-step";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { RoundActions } from "@/components/round-actions";
+import { useRoundLength } from "@/components/round-length-choice";
 import { usePeriodicSession } from "@/components/use-periodic-session";
 import { useWrongMarks } from "@/components/use-wrong-marks";
 import {
@@ -28,7 +30,7 @@ import {
   createPeriodicTablePositionKey,
   type PeriodicTablePosition,
 } from "@/lib/periodic-table-layout";
-import { selectElements } from "@/lib/periodic-table-scope";
+import { drawSeries, selectElements } from "@/lib/periodic-table-scope";
 import {
   PERIODIC_POSITION_SESSION_ID,
   type PeriodicCheckpoint,
@@ -40,6 +42,7 @@ import {
   finishPracticeQueue,
   type PracticeQueueState,
 } from "@/lib/practice-queue";
+import { plannedRoundSize } from "@/lib/round-length";
 
 interface PeriodicTablePracticeProps {
   readonly elements: readonly ElementFlashcardData[];
@@ -66,7 +69,13 @@ export function PeriodicTablePractice({
     () => new Map(elements.map((element) => [element.id, element])),
     [elements],
   );
-  const [selection, changeSelection] = useSharedElementSelection(layout, !canSave);
+  const [selection, changeSelection, selectionRestored] = useSharedElementSelection(
+    layout,
+    !canSave,
+  );
+  const [roundLength, changeRoundLength] = useRoundLength("periodic-position", canSave, null);
+  // A saved selection opens collapsed only on arrival; „Změnit výběr“ from results shows it.
+  const [collapseSaved, setCollapseSaved] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
   const wrongMarks = useWrongMarks();
@@ -97,9 +106,24 @@ export function PeriodicTablePractice({
     setLastAnswer(null);
     setShowResults(false);
     if (persisted.storageBroken) return;
-    const questions = selectElements(layout, selection);
-    if (questions.length === 0) return;
+    const selected = selectElements(layout, selection);
+    if (selected.length === 0) return;
+    const size = plannedRoundSize(selected.length, roundLength);
+    // Drawing only for a shorter round keeps the full-selection order identical to before.
+    begin(size < selected.length ? drawSeries(selected, size, random) : selected);
+  }
 
+  /** A new round of only the items missed in the finished one. */
+  function retryMissed() {
+    const missed = sessionRef.current?.missedIds;
+    if (!missed || missed.size === 0) return;
+    setLastAnswer(null);
+    setShowResults(false);
+    if (persisted.storageBroken) return;
+    begin(layout.map(({ element }) => element).filter((element) => missed.has(element.id)));
+  }
+
+  function begin(questions: readonly ElementFlashcardData[]) {
     wrongMarks.clear();
     const next = createPracticeQueue(questions, random);
     sessionRef.current = next;
@@ -111,6 +135,7 @@ export function PeriodicTablePractice({
   }
 
   function returnToSelection() {
+    setCollapseSaved(false);
     wrongMarks.clear();
     sessionRef.current = null;
     setSession(null);
@@ -193,7 +218,10 @@ export function PeriodicTablePractice({
         <PeriodicTableSelectionStep
           layout={layout}
           onChange={changeSelection}
+          onRoundLengthChange={changeRoundLength}
           onStart={start}
+          restored={selectionRestored && collapseSaved}
+          roundLength={roundLength}
           selection={selection}
         />
         <PeriodicSessionNotice
@@ -249,13 +277,13 @@ export function PeriodicTablePractice({
           solvedLabel="Umístěno"
           total={session.total}
         >
-          <button
-            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-            onClick={returnToSelection}
-            type="button"
-          >
-            Změnit výběr
-          </button>
+          <RoundActions
+            changeLabel="Změnit výběr"
+            missedCount={session.missedIds.size}
+            onChangeSelection={returnToSelection}
+            onNextRound={() => start()}
+            onRetryMissed={retryMissed}
+          />
         </PracticeSummary>
       ) : (
         // Pinned under the top bar, so the sought element stays in view while the table scrolls.

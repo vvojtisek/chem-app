@@ -83,10 +83,6 @@ export function PeriodicMasteryHeatmap({ userId }: Readonly<{ userId: string }>)
       <h2 className="font-display text-xl font-bold text-ink" id="mastery-heading">
         Zvládnutí periodické tabulky
       </h2>
-      <p className="mt-2 text-sm text-ink-2">
-        Přehled vychází z pokusů uložených na tomto zařízení. Funguje i bez připojení a po
-        synchronizaci se doplní pokusy z dalších zařízení.
-      </p>
       {attempts.isPending ? <p role="status">Načítám místní pokusy…</p> : null}
       {attempts.isError ? (
         <p role="alert">Místní pokusy se nepodařilo načíst. Zkuste stránku obnovit.</p>

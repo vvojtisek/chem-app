@@ -6,8 +6,8 @@ import { practiceCategories } from "@/lib/practice-catalog";
 
 /**
  * One card per practice area. Every exercise is the same full-width filled button, stacked at
- * the bottom of the card so the buttons line up across a row. `progress` replaces the
- * description when known.
+ * the bottom of the card so the buttons line up across a row. Returning learners know the
+ * areas, so the card shows no description; `progress` adds a caption when known.
  */
 export function PracticeCategoryList({
   progress,
@@ -23,9 +23,9 @@ export function PracticeCategoryList({
           key={category.area}
         >
           <h3 className="font-display text-lg font-bold text-ink">{category.title}</h3>
-          <p className="mt-1 leading-6 text-ink-2">
-            {progress?.[category.area] ?? category.description}
-          </p>
+          {progress?.[category.area] ? (
+            <p className="mt-1 leading-6 text-ink-2">{progress[category.area]}</p>
+          ) : null}
           <ul className="mt-auto grid list-none gap-2.5 p-0 pt-4">
             {category.links.map((link) => (
               <li key={link.href}>

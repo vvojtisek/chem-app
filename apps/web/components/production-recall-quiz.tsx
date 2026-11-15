@@ -30,8 +30,8 @@ import {
   EquationTerms,
   KIND_LABELS,
   KINDS,
-  type MissedQuestion,
   MissedList,
+  type MissedQuestion,
   PRODUCT_FORMS,
   QuizSetup,
   ROUTE_KIND_LABELS,
@@ -175,6 +175,7 @@ export function ProductionRecallQuiz({
       <QuizSetup
         available={available}
         description={DESCRIPTIONS[mode]}
+        helpId={`production-${mode}`}
         onChange={onSettingsChange}
         onStart={start}
         plannedCount={plannedCount}

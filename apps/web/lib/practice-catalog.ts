@@ -24,9 +24,17 @@ export const practiceCategories: readonly PracticeCategory[] = [
     title: "Periodická tabulka",
     description: "Procvičování značek, názvů a pozic prvků.",
     links: [
-      { href: "/procvicovani/prvky", label: "Procvičit názvy a značky" },
+      {
+        href: "/procvicovani/prvky",
+        label: "Názvy a značky prvků",
+        homeLabel: "Procvičit názvy a značky",
+      },
       { href: "/flashcards/prvky", label: "Pětiminutový kvíz prvků" },
-      { href: "/procvicovani/periodicka-tabulka", label: "Procvičit pozice" },
+      {
+        href: "/procvicovani/periodicka-tabulka",
+        label: "Slepá periodická tabulka",
+        homeLabel: "Procvičit pozice",
+      },
     ],
   },
   {
@@ -51,6 +59,8 @@ export const practiceCategories: readonly PracticeCategory[] = [
     area: "nomenclature",
     title: "Názvosloví",
     description: "Převod mezi českými názvy a chemickými vzorci.",
-    links: [{ href: "/procvicovani/nazvoslovi", label: "Procvičit názvosloví" }],
+    links: [
+      { href: "/procvicovani/nazvoslovi", label: "Názvosloví", homeLabel: "Procvičit názvosloví" },
+    ],
   },
 ];

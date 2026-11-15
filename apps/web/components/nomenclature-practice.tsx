@@ -18,6 +18,8 @@ import { FinalAnswerReview } from "@/components/final-answer-review";
 import { Formula } from "@/components/formula";
 import { NomenclatureFilterStep } from "@/components/nomenclature-filters";
 import { PracticeDashboard, PracticeSummary, useStopwatch } from "@/components/practice-dashboard";
+import { RoundActions } from "@/components/round-actions";
+import { useRoundLength } from "@/components/round-length-choice";
 import {
   type BrowserNomenclatureStore,
   createBrowserNomenclatureStore,
@@ -40,12 +42,14 @@ import {
   type NomenclatureDirection,
   type NomenclatureFilters,
 } from "@/lib/nomenclature-session";
+import { drawSeries } from "@/lib/periodic-table-scope";
 import {
   answerPracticeQueue,
   createPracticeQueue,
   finishPracticeQueue,
   type PracticeQueueState,
 } from "@/lib/practice-queue";
+import { plannedRoundSize } from "@/lib/round-length";
 
 interface NomenclaturePracticeProps {
   readonly compounds: readonly NomenclatureRuntimeRecord[];
@@ -83,6 +87,7 @@ export function NomenclaturePractice({
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<NomenclatureFilters>(DEFAULT_NOMENCLATURE_FILTERS);
   const [direction, setDirection] = useState<NomenclatureDirection>("formula-to-name");
+  const [filtersRestored, setFiltersRestored] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const sessionRef = useRef<Session | null>(null);
   const [runId, setRunId] = useState(0);
@@ -102,6 +107,9 @@ export function NomenclaturePractice({
   const storeRef = useRef<BrowserNomenclatureStore | null>(null);
   const account = useAccount();
   const { canSave } = useCapabilities();
+  const [roundLength, changeRoundLength] = useRoundLength("nomenclature", canSave);
+  // A saved selection opens collapsed only on arrival; „Změnit výběr“ from results shows it.
+  const [collapseSaved, setCollapseSaved] = useState(true);
   const checkpointRef = useRef<NomenclatureCheckpoint | null>(null);
   const persistedRevisionRef = useRef(0);
   const queuedWritesRef = useRef<Promise<void>>(Promise.resolve());
@@ -176,7 +184,10 @@ export function NomenclaturePractice({
       return;
     }
     const storedFilters = loadNomenclatureFilters();
-    if (storedFilters) setFilters(storedFilters);
+    if (storedFilters) {
+      setFilters(storedFilters);
+      setFiltersRestored(true);
+    }
     const storedDirection = loadNomenclatureDirection();
     if (storedDirection) setDirection(storedDirection);
 
@@ -291,7 +302,30 @@ export function NomenclaturePractice({
 
   function start(selectedDirection = direction) {
     setShowResults(false);
-    const questions = filterCompounds(compounds, filters, selectedDirection);
+    const matching = filterCompounds(compounds, filters, selectedDirection);
+    const size = plannedRoundSize(matching.length, roundLength);
+    // Drawing only for a shorter round keeps the full-selection order identical to before.
+    begin(
+      size < matching.length ? drawSeries(matching, size, random) : matching,
+      selectedDirection,
+    );
+  }
+
+  /** A new round of only the compounds missed in the finished one. */
+  function retryMissed() {
+    const missed = sessionRef.current?.missedIds;
+    if (!missed || missed.size === 0) return;
+    setShowResults(false);
+    begin(
+      compounds.filter((record) => missed.has(record.id) && record.directions.includes(direction)),
+      direction,
+    );
+  }
+
+  function begin(
+    questions: readonly NomenclatureRuntimeRecord[],
+    selectedDirection: NomenclatureDirection,
+  ) {
     if (questions.length === 0) {
       finish();
       sessionRef.current = null;
@@ -326,6 +360,7 @@ export function NomenclaturePractice({
   }
 
   function returnToFilters() {
+    setCollapseSaved(false);
     const current = sessionRef.current;
     if (current?.status === "running") finish();
     sessionRef.current = null;
@@ -480,7 +515,10 @@ export function NomenclaturePractice({
           compounds={compounds.filter((record) => record.directions.includes(direction))}
           filters={filters}
           onChange={changeFilters}
+          onRoundLengthChange={changeRoundLength}
           onStart={() => start()}
+          restored={filtersRestored && collapseSaved}
+          roundLength={roundLength}
         />
         {notices}
       </>
@@ -583,13 +621,13 @@ export function NomenclaturePractice({
           solvedLabel="Zodpovězeno"
           total={session.total}
         >
-          <button
-            className="mt-4 min-h-11 rounded-xl border border-line-strong bg-surface px-4 font-semibold text-ink"
-            onClick={returnToFilters}
-            type="button"
-          >
-            Změnit filtry
-          </button>
+          <RoundActions
+            changeLabel="Změnit filtry"
+            missedCount={session.missedIds.size}
+            onChangeSelection={returnToFilters}
+            onNextRound={() => start()}
+            onRetryMissed={retryMissed}
+          />
         </PracticeSummary>
       )}
       <p aria-live="polite" className="sr-only">
@@ -623,7 +661,14 @@ function FormulaPreview({
 function FeedbackCard({ feedback }: { readonly feedback: Feedback }) {
   const { record, isCorrect } = feedback;
   return (
-    <AnswerFeedback isCorrect={isCorrect}>
+    <AnswerFeedback
+      isCorrect={isCorrect}
+      report={{
+        exercise: "Názvosloví",
+        questionId: record.id,
+        prompt: `${plainFormula(record.formula, record.charge)} / ${record.nameCs}`,
+      }}
+    >
       <p className="text-lg">
         <Formula charge={record.charge} className="font-semibold" formula={record.formula} /> ={" "}
         <span className="font-semibold">{record.nameCs}</span>

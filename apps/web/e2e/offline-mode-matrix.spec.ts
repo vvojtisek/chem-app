@@ -24,17 +24,17 @@ test("starts and hydrates learning modes offline after one home visit", async ({
   await expect(page.getByText(/Správně: 1|Špatně: 1/)).toBeVisible();
 
   await page.goto("/procvicovani/nazvoslovi", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Procvičování: Názvosloví");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Názvosloví");
   await page.getByRole("button", { name: /^Spustit cvičení/ }).click();
   await expect(page.getByRole("heading", { name: /^Zadání:/ })).toBeVisible();
 
   await page.goto("/procvicovani/rovnice", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Chemické rovnice" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Vyčíslování rovnic" })).toBeVisible();
   const productOptions = page.getByRole("group", { name: "Produkty reakce" }).getByRole("button");
   await expect(productOptions).toHaveCount(4);
   await productOptions.first().click();
   await expect(page.getByText(/^(Správně\.|To není správné řešení\.)$/u)).toBeVisible();
-  await page.getByRole("button", { name: "Začátečník" }).click();
+  await page.getByRole("button", { name: "Střední" }).click();
   await expect(page.getByRole("button", { name: "Vyhodnotit koeficienty" })).toBeVisible();
 
   await page.goto("/procvicovani/priprava-vyroba", { waitUntil: "domcontentloaded" });
@@ -44,7 +44,9 @@ test("starts and hydrates learning modes offline after one home visit", async ({
   ).toBeVisible();
 
   await page.goto("/flashcards/prvky", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { level: 1, name: "Karty prvků · kvíz" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Pětiminutový kvíz prvků" }),
+  ).toBeVisible();
   await page.goto("/uceni/karty-prvku", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { level: 2, name: "Prvky" })).toBeVisible();
   await page.getByRole("button", { name: "Otočit kartu" }).click();

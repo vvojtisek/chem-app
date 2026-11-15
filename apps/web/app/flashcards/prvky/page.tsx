@@ -8,7 +8,7 @@ export default function ElementFlashcardsPage() {
   return (
     <main className="w-full px-4 py-6 sm:px-8 lg:py-10">
       <div className="mx-auto mb-4 w-full max-w-5xl">
-        <Breadcrumbs items={[PRACTICE_BREADCRUMB, { label: "Karty prvků" }]} />
+        <Breadcrumbs items={[PRACTICE_BREADCRUMB, { label: "Pětiminutový kvíz prvků" }]} />
       </div>
       <ElementFlashcardPractice elements={curatedElements} />
     </main>
