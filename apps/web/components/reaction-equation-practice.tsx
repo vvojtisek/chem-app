@@ -29,6 +29,7 @@ import {
   listReactionProductRoutes,
   type ReactionProductsQuestion,
 } from "@/lib/reaction-products-quiz";
+import { type ReviewRequest, takeReviewRequest } from "@/lib/review-request";
 
 type Level = "easy" | "beginner" | "advanced" | "pro";
 /** Levels whose attempts are saved; the attempt schema does not know the choice level yet. */
@@ -37,6 +38,11 @@ type Route = PreparationProductionRuntimeProduct["routes"][number];
 interface Question {
   readonly product: PreparationProductionRuntimeProduct;
   readonly route: Route;
+}
+
+/** The attempt question ID: the product at the Pro level, otherwise the route. */
+function questionIdOf(level: Level, question: Question): string {
+  return level === "pro" ? question.product.id : question.route.id;
 }
 
 const LEVELS: readonly Level[] = ["easy", "beginner", "advanced", "pro"];
@@ -109,6 +115,7 @@ export function ReactionEquationPractice({
   const [balanceFromAnswer, setBalanceFromAnswer] = useState(false);
   const [unreduced, setUnreduced] = useState(false);
   const [saveNotice, setSaveNotice] = useState("");
+  const [reviewing, setReviewing] = useState(false);
 
   /** Draws new options for every question shown at the easy level, also for a retry. */
   const drawChoice = useCallback(
@@ -123,7 +130,27 @@ export function ReactionEquationPractice({
     [allRoutes, symbols, random],
   );
 
+  // Taken once per mount: a review round requested from the home page replaces the first draw.
+  const reviewRequest = useRef<
+    Extract<ReviewRequest, { exercise: "equations" }> | null | undefined
+  >(undefined);
   useEffect(() => {
+    if (reviewRequest.current === undefined) reviewRequest.current = takeReviewRequest("equations");
+    const request = reviewRequest.current;
+    if (request) {
+      const wanted = new Set(request.ids);
+      const requested = questionsByLevel[request.level].filter((candidate) =>
+        wanted.has(questionIdOf(request.level, candidate)),
+      );
+      if (requested.length > 0) {
+        const drawn = drawSeries(requested, Infinity, random);
+        setLevel(request.level);
+        setReviewing(true);
+        setQuestions(drawn);
+        drawChoice(request.level, drawn[0]);
+        return;
+      }
+    }
     const drawn = drawSeries(questionsByLevel.easy, Infinity, random);
     setQuestions(drawn);
     drawChoice("easy", drawn[0]);
@@ -143,6 +170,7 @@ export function ReactionEquationPractice({
       : [];
 
   function changeLevel(nextLevel: Level) {
+    setReviewing(false);
     const drawn = drawSeries(questionsByLevel[nextLevel], Infinity, random);
     setLevel(nextLevel);
     setQuestions(drawn);
@@ -175,7 +203,7 @@ export function ReactionEquationPractice({
     } as const;
     const attempt = {
       id: createClientId(),
-      questionId: level === "pro" ? question.product.id : question.route.id,
+      questionId: questionIdOf(level, question),
       contentVersion: preparationProductionContentVersion,
       occurredAt: new Date().toISOString(),
       isCorrect,
@@ -335,6 +363,11 @@ export function ReactionEquationPractice({
               : "Podle názvu a vzorce produktu napište jednu správnou rovnici výroby. Pokud znáte více ověřených možností, oddělte je středníkem."}
       </HowItWorks>
       <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+        {reviewing ? (
+          <span className="inline-flex min-h-8 items-center rounded-full bg-accent-soft px-3 font-semibold text-accent-strong">
+            Opakování slabých míst
+          </span>
+        ) : null}
         <span className="inline-flex min-h-8 items-center rounded-full bg-surface-2 px-3 font-semibold text-ink tabular-nums">
           Otázka {Math.min(questionIndex + 1, questionCount)} z {questionCount}
         </span>

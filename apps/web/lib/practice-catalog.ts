@@ -5,8 +5,8 @@ export interface PracticeLink {
   readonly label: string;
   readonly target?: "_blank";
   /**
-   * Label on the home dashboard when `label` would repeat the name of a study page linked
-   * next to it there (the Učivo card has its own „Vyčíslování rovnic“ and „Příprava a výroba“).
+   * Label on the home dashboard, where each link starts practice of its area card
+   * („Procvičit …“) instead of repeating the exercise name.
    */
   readonly homeLabel?: string;
 }

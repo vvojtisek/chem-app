@@ -13,7 +13,8 @@ import {
 const userId = "11111111-1111-4111-8111-111111111111";
 const auth = vi.hoisted(() => ({ role: "user" as "user" | "guest" | "tester" }));
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+const router = vi.hoisted(() => ({ push: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => router }));
 vi.mock("@/lib/api/client", () => ({
   getMyProfile: vi.fn(async () => ({ displayName: "Jana Nováková", dailyGoal: 40 })),
 }));
@@ -82,7 +83,7 @@ describe("HomeDashboard", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Dobrý den, Jana Nováková" }),
     ).toBeVisible();
-    expect(screen.getByText("0 z 40 odpovědí · počítají se i chybné odpovědi")).toBeVisible();
+    expect(screen.getByText("0 z 40 odpovědí")).toBeVisible();
   });
 
   it("shows the accuracy of each area from the answers on this device", async () => {
@@ -96,7 +97,7 @@ describe("HomeDashboard", () => {
       await within(areaCard("Názvosloví")).findByText("Úspěšnost 75 % · 4 odpovědi"),
     ).toBeInTheDocument();
     expect(areaCard("Chemické rovnice, příprava a výroba")).toHaveTextContent("Zatím bez odpovědí");
-    expect(areaCard("Učivo")).toHaveTextContent("Bez otázek a bez hodnocení");
+    expect(screen.queryByRole("heading", { level: 3, name: "Učivo" })).toBeNull();
   });
 
   it("offers to continue a saved exercise", async () => {
@@ -130,11 +131,44 @@ describe("HomeDashboard", () => {
     expect(resume).toHaveTextContent("1 z 2");
   });
 
+  it("offers the exercise practised last as the one primary action", async () => {
+    await createBrowserProgressStore(indexedDB, userId).appendAttempt(nomenclatureAttempt(1, true));
+    renderDashboard();
+
+    const today = await screen.findByRole("region", { name: "Pokračovat v procvičování" });
+    expect(today).toHaveTextContent("Naposledy: Názvosloví");
+    expect(within(today).getByRole("link", { name: "Pokračovat: Názvosloví" })).toHaveAttribute(
+      "href",
+      "/procvicovani/nazvoslovi",
+    );
+  });
+
+  it("starts a nomenclature review round of the weakest compounds", async () => {
+    const store = createBrowserProgressStore(indexedDB, userId);
+    for (const [index, isCorrect] of [false, false, true].entries()) {
+      await store.appendAttempt(nomenclatureAttempt(index, isCorrect));
+    }
+    renderDashboard();
+
+    const review = await screen.findByRole("region", { name: "K zopakování" });
+    expect(review).toHaveTextContent("1 sloučenina · Vzorec → Název");
+    within(review).getByRole("button", { name: "Zopakovat sloučeniny" }).click();
+    expect(router.push).toHaveBeenCalledWith("/procvicovani/nazvoslovi");
+    expect(
+      JSON.parse(window.localStorage.getItem("inorganic.reviewRequest.nomenclature") ?? ""),
+    ).toEqual({
+      schemaVersion: 1,
+      exercise: "nomenclature",
+      direction: "formula-to-name",
+      ids: ["nomenclature.nacl"],
+    });
+  });
+
   it("keeps guests to the practice areas", async () => {
     auth.role = "guest";
     renderDashboard();
 
-    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
     expect(areaCard("Názvosloví")).toHaveTextContent("Převod mezi českými názvy");
     expect(screen.queryByRole("region", { name: /Rozpracovan/ })).toBeNull();
     expect(screen.queryByRole("region", { name: "K zopakování" })).toBeNull();

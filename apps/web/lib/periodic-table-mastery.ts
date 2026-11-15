@@ -19,26 +19,32 @@ const EMPTY_MASTERY: ElementMastery = {
   weightedAccuracy: null,
 };
 
-export function calculatePeriodicTableMastery(
+/**
+ * Mastery per item key. Each newer answer has twice the weight of the preceding answer, so the
+ * rating follows recent answers; fewer than MIN_MASTERY_ATTEMPTS answers give no rating.
+ * `keyOf` returns null for attempts that do not belong to any item.
+ */
+export function calculateItemMastery(
   attempts: readonly AttemptEvent[],
+  keyOf: (attempt: AttemptEvent) => string | null,
 ): ReadonlyMap<string, ElementMastery> {
-  const byElement = new Map<string, Extract<AttemptEvent, { mode: "periodic-table" }>[]>();
+  const byItem = new Map<string, AttemptEvent[]>();
   for (const attempt of attempts) {
-    if (attempt.mode !== "periodic-table") continue;
-    const group = byElement.get(attempt.questionId) ?? [];
+    const key = keyOf(attempt);
+    if (key === null) continue;
+    const group = byItem.get(key) ?? [];
     group.push(attempt);
-    byElement.set(attempt.questionId, group);
+    byItem.set(key, group);
   }
 
   const result = new Map<string, ElementMastery>();
-  for (const [questionId, group] of byElement) {
+  for (const [key, group] of byItem) {
     const chronological = [...group].sort((left, right) =>
       left.occurredAt === right.occurredAt
         ? left.id.localeCompare(right.id)
         : left.occurredAt.localeCompare(right.occurredAt),
     );
-    // Each newer answer has twice the weight of the preceding answer. Normalizing
-    // against the newest event avoids overflow even for a long practice history.
+    // Normalizing against the newest event avoids overflow even for a long practice history.
     let totalWeight = 0;
     let correctWeight = 0;
     for (const [index, attempt] of chronological.entries()) {
@@ -48,7 +54,7 @@ export function calculatePeriodicTableMastery(
     }
     const weightedAccuracy = correctWeight / totalWeight;
     const count = chronological.length;
-    result.set(questionId, {
+    result.set(key, {
       level:
         count < MIN_MASTERY_ATTEMPTS
           ? "starting"
@@ -63,6 +69,14 @@ export function calculatePeriodicTableMastery(
     });
   }
   return result;
+}
+
+export function calculatePeriodicTableMastery(
+  attempts: readonly AttemptEvent[],
+): ReadonlyMap<string, ElementMastery> {
+  return calculateItemMastery(attempts, (attempt) =>
+    attempt.mode === "periodic-table" ? attempt.questionId : null,
+  );
 }
 
 export function masteryForElement(
