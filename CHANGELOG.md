@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.0](https://github.com/vvojtisek/chem-app/compare/v1.33.0...v1.34.0) (2026-11-15)
+
+
+### Features
+
+* **web:** one primary action on the home page and cross-exercise review ([68fa9d6](https://github.com/vvojtisek/chem-app/commit/68fa9d6dcbf6f8db244009a51a9dab38270a70b9))
+
 ## [1.33.0](https://github.com/vvojtisek/chem-app/compare/v1.32.0...v1.33.0) (2026-11-15)
 
 
